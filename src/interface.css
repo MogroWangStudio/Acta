@@ -952,11 +952,12 @@ html[data-acta-theme="mono-dark"] .classification-emoji-picker > header button {
 .note-editor .note-date-line time + time::before { content: ""; width: 3px; height: 3px; margin-right: 7px; border-radius: 50%; background: color-mix(in srgb, var(--note-accent) 45%, var(--line)); }
 .note-editor .note-date-line svg { width: 12px; height: 12px; }
 .todo-notes:focus-visible, .note-body:focus-visible, .note-markdown-source:focus-visible, .editor-title:focus-visible { outline: none; }
-.filter-row .todo-completed-toggle { flex: 0 0 auto; gap: 7px; cursor: pointer; font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; color: var(--muted); transition: border-color .2s, background .2s, color .2s; }
-.filter-row .todo-completed-toggle input { width: 14px; height: 14px; margin: 0; flex: 0 0 auto; accent-color: var(--todo-accent); cursor: pointer; }
-.filter-row .todo-completed-toggle svg { width: 12px; height: 12px; color: var(--todo-accent); }
-.filter-row .todo-completed-toggle:hover { border-color: color-mix(in srgb, var(--todo-accent) 30%, var(--line)); color: var(--todo-accent); background: color-mix(in srgb, var(--todo-soft) 50%, var(--white)); }
-.filter-row .todo-completed-toggle.is-active { border-color: color-mix(in srgb, var(--todo-accent) 34%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 62%, var(--white)); color: var(--todo-accent); }
+/* 「显示已完成」开关：位于标题行右端的视图级显示选项。 */
+.item-header .todo-completed-toggle { flex: 0 0 auto; gap: 7px; cursor: pointer; font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; color: var(--muted); transition: border-color .2s, background .2s, color .2s; }
+.item-header .todo-completed-toggle input { width: 14px; height: 14px; margin: 0; flex: 0 0 auto; accent-color: var(--todo-accent); cursor: pointer; }
+.item-header .todo-completed-toggle svg { width: 12px; height: 12px; color: var(--todo-accent); }
+.item-header .todo-completed-toggle:hover { border-color: color-mix(in srgb, var(--todo-accent) 30%, var(--line)); color: var(--todo-accent); background: color-mix(in srgb, var(--todo-soft) 50%, var(--white)); }
+.item-header .todo-completed-toggle.is-active { border-color: color-mix(in srgb, var(--todo-accent) 34%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 62%, var(--white)); color: var(--todo-accent); }
 .folder-name-dialog { width: min(400px, calc(100vw - 32px)); }
 .folder-name-form { display: grid; gap: 12px; }
 .folder-name-input { width: 100%; height: 40px; box-sizing: border-box; padding: 0 11px; border: 1px solid var(--line); border-radius: 10px; outline: 0; background: var(--white); color: var(--ink); font-size: calc(12px * var(--acta-font-scale)); transition: border-color .2s, box-shadow .2s; }
@@ -1380,25 +1381,30 @@ body.acta-reduce-motion.note-focus-mode :is(.editor-pane,.note-editor) { animati
 .filter-row[data-filter-context="todo"] .filter-select.is-active { border-color: color-mix(in srgb, var(--todo-accent) 34%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 54%, var(--white)); color: var(--todo-accent); }
 .filter-row[data-filter-context="note"] .filter-select:focus-within,
 .filter-row[data-filter-context="note"] .filter-select.is-active { border-color: color-mix(in srgb, var(--note-accent) 34%, var(--line)); background: color-mix(in srgb, var(--note-soft) 54%, var(--white)); color: var(--note-accent); }
-/* 筛选区网格化：布局按 data-filter-context 三态确定，任何栏宽下
-   控件都对齐铺满、不再出现换行空缺。
-   - todo/note（待办/笔记视图，或收集箱选中某类型后）：行 1 恒为三个
-     等宽下拉；行 2 = 显示已完成（列 1）+ 清除（出现时占列 2，排序
-     随之收窄到列 3）+ 排序（默认跨列 2-3）。
-   - mixed（收集箱/归类，未选类型）：分段控件铺满列 1，排序占列 2。 */
-.filter-row[data-filter-context="todo"],
-.filter-row[data-filter-context="note"] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; }
-.filter-row[data-filter-context="todo"] .todo-completed-toggle { grid-column: 1; grid-row: 2; white-space: nowrap; }
-.filter-row[data-filter-context="todo"] .list-sort-field,
-.filter-row[data-filter-context="note"] .list-sort-field { grid-column: 2 / -1; grid-row: 2; }
-.filter-row[data-filter-context="todo"] .clear-list-filters,
-.filter-row[data-filter-context="note"] .clear-list-filters { grid-column: 2; grid-row: 2; width: auto; justify-self: stretch; }
-.filter-row[data-filter-context="todo"]:has(.clear-list-filters:not([hidden])) .list-sort-field,
-.filter-row[data-filter-context="note"]:has(.clear-list-filters:not([hidden])) .list-sort-field { grid-column: 3; }
-.filter-row[data-filter-context="mixed"] { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
-.filter-row[data-filter-context="mixed"] .type-filter-group { grid-column: 1; grid-row: 1; gap: 4px; padding: 3px; border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--white) 55%, transparent); }
-.filter-row[data-filter-context="mixed"] .type-filter-group button { flex: 1 1 0; }
-.filter-row[data-filter-context="mixed"] .list-sort-field { grid-column: 2; grid-row: 1; }
+/* 筛选区网格（4 列 = 3×1fr + 排序列 .9fr），格子按 data-filter-view
+   分派——视图身份稳定，筛选状态切换不会引起布局跳动：
+   - 收集箱/归类（mixed）：行 1 = 分段控件（跨 1-3 列）+ 排序；选中
+     类型后行 2 = 三个上下文下拉（清除隐藏时第三个跨 3-4 列补满，
+     清除出现时收窄到列 3、清除占列 4）。
+   - 待办/笔记/今天（todo/note）：行 1 = 三个下拉 + 排序；清除按钮
+     出现时独占行 2 全宽。
+   「显示已完成」开关已移至标题行右端（视图级显示选项）。 */
+.filter-row .list-sort-field { grid-column: 4; grid-row: 1; }
+.filter-row[data-filter-view="mixed"] .type-filter-group { grid-column: 1 / 4; grid-row: 1; gap: 4px; padding: 3px; border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--white) 55%, transparent); }
+.filter-row[data-filter-view="mixed"] .type-filter-group button { flex: 1 1 0; }
+.filter-row[data-filter-view="todo"] .contextual-filter-group .filter-select:nth-of-type(1),
+.filter-row[data-filter-view="note"] .contextual-filter-group .filter-select:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+.filter-row[data-filter-view="todo"] .contextual-filter-group .filter-select:nth-of-type(2),
+.filter-row[data-filter-view="note"] .contextual-filter-group .filter-select:nth-of-type(2) { grid-column: 2; grid-row: 1; }
+.filter-row[data-filter-view="todo"] .contextual-filter-group .filter-select:nth-of-type(3),
+.filter-row[data-filter-view="note"] .contextual-filter-group .filter-select:nth-of-type(3) { grid-column: 3; grid-row: 1; }
+.filter-row[data-filter-view="mixed"] .contextual-filter-group .filter-select:nth-of-type(1) { grid-column: 1; grid-row: 2; }
+.filter-row[data-filter-view="mixed"] .contextual-filter-group .filter-select:nth-of-type(2) { grid-column: 2; grid-row: 2; }
+.filter-row[data-filter-view="mixed"] .contextual-filter-group .filter-select:nth-of-type(3) { grid-column: 3 / 5; grid-row: 2; }
+.filter-row[data-filter-view="mixed"]:has(.clear-list-filters:not([hidden])) .contextual-filter-group .filter-select:nth-of-type(3) { grid-column: 3; }
+.filter-row[data-filter-view="mixed"] .clear-list-filters { grid-column: 4; grid-row: 2; width: auto; justify-self: stretch; }
+.filter-row[data-filter-view="todo"] .clear-list-filters,
+.filter-row[data-filter-view="note"] .clear-list-filters { grid-column: 1 / -1; grid-row: 2; width: auto; justify-self: stretch; }
 .list-sort-field { min-width: 0; }
 .filter-row .list-sort-field.is-active { border-color: color-mix(in srgb, var(--ink) 26%, var(--line)); background: var(--white); color: var(--ink); }
 html[data-acta-theme="mono-dark"] .filter-select,
@@ -1927,6 +1933,7 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
   html[data-acta-theme="mono-dark"] .mobile-titlebar-action { background: #292929; color: #e6e6e6; }
   .search-box { margin-bottom: 6px; }
   .filter-row { row-gap: 7px; }
+  .item-header .todo-completed-toggle { height: 31px; }
   .list-sort-field select { min-width: 0; }
   .mobile-list-shortcuts { min-height: 31px; margin-left: auto; padding: 0; display: none; align-items: flex-end; justify-content: flex-end; }
   body.inbox-view .mobile-list-shortcuts { display: flex; }

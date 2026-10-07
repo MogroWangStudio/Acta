@@ -108,6 +108,11 @@
         <section class="item-pane">
           <div class="item-header">
             <div><h1 id="viewTitle">收集箱</h1></div>
+            <label class="filter-select todo-completed-toggle" id="todoCompletedToggle" hidden>
+              <input id="todoShowCompleted" type="checkbox"/>
+              <svg><use href="#i-check"/></svg>
+              <span data-i18n="showCompletedTodos">显示已完成</span>
+            </label>
             <div class="mobile-list-shortcuts">
               <button class="mobile-classifications-trigger" id="mobileClassifications" type="button" aria-label="查看归类" aria-haspopup="dialog"><svg><use href="#i-folder"/></svg><span>查看归类</span><svg class="shortcut-chevron"><use href="#i-chevron"/></svg></button>
             </div>
@@ -183,11 +188,6 @@
                 </select>
               </label>
             </div>
-            <label class="filter-select todo-completed-toggle" id="todoCompletedToggle" hidden>
-              <input id="todoShowCompleted" type="checkbox"/>
-              <svg><use href="#i-check"/></svg>
-              <span data-i18n="showCompletedTodos">显示已完成</span>
-            </label>
             <label class="filter-select list-sort-field">
               <svg><use href="#i-sliders"/></svg>
               <select id="listSortOrder" aria-label="排序方式">

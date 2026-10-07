@@ -246,7 +246,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .search-box input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); }
 .search-box input::placeholder { color: var(--faint); }
 .search-box kbd { font: calc(9px * var(--acta-font-scale))/1 system-ui; padding: 4px 5px; border-radius: 5px; background: var(--sidebar); color: var(--faint); }
-.filter-row { min-height: 38px; padding: 0 18px 9px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); }
+.filter-row { min-height: 38px; padding: 0 18px 9px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, .9fr); gap: 6px; align-items: center; border-bottom: 1px solid var(--line); }
 .filter-group { min-width: 0; flex: 1; display: flex; align-items: center; gap: 6px; }
 .filter-group[hidden] { display: none; }
 /* 上下文筛选组不参与布局（display: contents），组内下拉直接成为筛选行
@@ -265,10 +265,9 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
    最窄栏宽下「全部截止时间」等长选项不再截断。 */
 .filter-row .filter-select > svg { display: none; }
 .filter-select select { width: 100%; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: inherit; font-size: calc(9px * var(--acta-font-scale)); text-overflow: ellipsis; cursor: pointer; }
-.filter-row .clear-list-filters { width: 30px; height: 30px; flex: 0 0 auto; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--white); display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.filter-row .clear-list-filters { height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); display: inline-flex; align-items: center; justify-content: center; gap: 5px; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; transition: border-color .15s ease, color .15s ease, background .15s ease; }
 .filter-row .clear-list-filters[hidden] { display: none; }
 .clear-list-filters svg { width: 12px; height: 12px; }
-.clear-list-filters span { display: none; }
 
 .item-list { flex: 1; overflow: hidden auto; padding: 10px; }
 
