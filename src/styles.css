@@ -246,22 +246,26 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .search-box input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); }
 .search-box input::placeholder { color: var(--faint); }
 .search-box kbd { font: calc(9px * var(--acta-font-scale))/1 system-ui; padding: 4px 5px; border-radius: 5px; background: var(--sidebar); color: var(--faint); }
-.filter-row { min-height: 38px; padding: 0 18px 9px; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; border-bottom: 1px solid var(--line); }
-.filter-group { min-width: 0; flex: 1; display: flex; align-items: center; gap: 5px; }
+.filter-row { min-height: 38px; padding: 0 18px 9px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); }
+.filter-group { min-width: 0; flex: 1; display: flex; align-items: center; gap: 6px; }
 .filter-group[hidden] { display: none; }
 /* flex-basis auto: the group claims room for its selects, so a narrow list pane
    wraps the toggle/sort to the next line instead of crushing the group to zero
    and letting the wrapped selects pile up underneath them. */
 .contextual-filter-group { flex: 1 1 auto; display: flex; flex-wrap: wrap; }
-.contextual-filter-group .filter-select { flex: 1 1 122px; min-width: 122px; }
-.filter-row button { height: 27px; padding: 0 10px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
+.contextual-filter-group { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; width: 100%; }
+.contextual-filter-group .filter-select { min-width: 0; }
+.filter-row button { height: 30px; padding: 0 11px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
 .filter-row button:hover { transform: scale(1.04); color: var(--ink); background: rgba(255,255,255,.5); }
 .filter-row button.active { background: var(--ink); color: var(--white); }
-.filter-select { min-width: 0; height: 30px; padding: 0 6px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.5); color: var(--muted); display: flex; align-items: center; gap: 4px; transition: border-color .2s, background .2s, box-shadow .2s; }
+.filter-select { min-width: 0; height: 30px; padding: 0 5px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.5); color: var(--muted); display: flex; align-items: center; gap: 4px; transition: border-color .2s, background .2s, box-shadow .2s; }
 .filter-select:focus-within { border-color: rgba(82,107,85,.3); background: var(--white); box-shadow: 0 0 0 2px rgba(82,107,85,.06); }
 .filter-select svg { width: 12px; height: 12px; flex: 0 0 auto; color: var(--faint); }
+/* 筛选下拉的图标纯装饰（文字已表意），隐藏后把空间还给选项文字，
+   最窄栏宽下「全部截止时间」等长选项不再截断。 */
+.filter-row .filter-select > svg { display: none; }
 .filter-select select { width: 100%; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: inherit; font-size: calc(9px * var(--acta-font-scale)); text-overflow: ellipsis; cursor: pointer; }
-.filter-row .clear-list-filters { width: 29px; flex: 0 0 auto; padding: 0; border: 1px solid var(--line); background: var(--white); display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.filter-row .clear-list-filters { width: 30px; height: 30px; flex: 0 0 auto; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--white); display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
 .filter-row .clear-list-filters[hidden] { display: none; }
 .clear-list-filters svg { width: 12px; height: 12px; }
 .clear-list-filters span { display: none; }
