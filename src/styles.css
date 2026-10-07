@@ -249,12 +249,12 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .filter-row { min-height: 38px; padding: 0 18px 9px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); }
 .filter-group { min-width: 0; flex: 1; display: flex; align-items: center; gap: 6px; }
 .filter-group[hidden] { display: none; }
-/* 上下文筛选组不参与布局（display: contents），组内下拉直接成为筛选行的
-   弹性子项：宽栏与开关、排序同处一行不留空白，窄栏自动换行且下拉按
-   basis 88px 弹性平分——最窄栏宽（330px）下恰好三个一行等宽。 */
+/* 上下文筛选组不参与布局（display: contents），组内下拉直接成为筛选行
+   网格的行 1 单元格；布局由 interface.css 按 data-filter-context 三态
+   网格化，杜绝 flex 换行带来的空缺。 */
 .contextual-filter-group { display: contents; }
 .contextual-filter-group[hidden] { display: none; }
-.contextual-filter-group .filter-select { flex: 1 1 88px; min-width: 0; }
+.contextual-filter-group .filter-select { min-width: 0; }
 .filter-row button { height: 30px; padding: 0 11px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
 .filter-row button:hover { transform: scale(1.04); color: var(--ink); background: rgba(255,255,255,.5); }
 .filter-row button.active { background: var(--ink); color: var(--white); }
