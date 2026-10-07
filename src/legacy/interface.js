@@ -2863,7 +2863,6 @@
     cardStatus.textContent = profile ? profileLocation(profile) : profileText('initializing');
     cardStatus.className = `workspace-card-status ${connected ? 'connected' : 'demo'}`;
     window.actaDataName = displayName;
-    if (byId('viewEyebrow') && !currentView.startsWith('folder:')) byId('viewEyebrow').textContent = displayName;
   }
 
   async function queueWorkspaceSave(librarySnapshot = JSON.parse(JSON.stringify(library))) {
@@ -3627,26 +3626,25 @@
     }
   }
 
-  // 历史记录弹窗：倒序展示操作日志，清空按钮需二次点击确认。
-  // 每条按操作语义分组着色（创建/完成/删除/重开），可回溯条目右侧
-  // 常驻一个回溯按钮：点击一次在原位展开确认按钮，再次点击才执行，
-  // 误触其他区域或另一条目时复位。
+  // 历史记录弹窗：活动流式行列表（行间 hairline 分隔），层级只靠字号
+  // 与间距——描述为主文字、相对化时间戳靠右弱化，不加类型图标等无
+  // 信息量的图形。可回溯条目右侧常驻回溯按钮：点击一次在原位展开
+  // 确认按钮，再次点击才执行，误触其他区域或另一条目时复位。
   const historyDialog = byId('historyDialog');
   const historyList = byId('historyList');
   const historyEmpty = byId('historyEmpty');
   let clearHistoryArmed = false;
   let clearHistoryTimer = null;
-  const historyKindMeta = type => {
-    switch (type) {
-      case 'note-created': case 'todo-created': case 'checkin-created': case 'folder-created': case 'subtask-added':
-        return { kind: 'created', icon: 'i-plus' };
-      case 'todo-completed': case 'subtask-completed': case 'checkin':
-        return { kind: 'completed', icon: 'i-check' };
-      case 'item-trashed': case 'item-destroyed': case 'subtask-removed': case 'folder-deleted':
-        return { kind: 'removed', icon: 'i-trash' };
-      default: // todo-reopened、subtask-reopened、checkin-undo 及未知类型
-        return { kind: 'reopened', icon: 'i-undo' };
-    }
+  // 列表里显示缩短的时刻（今天只看时分，更早带日期，往年带年份），
+  // 悬停 title 保留精确到秒的完整时间。
+  const formatHistoryTime = value => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    const now = new Date();
+    const hm = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    if (date.toDateString() === now.toDateString()) return hm;
+    const md = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+    return date.getFullYear() === now.getFullYear() ? `${md} ${hm}` : `${date.getFullYear()}/${md} ${hm}`;
   };
   const renderHistory = () => {
     historyList.innerHTML = historyEntries.map(entry => {
@@ -3654,11 +3652,10 @@
       const target = entry.targetId ? library.items.find(item => item.id === entry.targetId && !isTrashed(item)) : null;
       // 有快照的条目可恢复到操作之前；无快照但项目仍在的条目仅跳转查看。
       const action = restorable ? 'restore' : target ? 'jump' : 'none';
-      const { kind, icon } = historyKindMeta(entry.type);
       const actionLabel = action === 'restore' ? uiText('historyRestore') : uiText('historyJump');
       const entryAction = action === 'none' ? '<span class="history-entry-action" aria-hidden="true"></span>'
         : `<span class="history-entry-action"><button class="history-undo" type="button" title="${escapeHTML(actionLabel)}" aria-label="${escapeHTML(actionLabel)}"><svg><use href="#i-undo"/></svg></button><span class="history-jump" hidden><button class="history-jump-confirm" type="button">${escapeHTML(actionLabel)}</button></span></span>`;
-      return `<li class="history-entry${action === 'none' ? '' : ' with-target'}" data-history-id="${escapeHTML(entry.id)}" data-action="${action}" data-target-id="${escapeHTML(entry.targetId || '')}"><span class="history-kind" data-kind="${kind}"><svg><use href="#${icon}"/></svg></span><div class="history-copy"><time datetime="${escapeHTML(entry.at)}">${escapeHTML(formatDateTimeSeconds(entry.at))}</time><span>${escapeHTML(historyText(entry))}</span></div>${entryAction}</li>`;
+      return `<li class="history-entry${action === 'none' ? '' : ' with-target'}" data-history-id="${escapeHTML(entry.id)}" data-action="${action}" data-target-id="${escapeHTML(entry.targetId || '')}"><div class="history-copy"><span>${escapeHTML(historyText(entry))}</span></div><time datetime="${escapeHTML(entry.at)}" title="${escapeHTML(formatDateTimeSeconds(entry.at))}">${escapeHTML(formatHistoryTime(entry.at))}</time>${entryAction}</li>`;
     }).join('');
     historyEmpty.hidden = historyEntries.length > 0;
     byId('historySubtitle').textContent = `${uiText('historySubtitle')} · ${historyEntries.length} / 500`;

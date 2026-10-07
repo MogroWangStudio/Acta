@@ -217,28 +217,25 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
 .cancel-remove-task:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .confirm-remove-task svg, .cancel-remove-task svg { width: 12px; height: 12px; }
 @keyframes removeArmIn { from { opacity: 0; transform: translateY(-50%) scale(.92); } }
-/* 历史记录弹窗：条目 = 类型图标 + （时间 / 描述） + 行内回溯动作。
-   可回溯条目右侧常驻回溯按钮，点击一次在原位展开确认按钮。 */
-.history-body { display: grid; gap: 9px; align-content: start; max-height: min(430px, 56vh); overflow: auto; padding: 2px 4px 2px 2px; }
-.history-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
-.history-entry { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 11px; align-items: center; padding: 8px 11px; border: 1px solid color-mix(in srgb, var(--line) 70%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--white) 46%, transparent); }
-.history-kind { width: 27px; height: 27px; border-radius: 9px; display: grid; place-items: center; flex: 0 0 auto; }
-.history-kind svg { width: 13px; height: 13px; }
-.history-kind[data-kind="created"] { color: var(--violet); background: var(--violet-soft); }
-.history-kind[data-kind="completed"] { color: var(--sage); background: var(--sage-2); }
-.history-kind[data-kind="removed"] { color: #a35e4c; background: #f5e6e1; }
-.history-kind[data-kind="reopened"] { color: var(--amber); background: var(--amber-soft); }
-.history-copy { display: grid; gap: 2px; min-width: 0; }
-.history-copy time { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.history-copy span { min-width: 0; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.45; overflow-wrap: anywhere; }
-.history-entry.with-target { cursor: pointer; transition: border-color .15s ease, background .15s ease; }
-.history-entry.with-target:hover { border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); background: color-mix(in srgb, var(--sage) 8%, transparent); }
+/* 历史记录弹窗：活动流式行列表，行间 hairline 分隔，层级只靠字号与
+   间距（描述为主文字、时间戳靠右弱化）；左右边距与弹窗正文（17px）
+   对齐。可回溯条目右侧常驻回溯按钮，点击一次原位展开确认按钮。 */
+.history-body { max-height: min(430px, 56vh); overflow: auto; padding: 0 17px; }
+.history-list { margin: 0; padding: 0; list-style: none; }
+.history-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 11px 2px; border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent); }
+.history-list .history-entry:last-child { border-bottom: 0; }
+.history-copy { min-width: 0; }
+.history-copy span { color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.5; overflow-wrap: anywhere; }
+.history-entry time { color: var(--faint); font-size: calc(8.5px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; cursor: default; }
+.history-entry.with-target { cursor: pointer; transition: background .15s ease, box-shadow .15s ease; }
+/* 悬停 / 待确认时以圆角背景块高亮整行（box-shadow 画环，不与 hairline 打架）。 */
+.history-entry.with-target:hover { border-radius: 10px; background: color-mix(in srgb, var(--white) 60%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--line) 70%, transparent); border-bottom-color: transparent; }
 .history-entry-action { display: grid; place-items: center; min-height: 28px; }
 .history-undo { width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #b6b1a0; display: grid; place-items: center; cursor: pointer; transition: color .15s ease, background .15s ease, transform .18s var(--ease-out); }
 .history-undo svg { width: 13px; height: 13px; }
 .history-entry.with-target:hover .history-undo { color: var(--sage); background: color-mix(in srgb, var(--sage) 12%, transparent); }
 .history-undo:hover { color: var(--sage); background: color-mix(in srgb, var(--sage) 16%, transparent); transform: scale(1.06); }
-.history-entry.armed { border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); background: color-mix(in srgb, var(--sage) 9%, transparent); }
+.history-entry.armed { border-radius: 10px; background: color-mix(in srgb, var(--sage) 9%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--sage) 45%, var(--line)); border-bottom-color: transparent; }
 .history-entry.armed .history-undo { display: none; }
 .history-jump { display: flex; }
 .history-jump[hidden] { display: none; }
@@ -838,7 +835,7 @@ body { font-size: calc(14px * var(--acta-font-scale)); }
 .search-box input, .filter-row button, .filter-select select, .editor-folder, .meta-field input, .meta-field select, .linked-head b, .open-linked-item b, .progress-head h2, .note-block h2, .add-task { font-size: calc(11px * var(--acta-font-scale)); }
 .titlebar-center span, .sync-card b { font-size: calc(11px * var(--acta-font-scale)); }
 .nav-section button { font-size: calc(14px * var(--acta-font-scale)); }
-.sync-card small, .item-header p, .card-date, .editor-type, .editor-subline, .progress-head span, .no-links, .list-footer, .note-footer { font-size: calc(10px * var(--acta-font-scale)); }
+.sync-card small, .card-date, .editor-type, .editor-subline, .progress-head span, .no-links, .list-footer, .note-footer { font-size: calc(10px * var(--acta-font-scale)); }
 .type-pill, .priority-pill, .card-bottom, .meta-field label, .settings-row small, .settings-field label, .about-meta small { font-size: calc(9px * var(--acta-font-scale)); }
 .create-menu b { font-size: calc(12px * var(--acta-font-scale)); }
 .create-menu small, .empty-list p { font-size: calc(10px * var(--acta-font-scale)); }

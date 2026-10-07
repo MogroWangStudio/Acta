@@ -107,7 +107,7 @@
 
         <section class="item-pane">
           <div class="item-header">
-            <div><p id="viewEyebrow" data-i18n="actaData">行记数据</p><h1 id="viewTitle">收集箱</h1></div>
+            <div><h1 id="viewTitle">收集箱</h1></div>
             <div class="mobile-list-shortcuts">
               <button class="mobile-classifications-trigger" id="mobileClassifications" type="button" aria-label="查看归类" aria-haspopup="dialog"><svg><use href="#i-folder"/></svg><span>查看归类</span><svg class="shortcut-chevron"><use href="#i-chevron"/></svg></button>
             </div>

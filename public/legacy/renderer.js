@@ -2053,7 +2053,6 @@ function renderList() {
   if (currentView === 'calendar') {
     const periodItems = calendarPeriodItems();
     $('#viewTitle').textContent = calendarPeriodLabel();
-    $('#viewEyebrow').textContent = `${t('calendar')} · ${t(calendarModeKey(calendarViewMode))}`;
     $('#itemCountLabel').textContent = `${periodItems.length} ${t('calendarItems')}`;
     list.className = `item-list calendar-list calendar-${calendarViewMode}`;
     list.innerHTML = renderCalendar();
@@ -2064,7 +2063,6 @@ function renderList() {
   if (currentView === 'stats') {
     const total = statsCollectionItems().length;
     $('#viewTitle').textContent = viewTitle();
-    $('#viewEyebrow').textContent = window.actaDataName || t('actaData');
     $('#itemCountLabel').textContent = `${total} ${t('item')}`;
     list.className = 'item-list stats-list';
     list.innerHTML = renderStats();
@@ -2074,7 +2072,6 @@ function renderList() {
   if (currentView === 'trash') {
     const items = getVisibleItems();
     $('#viewTitle').textContent = viewTitle();
-    $('#viewEyebrow').textContent = t('trashOpenHint');
     $('#itemCountLabel').textContent = `${items.length} ${t('trashItems')}`;
     list.className = 'item-list trash-list';
     list.innerHTML = items.length
@@ -2085,7 +2082,6 @@ function renderList() {
   }
   const items = getVisibleItems();
   $('#viewTitle').textContent = viewTitle();
-  $('#viewEyebrow').textContent = currentView.startsWith('folder:') ? t('classify') : (window.actaDataName || t('actaData'));
   $('#itemCountLabel').textContent = `${items.length} ${t('item')}`;
   list.className = 'item-list';
   if (!items.length) {
