@@ -1380,8 +1380,11 @@ body.acta-reduce-motion.note-focus-mode :is(.editor-pane,.note-editor) { animati
 .filter-row[data-filter-context="todo"] .filter-select.is-active { border-color: color-mix(in srgb, var(--todo-accent) 34%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 54%, var(--white)); color: var(--todo-accent); }
 .filter-row[data-filter-context="note"] .filter-select:focus-within,
 .filter-row[data-filter-context="note"] .filter-select.is-active { border-color: color-mix(in srgb, var(--note-accent) 34%, var(--line)); background: color-mix(in srgb, var(--note-soft) 54%, var(--white)); color: var(--note-accent); }
+/* 收集箱（mixed）：类型切换组弹性铺满成完整的分段控件（浅色槽 + 等分段），
+   与排序同行无空缺。 */
 .filter-row[data-filter-view="mixed"] { flex-wrap: wrap; row-gap: 6px; }
-.filter-row[data-filter-view="mixed"] .type-filter-group { flex: 0 0 auto; }
+.filter-row[data-filter-view="mixed"] .type-filter-group { flex: 1 1 auto; gap: 4px; padding: 3px; border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--white) 55%, transparent); }
+.filter-row[data-filter-view="mixed"] .type-filter-group button { flex: 1 1 0; }
 .list-sort-field { margin-left: auto; flex: 0 0 auto; }
 .list-sort-field select { min-width: 104px; }
 .filter-row .list-sort-field.is-active { border-color: color-mix(in srgb, var(--ink) 26%, var(--line)); background: var(--white); color: var(--ink); }
@@ -1911,8 +1914,7 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
   html[data-acta-theme="mono-dark"] .mobile-titlebar-action { background: #292929; color: #e6e6e6; }
   .search-box { margin-bottom: 6px; }
   .filter-row { flex-wrap: wrap; row-gap: 7px; }
-  .contextual-filter-group { flex: 1 0 100%; }
-  .list-sort-field { flex: 1 1 auto; }
+  .list-sort-field { flex: 1 1 auto; margin-left: 0; }
   .list-sort-field select { min-width: 0; }
   .mobile-list-shortcuts { min-height: 31px; margin-left: auto; padding: 0; display: none; align-items: flex-end; justify-content: flex-end; }
   body.inbox-view .mobile-list-shortcuts { display: flex; }
