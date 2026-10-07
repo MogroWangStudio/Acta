@@ -233,7 +233,9 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .list-resizer { position: absolute; z-index: 20; top: 0; right: -4px; bottom: 0; width: 8px; cursor: col-resize; touch-action: none; }
 .list-resizer::after { content:""; position:absolute; top:0; bottom:0; left:3px; width:2px; background:var(--sage); opacity:0; transition:opacity .18s; }
 .list-resizer:hover::after, .list-resizer.dragging::after { opacity:.45; }
-.item-header { height: 83px; padding: 18px 18px 10px 21px; display: flex; justify-content: space-between; align-items: flex-end; }
+/* 移除大标题上方的小标题后收紧头部（83→66px），标题上移填补空缺，
+   列表与编辑器的起点相应上移。 */
+.item-header { height: 66px; padding: 15px 18px 10px 21px; display: flex; justify-content: space-between; align-items: flex-end; }
 .item-header h1 { margin: 0; font: 600 calc(23px * var(--acta-font-scale))/1.15 var(--acta-font-display); letter-spacing: -.03em; }
 .icon-button { width: 32px; height: 32px; border: 0; border-radius: 9px; display: grid; place-items: center; background: transparent; color: var(--muted); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
 .icon-button:hover { background: rgba(255,255,255,.8); color: var(--ink); transform: scale(1.07); }
