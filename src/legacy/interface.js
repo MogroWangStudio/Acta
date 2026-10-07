@@ -33,7 +33,6 @@
   const legacyAppIconPresets = { classic:'default', forest:'positive', sunset:'outline', midnight:'original' };
   const migratedAppIconPreset = Boolean(legacyAppIconPresets[uiSettings.appIconPreset]);
   if (migratedAppIconPreset) uiSettings.appIconPreset = legacyAppIconPresets[uiSettings.appIconPreset];
-  let currentAppIconURL = './icons/icon-192.png';
   const migratedTodayView = uiSettings.defaultView === 'today';
   if (migratedTodayView) uiSettings.defaultView = 'calendar';
   const migratedStatsView = uiSettings.defaultView === 'completed';
@@ -127,6 +126,35 @@
     link:'新增連結', unlink:'取消連結', undo:'復原', redo:'重做', markdownSource:'Markdown 原始碼', richText:'視覺化編輯', focusMode:'沉浸編輯', focusModeExit:'退出沉浸編輯', focusModeHint:'沉浸編輯', linkPrompt:'輸入連結地址', invalidLink:'請輸入有效的 HTTP、HTTPS 或電子郵件連結', selectTextFirst:'請先選取要格式化的文字'
   });
 
+  // 子任务批量添加与导出。
+  Object.assign(dictionaries.zh, {
+    bulkAddTask:'快速添加子任务', bulkAddTaskHint:'每行一条子任务，粘贴清单一键添加', bulkAddPlaceholder:'每行输入一条子任务…',
+    bulkAddConfirm:'添加 {0} 条子任务', bulkAddEmpty:'请先输入至少一条子任务', bulkAddDone:'已添加 {0} 条子任务',
+    exportTasks:'导出子任务', exportTasksHint:'复制或保存为分行文字 / 任务清单', exportFormatTitle:'导出格式',
+    exportFormatLines:'分行文字', exportFormatLinesHint:'每行一条，不带完成状态',
+    exportFormatChecklist:'任务清单', exportFormatChecklistHint:'Markdown 任务语法，保留完成状态',
+    exportCopyClipboard:'复制到剪贴板', exportTasksTxt:'导出 TXT', exportTasksMd:'导出 Markdown',
+    tasksExported:'子任务已导出', tasksExportEmpty:'还没有可导出的子任务'
+  });
+  Object.assign(dictionaries.en, {
+    bulkAddTask:'Quick-add subtasks', bulkAddTaskHint:'One subtask per line — paste a list and add them all at once', bulkAddPlaceholder:'Type one subtask per line…',
+    bulkAddConfirm:'Add {0} subtasks', bulkAddEmpty:'Type at least one subtask first', bulkAddDone:'Added {0} subtasks',
+    exportTasks:'Export subtasks', exportTasksHint:'Copy or save as plain lines or a task list', exportFormatTitle:'Format',
+    exportFormatLines:'Plain lines', exportFormatLinesHint:'One per line, without states',
+    exportFormatChecklist:'Task list', exportFormatChecklistHint:'Markdown task syntax, keeps states',
+    exportCopyClipboard:'Copy to clipboard', exportTasksTxt:'Export TXT', exportTasksMd:'Export Markdown',
+    tasksExported:'Subtasks exported', tasksExportEmpty:'No subtasks to export'
+  });
+  Object.assign(dictionaries['zh-Hant'], {
+    bulkAddTask:'快速新增子任務', bulkAddTaskHint:'每行一條子任務，貼上清單一鍵新增', bulkAddPlaceholder:'每行輸入一條子任務…',
+    bulkAddConfirm:'新增 {0} 條子任務', bulkAddEmpty:'請先輸入至少一條子任務', bulkAddDone:'已新增 {0} 條子任務',
+    exportTasks:'匯出子任務', exportTasksHint:'複製或儲存為分行文字 / 任務清單', exportFormatTitle:'匯出格式',
+    exportFormatLines:'分行文字', exportFormatLinesHint:'每行一條，不帶完成狀態',
+    exportFormatChecklist:'任務清單', exportFormatChecklistHint:'Markdown 任務語法，保留完成狀態',
+    exportCopyClipboard:'複製到剪貼簿', exportTasksTxt:'匯出 TXT', exportTasksMd:'匯出 Markdown',
+    tasksExported:'子任務已匯出', tasksExportEmpty:'還沒有可匯出的子任務'
+  });
+
   const interfaceTranslations = {
     en: {
       '设置':'Settings', '按你的方式使用 Acta':'Make Acta work your way', '关闭设置':'Close settings', '设置页面':'Settings pages',
@@ -176,13 +204,14 @@
     '更改后会立即把当前设置迁移到新文件夹':'Current settings migrate to the new folder immediately',
     '保存 Acta 自身的设置与偏好；笔记、待办等行记数据仍按数据档案的位置存储。便携版默认读取软件目录下的 data 文件夹。':'Stores Acta\'s own preferences; notes and tasks stay in their data profiles. Portable builds read the data folder next to the app by default.',
     '先选择软件数据文件夹':'Choose the software data folder first', '使用默认位置':'Use default location', '选择文件夹…':'Choose folder…',
-    '选择主题、字体与大小':'Choose theme, font, and size', '选择启动动画':'Choose the launch animation', '选择应用图标':'Choose the app icon',
+    '选择主题、字体与大小':'Choose theme, font, and size', '选择启动动画':'Choose the launch animation',
     '基础界面':'Base interface', '内容类型':'Content types', '待办主题色':'Task accent', '待办浅色背景':'Task soft background', '笔记主题色':'Note accent', '笔记浅色背景':'Note soft background', '日历主题色':'Calendar accent', '日历浅色背景':'Calendar soft background',
     '应用图标':'App icon', '应用于 Tauri 桌面客户端和 Capacitor 移动客户端；网页标签页图标保持默认。':'Used by the Tauri desktop client and Capacitor mobile client; the browser tab icon stays unchanged.',
-    '默认书页':'Default page', '正·书页':'True · Page', '勾勒·书页':'Outline · Page', '初版简洁':'Original minimal', '自定义图标':'Custom icon', '选择自定义图标':'Choose custom icon', '恢复默认图标':'Restore default icon',
-    '四个预设可用于 Tauri（Windows/macOS）与 Android；上传的自定义图标仅用于 Tauri 桌面端。网页端不生效，移动端桌面可能需要稍候刷新。':'The four presets work in Tauri (Windows/macOS) and Android; uploaded custom icons are Tauri desktop-only. This setting has no effect on the web, and Android launchers may take a moment to refresh.',
+    '默认书页':'Default page', '正·书页':'True · Page', '勾勒·书页':'Outline · Page', '初版简洁':'Original minimal', '恢复默认图标':'Restore default icon',
+    '应用图标':'App icon', '应用于 Capacitor 移动客户端；网页标签页图标保持默认。':'Used by the Capacitor mobile client; the browser tab icon stays unchanged.',
+    '四个预设仅用于 Android 客户端；切换后桌面启动器可能需要稍候刷新。':'The four presets are for the Android client only; launchers may take a moment to refresh after switching.',
     '桌面框架':'Desktop framework', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
-    '自定义图标已应用。':'Custom icon applied.', '默认图标已恢复。':'Default icon restored.', '应用图标应用失败。':'Failed to apply the app icon.', '网页端不应用应用图标设置。':'App icon settings do not apply on the web.', '移动端仅支持四个内置图标；已恢复默认书页。':'Mobile supports the four built-in icons only; Default Page was restored.', '图标文件不能超过 1.5 MB。':'The icon file cannot exceed 1.5 MB.', '图标至少需要 64 × 64 像素。':'The icon must be at least 64 × 64 pixels.', '请选择 PNG、WebP、JPG 或 SVG 图标。':'Choose a PNG, WebP, JPG, or SVG icon.', '无法读取图标文件。':'The icon file could not be read.',
+    '默认图标已恢复。':'Default icon restored.', '应用图标应用失败。':'Failed to apply the app icon.',
     '启动动画':'Splash animation', '启动时的过渡画面，关闭后直接进入工作区':'The transition screen shown at launch; turn it off to enter the workspace directly.',
     '动画预设':'Animation preset', '启动画面的演绎方式，可预览效果':'How the splash plays out; preview to compare.', 'Acta 线构（默认）':'Acta lines (default)', '静谧淡入':'Calm fade', '聚焦缩放':'Focus zoom',
     '动画时间':'Animation speed', '启动动画的整体播放倍率':'Overall playback speed of the splash animation', '预览动画':'Preview animation',
@@ -218,13 +247,14 @@
     '无法确定默认位置，请点击「选择文件夹」手动指定。':'無法確定預設位置，請點擊「選擇資料夾」手動指定。',
     '软件数据位置':'軟體資料位置', '位置操作':'位置操作', '打开文件夹':'開啟資料夾', '更改位置':'更改位置',
     '先选择软件数据文件夹':'先選擇軟體資料資料夾', '使用默认位置':'使用預設位置', '选择文件夹…':'選擇資料夾…',
-    '选择主题、字体与大小':'選擇主題、字型與大小', '选择启动动画':'選擇啟動動畫', '选择应用图标':'選擇應用程式圖示',
+    '选择主题、字体与大小':'選擇主題、字型與大小', '选择启动动画':'選擇啟動動畫',
     '基础界面':'基礎介面', '内容类型':'內容類型', '待办主题色':'待辦主題色', '待办浅色背景':'待辦淺色背景', '笔记主题色':'筆記主題色', '笔记浅色背景':'筆記淺色背景', '日历主题色':'日曆主題色', '日历浅色背景':'日曆淺色背景',
-    '应用图标':'應用程式圖示', '应用于 Tauri 桌面客户端和 Capacitor 移动客户端；网页标签页图标保持默认。':'套用於 Tauri 桌面用戶端與 Capacitor 行動用戶端；瀏覽器分頁圖示維持預設。',
-    '默认书页':'預設書頁', '正·书页':'正·書頁', '勾勒·书页':'勾勒·書頁', '初版简洁':'初版簡潔', '自定义图标':'自訂圖示', '选择自定义图标':'選擇自訂圖示', '恢复默认图标':'恢復預設圖示',
-    '四个预设可用于 Tauri（Windows/macOS）与 Android；上传的自定义图标仅用于 Tauri 桌面端。网页端不生效，移动端桌面可能需要稍候刷新。':'四個預設可用於 Tauri（Windows/macOS）與 Android；上傳的自訂圖示僅用於 Tauri 桌面端。網頁端不生效，行動裝置桌面可能需要稍候重新整理。',
+    '应用图标':'應用程式圖示', '应用于 Capacitor 移动客户端；网页标签页图标保持默认。':'套用於 Capacitor 行動用戶端；瀏覽器分頁圖示維持預設。',
+    '四个预设仅用于 Android 客户端；切换后桌面启动器可能需要稍候刷新。':'四個預設僅適用於 Android 用戶端；切換後桌面啟動器可能需要稍候重新整理。',
+    '默认书页':'預設書頁', '正·书页':'正·書頁', '勾勒·书页':'勾勒·書頁', '初版简洁':'初版簡潔', '恢复默认图标':'恢復預設圖示',
+
     '桌面框架':'桌面框架', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri（Windows/macOS），Capacitor（Android）',
-    '自定义图标已应用。':'自訂圖示已套用。', '默认图标已恢复。':'預設圖示已恢復。', '应用图标应用失败。':'套用應用程式圖示失敗。', '网页端不应用应用图标设置。':'網頁端不套用應用程式圖示設定。', '移动端仅支持四个内置图标；已恢复默认书页。':'行動端僅支援四個內建圖示；已恢復預設書頁。', '图标文件不能超过 1.5 MB。':'圖示檔案不能超過 1.5 MB。', '图标至少需要 64 × 64 像素。':'圖示至少需要 64 × 64 像素。', '请选择 PNG、WebP、JPG 或 SVG 图标。':'請選擇 PNG、WebP、JPG 或 SVG 圖示。', '无法读取图标文件。':'無法讀取圖示檔案。',
+    '默认图标已恢复。':'預設圖示已恢復。', '应用图标应用失败。':'套用應用程式圖示失敗。',
     '启动动画':'啟動動畫', '启动时的过渡画面，关闭后直接进入工作区':'啟動時的過渡畫面，關閉後直接進入工作區',
     '动画预设':'動畫預設', '启动画面的演绎方式，可预览效果':'啟動畫面的演繹方式，可預覽效果', 'Acta 线构（默认）':'Acta 線構（預設）', '静谧淡入':'靜謐淡入', '聚焦缩放':'聚焦縮放',
     '动画时间':'動畫時間', '启动动画的整体播放倍率':'啟動動畫的整體播放倍率', '预览动画':'預覽動畫',
@@ -1366,7 +1396,7 @@
         <time id="todoDueAtSummary" datetime="${escapeHTML(item.dueAt || '')}" ${item.dueAt ? '' : 'hidden'}><svg><use href="#i-clock"/></svg><b>${escapeHTML(metaCopy.due)}</b><span>${escapeHTML(dueLabel)}</span></time>
       </div>
       ${linkedItemsSection(item)}
-      <div class="progress-head"><h2>${t('progress')}</h2><span>${completed} / ${tasks.length} · ${progress}% ${t('done')}</span><button class="task-order-toggle${ordered ? ' active' : ''}" id="taskOrderToggle" type="button" aria-pressed="${ordered}" title="${escapeHTML(t('taskOrderHint'))}" aria-label="${escapeHTML(t('taskOrderHint'))}"><svg><use href="#i-ordered-list"/></svg></button></div>
+      <div class="progress-head"><h2>${t('progress')}</h2><span>${completed} / ${tasks.length} · ${progress}% ${t('done')}</span><span class="task-head-tools"><button class="task-tool-button" id="exportTasks" type="button" title="${escapeHTML(t('exportTasks'))}" aria-label="${escapeHTML(t('exportTasks'))}"><svg><use href="#i-upload"/></svg></button><button class="task-tool-button" id="bulkAddTask" type="button" title="${escapeHTML(t('bulkAddTask'))}" aria-label="${escapeHTML(t('bulkAddTask'))}"><svg><use href="#i-lightning"/></svg></button><button class="task-order-toggle${ordered ? ' active' : ''}" id="taskOrderToggle" type="button" aria-pressed="${ordered}" title="${escapeHTML(t('taskOrderHint'))}" aria-label="${escapeHTML(t('taskOrderHint'))}"><svg><use href="#i-ordered-list"/></svg></button></span></div>
       <div class="progress-track"><i style="width:${progress}%"></i></div>
       <div class="task-list" id="taskList">
         ${ordered
@@ -1711,6 +1741,8 @@
         doneToggle.setAttribute('aria-expanded', String(open));
       });
       byId('addTask').addEventListener('click', () => addTask(item));
+      byId('bulkAddTask')?.addEventListener('click', () => openBulkTaskDialog(item));
+      byId('exportTasks')?.addEventListener('click', () => openExportTasksDialog(item));
       if (ordered) {
         // 拖动行首序号快速重排：用 Pointer Events 自实现（WebView2 对
         // 页面内 HTML5 拖放的支持不可靠），按住序号后原行半透明跟随
@@ -1797,6 +1829,127 @@
     if (!row) return;
     row.classList.add('is-new');
     row.addEventListener('animationend', () => row.classList.remove('is-new'), { once: true });
+  };
+
+  // —— 子任务批量添加与导出 ——
+  // 两个轻量对话框复用 relation-dialog 的骨架，动态创建、用完即毁。
+  // 批量添加把非空行逐条转为子任务追加到列表尾部，记为一次撤销历史；
+  // 新行复用 is-new 入场动画并按行级联延迟。
+  const parseTaskLines = value => String(value || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+
+  const openBulkTaskDialog = item => {
+    document.querySelector('.bulk-task-dialog')?.remove();
+    const dialog = document.createElement('dialog');
+    dialog.className = 'relation-dialog bulk-task-dialog';
+    dialog.innerHTML = `
+      <header class="relation-dialog-head"><span><svg><use href="#i-lightning"/></svg></span><h3>${escapeHTML(t('bulkAddTask'))}</h3><button class="relation-dialog-close" type="button" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></header>
+      <form class="relation-dialog-body" method="dialog" novalidate>
+        <p class="bulk-task-hint">${escapeHTML(t('bulkAddTaskHint'))}</p>
+        <textarea class="bulk-task-input" rows="7" placeholder="${escapeHTML(t('bulkAddPlaceholder'))}"></textarea>
+        <div class="settings-actions">
+          <button type="button" class="settings-button secondary" data-bulk-cancel>${escapeHTML(t('cancel'))}</button>
+          <button type="submit" class="settings-button" data-bulk-submit disabled><svg><use href="#i-plus"/></svg><span>${escapeHTML(t('bulkAddTask'))}</span></button>
+        </div>
+      </form>`;
+    const form = dialog.querySelector('form');
+    const textarea = dialog.querySelector('.bulk-task-input');
+    const submit = dialog.querySelector('[data-bulk-submit]');
+    const syncSubmit = () => {
+      const count = parseTaskLines(textarea.value).length;
+      submit.disabled = count === 0;
+      submit.querySelector('span').textContent = count ? uiText('bulkAddConfirm', count) : t('bulkAddTask');
+    };
+    const finish = () => { if (dialog.open) dialog.close(); dialog.remove(); };
+    dialog.querySelector('[data-bulk-cancel]').addEventListener('click', finish);
+    dialog.querySelector('.relation-dialog-close').addEventListener('click', finish);
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish(); });
+    textarea.addEventListener('input', syncSubmit);
+    textarea.addEventListener('keydown', event => {
+      if (isImeComposing(event)) return;
+      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') { event.preventDefault(); form.requestSubmit(); }
+    });
+    dialog.addEventListener('submit', event => {
+      event.preventDefault();
+      const lines = parseTaskLines(textarea.value);
+      if (!lines.length) return;
+      const snapshotBefore = JSON.parse(JSON.stringify(item));
+      const newIds = lines.map(line => {
+        const task = { id: uid(), text: line, done: false };
+        item.tasks.push(task);
+        return task.id;
+      });
+      item.completed = item.tasks.length > 0 && item.tasks.every(entry => entry.done);
+      touchItem(item);
+      logHistory('subtask-added', item.title || t('untitledTodo'), item.id, snapshotBefore);
+      renderEditor(); renderList(); renderSidebar();
+      newIds.forEach((id, index) => {
+        const row = document.querySelector(`.task-row[data-task-id="${CSS.escape(id)}"]`);
+        if (!row) return;
+        row.style.animationDelay = `${Math.min(index, 12) * 35}ms`;
+        row.classList.add('is-new');
+        row.addEventListener('animationend', () => { row.classList.remove('is-new'); row.style.animationDelay = ''; }, { once: true });
+      });
+      finish();
+      showToast(uiText('bulkAddDone', lines.length));
+    });
+    document.body.appendChild(dialog);
+    dialog.showModal();
+    textarea.focus();
+  };
+
+  const taskExportContent = (item, format) => {
+    const tasks = item.tasks || [];
+    if (format === 'checklist') return tasks.map(task => `- [${task.done ? 'x' : ' '}] ${task.text}`).join('\n');
+    return tasks.map(task => task.text).join('\n');
+  };
+
+  const exportTasksToFile = async (item, content, extension) => {
+    const base = portableFileName(item.title || t('untitledTodo')).replace(/\.md$/i, '');
+    try {
+      const result = await getNoteFileBridge().exportText(`${base}-subtasks.${extension}`, content);
+      if (result) showToast(t('tasksExported'));
+    } catch (error) {
+      showToast(`${t('exportFailed')}: ${error?.message || error}`);
+    }
+  };
+
+  const openExportTasksDialog = item => {
+    if (!(item.tasks || []).length) { showToast(t('tasksExportEmpty')); return; }
+    document.querySelector('.export-tasks-dialog')?.remove();
+    const dialog = document.createElement('dialog');
+    dialog.className = 'relation-dialog export-tasks-dialog';
+    dialog.innerHTML = `
+      <header class="relation-dialog-head"><span><svg><use href="#i-upload"/></svg></span><h3>${escapeHTML(t('exportTasks'))}</h3><button class="relation-dialog-close" type="button" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></header>
+      <form class="relation-dialog-body" method="dialog" novalidate>
+        <p class="bulk-task-hint">${escapeHTML(t('exportTasksHint'))}</p>
+        <div class="export-tasks-format" role="radiogroup" aria-label="${escapeHTML(t('exportFormatTitle'))}">
+          <label><input type="radio" name="taskExportFormat" value="lines" checked/><span><b>${escapeHTML(t('exportFormatLines'))}</b><small>${escapeHTML(t('exportFormatLinesHint'))}</small></span></label>
+          <label><input type="radio" name="taskExportFormat" value="checklist"/><span><b>${escapeHTML(t('exportFormatChecklist'))}</b><small>${escapeHTML(t('exportFormatChecklistHint'))}</small></span></label>
+        </div>
+        <div class="settings-actions">
+          <button type="button" class="settings-button secondary" data-export-copy><svg><use href="#i-copy"/></svg><span>${escapeHTML(t('exportCopyClipboard'))}</span></button>
+          <button type="button" class="settings-button secondary" data-export-txt><span>${escapeHTML(t('exportTasksTxt'))}</span></button>
+          <button type="button" class="settings-button" data-export-md><span>${escapeHTML(t('exportTasksMd'))}</span></button>
+        </div>
+      </form>`;
+    const currentFormat = () => dialog.querySelector('input[name="taskExportFormat"]:checked')?.value || 'lines';
+    const finish = () => { if (dialog.open) dialog.close(); dialog.remove(); };
+    dialog.querySelector('.relation-dialog-close').addEventListener('click', finish);
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish(); });
+    dialog.querySelector('[data-export-copy]').addEventListener('click', async () => {
+      await contextClipboardWrite(taskExportContent(item, currentFormat()));
+      showToast(t('copied'));
+    });
+    dialog.querySelector('[data-export-txt]').addEventListener('click', async () => {
+      await exportTasksToFile(item, taskExportContent(item, currentFormat()), 'txt');
+      finish();
+    });
+    dialog.querySelector('[data-export-md]').addEventListener('click', async () => {
+      await exportTasksToFile(item, taskExportContent(item, currentFormat()), 'md');
+      finish();
+    });
+    document.body.appendChild(dialog);
+    dialog.showModal();
   };
 
   // 打卡式待办的卡片预览显示今天的打卡状态与连续天数。
@@ -4210,229 +4363,55 @@
   const appIconChoices = new Set([...Object.keys(appIconPresets), 'custom']);
   if (!appIconChoices.has(uiSettings.appIconPreset)) uiSettings.appIconPreset = 'default';
   const appearanceText = source => interfaceTranslations[uiSettings.language]?.[source] || source;
-  const loadIconImage = source => new Promise((resolve, reject) => {
-    const image = new Image();
-    image.decoding = 'async';
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('ICON_READ_FAILED'));
-    image.src = source;
-  });
-  // Runtime icons are shaped per platform to match the bundled set in
-  // src-tauri/icons (scripts/generate-desktop-icons.mjs): macOS 26+ masks
-  // full-bleed square artwork into the system squircle itself, so there the
-  // artwork covers the whole canvas; older macOS keeps the classic centred
-  // margins; Windows never masks icons, so it gets the same baked-in rounded
-  // corners the packaged .ico uses (18% radius).
-  const desktopPlatform = (() => {
-    // Prefer the bridge's own platform signal (tauri-bridge.js); fall back to
-    // the UA for pages without the bridge (pure web custom-icon validation).
-    const bridge = document.documentElement.dataset.desktopPlatform;
-    if (bridge === 'darwin') return 'macos';
-    if (bridge === 'win32') return 'windows';
-    const agent = `${navigator.platform} ${navigator.userAgent}`;
-    if (/Macintosh|MacIntel/i.test(agent)) return 'macos';
-    if (/Windows/i.test(agent)) return 'windows';
-    return 'other';
-  })();
-  const macOSMajorVersion = Number(navigator.userAgent.match(/Version\/(\d+)/)?.[1] || 0);
-  // macOS 26+ 只对 bundle 内图标应用 Liquid Glass squircle 遮罩；运行时经
-  // setApplicationIconImage 设置的 Dock 图标按原样显示，发送未遮罩的满版
-  // 方图会得到方形"异形"图标。预设改用 scripts/generate-macos26-icons.mjs
-  // 预生成的专属版本——烘焙了系统 squircle 形状（遮罩取自系统渲染图标的
-  // alpha），设置预览与实际 Dock 一致；其余平台沿用原资产。
-  const macOS26RuntimeIcons = () => desktopPlatform === 'macos' && macOSMajorVersion >= 26;
-  const iconSourceFor = preset => {
-    if (preset === 'custom') return uiSettings.customAppIcon || appIconPresets.default;
-    const known = preset in appIconPresets ? preset : 'default';
-    return macOS26RuntimeIcons() ? `./icons/macos26/${known}.png` : appIconPresets[known];
-  };
-  const activeAppIconSource = () => iconSourceFor(uiSettings.appIconPreset);
-  const roundRectPath = (context, x, y, size, radius) => {
-    context.beginPath();
-    context.moveTo(x + radius, y);
-    context.arcTo(x + size, y, x + size, y + size, radius);
-    context.arcTo(x + size, y + size, x, y + size, radius);
-    context.arcTo(x, y + size, x, y, radius);
-    context.arcTo(x, y, x + size, y, radius);
-    context.closePath();
-  };
-  // 预设图标先经 fetch→dataURL 再进画布：data URL 图像永远不会污染画布，
-  // 规避个别桌面 webview 对自定义协议图像的 CSP/染色差异；fetch 失败则回退直连。
-  const loadPresetImageDataUrl = async source => {
-    if (String(source).startsWith('data:')) return source;
-    try {
-      const response = await fetch(source);
-      if (!response.ok) throw new Error('ICON_FETCH_FAILED');
-      const blob = await response.blob();
-      return await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error('ICON_READ_FAILED'));
-        reader.readAsDataURL(blob);
-      });
-    } catch {
-      return source;
-    }
-  };
-  const renderSquareAppIcon = async (source, validateMinimum = false) => {
-    const image = await loadIconImage(await loadPresetImageDataUrl(source));
-    if (validateMinimum && (image.naturalWidth < 64 || image.naturalHeight < 64)) throw new Error('ICON_TOO_SMALL');
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const context = canvas.getContext('2d');
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = 'high';
-    context.clearRect(0, 0, 512, 512);
-    const fullBleed = desktopPlatform === 'macos' && macOSMajorVersion >= 26;
-    if (desktopPlatform === 'windows') {
-      roundRectPath(context, 0, 0, 512, 512 * 0.18);
-      context.clip();
-    }
-    const scale = fullBleed || desktopPlatform === 'windows'
-      ? Math.max(512 / image.naturalWidth, 512 / image.naturalHeight)
-      : Math.min(464 / image.naturalWidth, 464 / image.naturalHeight);
-    const width = image.naturalWidth * scale;
-    const height = image.naturalHeight * scale;
-    context.drawImage(image, (512 - width) / 2, (512 - height) / 2, width, height);
-    if (fullBleed) {
-      // macOS 26+ 运行时图标没有系统遮罩，自行烘焙与系统一致的 squircle：
-      // 遮罩形状即 public/icons/macos26/mask.png（与预生成预设同源），自定义
-      // 上传统一在此成型；遮罩加载失败时退回无遮罩，行为与旧版一致。
-      try {
-        const mask = await loadIconImage('./icons/macos26/mask.png');
-        context.globalCompositeOperation = 'destination-in';
-        context.drawImage(mask, 0, 0, 512, 512);
-        context.globalCompositeOperation = 'source-over';
-      } catch { /* Fall back to the unmasked artwork. */ }
-    }
-    return canvas.toDataURL('image/png');
-  };
+  // 3.5.0 起应用图标更换仅保留在移动端（Android activity-alias）。桌面端与
+  // 网页端不再提供入口：设置区块按 data-mobile-app-icon-only 显隐，桌面遗留
+  // 的持久化运行时图标由 Tauri 启动逻辑清除并回归打包默认图标。
+  const iconSourceFor = preset => appIconPresets[preset in appIconPresets ? preset : 'default'];
 
   async function applyAppIcon() {
-    const desktopIcon = window.actaDesktop?.setAppIcon;
     const mobileIcon = window.Capacitor?.Plugins?.ActaSync?.setAppIcon;
-    const webOnly = !desktopIcon && !mobileIcon;
-    document.querySelectorAll('[data-desktop-app-icon-only]').forEach(control => { control.hidden = webOnly; });
-    document.querySelector('.app-icon-options')?.classList.toggle('native-presets-only', false);
-    if (mobileIcon && !desktopIcon && uiSettings.appIconPreset === 'custom') {
+    document.querySelectorAll('[data-mobile-app-icon-only]').forEach(control => { control.hidden = !mobileIcon; });
+    if (!mobileIcon) {
+      // 桌面端 / 网页端：把遗留的预设选择归位即可，不再触碰运行时图标。
+      if (uiSettings.appIconPreset !== 'default' || uiSettings.customAppIcon) {
+        uiSettings.appIconPreset = 'default';
+        uiSettings.customAppIcon = '';
+        saveUISettings();
+      }
+      return true;
+    }
+    if (uiSettings.appIconPreset === 'custom') {
       uiSettings.appIconPreset = 'default';
       uiSettings.customAppIcon = '';
       saveUISettings();
     }
-    const source = activeAppIconSource();
     document.querySelectorAll('[data-app-icon-preview]').forEach(preview => {
       preview.src = iconSourceFor(preview.dataset.appIconPreview);
     });
     document.querySelectorAll('input[name="actaAppIcon"]').forEach(option => option.checked = option.value === uiSettings.appIconPreset);
-    currentAppIconURL = desktopIcon || mobileIcon ? source : appIconPresets.default;
-    let applied = true;
-    let mobileRequest = null;
-    if (mobileIcon && uiSettings.appIconPreset !== 'custom') {
-      try {
-        mobileRequest = mobileIcon({ preset:uiSettings.appIconPreset });
-      } catch (error) {
-        applied = false;
-        console.error('Failed to apply the Capacitor app icon.', error);
-        setStatus(appIconStatus, appearanceText('应用图标应用失败。'), 'error');
-      }
+    try {
+      await mobileIcon({ preset: uiSettings.appIconPreset });
+      return true;
+    } catch (error) {
+      console.error('Failed to apply the Capacitor app icon.', error);
+      setStatus(appIconStatus, appearanceText('应用图标应用失败。'), 'error');
+      return false;
     }
-    if (desktopIcon) {
-      try {
-        // Every preset goes through the platform-shaped canvas, including the
-        // default one - sending the processed image (instead of the Rust-side
-        // fallback) keeps Windows rounded and macOS 26+ full-bleed consistent
-        // with the bundled icons.
-        const icon = await renderSquareAppIcon(source);
-        await desktopIcon(icon);
-      } catch (error) {
-        // 画布管线不可用时（CSP/协议染色/图像加载失败），回退为"空 dataURL +
-        // 预设名"，由 Rust 端用打包内置的同一张预设图应用并持久化。
-        try {
-          if (uiSettings.appIconPreset === 'custom') throw error;
-          await desktopIcon('', uiSettings.appIconPreset);
-        } catch (fallbackError) {
-          applied = false;
-          console.error('Failed to apply the Tauri app icon.', fallbackError);
-          setStatus(appIconStatus, appearanceText('应用图标应用失败。'), 'error');
-        }
-      }
-    }
-    if (mobileRequest) {
-      try {
-        await mobileRequest;
-      } catch (error) {
-        applied = false;
-        console.error('Failed to apply the Capacitor app icon.', error);
-        setStatus(appIconStatus, appearanceText('应用图标应用失败。'), 'error');
-      }
-    }
-    if (mobileIcon && !desktopIcon && applied) setStatus(appIconStatus, appearanceText('四个预设可用于 Android；上传的自定义图标仅支持 PC 本地客户端（Windows/macOS）。'));
-    if (webOnly) setStatus(appIconStatus, appearanceText('网页端不应用应用图标设置。'));
-    return applied;
   }
 
-  const customAppIconFile = byId('customAppIconFile');
   const appIconStatus = byId('appIconStatus');
   document.querySelectorAll('input[name="actaAppIcon"]').forEach(option => option.addEventListener('change', async () => {
     if (!option.checked) return;
-    if (option.value === 'custom' && !window.actaDesktop?.setAppIcon) {
-      document.querySelectorAll('input[name="actaAppIcon"]').forEach(entry => entry.checked = entry.value === uiSettings.appIconPreset);
-      setStatus(appIconStatus, appearanceText('自定义图标仅支持 PC 本地客户端（Windows/macOS），移动端可使用上方四个预设。'), 'info');
-      return;
-    }
-    if (option.value === 'custom' && !uiSettings.customAppIcon) {
-      document.querySelectorAll('input[name="actaAppIcon"]').forEach(entry => entry.checked = entry.value === uiSettings.appIconPreset);
-      customAppIconFile.click();
-      return;
-    }
     uiSettings.appIconPreset = option.value;
     saveUISettings();
     await applyAppIcon();
-    if (!window.actaDesktop?.setAppIcon && !window.Capacitor?.Plugins?.ActaSync?.setAppIcon) {
-      setStatus(appIconStatus, appearanceText('网页端不应用应用图标设置。'));
-    }
   }));
-  byId('chooseCustomAppIcon').addEventListener('click', () => customAppIconFile.click());
   byId('resetAppIcon').addEventListener('click', async () => {
     uiSettings.appIconPreset = 'default';
     uiSettings.customAppIcon = '';
     saveUISettings();
     const applied = await applyAppIcon();
     setStatus(appIconStatus, appearanceText(applied ? '默认图标已恢复。' : '应用图标应用失败。'), applied ? 'success' : 'error');
-  });
-  customAppIconFile.addEventListener('change', async () => {
-    const file = customAppIconFile.files?.[0];
-    customAppIconFile.value = '';
-    if (!file) return;
-    const allowedTypes = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']);
-    if (!allowedTypes.has(file.type) && !/\.(png|jpe?g|webp|svg)$/i.test(file.name)) {
-      setStatus(appIconStatus, appearanceText('请选择 PNG、WebP、JPG 或 SVG 图标。'), 'error');
-      return;
-    }
-    if (file.size > 1.5 * 1024 * 1024) {
-      setStatus(appIconStatus, appearanceText('图标文件不能超过 1.5 MB。'), 'error');
-      return;
-    }
-    try {
-      const source = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error('ICON_READ_FAILED'));
-        reader.readAsDataURL(file);
-      });
-      uiSettings.customAppIcon = await renderSquareAppIcon(source, true);
-      uiSettings.appIconPreset = 'custom';
-      saveUISettings();
-      const applied = await applyAppIcon();
-      const message = !window.actaDesktop?.setAppIcon
-        ? '网页端不应用应用图标设置。'
-        : applied ? '自定义图标已应用。' : '应用图标应用失败。';
-      setStatus(appIconStatus, appearanceText(message), window.actaDesktop?.setAppIcon ? applied ? 'success' : 'error' : '');
-    } catch (error) {
-      const message = error.message === 'ICON_TOO_SMALL' ? '图标至少需要 64 × 64 像素。' : '无法读取图标文件。';
-      setStatus(appIconStatus, appearanceText(message), 'error');
-    }
   });
   void applyAppIcon();
 
@@ -6211,9 +6190,6 @@
     byId('oobeSplashPreset').value = uiSettings.splashAnimationPreset;
     byId('oobeSplashSpeed').value = String(splashDurationToSpeed(uiSettings.splashAnimationSpeed));
     byId('oobeSplashSpeedValue').textContent = formatSplashSpeed(splashDurationToSpeed(uiSettings.splashAnimationSpeed));
-    document.querySelectorAll('input[name="oobeAppIcon"]').forEach(option => { option.checked = option.value === uiSettings.appIconPreset; });
-    const customPreview = byId('oobeCustomIconPreview');
-    if (customPreview && uiSettings.customAppIcon) customPreview.src = uiSettings.customAppIcon;
   }
 
   function showOobeStep(index, backward = false) {
@@ -6379,18 +6355,6 @@
       window.actaSplash?.replay();
       setTimeout(() => button.classList.remove('is-busy'), 1200);
     });
-    document.querySelectorAll('input[name="oobeAppIcon"]').forEach(option => option.addEventListener('change', async () => {
-      if (!option.checked) return;
-      if (option.value === 'custom' && !uiSettings.customAppIcon) {
-        document.querySelectorAll('input[name="oobeAppIcon"]').forEach(entry => { entry.checked = entry.value === uiSettings.appIconPreset; });
-        customAppIconFile.click();
-        return;
-      }
-      uiSettings.appIconPreset = option.value;
-      saveUISettings();
-      await applyAppIcon();
-      syncOobeControls();
-    }));
   }
 
   byId('changeAppDataFolder')?.addEventListener('click', async () => {

@@ -3088,7 +3088,8 @@ function browserImportNote() {
 }
 
 function browserExportNote(fileName, content) {
-  const url = URL.createObjectURL(new Blob([content], { type: 'text/markdown;charset=utf-8' }));
+  const isMarkdown = /\.md$/i.test(fileName);
+  const url = URL.createObjectURL(new Blob([content], { type: `${isMarkdown ? 'text/markdown' : 'text/plain'};charset=utf-8` }));
   const anchor = document.createElement('a');
   anchor.href = url;
   anchor.download = fileName;
@@ -3102,16 +3103,21 @@ function browserExportNote(fileName, content) {
 
 function getNoteFileBridge() {
   if (window.actaDesktop?.importNote && window.actaDesktop?.exportNote) {
-    return { importNote: window.actaDesktop.importNote, exportNote: window.actaDesktop.exportNote };
+    return {
+      importNote: window.actaDesktop.importNote,
+      exportNote: window.actaDesktop.exportNote,
+      exportText: window.actaDesktop.exportText || window.actaDesktop.exportNote
+    };
   }
   const nativeFiles = window.Capacitor?.Plugins?.ActaSync;
   if (nativeFiles?.importNote && nativeFiles?.exportNote) {
     return {
       importNote: () => nativeFiles.importNote(),
-      exportNote: (fileName, content) => nativeFiles.exportNote({ fileName, content })
+      exportNote: (fileName, content) => nativeFiles.exportNote({ fileName, content }),
+      exportText: (fileName, content) => nativeFiles.exportNote({ fileName, content })
     };
   }
-  return { importNote: browserImportNote, exportNote: browserExportNote };
+  return { importNote: browserImportNote, exportNote: browserExportNote, exportText: browserExportNote };
 }
 
 async function importNoteFromFile() {

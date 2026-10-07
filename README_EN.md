@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <strong>Current version v3.4.0</strong>
+  <strong>Current version v3.5.0</strong>
 </p>
 
 Acta is a local-first notes and tasks app that brings writing, action, and organization into one calm workspace. The project shares a single web interface across Tauri desktop apps for Windows/macOS, a Capacitor Android app, and a modern-browser PWA.
@@ -20,12 +20,13 @@ Acta is a local-first notes and tasks app that brings writing, action, and organ
 - High, medium, and low task priorities, plus subtasks, progress, immutable creation time, and optional start/due times
 - Check-in tasks: generate from the create menu or quick capture, check in daily with streak/total counters and a last-7-days strip, optional start/due dates that feed the calendar, and a today badge on list cards
 - Ordered subtasks: turn on "In order" to arrange subtasks by number and reorder them with arrow buttons; the default stays unordered
+- Bulk subtask add & export: the editor's progress row offers "Quick-add subtasks" (one per line — paste a multi-line list and append them all at once) and "Export subtasks" (plain lines or a Markdown task list, copied to the clipboard or saved as a TXT / Markdown file)
 - Ordered subtasks can be reordered with arrow buttons or by dragging the leading number (checking a step auto-completes earlier unchecked ones); subtasks record their completion time and show the date next to the checkbox (hover for the exact timestamp, toggleable in settings); in unordered mode a checked row lingers briefly, then slides into — or fades into — the bottom collapsed group (sharing the delay setting with the list); clicking "Add a subtask" focuses the new row and scrolls it into view; folder views offer a "Show completed" switch; completed tasks wait a moment before settling (delay and switch configurable in task settings), leaving time to undo: where completed items stay visible they glide to the end of the list with a fluid, non-linear motion, and in views like the inbox they fade out after the pause
 - An action history dialog in the lower-left dock lists recent operations (creation, deletion, completion, check-ins, subtask changes, classifications — up to 500 entries); entries about a specific item restore that item to the state before the action after an inline confirmation; data statistics moved into the workspace settings page; deleting a subtask requires a two-step inline confirmation
 - A year/month/week/day calendar replacing Today: week numbers in the compact month view, independently scrollable desktop/mobile week layouts, and direct task/subtask completion in week and day views
 - A summary page (formerly statistics) as a notes-and-tasks list: gather items created in a chosen period, list every subtask in full, tick some, and make a list picture in one click; a "Data statistics" dialog in the sidebar's lower-left dock reports the profile's total file size, file count, notes, tasks, classifications, and trash count
 - A note base font-size slider that scales body text and every heading level together; heading size and heading font remain independently adjustable (serif, rounded, monospace, or a custom font), with separate sliders for in-paragraph line spacing and paragraph spacing; Markdown syntax typed in the visual editor (headings, lists, quotes, bold/italic, and more) applies instantly
-- First-run OOBE onboarding: set the software data folder, theme and interface font, launch animation, and app icon step by step; it can be re-run from general settings, and the software data location can be changed later. Four icon presets plus custom uploads work on Windows even when the app is pinned to the taskbar, and on macOS 26 and later the presets come in a dedicated flavor baked into the new Dock squircle shape, so the Dock icon matches the bundled one
+- First-run OOBE onboarding: set the software data folder, theme and interface font, and launch animation step by step; it can be re-run from general settings, and the software data location can be changed later. App-icon switching is an Android-only feature with four built-in presets (desktop builds always use the bundled default icon)
 - MWS Light / MWS Dark brand themes (primary #FF6666, secondary #66CC66; the light theme paints the sidebar and titlebar in the brand colors) plus three previewable launch animations with a playback-speed control
 - Deleting offers move-to-trash or delete-now; the trash is never emptied automatically and supports restore, delete-forever, and empty-all
 - Folders, smart views, combinable task/note filters, and unified search
@@ -131,7 +132,7 @@ Builds run automatically through GitHub Actions (`.github/workflows/build.yml`):
 npm test
 ```
 
-The smoke test starts a Vite dev server programmatically and then drives the app in headless Edge/Chrome. It covers default task classification, creation/start/due times, mobile calendar interaction, week-list scrolling, direct task/subtask completion, IME composition, strict view filtering, bidirectional links, OOBE onboarding, custom select menus, MWS themes, launch-animation speed semantics, the app-icon preset fallback, check-in tasks, ordered subtasks, and Markdown round-trips.
+The smoke test starts a Vite dev server programmatically and then drives the app in headless Edge/Chrome. It covers default task classification, creation/start/due times, mobile calendar interaction, week-list scrolling, direct task/subtask completion, IME composition, strict view filtering, bidirectional links, OOBE onboarding, custom select menus, MWS themes, launch-animation speed semantics, the mobile app-icon presets, check-in tasks, ordered subtasks, and Markdown round-trips.
 
 ## Troubleshooting
 

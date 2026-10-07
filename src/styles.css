@@ -375,9 +375,10 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .progress-head h2, .note-block h2 { margin: 0; font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; letter-spacing: .03em; }
 .progress-head span { color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); }
 .progress-head:has(.task-order-toggle) { justify-content: flex-start; align-items: center; gap: 9px; }
-.task-order-toggle { margin-left: auto; width: 28px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--faint); display: grid; place-items: center; cursor: pointer; transition: border-color .18s ease, color .18s ease, background .18s ease, transform .18s var(--ease-out); }
-.task-order-toggle svg { width: 14px; height: 14px; }
-.task-order-toggle:hover { color: var(--sage); border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); transform: scale(1.05); }
+.task-head-tools { margin-left: auto; display: flex; align-items: center; gap: 7px; }
+.task-order-toggle, .task-tool-button { width: 28px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--faint); display: grid; place-items: center; cursor: pointer; transition: border-color .18s ease, color .18s ease, background .18s ease, transform .18s var(--ease-out); }
+.task-order-toggle svg, .task-tool-button svg { width: 14px; height: 14px; }
+.task-order-toggle:hover, .task-tool-button:hover { color: var(--sage); border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); transform: scale(1.05); }
 .task-order-toggle.active { color: var(--sage); border-color: var(--sage); background: color-mix(in srgb, var(--sage) 10%, transparent); }
 .progress-track { height: 5px; background: #e8e7e0; border-radius: 10px; overflow: hidden; }
 .progress-track i { display: block; height: 100%; background: var(--sage); border-radius: inherit; transition: width .7s var(--ease-out); }

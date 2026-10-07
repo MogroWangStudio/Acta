@@ -733,7 +733,10 @@ async fn export_note(path: String, content: String) -> Result<ExportedFile, Stri
             return Err("文件不能超过 5 MB".into());
         }
         let mut path = PathBuf::from(path);
-        path.set_extension("md");
+        // 调用方自带扩展名（md / txt）时原样保留，仅在缺省时回落为 md。
+        if path.extension().is_none() {
+            path.set_extension("md");
+        }
         fs::write(&path, content).map_err(|error| error.to_string())?;
         Ok(ExportedFile {
             file_name: path
@@ -1783,38 +1786,11 @@ pub fn run() {
             updater::cleanup_stale_backup();
             // 旧版本把主题色/图标/窗口状态写在系统 AppData，先搬到当前配置目录。
             migrate_legacy_config_files(app_handle);
-            let stored_icon = persisted_app_icon_path(app_handle)
-                .ok()
-                .and_then(|path| fs::read(path).ok());
-            if let Some(bytes) = stored_icon {
-                #[cfg(target_os = "macos")]
-                {
-                    let _ = set_macos_dock_icon(&bytes);
-                }
-                #[cfg(target_os = "windows")]
-                {
-                    if let Some(window) = app.get_webview_window("main") {
-                        if let Ok(image) = tauri::image::Image::from_bytes(&bytes) {
-                            let _ = window.set_icon(image);
-                        }
-                        // 任务栏图标与 macOS Dock 图标同属启动可见面，恢复
-                        // 失败不阻塞启动，交由设置里的重新应用兜底。
-                        let _ = set_windows_taskbar_icon(&window, &bytes);
-                        // 钉选快捷方式的图标同样随启动恢复（切换预设后固定、
-                        // 或旧版本遗留的钉选图标都借此对齐）。
-                        let ico_path = software_config_dir(app_handle).join(PINNED_TASKBAR_ICO_FILE);
-                        if write_windows_ico(&bytes, &ico_path).is_ok() {
-                            update_pinned_taskbar_shortcuts(&ico_path);
-                        }
-                    }
-                }
-                #[cfg(all(not(target_os = "macos"), not(target_os = "windows")))]
-                {
-                    if let Some(window) = app.get_webview_window("main") {
-                        if let Ok(image) = tauri::image::Image::from_bytes(&bytes) {
-                            let _ = window.set_icon(image);
-                        }
-                    }
+            // 3.5.0 起桌面端移除了应用图标更换功能：清除旧版本持久化的运行时
+            // 图标，让 Dock / 任务栏回归打包默认图标。
+            if let Ok(icon_path) = persisted_app_icon_path(app_handle) {
+                if icon_path.exists() {
+                    let _ = fs::remove_file(&icon_path);
                 }
             }
             // The window is created hidden (visible: false) and stays hidden

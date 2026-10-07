@@ -774,7 +774,9 @@ public class ActaLanPlugin extends Plugin {
         int size = call.getInt("size", 0);
         synchronized (this) {
             LanService current = service;
-            FetchRequest request = current == null ? null : current.fetches.remove(requestId);
+            // 只校验请求存在，不取出：FetchRequest 要留给传输完成后的
+            // deliverProvidedBundle 去移除并应答，提前 remove 会让拉取方等满超时。
+            FetchRequest request = current == null ? null : current.fetches.get(requestId);
             if (request == null) {
                 call.reject("没有对应的读取请求");
                 return;
@@ -1166,8 +1168,12 @@ public class ActaLanPlugin extends Plugin {
         sink().accept("lanIncoming", incomingEvent(plan, trustedNow));
 
         if (trustedNow) {
-            // 信任网络：不做任何等待，直接进入待写入状态并接受。
+            // 信任网络：不做任何等待，直接进入待写入状态并接受。incoming 槽
+            // 必须一并清除，否则同一服务会话的第二次推送会永远撞上 409 pending。
             String token = current.acceptPlan(plan);
+            synchronized (current) {
+                if (current.incoming == incoming) current.incoming = null;
+            }
             respond(socket, 200, "OK", "{\"status\":\"accepted\",\"token\":\"" + token + "\"}");
             return;
         }

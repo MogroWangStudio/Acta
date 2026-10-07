@@ -849,9 +849,13 @@ fn handle_push_plan(stream: &mut TcpStream, service: &Arc<LanService>, length: u
     }
     let _ = service.app.emit(LAN_INCOMING_EVENT, plan.event_json(trusted));
 
-    // 信任网络：不做任何等待，直接进入待写入状态并接受。
+    // 信任网络：不做任何等待，直接进入待写入状态并接受。incoming 槽必须
+    // 一并清除，否则同一服务会话的第二次推送会永远撞上 409 pending。
     if trusted {
         let token = move_plan_to_pending(service, plan);
+        if let Ok(mut slot) = service.incoming.lock() {
+            *slot = None;
+        }
         let response = json!({"status": "accepted", "token": token}).to_string();
         let _ = write_http_response(stream, 200, "OK", &response);
         return;

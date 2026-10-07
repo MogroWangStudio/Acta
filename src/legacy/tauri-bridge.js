@@ -135,6 +135,15 @@
       });
       return path ? invoke('export_note', { path, content }) : null;
     },
+    async exportText(fileName, content) {
+      const extension = /\.md$/i.test(baseName(fileName)) ? 'md' : 'txt';
+      const path = await dialog.save({
+        title:'导出文本文件',
+        defaultPath:baseName(fileName),
+        filters:[{ name: extension === 'md' ? 'Markdown' : '文本文档', extensions:[extension] }]
+      });
+      return path ? invoke('export_note', { path, content }) : null;
+    },
     async exportAssets(assets) {
       if (!Array.isArray(assets) || !assets.length) return null;
       if (assets.length === 1) {

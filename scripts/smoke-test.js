@@ -984,48 +984,11 @@ async function main() {
         && document.querySelector('.about-mark img').src === fixedAboutIcon
         && document.querySelector('link[rel="icon"]').href === fixedFavicon
         && nativeAppIconCalls.at(-1)?.preset === 'positive';
-      const previousAppIconPreset = readAppearanceSettings().appIconPreset;
-      const previousCheckedRadio = document.querySelector('input[name="actaAppIcon"]:checked');
-      document.querySelector('input[name="actaAppIcon"][value="custom"]').click();
-      const nativeCustomPromptUI = !document.querySelector('[data-desktop-app-icon-only].app-icon-option').hidden
-        && !document.querySelector('#chooseCustomAppIcon').hidden
-        && !document.querySelector('.app-icon-options').classList.contains('native-presets-only')
-        && (document.querySelector('input[name="actaAppIcon"]:checked') === previousCheckedRadio)
-        && /自定义图标仅支持 PC/.test(document.querySelector('#appIconStatus').textContent)
-        && readAppearanceSettings().appIconPreset === previousAppIconPreset;
-      const desktopAppIconCalls = [];
-      window.actaDesktop = { setAppIcon:value => { desktopAppIconCalls.push(value); return Promise.resolve(); } };
-      document.querySelector('input[name="actaAppIcon"][value="default"]').click();
-      document.querySelector('input[name="actaAppIcon"][value="positive"]').click();
-      const nativeAppIconCallsBeforeCustom = nativeAppIconCalls.length;
-      const customIconFile = new File(['<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" rx="24" fill="#2f7a52"/><circle cx="64" cy="64" r="28" fill="#fff"/></svg>'], 'smoke-icon.svg', { type:'image/svg+xml' });
-      const iconTransfer = new DataTransfer();
-      iconTransfer.items.add(customIconFile);
-      const customIconInput = document.querySelector('#customAppIconFile');
-      customIconInput.files = iconTransfer.files;
-      customIconInput.dispatchEvent(new Event('change'));
-      await waitFor(() => readAppearanceSettings().appIconPreset === 'custom' && readAppearanceSettings().customAppIcon?.startsWith('data:image/png'));
-      await waitFor(() => desktopAppIconCalls.at(-1)?.startsWith('data:image/png'));
-      const customIconSettings = readAppearanceSettings();
-      const customAppIconMetrics = {
-        preset:customIconSettings.appIconPreset,
-        hasDataIcon:customIconSettings.customAppIcon?.startsWith('data:image/png'),
-        previewMatches:document.querySelector('#customAppIconPreview').src === customIconSettings.customAppIcon,
-        brandUnchanged:document.querySelector('.brand-mini-logo').src === fixedBrandIcon,
-        faviconUnchanged:document.querySelector('link[rel="icon"]').href === fixedFavicon,
-        nativeCallsBefore:nativeAppIconCallsBeforeCustom,
-        nativeCallsAfter:nativeAppIconCalls.length,
-        lastNativePreset:nativeAppIconCalls.at(-1)?.preset,
-        desktopReceivedCustom:desktopAppIconCalls.at(-1)?.startsWith('data:image/png')
-      };
-      const customAppIconWorks = customIconSettings.appIconPreset === 'custom'
-        && customIconSettings.customAppIcon.startsWith('data:image/png')
-        && document.querySelector('#customAppIconPreview').src === customIconSettings.customAppIcon
-        && document.querySelector('.brand-mini-logo').src === fixedBrandIcon
-        && document.querySelector('link[rel="icon"]').href === fixedFavicon
-        && nativeAppIconCalls.length === nativeAppIconCallsBeforeCustom
-        && nativeAppIconCalls.at(-1)?.preset === 'positive'
-        && desktopAppIconCalls.at(-1)?.startsWith('data:image/png');
+      // 3.5.0 起移动端保留四个预设、无自定义上传；custom 入口应整体移除。
+      const customAppIconWorks = !document.querySelector('input[name="actaAppIcon"][value="custom"]')
+        && !document.querySelector('#chooseCustomAppIcon')
+        && !document.querySelector('#customAppIconFile')
+        && !document.querySelector('.app-icon-settings').hidden;
       document.querySelector('#resetAppIcon').click();
       const resetIconSettings = readAppearanceSettings();
       const appIconResetWorks = resetIconSettings.appIconPreset === 'default'
@@ -1033,10 +996,21 @@ async function main() {
         && document.querySelector('[data-app-icon-preview="default"]').src.endsWith('/icons/icon-512-square.png')
         && document.querySelector('.brand-mini-logo').src === fixedBrandIcon
         && document.querySelector('link[rel="icon"]').href === fixedFavicon
-        && nativeAppIconCalls.at(-1)?.preset === 'default'
-        && desktopAppIconCalls.at(-1)?.startsWith('data:image/png');
-      delete window.actaDesktop;
+        && nativeAppIconCalls.at(-1)?.preset === 'default';
+      // 仅桌面桥（无 Capacitor）时：触发一次图标应用，整个区块应隐藏，
+      // 遗留预设归位默认且不再触碰运行时图标。
       delete window.Capacitor;
+      const desktopAppIconCalls = [];
+      window.actaDesktop = { setAppIcon:value => { desktopAppIconCalls.push(value); return Promise.resolve(); } };
+      const desktopIconProbe = document.querySelector('input[name="actaAppIcon"][value="positive"]');
+      desktopIconProbe.checked = true;
+      desktopIconProbe.dispatchEvent(new Event('change'));
+      await waitFor(() => document.querySelector('.app-icon-settings').hidden);
+      const nativeCustomPromptUI = document.querySelector('.app-icon-settings').hidden
+        && readAppearanceSettings().appIconPreset === 'default'
+        && desktopAppIconCalls.length === 0;
+      const desktopAppIconIdle = desktopAppIconCalls.length === 0;
+      delete window.actaDesktop;
       darkTheme.checked = true;
       darkTheme.dispatchEvent(new Event('change'));
       const hasPriorityBadge = Boolean(document.querySelector('.priority-pill.high'));
@@ -1472,7 +1446,7 @@ async function main() {
       document.querySelector('[data-settings-page="appearance"]').click();
       const appearancePanel = document.querySelector('[data-settings-panel="appearance"]');
       const appearanceSettingsComplete = document.querySelectorAll('input[name="actaTheme"]').length === 12
-        && document.querySelectorAll('input[name="actaAppIcon"]').length === 5
+        && document.querySelectorAll('input[name="actaAppIcon"]').length === 4
         && [...document.querySelectorAll('.app-icon-option b')].slice(0, 4).map(node => node.textContent).join('|') === '默认书页|正·书页|勾勒·书页|初版简洁'
         && Object.keys(detailedColorInputs).every(id => document.querySelector('#' + id));
       const appearanceLayoutFits = appearancePanel.scrollWidth <= document.querySelector('.settings-content').clientWidth;
@@ -1571,8 +1545,8 @@ async function main() {
         presetAppIconWorks,
         nativeCustomPromptUI,
         customAppIconWorks,
-        customAppIconMetrics,
         appIconResetWorks,
+        desktopAppIconIdle,
         checkinEditorRenders,
         checkinMarksToday,
         checkinUndoWorks,
@@ -1846,10 +1820,12 @@ async function main() {
       assert.match(androidManifest, new RegExp(`android:name="\\.${alias}"`));
       assert.match(androidIconPlugin, new RegExp(`case "${preset}": return "${alias}"`));
     });
+    // 3.5.0 起图标更换仅保留在移动端：自定义上传入口整体移除，
+    // 设置区块改为 data-mobile-app-icon-only 按移动端显隐。
     const appIconInterfaceSource = fs.readFileSync(path.join(__dirname, '..', 'src', 'legacy', 'interface.js'), 'utf8');
     assert.doesNotMatch(appIconInterfaceSource, /appIconPreset === 'custom'\s*\?\s*'default'/);
-    assert.match(appIconInterfaceSource, /自定义图标仅支持 PC 本地客户端/);
-    assert.match(appIconInterfaceSource, /const webOnly = !desktopIcon && !mobileIcon/);
+    assert.match(appIconInterfaceSource, /data-mobile-app-icon-only/);
+    assert.doesNotMatch(appIconInterfaceSource, /chooseCustomAppIcon/);
 
     assert.deepEqual(unscaledFontDeclarations, []);
     assert.equal(result.developerSettingsRemoved, true);
@@ -1905,7 +1881,8 @@ async function main() {
     assert.equal(result.mobileFontSizeLayoutFits, true, JSON.stringify(result.mobileFontSizeLayoutMetrics));
     assert.equal(result.presetAppIconWorks, true);
     assert.equal(result.nativeCustomPromptUI, true);
-    assert.equal(result.customAppIconWorks, true, JSON.stringify(result.customAppIconMetrics));
+    assert.equal(result.customAppIconWorks, true);
+    assert.equal(result.desktopAppIconIdle, true);
     assert.equal(result.appIconResetWorks, true);
     assert.equal(result.checkinEditorRenders, true);
     assert.equal(result.checkinMarksToday, true);
@@ -2274,23 +2251,13 @@ async function main() {
       const stored = JSON.parse(localStorage.getItem('acta.interface.settings.v1') || '{}');
       const speedInverted = stored.splashAnimationSpeed === 0.5 && document.querySelector('#oobeSplashSpeedValue').textContent === '2.0×';
       document.querySelector('#oobeNext').click();
-      const iconCalls = [];
-      const bridgeIcon = window.actaDesktop.setAppIcon.bind(window.actaDesktop);
-      Object.defineProperty(window, 'actaDesktop', { value:Object.freeze({ ...window.actaDesktop, setAppIcon:(dataUrl, preset) => {
-        iconCalls.push({ canvas:dataUrl.startsWith('data:image/png'), preset: preset || '' });
-        if (dataUrl) return Promise.reject(new Error('SMOKE_CANVAS_FAIL'));
-        return bridgeIcon(dataUrl, preset);
-      } }), configurable:true });
-      const positiveRadio = document.querySelector('input[name="oobeAppIcon"][value="positive"]');
-      positiveRadio.click();
-      await waitFor(() => iconCalls.some(call => !call.canvas && call.preset === 'positive'));
-      const iconFallbackWorks = iconCalls[0]?.canvas === true && iconCalls[1]?.canvas === false && iconCalls[1]?.preset === 'positive';
-      document.querySelector('#oobeNext').click();
+      // 3.5.0 起 OOBE 不再包含应用图标步骤，splash 之后直接进入欢迎页。
+      const iconStepRemoved = !document.querySelector('[data-oobe-step="icon"]');
       const welcomeShown = document.querySelector('[data-oobe-step="welcome"]').classList.contains('active');
       document.querySelector('#oobeNext').click();
       const oobeClosed = await waitFor(() => !overlay.classList.contains('open'));
       const settingsMirrored = [...document.querySelectorAll('input[name="actaTheme"]')].some(radio => radio.value === 'mws-light' && radio.checked);
-      return { oobeOpens, selectsEnhanced, menuOpens, menuOptionCount, menuClosed, sortChanged, oobePrepared, mwsAccent, mwsIsDark, speedInverted, iconFallbackWorks, welcomeShown, oobeClosed, settingsMirrored,
+      return { oobeOpens, selectsEnhanced, menuOpens, menuOptionCount, menuClosed, sortChanged, oobePrepared, mwsAccent, mwsIsDark, speedInverted, iconStepRemoved, welcomeShown, oobeClosed, settingsMirrored,
         prepareCalled:window.__featureCalls.some(call => call.command === 'prepare_app_data_dir' && String(call.args.path).split('\\\\').join('!') === 'C:!ActaData'),
         settingsSaved:window.__featureCalls.some(call => call.command === 'save_app_data_settings'),
         callsDebug:window.__featureCalls.filter(call => String(call.command).startsWith('prepare') || String(call.command).startsWith('save')).map(call => ({ c:call.command, p:call.args && call.args.path })),        settingsSavedCheck:window.__featureCalls.some(call => call.command === 'save_app_data_settings') };
@@ -2309,7 +2276,7 @@ async function main() {
     assert.equal(featureResult.mwsAccent, '#ff6666');
     assert.equal(featureResult.mwsIsDark, true);
     assert.equal(featureResult.speedInverted, true);
-    assert.equal(featureResult.iconFallbackWorks, true);
+    assert.equal(featureResult.iconStepRemoved, true);
     assert.equal(featureResult.welcomeShown, true);
     assert.equal(featureResult.oobeClosed, true);
     assert.equal(featureResult.settingsMirrored, true);

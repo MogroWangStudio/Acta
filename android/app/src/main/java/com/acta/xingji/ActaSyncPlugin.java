@@ -438,11 +438,14 @@ public class ActaSyncPlugin extends Plugin {
             return;
         }
         String safeName = fileName.replaceAll("[\\\\/:*?\"<>|]", "-");
-        if (!safeName.toLowerCase(Locale.US).endsWith(".md")) safeName += ".md";
+        // 子任务导出走同一入口：.txt 保留纯文本类型，其余回落为 .md。
+        String lowerName = safeName.toLowerCase(Locale.US);
+        boolean isPlainText = lowerName.endsWith(".txt");
+        if (!isPlainText && !lowerName.endsWith(".md")) safeName += ".md";
 
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/markdown");
+        intent.setType(isPlainText ? "text/plain" : "text/markdown");
         intent.putExtra(Intent.EXTRA_TITLE, safeName);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         startActivityForResult(call, intent, "noteExportResult");

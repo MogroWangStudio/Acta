@@ -2290,3 +2290,25 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 @media (prefers-reduced-motion: reduce) {
   .lan-peer-card { animation: none; }
 }
+
+/* —— 子任务批量添加与导出对话框 —— */
+.bulk-task-dialog .relation-dialog-body, .export-tasks-dialog .relation-dialog-body { display: flex; flex-direction: column; gap: 14px; }
+.bulk-task-hint { margin: 0; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.55; }
+.bulk-task-input { resize: vertical; min-height: 148px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); color: var(--ink); font: inherit; font-size: calc(12px * var(--acta-font-scale)); line-height: 1.6; transition: border-color .15s ease, box-shadow .15s ease; }
+.bulk-task-input:focus { outline: 0; border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 12%, transparent); }
+.export-tasks-format { display: grid; gap: 8px; }
+.export-tasks-format label { display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 58%, transparent); cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.export-tasks-format label:has(input:checked) { border-color: color-mix(in srgb, var(--sage) 55%, var(--line)); background: color-mix(in srgb, var(--sage) 7%, var(--white)); }
+.export-tasks-format input { margin-top: 2px; accent-color: var(--sage); }
+.export-tasks-format b { display: block; font-size: calc(11.5px * var(--acta-font-scale)); }
+.export-tasks-format small { display: block; margin-top: 2px; color: var(--muted); font-size: calc(9.5px * var(--acta-font-scale)); line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) {
+  .bulk-task-input, .export-tasks-format label { transition: none; }
+}
+
+/* macOS：品牌区绝对定位在标题栏右上，保存状态随之移到 logo 左侧，
+   远离系统红绿灯；brand 脱离文档流后 titlebar-center 会顶进第一列，
+   必须显式固定到第二列。 */
+@media (min-width: 801px) {
+  html[data-desktop-platform="darwin"] .titlebar-center { grid-column: 2; justify-content: flex-end; padding: 0 190px 0 16px; border-left: 0; }
+}
