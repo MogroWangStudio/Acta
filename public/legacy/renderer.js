@@ -1355,8 +1355,9 @@ function renderSidebar() {
 
 function itemPreview(item) {
   if (item.type === 'note') return stripHTML(item.body) || t('notePlaceholder');
+  // 子任务文本可能含 Shift+Enter 换行；卡片预览为单行，折叠为空格。
   const open = (item.tasks || []).filter(task => !task.done).map(task => task.text).filter(Boolean);
-  return open[0] || item.notes || (isTodoComplete(item) ? t('done') : t('taskPlaceholder'));
+  return open[0]?.replace(/\s*\r?\n\s*/g, ' ') || item.notes || (isTodoComplete(item) ? t('done') : t('taskPlaceholder'));
 }
 
 const statsRangePresets = ['all', 'today', '7', '30', '90', 'custom'];

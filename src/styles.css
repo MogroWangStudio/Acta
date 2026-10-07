@@ -432,7 +432,8 @@ body.acta-steady .task-row.is-new, .task-row.is-new { animation: taskRowNew .6s 
 @keyframes taskToggle { from { transform:scale(.992); } to { transform:scale(1); } }
 .task-row.done .task-check { background: var(--sage); border-color: var(--sage); }
 .task-row.done .task-check svg { opacity: 1; transform: scale(1) rotate(0); }
-.task-text { min-width: 0; padding: 11px 9px; margin: 0 -9px; border: 1px solid transparent; border-radius: 10px; outline: 0; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); line-height: 1.45; user-select: text; transition: color .2s, opacity .2s; }
+/* pre-wrap 让 Shift+Enter 换行后的多行子任务按行显示（数据存 \n 纯文本）。 */
+.task-text { min-width: 0; padding: 11px 9px; margin: 0 -9px; border: 1px solid transparent; border-radius: 10px; outline: 0; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; user-select: text; transition: color .2s, opacity .2s; }
 .task-text:focus { border-color: color-mix(in srgb, var(--sage) 38%, var(--line)); background: color-mix(in srgb, var(--sage) 6%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 13%, transparent); border-radius: 14px; }
 .task-text:empty::before { content: attr(data-placeholder); color: var(--faint); }
 .task-row.done .task-text { color: var(--faint); text-decoration: line-through; }

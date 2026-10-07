@@ -1695,9 +1695,20 @@
             }, sinkDelay);
           }
         });
-        $('.task-text', row).addEventListener('input', event => { task.text = event.target.textContent; touchItem(item); updateCard(item); });
+        $('.task-text', row).addEventListener('input', event => {
+          // innerText (unlike textContent) keeps the line breaks the user
+          // typed with Shift+Enter; trailing breaks are editor artifacts.
+          task.text = event.target.innerText.replace(/\r/g, '').replace(/\n+$/, '');
+          touchItem(item); updateCard(item);
+        });
         $('.task-text', row).addEventListener('keydown', event => {
           if (isImeComposing(event)) return;
+          // Shift+Enter 在行内换行；Enter 直接新增下一条子任务。
+          if (event.shiftKey && event.key === 'Enter') {
+            event.preventDefault();
+            document.execCommand('insertLineBreak');
+            return;
+          }
           if (event.key === 'Enter') { event.preventDefault(); addTask(item); }
         });
         if (ordered) {
@@ -1897,10 +1908,13 @@
     textarea.focus();
   };
 
+  // 子任务文本可能含 Shift+Enter 换行；导出以「每条一行」为语义，
+  // 行内换行折叠为空格，避免破坏纯文本行与 Markdown 列表结构。
+  const taskExportText = task => String(task?.text || '').replace(/\s*\r?\n\s*/g, ' ').trim();
   const taskExportContent = (item, format) => {
     const tasks = item.tasks || [];
-    if (format === 'checklist') return tasks.map(task => `- [${task.done ? 'x' : ' '}] ${task.text}`).join('\n');
-    return tasks.map(task => task.text).join('\n');
+    if (format === 'checklist') return tasks.map(task => `- [${task.done ? 'x' : ' '}] ${taskExportText(task)}`).join('\n');
+    return tasks.map(taskExportText).join('\n');
   };
 
   const exportTasksToFile = async (item, content, extension) => {
@@ -3614,42 +3628,74 @@
   }
 
   // 历史记录弹窗：倒序展示操作日志，清空按钮需二次点击确认。
+  // 每条按操作语义分组着色（创建/完成/删除/重开），可回溯条目右侧
+  // 常驻一个回溯按钮：点击一次在原位展开确认按钮，再次点击才执行，
+  // 误触其他区域或另一条目时复位。
   const historyDialog = byId('historyDialog');
   const historyList = byId('historyList');
   const historyEmpty = byId('historyEmpty');
   let clearHistoryArmed = false;
   let clearHistoryTimer = null;
+  const historyKindMeta = type => {
+    switch (type) {
+      case 'note-created': case 'todo-created': case 'checkin-created': case 'folder-created': case 'subtask-added':
+        return { kind: 'created', icon: 'i-plus' };
+      case 'todo-completed': case 'subtask-completed': case 'checkin':
+        return { kind: 'completed', icon: 'i-check' };
+      case 'item-trashed': case 'item-destroyed': case 'subtask-removed': case 'folder-deleted':
+        return { kind: 'removed', icon: 'i-trash' };
+      default: // todo-reopened、subtask-reopened、checkin-undo 及未知类型
+        return { kind: 'reopened', icon: 'i-undo' };
+    }
+  };
   const renderHistory = () => {
     historyList.innerHTML = historyEntries.map(entry => {
       const restorable = Boolean(entry.snapshot);
       const target = entry.targetId ? library.items.find(item => item.id === entry.targetId && !isTrashed(item)) : null;
       // 有快照的条目可恢复到操作之前；无快照但项目仍在的条目仅跳转查看。
       const action = restorable ? 'restore' : target ? 'jump' : 'none';
-      const jump = action === 'none' ? '' : `<span class="history-jump" hidden><button class="history-jump-confirm" type="button">${escapeHTML(action === 'restore' ? uiText('historyRestore') : uiText('historyJump'))}</button></span>`;
-      const cls = action === 'none' ? 'history-entry' : 'history-entry with-target';
-      return `<li class="${cls}" data-history-id="${escapeHTML(entry.id)}" data-action="${action}" data-target-id="${escapeHTML(entry.targetId || '')}"><time datetime="${escapeHTML(entry.at)}">${escapeHTML(formatDateTimeSeconds(entry.at))}</time><span>${escapeHTML(historyText(entry))}</span>${jump}</li>`;
+      const { kind, icon } = historyKindMeta(entry.type);
+      const actionLabel = action === 'restore' ? uiText('historyRestore') : uiText('historyJump');
+      const entryAction = action === 'none' ? '<span class="history-entry-action" aria-hidden="true"></span>'
+        : `<span class="history-entry-action"><button class="history-undo" type="button" title="${escapeHTML(actionLabel)}" aria-label="${escapeHTML(actionLabel)}"><svg><use href="#i-undo"/></svg></button><span class="history-jump" hidden><button class="history-jump-confirm" type="button">${escapeHTML(actionLabel)}</button></span></span>`;
+      return `<li class="history-entry${action === 'none' ? '' : ' with-target'}" data-history-id="${escapeHTML(entry.id)}" data-action="${action}" data-target-id="${escapeHTML(entry.targetId || '')}"><span class="history-kind" data-kind="${kind}"><svg><use href="#${icon}"/></svg></span><div class="history-copy"><time datetime="${escapeHTML(entry.at)}">${escapeHTML(formatDateTimeSeconds(entry.at))}</time><span>${escapeHTML(historyText(entry))}</span></div>${entryAction}</li>`;
     }).join('');
     historyEmpty.hidden = historyEntries.length > 0;
     byId('historySubtitle').textContent = `${uiText('historySubtitle')} · ${historyEntries.length} / 500`;
   };
-  // 点击条目回溯：条目先展开「跳转」按钮（二级确认），确认后打开目标
-  // 项目并关闭历史弹窗；目标已删除的条目不可点击。
+  // 点击条目或回溯按钮：先在行内展开确认按钮（二级确认），确认后执行
+  // 回溯 / 跳转并关闭历史弹窗；目标已删除的条目不可点击。
+  const disarmHistoryRow = () => {
+    historyList.querySelectorAll('.history-entry.armed').forEach(entry => {
+      entry.classList.remove('armed');
+      const jump = entry.querySelector('.history-jump');
+      if (jump) jump.hidden = true;
+    });
+  };
   historyList.addEventListener('click', event => {
     const entryEl = event.target instanceof Element ? event.target.closest('.history-entry.with-target') : null;
     if (!entryEl) {
-      historyList.querySelectorAll('.history-jump:not([hidden])').forEach(jump => { jump.hidden = true; });
+      disarmHistoryRow();
       return;
     }
     const jump = entryEl.querySelector('.history-jump');
     if (!jump) return;
-    if (jump.hidden) {
-      historyList.querySelectorAll('.history-jump:not([hidden])').forEach(other => { if (other !== jump) other.hidden = true; });
+    if (!entryEl.classList.contains('armed')) {
+      historyList.querySelectorAll('.history-entry.armed').forEach(other => {
+        if (other !== entryEl) {
+          other.classList.remove('armed');
+          const otherJump = other.querySelector('.history-jump');
+          if (otherJump) otherJump.hidden = true;
+        }
+      });
+      entryEl.classList.add('armed');
       jump.hidden = false;
       jump.querySelector('.history-jump-confirm')?.focus();
       return;
     }
     const action = entryEl.dataset.action;
     const targetId = entryEl.dataset.targetId;
+    entryEl.classList.remove('armed');
     jump.hidden = true;
     if (action === 'restore') {
       const snapshot = historyEntries.find(entry => entry.id === (entryEl.dataset.historyId || ''))?.snapshot
