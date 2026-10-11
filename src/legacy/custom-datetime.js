@@ -17,7 +17,7 @@
   style.textContent = `
 input[${ENHANCED_FLAG}] { cursor: pointer; }
 input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); }
-.acdt-panel { position: fixed; z-index: 2147483000; width: 268px; margin: 0; padding: 10px 10px 8px; border: 1px solid color-mix(in srgb, var(--line) 78%, var(--faint)); border-radius: 14px; background: var(--paper); color: var(--ink); box-shadow: 0 3px 9px -2px rgba(31,35,30,.14), 0 14px 32px -10px rgba(31,35,30,.22); opacity: 0; transform: scale(.955) translateY(-5px); transform-origin: 50% 0; pointer-events: none; transition: opacity .16s ease, transform .26s cubic-bezier(.16,1,.3,1); font-size: calc(11px * var(--acta-font-scale, 1)); }
+.acdt-panel { position: fixed; z-index: 2147483000; width: 268px; margin: 0; padding: 10px 10px 8px; border: 1px solid color-mix(in srgb, var(--line) 78%, var(--faint)); border-radius: 14px; background: var(--paper); color: var(--ink); box-shadow: 0 3px 9px -2px rgba(31,35,30,.14), 0 14px 32px -10px rgba(31,35,30,.22); overflow: hidden auto; opacity: 0; transform: scale(.955) translateY(-5px); transform-origin: 50% 0; pointer-events: none; transition: opacity .16s ease, transform .26s cubic-bezier(.16,1,.3,1); font-size: calc(11px * var(--acta-font-scale, 1)); }
 .acdt-panel.acdt-flip { transform-origin: 50% 100%; transform: scale(.955) translateY(5px); }
 .acdt-panel.acdt-open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
 .acdt-panel.acdt-closing { transition: opacity .13s ease, transform .13s cubic-bezier(.4,0,.7,.2); }
@@ -37,7 +37,9 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
 .acdt-time { display: flex; align-items: end; gap: 7px; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line); }
 .acdt-time label { min-width: 0; flex: 1; display: grid; gap: 3px; }
 .acdt-time label span { color: var(--faint); font-size: calc(8px * var(--acta-font-scale, 1)); }
-.acdt-time select { width: 100%; height: 29px; padding: 0 20px 0 7px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); outline: 0; font: inherit; font-size: calc(10px * var(--acta-font-scale, 1)); }
+.acdt-time input { width: 100%; height: 29px; padding: 0 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); outline: 0; font: inherit; font-size: calc(10px * var(--acta-font-scale, 1)); text-align: center; font-variant-numeric: tabular-nums; cursor: text; transition: border-color .14s ease; }
+.acdt-time input:hover { border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); }
+.acdt-time input:focus { border-color: color-mix(in srgb, var(--sage) 55%, var(--line)); }
 .acdt-actions { display: flex; align-items: center; justify-content: space-between; gap: 7px; margin-top: 9px; }
 .acdt-actions button { height: 28px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted); font: inherit; font-size: calc(9px * var(--acta-font-scale, 1)); font-weight: 650; cursor: pointer; transition: color .15s ease, background .15s ease, border-color .15s ease; }
 .acdt-actions button:hover { color: var(--ink); background: var(--panel); }
@@ -123,23 +125,25 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
       grid.appendChild(cell);
     }
 
+    // 时间改为可直接输入的数字框：支持手动键入（两位自动跳到下一栏）、
+    // 上下方向键增减（循环回绕）、滚轮步进；失焦时归一化为两位数字。
+    // 替代原先的下拉选择——输入比在几十个选项里滚动快得多。
     const time = document.createElement('div');
     time.className = 'acdt-time';
     [['hour', '时', 23], ['minute', '分', 59], ['second', '秒', 59]].forEach(([key, label, max]) => {
       const field = document.createElement('label');
       const caption = document.createElement('span');
       caption.textContent = label;
-      const select = document.createElement('select');
-      select.className = `acdt-${key}`;
-      for (let unit = 0; unit <= max; unit += 1) {
-        const option = document.createElement('option');
-        option.value = String(unit);
-        option.textContent = pad(unit);
-        select.appendChild(option);
-      }
-      select.value = String(value[key]);
-      select.dataset.unit = key;
-      field.append(caption, select);
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.inputMode = 'numeric';
+      input.maxLength = 2;
+      input.className = `acdt-${key}`;
+      input.dataset.unit = key;
+      input.dataset.max = String(max);
+      input.value = pad(value[key]);
+      input.setAttribute('aria-label', label);
+      field.append(caption, input);
       time.appendChild(field);
     });
 
@@ -165,14 +169,26 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
     if (!panel.isConnected) return;
     const dialogRect = dialog ? dialog.getBoundingClientRect() : null;
     const width = panel.offsetWidth || 268;
-    const height = panel.offsetHeight || 330;
-    const spaceBelow = (dialogRect ? dialogRect.bottom : window.innerHeight) - rect.bottom;
-    const spaceAbove = rect.top - (dialogRect ? dialogRect.top : 0);
-    const flip = spaceBelow < height + 10 && spaceAbove > spaceBelow;
+    // 弹层必须完整落在容器（宿主 dialog 或视口）内：dialog 常带
+    // overflow:hidden，超出部分会被裁剪。面板比容器矮时正常上下翻转；
+    // 比容器还高时夹取位置并允许面板内部滚动。
+    const bounds = dialogRect
+      ? { top: dialogRect.top, height: dialogRect.height }
+      : { top: 0, height: window.innerHeight };
+    const margin = 6;
+    const spaceBelow = bounds.top + bounds.height - margin - rect.bottom;
+    const spaceAbove = rect.top - bounds.top - margin;
+    const naturalHeight = panel.offsetHeight || 330;
+    const flip = spaceBelow < naturalHeight + 10 && spaceAbove > spaceBelow;
+    const availableHeight = Math.max(220, Math.min(naturalHeight, (flip ? spaceAbove : spaceBelow) - margin));
+    panel.style.maxHeight = `${Math.max(220, Math.min(naturalHeight, availableHeight))}px`;
+    const height = Math.min(naturalHeight, availableHeight);
     let left = rect.left - (dialogRect ? dialogRect.left : 0);
-    const top = flip
-      ? rect.top - (dialogRect ? dialogRect.top : 0) - height - 6
-      : rect.bottom - (dialogRect ? dialogRect.top : 0) + 6;
+    let top = flip
+      ? rect.top - (dialogRect ? dialogRect.top : 0) - height - margin
+      : rect.bottom - (dialogRect ? dialogRect.top : 0) + margin;
+    const maxTop = Math.max(margin, bounds.height - height - margin);
+    top = Math.min(Math.max(top, margin), maxTop);
     if (dialogRect) left = Math.min(Math.max(left, 6), Math.max(6, dialogRect.width - width - 6));
     else left = Math.min(Math.max(left, 8), Math.max(8, window.innerWidth - width - 8));
     panel.style.left = `${Math.round(left)}px`;
@@ -203,7 +219,11 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
       panel.className = 'acdt-panel';
       panel.setAttribute('role', 'dialog');
       panel.setAttribute('aria-label', '选择日期和时间');
-      panel.addEventListener('mousedown', event => event.preventDefault());
+      panel.addEventListener('mousedown', event => {
+        // 时间输入框需要原生焦点与光标，不能阻断其默认行为。
+        if (event.target.closest('input[data-unit]')) return;
+        event.preventDefault();
+      });
       panel.addEventListener('click', event => {
         if (!openState) return;
         const nav = event.target.closest('.acdt-nav');
@@ -241,6 +261,71 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
           placePanel();
         }
       });
+      panel.addEventListener('input', event => {
+        const input = event.target.closest('input[data-unit]');
+        if (!input || !openState) return;
+        const unit = input.dataset.unit;
+        const max = Number(input.dataset.max);
+        const digits = input.value.replace(/\D/g, '').slice(-2);
+        if (!digits) return; // 输入中允许暂时为空，失焦时归一化。
+        const number = Math.min(Number(digits), max);
+        openState.value[unit] = number;
+        writeBack();
+        // 两位输满或已到上限时自动跳到下一栏，连续键入 0930 即 09:30。
+        if (digits.length === 2 || Number(digits) * 10 > max) {
+          const inputs = [...panel.querySelectorAll('input[data-unit]')];
+          inputs[Math.min(inputs.indexOf(input) + 1, inputs.length - 1)]?.select?.();
+        }
+      });
+      panel.addEventListener('focusin', event => {
+        const input = event.target.closest('input[data-unit]');
+        if (input) input.select?.(); // 聚焦即全选，直接输入替换。
+      });
+      const normalizeTimeInput = input => {
+        if (!openState) return;
+        const unit = input.dataset.unit;
+        const max = Number(input.dataset.max);
+        const digits = input.value.replace(/\D/g, '');
+        const number = Math.min(Math.max(Number(digits) || 0, 0), max);
+        openState.value[unit] = number;
+        input.value = pad(number);
+        writeBack();
+      };
+      panel.addEventListener('focusout', event => {
+        const input = event.target.closest('input[data-unit]');
+        if (input) normalizeTimeInput(input);
+      });
+      panel.addEventListener('keydown', event => {
+        const input = event.target.closest('input[data-unit]');
+        if (!input || !openState) return;
+        const unit = input.dataset.unit;
+        const max = Number(input.dataset.max);
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+          event.preventDefault();
+          const step = event.key === 'ArrowUp' ? 1 : -1;
+          const next = ((openState.value[unit] + step) % (max + 1) + max + 1) % (max + 1);
+          openState.value[unit] = next;
+          input.value = pad(next);
+          writeBack();
+          input.select?.();
+        } else if (event.key === 'Enter') {
+          event.preventDefault();
+          normalizeTimeInput(input);
+          input.blur();
+        }
+      });
+      panel.addEventListener('wheel', event => {
+        const input = event.target.closest('input[data-unit]');
+        if (!input || !openState) return;
+        event.preventDefault();
+        const unit = input.dataset.unit;
+        const max = Number(input.dataset.max);
+        const step = event.deltaY < 0 ? 1 : -1;
+        const next = ((openState.value[unit] + step) % (max + 1) + max + 1) % (max + 1);
+        openState.value[unit] = next;
+        input.value = pad(next);
+        writeBack();
+      }, { passive: false });
       panel.addEventListener('change', event => {
         const select = event.target.closest('select[data-unit]');
         if (!select || !openState) return;
@@ -293,6 +378,8 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
       return;
     }
     if (!panel.contains(document.activeElement)) return;
+    // 时间输入框内的方向键由其自身的增减逻辑处理，不移动日期焦点。
+    if (document.activeElement instanceof Element && document.activeElement.closest('input[data-unit]')) return;
     if (event.key === 'ArrowRight') { event.preventDefault(); moveDayFocus(1); }
     else if (event.key === 'ArrowLeft') { event.preventDefault(); moveDayFocus(-1); }
     else if (event.key === 'ArrowDown') { event.preventDefault(); moveDayFocus(7); }

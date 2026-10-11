@@ -991,7 +991,7 @@
   byId('closeNoteExport').addEventListener('click', closeDialog);
   byId('cancelNoteExport').addEventListener('click', closeDialog);
   confirmButton.addEventListener('click', performExport);
-  dialog.addEventListener('click', event => { if (event.target === dialog) closeDialog(); });
+  // 弹出窗口不因点击空白处而关闭（设计约定）：导出设置项较多，避免误触丢失配置。
   dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(); });
 
   initFontState();

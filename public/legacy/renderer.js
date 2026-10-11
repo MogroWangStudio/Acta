@@ -2953,26 +2953,91 @@ function addTask(item) {
   item.completed = false;
   const task = { id: uid(), text: '', done: false };
   item.tasks.push(task);
+  // 在重建编辑器前记录正在编辑的子任务行在视口中的位置：新行渲染后
+  // 从同一视角位置接力平移过去，保持空间连续性（视线不跳动）。
+  const pane = $('#editorPane');
+  const activeRow = document.activeElement instanceof Element ? document.activeElement.closest('.task-row') : null;
+  const anchorTop = activeRow && pane?.contains(activeRow)
+    ? activeRow.getBoundingClientRect().top - pane.getBoundingClientRect().top
+    : null;
   touchItem(item); renderEditor(); renderList();
-  requestAnimationFrame(() => focusNewTaskRow(task.id));
+  requestAnimationFrame(() => focusNewTaskRow(task.id, anchorTop));
   return task.id;
 }
 
-// 新行要立即可以输入：聚焦它的正文区并滚动到可视位置。注意不能取
-// .task-text 的最后一项——无序模式底部还有折叠的已完成分组，新行
-// （未完成）永远在活跃区，按 id 定位才准确。
-function focusNewTaskRow(taskId) {
+// 编辑区滚动动画：快速、非线性（easeOutQuart）的垂直平移，接近关键
+// 阻尼弹簧的观感——起步快、缓入落点。可随时被用户滚轮/触摸打断，
+// 从当前位置继续，绝不和用户抢方向盘。
+const paneScrollAnimations = new WeakMap();
+function cancelPaneScroll(pane) {
+  const state = paneScrollAnimations.get(pane);
+  if (!state) return;
+  cancelAnimationFrame(state.frame);
+  paneScrollAnimations.delete(pane);
+}
+function animatePaneScrollTo(pane, targetTop) {
+  cancelPaneScroll(pane);
+  if (reduceWindowMotion()) { pane.scrollTop = targetTop; return; }
+  const from = pane.scrollTop;
+  const delta = targetTop - from;
+  if (Math.abs(delta) < 1) return;
+  const duration = Math.min(560, 260 + Math.abs(delta) * 0.32);
+  const start = performance.now();
+  const easeOutQuart = progress => 1 - (1 - progress) ** 4;
+  const state = { frame: 0 };
+  const step = now => {
+    if (!paneScrollAnimations.get(pane)) return;
+    const progress = Math.min((now - start) / duration, 1);
+    pane.scrollTop = from + delta * easeOutQuart(progress);
+    if (progress < 1) state.frame = requestAnimationFrame(step);
+    else paneScrollAnimations.delete(pane);
+  };
+  state.frame = requestAnimationFrame(step);
+  paneScrollAnimations.set(pane, state);
+}
+// 用户的任何滚动意图立即接管，取消进行中的视角平移。
+['wheel', 'touchstart'].forEach(type => {
+  document.addEventListener(type, event => {
+    const pane = event.target instanceof Element ? event.target.closest('#editorPane') : null;
+    if (pane) cancelPaneScroll(pane);
+  }, { passive: true, capture: true });
+});
+
+// 新行要立即可以输入：聚焦它的正文区并把视角非线性平移过去。注意不能
+// 取 .task-text 的最后一项——无序模式底部还有折叠的已完成分组，新行
+// （未完成）永远在活跃区，按 id 定位才准确。anchorTop 是添加前上一条
+// 正在编辑的子任务行在视口中的纵向位置：新行落到同一视角位置，视线
+// 无缝接力；没有参考时（如从标题或正文触发添加）居中落位。
+function focusNewTaskRow(taskId, anchorTop = null) {
   const row = document.querySelector(`.task-row[data-task-id="${CSS.escape(taskId)}"]`);
   const text = row && !row.closest('#taskDoneGroup') ? $('.task-text', row) : null;
   if (!text) return;
   const pane = $('#editorPane');
   if (pane) {
-    const rowRect = row.getBoundingClientRect();
     const paneRect = pane.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
     const fullyVisible = rowRect.top >= paneRect.top && rowRect.bottom <= paneRect.bottom;
-    if (!fullyVisible) row.scrollIntoView({ block: 'center', behavior: reduceWindowMotion() ? 'auto' : 'smooth' });
+    if (!fullyVisible) {
+      // 用 offsetTop 链定位：getBoundingClientRect 会把新行入场动画的
+      // transform 位移算进坐标，造成落点偏差。
+      let rowContentTop = 0;
+      for (let node = row; node && node !== pane; node = node.offsetParent) rowContentTop += node.offsetTop;
+      const rowHeight = row.offsetHeight;
+      const maxAnchor = Math.max(0, pane.clientHeight - rowHeight);
+      const desired = anchorTop === null
+        ? (pane.clientHeight - rowHeight) / 2
+        : Math.min(Math.max(anchorTop, 0), maxAnchor);
+      const target = Math.min(Math.max(rowContentTop - desired, 0), Math.max(0, pane.scrollHeight - pane.clientHeight));
+      animatePaneScrollTo(pane, target);
+    }
   }
   text.focus({ preventScroll: true });
+  // 新行为空时无需选区；若行内已有文字（例如重放定位），全选便于直接输入替换。
+  const range = document.createRange();
+  range.selectNodeContents(text);
+  const selection = getSelection();
+  selection.removeAllRanges();
+  if (text.textContent) selection.addRange(range);
 }
 
 function linkItems(item, linked) {

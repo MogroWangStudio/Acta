@@ -134,7 +134,9 @@
     exportFormatLines:'分行文字', exportFormatLinesHint:'每行一条，不带完成状态',
     exportFormatChecklist:'任务清单', exportFormatChecklistHint:'Markdown 任务语法，保留完成状态',
     exportCopyClipboard:'复制到剪贴板', exportTasksTxt:'导出 TXT', exportTasksMd:'导出 Markdown',
-    tasksExported:'子任务已导出', tasksExportEmpty:'还没有可导出的子任务'
+    tasksExported:'子任务已导出', tasksExportEmpty:'还没有可导出的子任务',
+    exportIncludeDone:'包含已完成的子任务', exportIncludeDoneHint:'关闭后只导出未完成的子任务',
+    exportNumbering:'序号样式', exportNumberingNone:'不加序号', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
   });
   Object.assign(dictionaries.en, {
     bulkAddTask:'Quick-add subtasks', bulkAddTaskHint:'One subtask per line — paste a list and add them all at once', bulkAddPlaceholder:'Type one subtask per line…',
@@ -143,7 +145,9 @@
     exportFormatLines:'Plain lines', exportFormatLinesHint:'One per line, without states',
     exportFormatChecklist:'Task list', exportFormatChecklistHint:'Markdown task syntax, keeps states',
     exportCopyClipboard:'Copy to clipboard', exportTasksTxt:'Export TXT', exportTasksMd:'Export Markdown',
-    tasksExported:'Subtasks exported', tasksExportEmpty:'No subtasks to export'
+    tasksExported:'Subtasks exported', tasksExportEmpty:'No subtasks to export',
+    exportIncludeDone:'Include completed subtasks', exportIncludeDoneHint:'Turn off to export open subtasks only',
+    exportNumbering:'Numbering', exportNumberingNone:'No numbering', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
   });
   Object.assign(dictionaries['zh-Hant'], {
     bulkAddTask:'快速新增子任務', bulkAddTaskHint:'每行一條子任務，貼上清單一鍵新增', bulkAddPlaceholder:'每行輸入一條子任務…',
@@ -152,7 +156,23 @@
     exportFormatLines:'分行文字', exportFormatLinesHint:'每行一條，不帶完成狀態',
     exportFormatChecklist:'任務清單', exportFormatChecklistHint:'Markdown 任務語法，保留完成狀態',
     exportCopyClipboard:'複製到剪貼簿', exportTasksTxt:'匯出 TXT', exportTasksMd:'匯出 Markdown',
-    tasksExported:'子任務已匯出', tasksExportEmpty:'還沒有可匯出的子任務'
+    tasksExported:'子任務已匯出', tasksExportEmpty:'還沒有可匯出的子任務',
+    exportIncludeDone:'包含已完成的子任務', exportIncludeDoneHint:'關閉後只匯出未完成的子任務',
+    exportNumbering:'序號樣式', exportNumberingNone:'不加序號', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
+  });
+
+  // 编辑器内查找。
+  Object.assign(dictionaries.zh, {
+    findInItem:'查找', findInItemHint:'在当前内容中查找（Ctrl+F）', findPlaceholder:'查找…',
+    findNoMatches:'无结果', findPrev:'上一个', findNext:'下一个', findClose:'关闭查找'
+  });
+  Object.assign(dictionaries.en, {
+    findInItem:'Find', findInItemHint:'Find in this item (Ctrl+F)', findPlaceholder:'Find…',
+    findNoMatches:'No matches', findPrev:'Previous match', findNext:'Next match', findClose:'Close find'
+  });
+  Object.assign(dictionaries['zh-Hant'], {
+    findInItem:'尋找', findInItemHint:'在目前內容中尋找（Ctrl+F）', findPlaceholder:'尋找…',
+    findNoMatches:'無結果', findPrev:'上一個', findNext:'下一個', findClose:'關閉尋找'
   });
 
   const interfaceTranslations = {
@@ -662,7 +682,8 @@
   }));
   byId('closeQuickCapture').addEventListener('click', () => closeAnimatedDialog(quickCaptureDialog));
   byId('cancelQuickCapture').addEventListener('click', () => closeAnimatedDialog(quickCaptureDialog));
-  quickCaptureDialog.addEventListener('click', event => { if (event.target === quickCaptureDialog) closeAnimatedDialog(quickCaptureDialog); });
+  // 设计约定：弹出窗口不因点击空白处而关闭，避免误触丢失已输入的内容；
+  // 关闭只通过明确的关闭/取消按钮或 Esc。
   quickCaptureDialog.addEventListener('cancel', event => { event.preventDefault(); closeAnimatedDialog(quickCaptureDialog); });
   quickCaptureTitleInput.addEventListener('input', () => {
     quickCaptureTitleInput.setCustomValidity('');
@@ -793,9 +814,6 @@
     openMobileClassifications();
   });
   byId('closeMobileClassifications').addEventListener('click', () => closeAnimatedDialog(mobileClassificationDialog));
-  mobileClassificationDialog.addEventListener('click', event => {
-    if (event.target === mobileClassificationDialog) closeAnimatedDialog(mobileClassificationDialog);
-  });
   mobileClassificationDialog.addEventListener('cancel', event => {
     event.preventDefault();
     closeAnimatedDialog(mobileClassificationDialog);
@@ -1014,9 +1032,6 @@
       activeFolder?.focus();
       if (matchMedia('(max-width: 760px)').matches) activeFolder?.scrollIntoView({ block:'nearest', inline:'center' });
     });
-  });
-  byId('classificationManagerDialog').addEventListener('click', event => {
-    if (event.target === classificationManagerDialog) closeAnimatedDialog(classificationManagerDialog);
   });
   byId('classificationManagerDialog').addEventListener('cancel', event => {
     event.preventDefault();
@@ -1911,11 +1926,46 @@
   // 子任务文本可能含 Shift+Enter 换行；导出以「每条一行」为语义，
   // 行内换行折叠为空格，避免破坏纯文本行与 Markdown 列表结构。
   const taskExportText = task => String(task?.text || '').replace(/\s*\r?\n\s*/g, ' ').trim();
-  const taskExportContent = (item, format) => {
-    const tasks = item.tasks || [];
-    if (format === 'checklist') return tasks.map(task => `- [${task.done ? 'x' : ' '}] ${taskExportText(task)}`).join('\n');
-    return tasks.map(taskExportText).join('\n');
+  // 中文序号：个位十进制转汉字，支持到 9999 足够覆盖任何待办清单。
+  const CN_DIGITS = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  const cnNumber = value => {
+    if (value <= 0 || value >= 10000) return String(value);
+    const units = ['', '十', '百', '千'];
+    let result = '';
+    let zeroPending = false;
+    for (let place = 3; place >= 0; place -= 1) {
+      const digit = Math.floor(value / 10 ** place) % 10;
+      if (!digit) { zeroPending = result.length > 0; continue; }
+      if (zeroPending) result += '零';
+      zeroPending = false;
+      // 十位上的一：口語習慣「十二」而非「一十二」，其余数位正常展开。
+      result += (place === 1 && digit === 1 && !result ? '' : CN_DIGITS[digit]) + units[place];
+    }
+    return result;
   };
+  const exportNumberPrefix = (style, index) => {
+    const number = index + 1;
+    if (style === 'dot') return `${number}. `;
+    if (style === 'dunhao') return `${number}、`;
+    if (style === 'cn') return `${cnNumber(number)}、`;
+    if (style === 'paren') return `(${number}) `;
+    return '';
+  };
+  const taskExportContent = (item, format, options = {}) => {
+    const includeDone = options.includeDone !== false;
+    const numbering = options.numbering || 'none';
+    const tasks = (item.tasks || []).filter(task => includeDone || !task.done);
+    const render = (task, index) => {
+      const text = `${exportNumberPrefix(numbering, index)}${taskExportText(task)}`;
+      if (format !== 'checklist') return text;
+      const mark = task.done ? 'x' : ' ';
+      // 有序号时直接用 Markdown 有序列表语法（1. [x] …），无序号保留原任务语法。
+      return numbering === 'none' ? `- [${mark}] ${taskExportText(task)}` : `${exportNumberPrefix(numbering, index).trim()} [${mark}] ${taskExportText(task)}`;
+    };
+    return tasks.map(render).join('\n');
+  };
+  // 与 note-export 相同的测试钩子：供冒烟/验证脚本检查导出内容。
+  window.__actaTasksExportTest = { taskExportContent, cnNumber };
 
   const exportTasksToFile = async (item, content, extension) => {
     const base = portableFileName(item.title || t('untitledTodo')).replace(/\.md$/i, '');
@@ -1940,6 +1990,16 @@
           <label><input type="radio" name="taskExportFormat" value="lines" checked/><span><b>${escapeHTML(t('exportFormatLines'))}</b><small>${escapeHTML(t('exportFormatLinesHint'))}</small></span></label>
           <label><input type="radio" name="taskExportFormat" value="checklist"/><span><b>${escapeHTML(t('exportFormatChecklist'))}</b><small>${escapeHTML(t('exportFormatChecklistHint'))}</small></span></label>
         </div>
+        <div class="export-tasks-options">
+          <label class="export-tasks-switch" title="${escapeHTML(t('exportIncludeDoneHint'))}"><input type="checkbox" name="taskExportIncludeDone" checked/><span>${escapeHTML(t('exportIncludeDone'))}</span></label>
+          <label class="export-tasks-numbering"><span>${escapeHTML(t('exportNumbering'))}</span><select name="taskExportNumbering">
+            <option value="none">${escapeHTML(t('exportNumberingNone'))}</option>
+            <option value="dot">${escapeHTML(t('exportNumberingDot'))}</option>
+            <option value="dunhao">${escapeHTML(t('exportNumberingDunhao'))}</option>
+            <option value="cn">${escapeHTML(t('exportNumberingCn'))}</option>
+            <option value="paren">${escapeHTML(t('exportNumberingParen'))}</option>
+          </select></label>
+        </div>
         <div class="settings-actions">
           <button type="button" class="settings-button secondary" data-export-copy><svg><use href="#i-copy"/></svg><span>${escapeHTML(t('exportCopyClipboard'))}</span></button>
           <button type="button" class="settings-button secondary" data-export-txt><span>${escapeHTML(t('exportTasksTxt'))}</span></button>
@@ -1947,19 +2007,23 @@
         </div>
       </form>`;
     const currentFormat = () => dialog.querySelector('input[name="taskExportFormat"]:checked')?.value || 'lines';
+    const currentOptions = () => ({
+      includeDone: Boolean(dialog.querySelector('input[name="taskExportIncludeDone"]')?.checked),
+      numbering: dialog.querySelector('select[name="taskExportNumbering"]')?.value || 'none'
+    });
     const finish = () => { if (dialog.open) dialog.close(); dialog.remove(); };
     dialog.querySelector('.relation-dialog-close').addEventListener('click', finish);
     dialog.addEventListener('cancel', event => { event.preventDefault(); finish(); });
     dialog.querySelector('[data-export-copy]').addEventListener('click', async () => {
-      await contextClipboardWrite(taskExportContent(item, currentFormat()));
+      await contextClipboardWrite(taskExportContent(item, currentFormat(), currentOptions()));
       showToast(t('copied'));
     });
     dialog.querySelector('[data-export-txt]').addEventListener('click', async () => {
-      await exportTasksToFile(item, taskExportContent(item, currentFormat()), 'txt');
+      await exportTasksToFile(item, taskExportContent(item, currentFormat(), currentOptions()), 'txt');
       finish();
     });
     dialog.querySelector('[data-export-md]').addEventListener('click', async () => {
-      await exportTasksToFile(item, taskExportContent(item, currentFormat()), 'md');
+      await exportTasksToFile(item, taskExportContent(item, currentFormat(), currentOptions()), 'md');
       finish();
     });
     document.body.appendChild(dialog);
@@ -3211,7 +3275,8 @@
     openSettings('general');
   }, true);
   byId('settingsClose').addEventListener('click', closeSettings);
-  settingsModal.addEventListener('click', event => { if (event.target === settingsModal) closeSettings(); });
+  // 弹出窗口不因点击空白处而关闭（设计约定）：设置面板内容较多，误点空白
+  // 丢失浏览位置代价高；关闭只通过关闭按钮或 Esc。
   document.querySelectorAll('[data-settings-page]').forEach(button => button.addEventListener('click', () => switchSettingsPage(button.dataset.settingsPage)));
   document.addEventListener('keydown', event => { if (!isImeComposing(event) && event.key === 'Escape') closeSettings(); });
 
@@ -3721,7 +3786,7 @@
     openAnimatedDialog(historyDialog);
   });
   byId('closeHistory').addEventListener('click', () => closeAnimatedDialog(historyDialog));
-  historyDialog.addEventListener('click', event => { if (event.target === historyDialog) closeAnimatedDialog(historyDialog); });
+  // 弹出窗口不因点击空白处而关闭（设计约定），关闭只通过关闭按钮或 Esc。
   historyDialog.addEventListener('cancel', event => { event.preventDefault(); closeAnimatedDialog(historyDialog); });
   byId('clearHistory').addEventListener('click', () => {
     if (!clearHistoryArmed) {
@@ -5742,13 +5807,13 @@
     byId('closeLanSync').addEventListener('click', () => { if (!lanTransferActive) settleLanConfirm(false); });
     // 传输进行中不允许关闭对话框：半途关闭会让接收流程停在半写入状态。
     lanDialog.addEventListener('cancel', event => { event.preventDefault(); if (!lanTransferActive) settleLanConfirm(false); });
-    lanDialog.addEventListener('click', event => { if (event.target === lanDialog && !lanTransferActive) settleLanConfirm(false); });
+    // 弹出窗口不因点击空白处而关闭（设计约定）：传输确认必须由用户明确选择。
 
     // 通知对话框：查看详情 → 打开完整确认窗口；拒绝或关闭 → 拒绝请求。
     byId('lanNoticeDetail').addEventListener('click', () => settleLanNotice('detail'));
     byId('lanNoticeReject').addEventListener('click', () => settleLanNotice('reject'));
     lanNoticeDialog.addEventListener('cancel', event => { event.preventDefault(); settleLanNotice('reject'); });
-    lanNoticeDialog.addEventListener('click', event => { if (event.target === lanNoticeDialog) settleLanNotice('reject'); });
+    // 弹出窗口不因点击空白处而关闭（设计约定）。
 
     // 传输进度：原生层在分块收发数据时发出进度事件，这里更新当前步骤说明。
     lanEvents.onLanProgress?.(event => {
@@ -5909,13 +5974,250 @@
 
     trigger.addEventListener('click', () => { if (!dialog.open) openAnimatedDialog(dialog); });
     dialog.querySelector('.relation-dialog-close').addEventListener('click', () => closeAnimatedDialog(dialog));
-    dialog.addEventListener('click', event => { if (event.target === dialog) closeAnimatedDialog(dialog); });
+    // 弹出窗口不因点击空白处而关闭（设计约定），关闭只通过关闭按钮或 Esc。
     dialog.addEventListener('cancel', event => { event.preventDefault(); closeAnimatedDialog(dialog); });
   }
 
   const editorObserver = new MutationObserver(enhanceRelationEditor);
   editorObserver.observe(byId('editorPane'), { childList: true, subtree: true });
   enhanceRelationEditor();
+
+  // —— 编辑器内查找（待办与笔记通用）——
+  // 查找栏以悬浮层形式锚定在编辑器滚动容器顶部；匹配用 CSS Highlight API
+  // 高亮（不改写 DOM，不干扰正在编辑的内容），唯一例外是 Markdown 源码
+  // textarea——无法注入高亮，改用选中区间定位。导航支持 Enter/Shift+Enter
+  // 与上下按钮；Esc 关闭并清空高亮。
+  const findHighlightsSupported = typeof window.Highlight === 'function' && window.CSS && CSS.highlights;
+  const findState = { bar: null, input: null, count: null, matches: [], current: -1, ranges: [], targets: [], kind: 'rich', sourceInput: null, query: '' };
+
+  const clearFindHighlights = () => {
+    if (!findHighlightsSupported) return;
+    CSS.highlights.delete('acta-find');
+    CSS.highlights.delete('acta-find-current');
+  };
+
+  const findTargets = () => {
+    const source = byId('noteMarkdownSource');
+    if (source && !source.hidden) return { kind: 'source', input: source };
+    const roots = [];
+    const noteBody = byId('noteBody');
+    if (noteBody && !noteBody.hidden) roots.push(noteBody);
+    const todoNotes = byId('todoNotes');
+    if (todoNotes) roots.push(todoNotes);
+    document.querySelectorAll('.task-row:not([hidden]) .task-text').forEach(node => roots.push(node));
+    return { kind: 'rich', roots };
+  };
+
+  // 在单个可编辑根内收集不跨元素的匹配区间（大小写不敏感）。
+  const collectFindRanges = (root, query) => {
+    const ranges = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: node => node.parentElement?.closest('[contenteditable="false"]')
+        ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+    });
+    const loweredQuery = query.toLowerCase();
+    let node;
+    while ((node = walker.nextNode())) {
+      const text = node.nodeValue || '';
+      if (!text) continue;
+      const loweredText = text.toLowerCase();
+      let index = loweredText.indexOf(loweredQuery);
+      while (index !== -1) {
+        const range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, index + query.length);
+        ranges.push(range);
+        index = loweredText.indexOf(loweredQuery, index + 1);
+      }
+    }
+    return ranges;
+  };
+
+  const scrollFindRangeIntoView = range => {
+    const rect = range.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return;
+    const pane = byId('editorPane');
+    if (!pane) return;
+    const paneRect = pane.getBoundingClientRect();
+    if (rect.top < paneRect.top || rect.bottom > paneRect.bottom) {
+      range.startContainer.parentElement?.scrollIntoView({
+        block: 'center',
+        behavior: reduceWindowMotion() ? 'auto' : 'smooth'
+      });
+    }
+  };
+
+  const updateFindCount = () => {
+    if (!findState.count) return;
+    findState.count.textContent = findState.matches.length
+      ? `${findState.current + 1}/${findState.matches.length}`
+      : t('findNoMatches');
+  };
+
+  const revealFindMatch = index => {
+    if (!findState.matches.length) return;
+    findState.current = ((index % findState.matches.length) + findState.matches.length) % findState.matches.length;
+    const target = findState.targets?.[findState.current];
+    if (findState.kind === 'source' && findState.sourceInput && target !== undefined) {
+      findState.sourceInput.focus({ preventScroll: true });
+      findState.sourceInput.setSelectionRange(target, target + findState.query.length);
+    } else if (findHighlightsSupported && findState.ranges[findState.current]) {
+      const current = new Highlight(findState.ranges[findState.current]);
+      CSS.highlights.set('acta-find-current', current);
+      scrollFindRangeIntoView(findState.ranges[findState.current]);
+    }
+    updateFindCount();
+  };
+
+  const runFind = () => {
+    clearFindHighlights();
+    findState.matches = [];
+    findState.ranges = [];
+    findState.targets = [];
+    findState.current = -1;
+    findState.kind = 'rich';
+    const query = findState.input?.value || '';
+    findState.query = query;
+    if (!query) { updateFindCount(); return; }
+    const targets = findTargets();
+    findState.kind = targets.kind;
+    if (targets.kind === 'source') {
+      findState.sourceInput = targets.input;
+      const value = targets.input.value.toLowerCase();
+      const loweredQuery = query.toLowerCase();
+      let index = value.indexOf(loweredQuery);
+      while (index !== -1) {
+        findState.targets.push(index);
+        findState.matches.push(index);
+        index = value.indexOf(loweredQuery, index + 1);
+      }
+    } else {
+      targets.roots.forEach(root => {
+        collectFindRanges(root, query).forEach(range => {
+          findState.ranges.push(range);
+          findState.matches.push(range);
+        });
+      });
+      if (findHighlightsSupported && findState.ranges.length) {
+        CSS.highlights.set('acta-find', new Highlight(...findState.ranges));
+      }
+    }
+    if (findState.matches.length) revealFindMatch(0);
+    else updateFindCount();
+  };
+
+  let findRunTimer = 0;
+  const scheduleRunFind = () => {
+    clearTimeout(findRunTimer);
+    findRunTimer = setTimeout(runFind, 160);
+  };
+
+  const closeFindBar = restoreFocus => {
+    clearTimeout(findRunTimer);
+    clearFindHighlights();
+    const bar = findState.bar;
+    findState.bar = null;
+    findState.input = null;
+    findState.count = null;
+    findState.sourceInput = null;
+    findState.matches = [];
+    findState.ranges = [];
+    findState.targets = [];
+    if (bar) {
+      bar.classList.add('is-closing');
+      setTimeout(() => bar.remove(), reduceWindowMotion() ? 0 : 160);
+    }
+    if (restoreFocus) byId('editorPane')?.querySelector('.editor-title, #noteBody, #todoNotes')?.focus({ preventScroll: true });
+  };
+
+  const openFindBar = () => {
+    if (!getItem()) return;
+    if (findState.bar?.isConnected) { findState.input?.select(); return; }
+    closeFindBar(false);
+    const pane = byId('editorPane');
+    if (!pane) return;
+    const bar = document.createElement('div');
+    bar.className = 'editor-find';
+    bar.setAttribute('role', 'search');
+    bar.innerHTML = `
+      <svg aria-hidden="true"><use href="#i-search"/></svg>
+      <input type="text" placeholder="${escapeHTML(t('findPlaceholder'))}" aria-label="${escapeHTML(t('findInItem'))}"/>
+      <span class="editor-find-count"></span>
+      <button type="button" data-find-prev title="${escapeHTML(t('findPrev'))}" aria-label="${escapeHTML(t('findPrev'))}"><svg><use href="#i-chevron"/></svg></button>
+      <button type="button" data-find-next title="${escapeHTML(t('findNext'))}" aria-label="${escapeHTML(t('findNext'))}"><svg><use href="#i-chevron"/></svg></button>
+      <button type="button" data-find-close title="${escapeHTML(t('findClose'))}" aria-label="${escapeHTML(t('findClose'))}"><svg><use href="#i-close"/></svg></button>`;
+    findState.bar = bar;
+    findState.input = bar.querySelector('input');
+    findState.count = bar.querySelector('.editor-find-count');
+    bar.querySelector('[data-find-prev]').addEventListener('click', () => revealFindMatch(findState.current - 1));
+    bar.querySelector('[data-find-next]').addEventListener('click', () => revealFindMatch(findState.current + 1));
+    bar.querySelector('[data-find-close]').addEventListener('click', () => closeFindBar(true));
+    findState.input.addEventListener('input', scheduleRunFind);
+    findState.input.addEventListener('keydown', event => {
+      if (isImeComposing(event)) return;
+      if (event.key === 'Enter') { event.preventDefault(); revealFindMatch(findState.current + (event.shiftKey ? -1 : 1)); }
+      else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeFindBar(true); }
+    });
+    pane.prepend(bar);
+    requestAnimationFrame(() => bar.classList.add('is-open'));
+    findState.input.focus();
+    // 打开时带入编辑器中当前选中的文字，贴近系统查找的习惯。
+    const selection = getSelection();
+    const selected = selection && !selection.isCollapsed ? String(selection) : '';
+    if (selected && selected.length <= 80) findState.input.value = selected;
+    runFind();
+  };
+
+  // 编辑器重渲染会移除查找栏；同步清理残留高亮与状态。
+  const findCleanupObserver = new MutationObserver(() => {
+    if (findState.bar && !findState.bar.isConnected) closeFindBar(false);
+  });
+  findCleanupObserver.observe(byId('editorPane'), { childList: true });
+  // 查找打开时，编辑内容变化后实时重算匹配。
+  document.addEventListener('input', event => {
+    if (!findState.bar?.isConnected) return;
+    if (!(event.target instanceof Element) || !event.target.closest('#editorPane')) return;
+    if (event.target === findState.input) return;
+    scheduleRunFind();
+  }, true);
+
+  document.addEventListener('keydown', event => {
+    if ((event.metaKey || event.ctrlKey) && !event.shiftKey && !event.altKey && String(event.key).toLowerCase() === 'f') {
+      // 速记弹窗、设置面板与导出对话框中的 Cmd+F 保持系统行为。
+      if (document.querySelector('dialog[open], .settings-backdrop.open')) return;
+      if (!getItem()) return;
+      event.preventDefault();
+      openFindBar();
+      return;
+    }
+    if (event.key === 'Escape' && findState.bar?.isConnected
+      && event.target instanceof Element
+      && !event.target.closest('.editor-find')
+      && event.target.closest('#editorPane')) {
+      // 焦点在编辑器内按 Esc 也收起查找栏。
+      event.preventDefault();
+      closeFindBar(true);
+    }
+  });
+
+  function enhanceFindEditor() {
+    const article = byId('editorPane')?.querySelector('[data-editor-id]');
+    if (!article || article.dataset.findUi === 'ready') return;
+    const actions = article.querySelector('.editor-actions');
+    if (!actions) return;
+    article.dataset.findUi = 'ready';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.id = 'editorFindButton';
+    button.title = `${t('findInItemHint')}`;
+    button.setAttribute('aria-label', button.title);
+    button.innerHTML = '<svg><use href="#i-search"/></svg>';
+    button.addEventListener('click', openFindBar);
+    actions.insertBefore(button, actions.querySelector('#deleteItem'));
+  }
+  const findButtonObserver = new MutationObserver(enhanceFindEditor);
+  findButtonObserver.observe(byId('editorPane'), { childList: true, subtree: true });
+  enhanceFindEditor();
 
   let listRevealTimer = null;
   document.addEventListener('click', event => {
