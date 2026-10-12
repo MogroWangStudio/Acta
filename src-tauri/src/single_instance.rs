@@ -8,6 +8,7 @@
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::time::Duration;
+use tauri::Manager;
 
 pub const SINGLE_INSTANCE_PORT: u16 = 44154;
 const SHOW_MAGIC: &[u8] = b"ACTA_SHOW";
