@@ -61,8 +61,8 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
 .acdt-dial:focus-visible .acdt-dial-face { stroke: color-mix(in srgb, var(--sage) 55%, var(--line)); }
 .acdt-dial-face { fill: var(--panel); stroke: var(--line); }
 .acdt-dial-tick { stroke: var(--line); }
-.acdt-dial-num { fill: var(--ink); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; text-anchor: middle; dominant-baseline: central; }
-.acdt-dial-num.acdt-sub { fill: var(--muted); font-size: 10.5px; font-weight: 500; }
+.acdt-dial-num { fill: var(--ink); font-size: 13px; font-weight: 400; font-variant-numeric: tabular-nums; text-anchor: middle; dominant-baseline: central; }
+.acdt-dial-num.acdt-sub { fill: var(--muted); font-size: 10.5px; font-weight: 400; }
 .acdt-dial-num.acdt-picked { fill: var(--paper); }
 .acdt-dial-knob { fill: var(--sage); opacity: 0; transition: opacity .12s ease, transform .18s cubic-bezier(.16,1,.3,1); }
 .acdt-dial.acdt-dragging .acdt-dial-knob, .acdt-dial.acdt-dragging .acdt-dial-hand { transition: none; }

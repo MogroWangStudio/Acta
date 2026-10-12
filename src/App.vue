@@ -225,6 +225,7 @@
           <nav class="settings-nav" aria-label="设置页面">
             <button class="active" type="button" data-settings-page="language"><svg><use href="#i-globe"/></svg><span>语言</span></button>
             <button type="button" data-settings-page="general"><svg><use href="#i-sliders"/></svg><span>常规设置</span></button>
+            <button type="button" data-settings-page="nav"><svg><use href="#i-more"/></svg><span>页面跳转栏</span></button>
             <button type="button" data-settings-page="workspace"><svg><use href="#i-folder"/></svg><span>行记数据</span></button>
             <button type="button" data-settings-page="cloud"><svg><use href="#i-cloud"/></svg><span>数据同步</span></button>
             <button type="button" data-settings-page="note-editor"><svg><use href="#i-note"/></svg><span>笔记编辑器</span></button>
@@ -287,6 +288,27 @@
                 <p class="settings-status" id="appDataStatus"></p>
               </div>
               <p class="settings-status" id="generalStatus">设置会自动保存在当前设备。</p>
+            </section>
+
+            <section class="settings-panel" data-settings-panel="nav">
+              <header><h3>页面跳转栏</h3><p>自定义桌面端侧边栏与移动端底栏显示哪些页面跳转按钮。</p></header>
+              <div class="settings-group">
+                <div class="settings-row"><span><b>桌面端侧边栏</b><small>勾选要显示的页面；「所有待办」与「所有笔记」默认不显示，可在此重新开启</small></span></div>
+                <div class="nav-page-grid" id="navPageGrid">
+                  <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
+                  <label><input type="checkbox" data-nav-page="calendar"/><span>日历</span></label>
+                  <label><input type="checkbox" data-nav-page="todos"/><span>所有待办</span></label>
+                  <label><input type="checkbox" data-nav-page="notes"/><span>所有笔记</span></label>
+                  <label><input type="checkbox" data-nav-page="trash"/><span>回收站</span></label>
+                  <label><input type="checkbox" data-nav-page="stats"/><span>总结</span></label>
+                </div>
+              </div>
+              <div class="settings-group">
+                <div class="settings-row"><span><b>移动端底栏</b><small>底栏右侧预留两个可替换的位置，选择要放入的页面；两侧固定为收集箱与日历</small></span></div>
+                <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
+                <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
+              </div>
+              <p class="settings-status" id="navSettingsStatus">设置会自动保存在当前设备。</p>
             </section>
 
             <section class="settings-panel" data-settings-panel="note-editor">

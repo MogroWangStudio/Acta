@@ -7,6 +7,8 @@
     appIconPreset: 'default', customAppIcon: '',
     splashAnimationEnabled: true, splashAnimationPreset: 'acta-lines', splashAnimationSpeed: 1, inputFocusAnimation: true, subtaskCompletedDates: true,
     completedTodoSink: true, completedTodoSinkDelay: 1, subtaskDoneSort: 'asc', backdropClose: 'double',
+    navPages: { inbox: true, calendar: true, todos: false, notes: false, trash: true, stats: true },
+    mobileSlots: ['trash', 'stats'],
     appFont: 'system', customFont: 'Inter', appFontSize: 14,
     noteHeadingH1Size: 32, noteHeadingH2Size: 24, noteHeadingH3Size: 19, noteBaseSize: 17, noteHeadingFont: 'serif', noteHeadingCustomFont: '', noteLineHeight: 1.6, noteParagraphGap: 1,
     noteToolbarPosition: 'bottom', noteToolbarShowLabels: false,
@@ -186,6 +188,7 @@
       '调整启动位置、内容密度和动效偏好。':'Adjust the startup view, content density, and motion.', '默认启动页面':'Default startup view', '打开应用时优先进入的智能视图':'The smart view shown when Acta opens', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '已完成':'Completed',
       '紧凑列表':'Compact lists', '在中栏显示更多笔记和待办':'Show more notes and tasks in the middle pane', '减少动态效果':'Reduce motion', '降低转场和弹性动画，减少视觉干扰':'Reduce transitions and spring animations', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
       '点击空白处':'Click outside dialogs', '弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容':'How clicks on the blank area outside a dialog behave; double click is required by default so accidental clicks never discard what you typed', '不关闭（防误触）':"Don't close (accident protection)", '单击关闭':'Single click closes', '双击关闭':'Double click closes',
+      '页面跳转栏':'Navigation bar', '自定义桌面端侧边栏与移动端底栏显示哪些页面跳转按钮。':'Choose which page shortcuts appear in the desktop sidebar and the mobile bottom bar.', '桌面端侧边栏':'Desktop sidebar', '勾选要显示的页面；「所有待办」与「所有笔记」默认不显示，可在此重新开启':'Tick the pages to show; All tasks and All notes are hidden by default and can be re-enabled here', '移动端底栏':'Mobile bottom bar', '底栏右侧预留两个可替换的位置，选择要放入的页面；两侧固定为收集箱与日历':'The right side of the bar reserves two replaceable slots — pick the pages to put there; the left side is fixed to Inbox and Calendar', '槽位一':'Slot one', '槽位二':'Slot two', '回收站':'Trash',
       '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes only change the appearance; your notes and tasks are unaffected.', '黑白浅色':'Monochrome light', '黑白深色':'Monochrome dark', '蓝黄':'Blue and yellow', '纸色护眼':'Eye-comfort paper', '默认':'Default', '自定义':'Custom',
       '纸张颜色':'Paper color', '侧栏颜色':'Sidebar color', '强调颜色':'Accent color', '界面字体':'Interface font', '同时应用到列表、编辑器和设置页面':'Applied to lists, the editor, and settings', '系统默认':'System default', '衬线字体':'Serif', '圆体':'Rounded', '等宽字体':'Monospace', '自定义字体':'Custom font',
       '字体家族':'Font family', '输入设备上已安装的字体，例如 Inter 或 Microsoft YaHei':'Enter a font installed on this device, such as Inter or Microsoft YaHei', '字体大小':'Font size', '统一调整界面、列表、编辑器与设置页':'Scale the interface, lists, editor, and settings together', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capture, then act. Acta connects notes and tasks naturally.',
@@ -204,6 +207,8 @@
       '整个资料库保存在所选文件夹内唯一的':'整個資料庫儲存在所選資料夾內唯一的', '文件中。':'檔案中。', '演示工作区':'示範工作區', '尚未选择文件夹；本次修改不会保存。':'尚未選擇資料夾；本次修改不會儲存。', '选择本地文件夹':'選擇本機資料夾', '立即保存':'立即儲存', '从文件重载':'從檔案重新載入', '返回演示工作区':'返回示範工作區',
       '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '调整启动位置、内容密度和动效偏好。':'調整啟動位置、內容密度和動效偏好。', '默认启动页面':'預設啟動頁面', '打开应用时优先进入的智能视图':'開啟應用程式時優先進入的智慧檢視', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '紧凑列表':'緊湊清單', '在中栏显示更多笔记和待办':'在中欄顯示更多筆記和待辦', '减少动态效果':'減少動態效果', '降低转场和弹性动画，减少视觉干扰':'降低轉場和彈性動畫，減少視覺干擾', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
       '点击空白处':'點擊空白處', '弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容':'彈出視窗的空白處點擊行為，預設需要雙擊才會關閉，防止誤觸遺失已輸入的內容', '不关闭（防误触）':'不關閉（防誤觸）', '单击关闭':'單擊關閉', '双击关闭':'雙擊關閉',
+      '页面跳转栏':'頁面跳轉欄', '自定义桌面端侧边栏与移动端底栏显示哪些页面跳转按钮。':'自訂桌面端側邊欄與行動端底欄顯示哪些頁面跳轉按鈕。', '桌面端侧边栏':'桌面端側邊欄', '勾选要显示的页面；「所有待办」与「所有笔记」默认不显示，可在此重新开启':'勾選要顯示的頁面；「所有待办」與「所有笔记」預設不顯示，可在此重新開啟', '移动端底栏':'行動端底欄', '底栏右侧预留两个可替换的位置，选择要放入的页面；两侧固定为收集箱与日历':'底欄右側預留兩個可替換的位置，選擇要放入的頁面；兩側固定為收集箱與日曆', '槽位一':'槽位一', '槽位二':'槽位二',
+      '回收站':'回收站',
       '主题只改变显示效果，不会影响任何笔记或待办数据。':'主題只改變顯示效果，不會影響任何筆記或待辦資料。', '黑白浅色':'黑白淺色', '黑白深色':'黑白深色', '蓝黄':'藍黃', '纸色护眼':'紙色護眼', '默认':'預設', '自定义':'自訂', '纸张颜色':'紙張顏色', '侧栏颜色':'側欄顏色', '强调颜色':'強調顏色', '界面字体':'介面字型', '同时应用到列表、编辑器和设置页面':'同時套用到清單、編輯器和設定頁面', '系统默认':'系統預設', '衬线字体':'襯線字型', '圆体':'圓體', '等宽字体':'等寬字型', '自定义字体':'自訂字型', '字体家族':'字型家族', '输入设备上已安装的字体，例如 Inter 或 Microsoft YaHei':'輸入裝置上已安裝的字型，例如 Inter 或 Microsoft YaHei', '字体大小':'字型大小', '统一调整界面、列表、编辑器与设置页':'統一調整介面、清單、編輯器與設定頁', '记录，然后行动。Acta 让笔记与待办自然连接。':'記錄，然後行動。Acta 讓筆記與待辦自然連接。',
       '先支持 OneDrive 本地同步文件夹；上传与下载均使用完整资料库数据文件。':'目前支援 OneDrive 本機同步資料夾；上傳與下載均使用完整資料庫檔案。', '尚未选择 OneDrive 同步文件夹':'尚未選擇 OneDrive 同步資料夾', 'OneDrive 文件操作':'OneDrive 檔案操作', '由 OneDrive 客户端把 acta-library.json 同步到云端':'由 OneDrive 用戶端把 acta-library.json 同步到雲端', '选择文件夹':'選擇資料夾', '自动同步':'自動同步', '本地内容变化后自动上传，并定时检查 OneDrive 文件中的更新':'本機內容變更後自動上傳，並定時檢查 OneDrive 檔案中的更新', '检查频率':'檢查頻率', '仅在 Acta 保持运行时执行':'僅在 Acta 保持執行時運作', '每 1 分钟':'每 1 分鐘', '每 5 分钟':'每 5 分鐘', '每 15 分钟':'每 15 分鐘', '从 OneDrive 下载':'從 OneDrive 下載', '上传到 OneDrive':'上傳到 OneDrive', '请选择电脑或网页文件选择器中的 OneDrive 同步文件夹。':'請從電腦或網頁資料夾選擇器選擇 OneDrive 同步資料夾。', 'Acta 不会获取你的 OneDrive 账号或密码；文件传输由系统文件夹与 OneDrive 客户端完成。':'Acta 不會取得你的 OneDrive 帳號或密碼；檔案傳輸由系統資料夾與 OneDrive 用戶端完成。',
       '关于 Acta':'關於 Acta', '检查更新':'檢查更新', '让笔记与行动在一个安静、可掌控的本地空间中自然连接。':'讓筆記與行動在一個安靜、可掌控的本機空間中自然連接。', '产品':'產品', '版本':'版本', '本版更新日期':'本版更新日期', '桌面框架':'桌面框架', '笔记、待办和设置默认保存在当前设备；只有在你主动操作时才会导入、导出或同步。':'筆記、待辦和設定預設儲存在目前裝置；只有在你主動操作時才會匯入、匯出或同步。',
@@ -4111,6 +4116,71 @@
     saveUISettings();
   });
 
+  // —— 页面跳转栏：桌面侧边栏显隐 + 移动底栏槽位 ——
+  // 「所有待办」与「所有笔记」默认不在桌面侧栏显示；移动底栏两侧固定为
+  // 收集箱、日历，右侧两个槽位由用户在设置中替换。
+  const NAV_PAGE_IDS = ['inbox', 'calendar', 'todos', 'notes', 'trash', 'stats'];
+  const normalizeNavPages = () => {
+    const stored = uiSettings.navPages;
+    const pages = {};
+    NAV_PAGE_IDS.forEach(id => { pages[id] = !(stored && stored[id] === false); });
+    return pages;
+  };
+  const normalizeMobileSlots = () => {
+    const defaults = ['trash', 'stats'];
+    const slots = Array.isArray(uiSettings.mobileSlots)
+      ? uiSettings.mobileSlots.filter(id => NAV_PAGE_IDS.includes(id))
+      : [];
+    while (slots.length < 2) slots.push(defaults[slots.length]);
+    return slots.slice(0, 2);
+  };
+  function applyNavSettings() {
+    const nav = byId('smartNav');
+    if (!nav) return;
+    const pages = normalizeNavPages();
+    const buttons = new Map();
+    NAV_PAGE_IDS.forEach(id => buttons.set(id, nav.querySelector(`button[data-view="${id}"]`)));
+    buttons.forEach((button, id) => { if (button) button.hidden = pages[id] === false; });
+    // 移动底栏：先清空全部槽位标记再按设置重新分配，避免旧类残留。
+    buttons.forEach(button => button && button.classList.remove('mobile-slot-1', 'mobile-slot-2', 'mobile-slot-3', 'mobile-slot-4'));
+    const slots = ['inbox', 'calendar', ...normalizeMobileSlots()];
+    const assigned = new Set();
+    slots.forEach((id, index) => {
+      const button = buttons.get(id);
+      if (!button || assigned.has(id)) return; // 同一页面不能同时占两个位置。
+      assigned.add(id);
+      button.classList.add(`mobile-slot-${index + 1}`);
+      button.hidden = false;
+    });
+  }
+  const navPageGrid = byId('navPageGrid');
+  const navPageInputs = navPageGrid ? [...navPageGrid.querySelectorAll('input[data-nav-page]')] : [];
+  navPageInputs.forEach(input => {
+    input.checked = normalizeNavPages()[input.dataset.navPage] !== false;
+    input.addEventListener('change', () => {
+      uiSettings.navPages = normalizeNavPages();
+      uiSettings.navPages[input.dataset.navPage] = input.checked;
+      saveUISettings();
+      applyNavSettings();
+    });
+  });
+  const mobileSlotOne = byId('mobileSlotOne');
+  const mobileSlotTwo = byId('mobileSlotTwo');
+  const syncMobileSlotControls = () => {
+    const slots = normalizeMobileSlots();
+    mobileSlotOne.value = slots[0];
+    mobileSlotTwo.value = slots[1];
+  };
+  syncMobileSlotControls();
+  const saveMobileSlots = () => {
+    uiSettings.mobileSlots = [mobileSlotOne.value, mobileSlotTwo.value];
+    saveUISettings();
+    applyNavSettings();
+  };
+  mobileSlotOne.addEventListener('change', saveMobileSlots);
+  mobileSlotTwo.addEventListener('change', saveMobileSlots);
+  applyNavSettings();
+
   function applyGeneralSettings() {
     document.body.classList.toggle('acta-compact', Boolean(uiSettings.compact));
     document.body.classList.toggle('acta-reduce-motion', Boolean(uiSettings.reduceMotion));
@@ -6725,6 +6795,9 @@
     compactModeSetting.checked = Boolean(uiSettings.compact);
     reduceMotionSetting.checked = Boolean(uiSettings.reduceMotion);
     backdropCloseSetting.value = ['none', 'single', 'double'].includes(uiSettings.backdropClose) ? uiSettings.backdropClose : 'double';
+    applyNavSettings();
+    navPageInputs.forEach(input => { input.checked = normalizeNavPages()[input.dataset.navPage] !== false; });
+    syncMobileSlotControls();
     splashAnimationSetting.checked = uiSettings.splashAnimationEnabled !== false;
     splashPresetSetting.value = uiSettings.splashAnimationPreset;
     splashSpeedSetting.value = String(splashDurationToSpeed(uiSettings.splashAnimationSpeed));

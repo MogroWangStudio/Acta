@@ -31,6 +31,7 @@ Acta is a local-first notes and tasks app that brings writing, action, and organ
 - MWS Light / MWS Dark brand themes (primary #FF6666, secondary #66CC66; the light theme paints the sidebar and titlebar in the brand colors) plus three previewable launch animations with a playback-speed control
 - Deleting offers move-to-trash or delete-now; the trash is never emptied automatically and supports restore, delete-forever, and empty-all
 - Folders, smart views, combinable task/note filters, and unified search
+- Customizable navigation bar: page buttons in the desktop sidebar and mobile bottom bar can be toggled freely (All tasks and All notes are hidden by default and can be re-enabled in settings; the two right-hand slots of the mobile bottom bar can be swapped for any page)
 - Rich-text editing and UTF-8 Markdown import/export for individual notes
 - A desktop context menu on an opaque panel, with cut, copy, paste, and select all for text, plus copy for any selected text
 - Simplified Chinese, Traditional Chinese, and English interfaces with theme and font settings

@@ -2389,3 +2389,11 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 @media (min-width: 801px) {
   html[data-desktop-platform="darwin"] .titlebar-center { grid-column: 2; justify-content: flex-end; padding: 0 190px 0 16px; border-left: 0; }
 }
+
+/* —— 页面跳转栏设置 —— */
+.nav-page-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 2px 15px 13px; }
+.nav-page-grid label { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 45%, transparent); cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.nav-page-grid label:hover { border-color: color-mix(in srgb, var(--sage) 32%, var(--line)); }
+.nav-page-grid label:has(input:checked) { border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); background: color-mix(in srgb, var(--sage) 8%, transparent); }
+.nav-page-grid label span { font-size: calc(10px * var(--acta-font-scale)); font-weight: 600; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 800px) { .nav-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

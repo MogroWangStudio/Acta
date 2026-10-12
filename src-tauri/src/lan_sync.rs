@@ -447,39 +447,30 @@ pub async fn lan_sync_discover(
         // 同一台设备可能从多个网段回应：按 ip+port 去重，先到先得。
         let mut peers: HashMap<(String, u16), LanPeer> = HashMap::new();
         let mut buffer = [0u8; 8192];
-        // 逐接口发送：全局广播 255.255.255.255 在 Windows 上只会从默认路由
-        // 接口发出，装有 WSL/Hyper-V/VPN 虚拟网卡的机器上常常走错出口，
-        // 其他设备根本收不到——这正是「Windows 发现不到 macOS」的根因。
-        // 绑定每个接口自己的地址后发送，系统会从对应接口出包；回环则覆盖
-        // 同一台机器上的多个实例。每个 socket 有独立的源端口，回应由各自
-        // 的 socket 收取；扫描窗口内周期性重发，弥补设备 ARP 未就绪的丢包。
-        let mut senders: Vec<(UdpSocket, (&'static str, u16))> = Vec::new();
-        for ip in local_ipv4_addrs() {
-            if let Ok(socket) = UdpSocket::bind((std::net::IpAddr::from(ip), 0)) {
-                let _ = socket.set_broadcast(true);
-                let _ = socket.set_read_timeout(Some(Duration::from_millis(200)));
-                senders.push((socket, ("255.255.255.255", LAN_DISCOVERY_PORT)));
-            }
-        }
-        if let Ok(loopback) = UdpSocket::bind(("127.0.0.1", 0)) {
-            let _ = loopback.set_read_timeout(Some(Duration::from_millis(200)));
-            senders.push((loopback, ("127.0.0.1", LAN_DISCOVERY_PORT)));
-        }
-        if senders.is_empty() {
-            return Err("无法发起局域网搜索：没有可用的网络接口".to_string());
-        }
+        // 发送目标与 Android 端（ActaLanPlugin，实测可发现两端）完全一致：
+        // 255.255.255.255 受限广播 + 每个网卡的子网定向广播（如 192.168.31.255）
+        // + 回环。关键在定向广播：受限广播在桌面端常被默认路由劫走或被
+        // AP 丢弃，Android 正是靠 getBroadcast() 的定向地址才能发现两端。
+        // 使用单个未绑定 socket 发送与接收（与 Android 相同）：所有回应
+        // 都落到同一源端口，不依赖各接口绑定与强主机模型的差异。
+        let targets = discovery_targets();
+        let socket = UdpSocket::bind(("0.0.0.0", 0)).map_err(|error| format!("无法发起局域网搜索：{error}"))?;
+        socket
+            .set_broadcast(true)
+            .map_err(|error| format!("无法发起局域网搜索：{error}"))?;
+        let _ = socket.set_read_timeout(Some(Duration::from_millis(200)));
         let mut next_resend = Instant::now();
         while Instant::now() < deadline {
-            let resend = Instant::now() >= next_resend;
-            if resend {
+            if Instant::now() >= next_resend {
                 next_resend = Instant::now() + Duration::from_millis(900);
-            }
-            for (socket, target) in senders.iter() {
-                if resend {
+                for target in targets.iter() {
                     let _ = socket.send_to(message.as_bytes(), *target);
                 }
-                recv_discovery_reply(socket, &mut buffer, deadline, &token, own_session.as_deref(), &mut peers);
             }
+            recv_discovery_reply(&socket, &mut buffer, deadline, &token, own_session.as_deref(), &mut peers);
+        }
+        if peers.is_empty() && targets.is_empty() {
+            return Err("无法发起局域网搜索：没有可用的网络接口".to_string());
         }
         Ok(peers.into_values().collect())
     })
@@ -487,23 +478,33 @@ pub async fn lan_sync_discover(
     .map_err(|error| error.to_string())?
 }
 
-/// 枚举本机所有非回环 IPv4 地址（每个物理/虚拟网卡各一个）。
-fn local_ipv4_addrs() -> Vec<std::net::Ipv4Addr> {
-    if_addrs::get_if_addrs()
-        .map(|interfaces| {
-            interfaces
-                .into_iter()
-                .filter_map(|interface| match interface.addr.ip() {
-                    std::net::IpAddr::V4(ip) if !ip.is_loopback() => Some(ip),
-                    _ => None,
-                })
-                .collect()
-        })
-        .unwrap_or_default()
+/// 枚举所有非回环 IPv4 网卡的子网定向广播地址，另加受限广播与回环。
+fn discovery_targets() -> Vec<(std::net::IpAddr, u16)> {
+    let mut targets = vec![
+        (std::net::IpAddr::from([255, 255, 255, 255]), LAN_DISCOVERY_PORT),
+        (std::net::IpAddr::from([127, 0, 0, 1]), LAN_DISCOVERY_PORT),
+    ];
+    if let Ok(interfaces) = if_addrs::get_if_addrs() {
+        for interface in interfaces {
+            if let if_addrs::IfAddr::V4(v4) = interface.addr {
+                if v4.ip.is_loopback() {
+                    continue;
+                }
+                // 定向广播地址由 getifaddrs 给出（可能缺失，如点对点链路）。
+                if let Some(broadcast) = v4.broadcast {
+                    let target = (std::net::IpAddr::from(broadcast), LAN_DISCOVERY_PORT);
+                    if !targets.contains(&target) {
+                        targets.push(target);
+                    }
+                }
+            }
+        }
+    }
+    targets
 }
 
 /// 从一个已绑定的发送 socket 读取回应；读超时后返回调用方，由外层判断
-/// 是否重新广播或切换下一个 socket。合法回应按 ip+port 去重后写入 peers。
+/// 是否重新广播。合法回应按 ip+port 去重后写入 peers。
 fn recv_discovery_reply(
     socket: &UdpSocket,
     buffer: &mut [u8],
