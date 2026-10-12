@@ -49,7 +49,6 @@
   if (migratedTodayView || migratedStatsView) saveUISettings();
   Object.assign(dictionaries.zh, { syncTitle:'连接本地文件夹', syncCopy:'选择设备本地、局域网或系统已挂载的网络文件夹。Acta 会在其中读写清单、归类、notes 和 todos 完整数据文件夹。', download:'下载完整数据文件夹', upload:'上传完整数据文件夹', taskDoneSortHint:'按完成时间正序或倒序排列已完成的子任务' });
   Object.assign(dictionaries.en, { syncTitle:'Connect a local folder', syncCopy:'Choose a device folder, LAN location, or mounted network folder. Acta reads and writes the complete manifest, classifications, notes, and todos data folder there.', download:'Download complete data folder', upload:'Upload complete data folder', taskDoneSortHint:'Sort completed subtasks by completion time, oldest or newest first' });
-  Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
   dictionaries['zh-Hant'] = {
     ...dictionaries.zh,
     saved:'已儲存', saving:'正在儲存…', new:'新增', quickCapture:'速記', quickCaptureHint:'快速建立待辦或筆記', newNote:'新增筆記', newNoteHint:'記錄想法與靈感', newTodo:'新增待辦', newTodoHint:'拆解目標與行動',
@@ -84,6 +83,7 @@
     metaQuickActions:'快捷操作', metaCopyTitle:'複製標題', metaCopyBody:'複製全文', metaCopyNotes:'複製說明', metaCopyMarkdown:'複製 Markdown', metaMarkComplete:'標記完成', metaReopen:'重新開啟', metaViewCalendar:'在日曆查看', metaTrash:'移入回收站',
     copied:'已複製到剪貼簿', copyFailed:'複製失敗'
   };
+  Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
   Object.assign(dictionaries.zh, { high:'优先处理', medium:'稍后处理', low:'延缓处理' });
   Object.assign(dictionaries.en, { high:'Do first', medium:'Do later', low:'Delay' });
   Object.assign(dictionaries['zh-Hant'], { high:'優先處理', medium:'稍後處理', low:'延緩處理' });
