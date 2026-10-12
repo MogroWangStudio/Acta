@@ -17,6 +17,7 @@ use tauri::{AppHandle, Manager, WebviewWindow};
 use url::Url;
 
 mod lan_sync;
+mod single_instance;
 mod updater;
 
 // 自更新命令的薄包装：#[tauri::command] 的隐藏宏留在 lib.rs 作用域，
@@ -1751,12 +1752,24 @@ pub fn run() {
         eprintln!("更新清单不存在：{}", manifest_path.display());
         return;
     }
+    // 单实例约束：更新向导实例（--acta-update-wizard）不受约束，它由主应用
+    // 亲自拉起、生命周期极短。这里先探测实例锁：已有主实例在运行时向其
+    // 发送唤起请求后直接退出，保证 Acta 同时只有一个窗口存在。
+    let show_listener = match single_instance::claim() {
+        single_instance::Claim::First(listener) => Some(listener),
+        single_instance::Claim::Another => return,
+        // 锁端口被无关应用占用：放行启动，不阻塞应用本身。
+        single_instance::Claim::Fallback => None,
+    };
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_opener::init())
         .manage(lan_sync::LanState::default())
-        .setup(|app| {
+        .setup(move |app| {
+            if let Some(listener) = show_listener {
+                single_instance::spawn_show_listener(listener, app.handle().clone());
+            }
             let app_handle = app.handle();
             // 主窗口在 tauri.conf.json 里是 create:false，这里手动按同一份配置
             // 创建：更新向导模式需要完全绕开主窗口，配置窗口自动创建做不到这点。

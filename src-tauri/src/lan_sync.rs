@@ -441,61 +441,114 @@ pub async fn lan_sync_discover(
         guard.as_ref().map(|service| service.session.clone())
     };
     tauri::async_runtime::spawn_blocking(move || {
-        let socket = UdpSocket::bind(("0.0.0.0", 0)).map_err(|error| format!("无法发起局域网搜索：{error}"))?;
-        socket
-            .set_broadcast(true)
-            .map_err(|error| format!("无法发起局域网搜索：{error}"))?;
-        let _ = socket.set_read_timeout(Some(Duration::from_millis(200)));
         let token = random_token();
         let message = format!("{LAN_DISCOVERY_MAGIC} {token}");
-        // 有限广播覆盖默认网段，回环覆盖同一台机器上的多个实例。
-        let _ = socket.send_to(message.as_bytes(), ("255.255.255.255", LAN_DISCOVERY_PORT));
-        let _ = socket.send_to(message.as_bytes(), ("127.0.0.1", LAN_DISCOVERY_PORT));
         let deadline = Instant::now() + Duration::from_millis(timeout_ms.clamp(400, 5000));
         // 同一台设备可能从多个网段回应：按 ip+port 去重，先到先得。
         let mut peers: HashMap<(String, u16), LanPeer> = HashMap::new();
         let mut buffer = [0u8; 8192];
+        // 逐接口发送：全局广播 255.255.255.255 在 Windows 上只会从默认路由
+        // 接口发出，装有 WSL/Hyper-V/VPN 虚拟网卡的机器上常常走错出口，
+        // 其他设备根本收不到——这正是「Windows 发现不到 macOS」的根因。
+        // 绑定每个接口自己的地址后发送，系统会从对应接口出包；回环则覆盖
+        // 同一台机器上的多个实例。每个 socket 有独立的源端口，回应由各自
+        // 的 socket 收取；扫描窗口内周期性重发，弥补设备 ARP 未就绪的丢包。
+        let mut senders: Vec<(UdpSocket, (&'static str, u16))> = Vec::new();
+        for ip in local_ipv4_addrs() {
+            if let Ok(socket) = UdpSocket::bind((std::net::IpAddr::from(ip), 0)) {
+                let _ = socket.set_broadcast(true);
+                let _ = socket.set_read_timeout(Some(Duration::from_millis(200)));
+                senders.push((socket, ("255.255.255.255", LAN_DISCOVERY_PORT)));
+            }
+        }
+        if let Ok(loopback) = UdpSocket::bind(("127.0.0.1", 0)) {
+            let _ = loopback.set_read_timeout(Some(Duration::from_millis(200)));
+            senders.push((loopback, ("127.0.0.1", LAN_DISCOVERY_PORT)));
+        }
+        if senders.is_empty() {
+            return Err("无法发起局域网搜索：没有可用的网络接口".to_string());
+        }
+        let mut next_resend = Instant::now();
         while Instant::now() < deadline {
-            match socket.recv_from(&mut buffer) {
-                Ok((size, source)) => {
-                    let Ok(payload) = serde_json::from_slice::<Value>(&buffer[..size]) else { continue };
-                    if payload.get("app").and_then(Value::as_str) != Some("acta")
-                        || payload.get("protocol").and_then(Value::as_u64) != Some(LAN_PROTOCOL as u64)
-                        || payload.get("token").and_then(Value::as_str) != Some(token.as_str())
-                    {
-                        continue;
-                    }
-                    let session = payload
-                        .get("session")
-                        .and_then(Value::as_str)
-                        .unwrap_or_default()
-                        .to_string();
-                    if session.is_empty() || own_session.as_deref() == Some(session.as_str()) {
-                        continue;
-                    }
-                    let port = payload.get("port").and_then(Value::as_u64).unwrap_or(0) as u16;
-                    if port == 0 {
-                        continue;
-                    }
-                    let peer = LanPeer {
-                        ip: source.ip().to_string(),
-                        port,
-                        session,
-                        name: payload.get("name").and_then(Value::as_str).unwrap_or("Acta").to_string(),
-                        platform: payload.get("platform").and_then(Value::as_str).unwrap_or_default().to_string(),
-                        trusted: payload.get("trusted").and_then(Value::as_bool).unwrap_or(false),
-                        profiles: payload.get("profiles").cloned().unwrap_or(Value::Array(Vec::new())),
-                    };
-                    peers.entry((peer.ip.clone(), peer.port)).or_insert(peer);
+            let resend = Instant::now() >= next_resend;
+            if resend {
+                next_resend = Instant::now() + Duration::from_millis(900);
+            }
+            for (socket, target) in senders.iter() {
+                if resend {
+                    let _ = socket.send_to(message.as_bytes(), *target);
                 }
-                Err(error) if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => continue,
-                Err(error) => return Err(error.to_string()),
+                recv_discovery_reply(socket, &mut buffer, deadline, &token, own_session.as_deref(), &mut peers);
             }
         }
         Ok(peers.into_values().collect())
     })
     .await
     .map_err(|error| error.to_string())?
+}
+
+/// 枚举本机所有非回环 IPv4 地址（每个物理/虚拟网卡各一个）。
+fn local_ipv4_addrs() -> Vec<std::net::Ipv4Addr> {
+    if_addrs::get_if_addrs()
+        .map(|interfaces| {
+            interfaces
+                .into_iter()
+                .filter_map(|interface| match interface.addr.ip() {
+                    std::net::IpAddr::V4(ip) if !ip.is_loopback() => Some(ip),
+                    _ => None,
+                })
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// 从一个已绑定的发送 socket 读取回应；读超时后返回调用方，由外层判断
+/// 是否重新广播或切换下一个 socket。合法回应按 ip+port 去重后写入 peers。
+fn recv_discovery_reply(
+    socket: &UdpSocket,
+    buffer: &mut [u8],
+    deadline: Instant,
+    token: &str,
+    own_session: Option<&str>,
+    peers: &mut HashMap<(String, u16), LanPeer>,
+) {
+    while Instant::now() < deadline {
+        match socket.recv_from(buffer) {
+            Ok((size, source)) => {
+                let Ok(payload) = serde_json::from_slice::<Value>(&buffer[..size]) else { continue };
+                if payload.get("app").and_then(Value::as_str) != Some("acta")
+                    || payload.get("protocol").and_then(Value::as_u64) != Some(LAN_PROTOCOL as u64)
+                    || payload.get("token").and_then(Value::as_str) != Some(token)
+                {
+                    continue;
+                }
+                let session = payload
+                    .get("session")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+                if session.is_empty() || own_session == Some(session.as_str()) {
+                    continue;
+                }
+                let port = payload.get("port").and_then(Value::as_u64).unwrap_or(0) as u16;
+                if port == 0 {
+                    continue;
+                }
+                let peer = LanPeer {
+                    ip: source.ip().to_string(),
+                    port,
+                    session,
+                    name: payload.get("name").and_then(Value::as_str).unwrap_or("Acta").to_string(),
+                    platform: payload.get("platform").and_then(Value::as_str).unwrap_or_default().to_string(),
+                    trusted: payload.get("trusted").and_then(Value::as_bool).unwrap_or(false),
+                    profiles: payload.get("profiles").cloned().unwrap_or(Value::Array(Vec::new())),
+                };
+                peers.entry((peer.ip.clone(), peer.port)).or_insert(peer);
+            }
+            // 超时/暂时性错误：交还外层循环，让它继续重发或轮询其他接口。
+            Err(_) => return,
+        }
+    }
 }
 
 fn lan_client() -> Result<reqwest::Client, String> {

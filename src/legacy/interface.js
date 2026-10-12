@@ -6,7 +6,7 @@
     customTodo: '#4f86a8', customTodoSoft: '#dceef8', customNote: '#987329', customNoteSoft: '#fff0bd', customCalendar: '#4f7656', customCalendarSoft: '#dcebdd',
     appIconPreset: 'default', customAppIcon: '',
     splashAnimationEnabled: true, splashAnimationPreset: 'acta-lines', splashAnimationSpeed: 1, inputFocusAnimation: true, subtaskCompletedDates: true,
-    completedTodoSink: true, completedTodoSinkDelay: 1,
+    completedTodoSink: true, completedTodoSinkDelay: 1, subtaskDoneSort: 'asc', backdropClose: 'double',
     appFont: 'system', customFont: 'Inter', appFontSize: 14,
     noteHeadingH1Size: 32, noteHeadingH2Size: 24, noteHeadingH3Size: 19, noteBaseSize: 17, noteHeadingFont: 'serif', noteHeadingCustomFont: '', noteLineHeight: 1.6, noteParagraphGap: 1,
     noteToolbarPosition: 'bottom', noteToolbarShowLabels: false,
@@ -47,8 +47,9 @@
   if (migratedTodayView || migratedAppIconPreset) saveUISettings();
   const saveRendererSettings = () => localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...settings, language: uiSettings.language === 'zh-Hant' ? 'zh' : uiSettings.language }));
   if (migratedTodayView || migratedStatsView) saveUISettings();
-  Object.assign(dictionaries.zh, { syncTitle:'连接本地文件夹', syncCopy:'选择设备本地、局域网或系统已挂载的网络文件夹。Acta 会在其中读写清单、归类、notes 和 todos 完整数据文件夹。', download:'下载完整数据文件夹', upload:'上传完整数据文件夹' });
-  Object.assign(dictionaries.en, { syncTitle:'Connect a local folder', syncCopy:'Choose a device folder, LAN location, or mounted network folder. Acta reads and writes the complete manifest, classifications, notes, and todos data folder there.', download:'Download complete data folder', upload:'Upload complete data folder' });
+  Object.assign(dictionaries.zh, { syncTitle:'连接本地文件夹', syncCopy:'选择设备本地、局域网或系统已挂载的网络文件夹。Acta 会在其中读写清单、归类、notes 和 todos 完整数据文件夹。', download:'下载完整数据文件夹', upload:'上传完整数据文件夹', taskDoneSortHint:'按完成时间正序或倒序排列已完成的子任务' });
+  Object.assign(dictionaries.en, { syncTitle:'Connect a local folder', syncCopy:'Choose a device folder, LAN location, or mounted network folder. Acta reads and writes the complete manifest, classifications, notes, and todos data folder there.', download:'Download complete data folder', upload:'Upload complete data folder', taskDoneSortHint:'Sort completed subtasks by completion time, oldest or newest first' });
+  Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
   dictionaries['zh-Hant'] = {
     ...dictionaries.zh,
     saved:'已儲存', saving:'正在儲存…', new:'新增', quickCapture:'速記', quickCaptureHint:'快速建立待辦或筆記', newNote:'新增筆記', newNoteHint:'記錄想法與靈感', newTodo:'新增待辦', newTodoHint:'拆解目標與行動',
@@ -184,6 +185,7 @@
       '选择本地文件夹':'Choose local folder', '立即保存':'Save now', '从文件重载':'Reload from file', '返回演示工作区':'Return to demo workspace', '返回演示行记数据':'Return to demo Acta Data', '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is the demo workspace. Its content resets when you close or refresh the page and is not written to browser storage.', '当前是演示行记数据。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is demo Acta Data. Its content resets when you close or refresh the page and is not written to browser storage.',
       '调整启动位置、内容密度和动效偏好。':'Adjust the startup view, content density, and motion.', '默认启动页面':'Default startup view', '打开应用时优先进入的智能视图':'The smart view shown when Acta opens', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '已完成':'Completed',
       '紧凑列表':'Compact lists', '在中栏显示更多笔记和待办':'Show more notes and tasks in the middle pane', '减少动态效果':'Reduce motion', '降低转场和弹性动画，减少视觉干扰':'Reduce transitions and spring animations', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
+      '点击空白处':'Click outside dialogs', '弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容':'How clicks on the blank area outside a dialog behave; double click is required by default so accidental clicks never discard what you typed', '不关闭（防误触）':"Don't close (accident protection)", '单击关闭':'Single click closes', '双击关闭':'Double click closes',
       '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes only change the appearance; your notes and tasks are unaffected.', '黑白浅色':'Monochrome light', '黑白深色':'Monochrome dark', '蓝黄':'Blue and yellow', '纸色护眼':'Eye-comfort paper', '默认':'Default', '自定义':'Custom',
       '纸张颜色':'Paper color', '侧栏颜色':'Sidebar color', '强调颜色':'Accent color', '界面字体':'Interface font', '同时应用到列表、编辑器和设置页面':'Applied to lists, the editor, and settings', '系统默认':'System default', '衬线字体':'Serif', '圆体':'Rounded', '等宽字体':'Monospace', '自定义字体':'Custom font',
       '字体家族':'Font family', '输入设备上已安装的字体，例如 Inter 或 Microsoft YaHei':'Enter a font installed on this device, such as Inter or Microsoft YaHei', '字体大小':'Font size', '统一调整界面、列表、编辑器与设置页':'Scale the interface, lists, editor, and settings together', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capture, then act. Acta connects notes and tasks naturally.',
@@ -201,6 +203,7 @@
       '切换 Acta 的界面语言，笔记内容不会被翻译或修改。':'切換 Acta 的介面語言，筆記內容不會被翻譯或修改。', '简体中文':'簡體中文', '英语':'英文',
       '整个资料库保存在所选文件夹内唯一的':'整個資料庫儲存在所選資料夾內唯一的', '文件中。':'檔案中。', '演示工作区':'示範工作區', '尚未选择文件夹；本次修改不会保存。':'尚未選擇資料夾；本次修改不會儲存。', '选择本地文件夹':'選擇本機資料夾', '立即保存':'立即儲存', '从文件重载':'從檔案重新載入', '返回演示工作区':'返回示範工作區',
       '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '调整启动位置、内容密度和动效偏好。':'調整啟動位置、內容密度和動效偏好。', '默认启动页面':'預設啟動頁面', '打开应用时优先进入的智能视图':'開啟應用程式時優先進入的智慧檢視', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '紧凑列表':'緊湊清單', '在中栏显示更多笔记和待办':'在中欄顯示更多筆記和待辦', '减少动态效果':'減少動態效果', '降低转场和弹性动画，减少视觉干扰':'降低轉場和彈性動畫，減少視覺干擾', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
+      '点击空白处':'點擊空白處', '弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容':'彈出視窗的空白處點擊行為，預設需要雙擊才會關閉，防止誤觸遺失已輸入的內容', '不关闭（防误触）':'不關閉（防誤觸）', '单击关闭':'單擊關閉', '双击关闭':'雙擊關閉',
       '主题只改变显示效果，不会影响任何笔记或待办数据。':'主題只改變顯示效果，不會影響任何筆記或待辦資料。', '黑白浅色':'黑白淺色', '黑白深色':'黑白深色', '蓝黄':'藍黃', '纸色护眼':'紙色護眼', '默认':'預設', '自定义':'自訂', '纸张颜色':'紙張顏色', '侧栏颜色':'側欄顏色', '强调颜色':'強調顏色', '界面字体':'介面字型', '同时应用到列表、编辑器和设置页面':'同時套用到清單、編輯器和設定頁面', '系统默认':'系統預設', '衬线字体':'襯線字型', '圆体':'圓體', '等宽字体':'等寬字型', '自定义字体':'自訂字型', '字体家族':'字型家族', '输入设备上已安装的字体，例如 Inter 或 Microsoft YaHei':'輸入裝置上已安裝的字型，例如 Inter 或 Microsoft YaHei', '字体大小':'字型大小', '统一调整界面、列表、编辑器与设置页':'統一調整介面、清單、編輯器與設定頁', '记录，然后行动。Acta 让笔记与待办自然连接。':'記錄，然後行動。Acta 讓筆記與待辦自然連接。',
       '先支持 OneDrive 本地同步文件夹；上传与下载均使用完整资料库数据文件。':'目前支援 OneDrive 本機同步資料夾；上傳與下載均使用完整資料庫檔案。', '尚未选择 OneDrive 同步文件夹':'尚未選擇 OneDrive 同步資料夾', 'OneDrive 文件操作':'OneDrive 檔案操作', '由 OneDrive 客户端把 acta-library.json 同步到云端':'由 OneDrive 用戶端把 acta-library.json 同步到雲端', '选择文件夹':'選擇資料夾', '自动同步':'自動同步', '本地内容变化后自动上传，并定时检查 OneDrive 文件中的更新':'本機內容變更後自動上傳，並定時檢查 OneDrive 檔案中的更新', '检查频率':'檢查頻率', '仅在 Acta 保持运行时执行':'僅在 Acta 保持執行時運作', '每 1 分钟':'每 1 分鐘', '每 5 分钟':'每 5 分鐘', '每 15 分钟':'每 15 分鐘', '从 OneDrive 下载':'從 OneDrive 下載', '上传到 OneDrive':'上傳到 OneDrive', '请选择电脑或网页文件选择器中的 OneDrive 同步文件夹。':'請從電腦或網頁資料夾選擇器選擇 OneDrive 同步資料夾。', 'Acta 不会获取你的 OneDrive 账号或密码；文件传输由系统文件夹与 OneDrive 客户端完成。':'Acta 不會取得你的 OneDrive 帳號或密碼；檔案傳輸由系統資料夾與 OneDrive 用戶端完成。',
       '关于 Acta':'關於 Acta', '检查更新':'檢查更新', '让笔记与行动在一个安静、可掌控的本地空间中自然连接。':'讓筆記與行動在一個安靜、可掌控的本機空間中自然連接。', '产品':'產品', '版本':'版本', '本版更新日期':'本版更新日期', '桌面框架':'桌面框架', '笔记、待办和设置默认保存在当前设备；只有在你主动操作时才会导入、导出或同步。':'筆記、待辦和設定預設儲存在目前裝置；只有在你主動操作時才會匯入、匯出或同步。',
@@ -252,7 +255,7 @@
     'Acta 局域网同步':'Acta LAN sync', '与同一网络中的其他 Acta 设备直接互相同步行记数据，数据不经过任何服务器。实验性功能，传输完成后请核对数据是否完整。':'Sync your data directly with other Acta devices on the same network. Nothing passes through a server. This is an experimental feature; verify the data after a transfer.',
     '传输的行记数据':'Acta data to share', '发送到其他设备时使用的本机档案；导入到本机的数据不受此选择影响':'The local profile sent to other devices; imports to this device are not affected by this choice.',
     '允许被其他设备发现':'Be discoverable', '开启后这台设备会出现在附近设备的列表中；关闭或退出 Acta 时立即停止':'This device then appears in nearby device lists; it stops the moment you turn this off or quit Acta',
-    '附近的设备':'Nearby devices', '搜索设备':'Scan for devices',
+    '附近的设备':'Nearby devices', '搜索设备':'Scan for devices', '设备雷达':'Device radar',
     '信任此局域网（自动确认）':'Trust this network (auto-confirm)', '开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启':'Other devices can then read any Acta data profile on this device, or write data into it, without confirmation; replaced data is still backed up first. Only enable this on networks you trust.'
   });
   Object.assign(interfaceTranslations['zh-Hant'], {
@@ -295,7 +298,7 @@
     'Acta 局域网同步':'Acta 區域網路同步', '与同一网络中的其他 Acta 设备直接互相同步行记数据，数据不经过任何服务器。实验性功能，传输完成后请核对数据是否完整。':'與同一網路中的其他 Acta 裝置直接互相同步行記資料，資料不經過任何伺服器。實驗性功能，傳輸完成後請核對資料是否完整。',
     '传输的行记数据':'傳輸的行記資料', '发送到其他设备时使用的本机档案；导入到本机的数据不受此选择影响':'傳送到其他裝置時使用的本機檔案；匯入到本機的資料不受此選擇影響',
     '允许被其他设备发现':'允許被其他裝置發現', '开启后这台设备会出现在附近设备的列表中；关闭或退出 Acta 时立即停止':'開啟後這台裝置會出現在附近裝置的清單中；關閉或退出 Acta 時立即停止',
-    '附近的设备':'附近的裝置', '搜尋裝置':'搜尋裝置',
+    '附近的设备':'附近的裝置', '搜尋裝置':'搜尋裝置', '设备雷达':'裝置雷達',
     '信任此局域网（自动确认）':'信任此區域網路（自動確認）', '开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启':'開啟後其他裝置可以不經確認直接讀取本機任一行記資料，或直接向本機寫入資料；覆寫前仍會自動備份。請僅在可信網路中開啟。'
   });
 
@@ -571,6 +574,35 @@
     dialog.classList.add('is-closing');
     animatedDialogCloseTimers.set(dialog, setTimeout(finish, 250));
   }
+
+  // —— 弹窗空白处点击行为 ——
+  // 设计约定：弹出窗口不因误触空白处丢内容；默认需要双击（明确的关闭
+  // 意图）才触发各弹窗已有的 cancel 关闭逻辑（含传输中锁定等守卫），
+  // 可在 常规设置 中改为单击关闭或完全不响应（防误触）。
+  // 点击 ::backdrop 时 event.target 是 dialog 元素自身；rect 检查把落在
+  // 弹窗内容盒内的点击（如 padding 空白）排除，只把真正落在弹窗外的
+  // 点击当作“空白处”。
+  const backdropClickState = { dialog: null, at: 0 };
+  document.addEventListener('click', event => {
+    const dialog = event.target instanceof Element ? event.target.closest('dialog') : null;
+    if (!dialog?.open || event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) return;
+    const mode = ['none', 'single', 'double'].includes(uiSettings.backdropClose) ? uiSettings.backdropClose : 'double';
+    if (mode === 'none') return;
+    if (mode === 'single') {
+      dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+      return;
+    }
+    const now = performance.now();
+    if (backdropClickState.dialog === dialog && now - backdropClickState.at < 450) {
+      backdropClickState.dialog = null;
+      dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+    } else {
+      backdropClickState.dialog = dialog;
+      backdropClickState.at = now;
+    }
+  }, true);
 
   function populateQuickCaptureFolders(preferredFolderId = quickCaptureFolder.value) {
     quickCaptureFolder.replaceChildren();
@@ -1359,8 +1391,12 @@
     const dueLabel = item.dueAt ? formatDateTimeSeconds(item.dueAt) : metaCopy.notSet;
     const ordered = item.taskOrder === 'ordered';
     // 无序模式把已完成子任务沉到列表末尾的折叠分组里（taskRowHTML 同时
-    // 服务活跃区与该分组）；有序模式保持编号原位布局不变。
+    // 服务活跃区与该分组）；有序模式保持编号原位布局不变。分组内按完成
+    // 时间排序，方向由设置（subtaskDoneSort）控制，分组头最右侧可切换。
     const doneTasks = tasks.filter(task => task.done);
+    const doneDirection = uiSettings.subtaskDoneSort === 'desc' ? -1 : 1;
+    const sortedDoneTasks = [...doneTasks].sort((a, b) =>
+      String(a.completedAt || '').localeCompare(String(b.completedAt || '')) * doneDirection);
     const taskRowHTML = (task, index) => `<div class="task-row${ordered ? ' is-ordered' : ''} ${task.done ? 'done' : ''}" data-task-id="${escapeHTML(task.id)}" style="animation-delay:${index * 35}ms">
           <i class="task-done-date"${task.done && task.completedAt && uiSettings.subtaskCompletedDates !== false ? ` data-time="${escapeHTML(task.completedAt)}">${escapeHTML(formatMonthDay(task.completedAt))}</i>` : ' aria-hidden="true"></i>'}
           ${ordered ? `<i class="task-order-index" title="${escapeHTML(t('taskDragHint'))}" aria-hidden="true">${index + 1}</i>` : ''}
@@ -1418,8 +1454,11 @@
           ? tasks.map((task, index) => taskRowHTML(task, index)).join('')
           : tasks.filter(task => !task.done).map((task, index) => taskRowHTML(task, index)).join('')
             + (doneTasks.length ? `<div class="task-done-section" id="taskDoneSection">
-          <button type="button" class="task-done-toggle" id="taskDoneToggle" aria-expanded="false" title="${escapeHTML(t('done'))}"><svg aria-hidden="true"><use href="#i-chevron"/></svg><span>${escapeHTML(t('done'))} ${doneTasks.length}</span></button>
-          <div class="task-done-group" id="taskDoneGroup" hidden>${doneTasks.map((task, index) => taskRowHTML(task, index)).join('')}</div>
+          <div class="task-done-head">
+            <button type="button" class="task-done-toggle" id="taskDoneToggle" aria-expanded="false" title="${escapeHTML(t('done'))}"><svg aria-hidden="true"><use href="#i-chevron"/></svg><span>${escapeHTML(t('done'))} ${doneTasks.length}</span></button>
+            <button type="button" class="task-done-sort${doneDirection < 0 ? ' is-desc' : ''}" id="taskDoneSort" aria-pressed="${doneDirection < 0}" title="${escapeHTML(t('taskDoneSortHint'))}" aria-label="${escapeHTML(t('taskDoneSortHint'))}"><svg aria-hidden="true"><use href="#i-sort"/></svg></button>
+          </div>
+          <div class="task-done-group" id="taskDoneGroup" hidden>${sortedDoneTasks.map((task, index) => taskRowHTML(task, index)).join('')}</div>
         </div>` : '')}
       </div>
       <button class="add-task" id="addTask"><span><svg><use href="#i-plus"/></svg></span>${t('addTask')}</button>
@@ -1560,6 +1599,40 @@
         touchItem(item);
         renderEditor(); renderList();
       });
+      // —— 子待办之间的键盘导航 ——
+      // ↑/↓ 在子待办行之间移动焦点，落点光标停在文本末尾。多行子任务
+      // （Shift+Enter 换行）内仍先用方向键在行内移动，只有光标已到达
+      // 第一行/最后一行才跳出行——键盘顺序与视觉顺序一致，不跳过折叠组。
+      const caretOnEdgeLine = (element, edge) => {
+        if (!element.textContent) return true; // 空行视为首末行，可直接跳出。
+        const selection = getSelection();
+        if (!selection || !selection.rangeCount) return true;
+        const range = selection.getRangeAt(0);
+        if (!range.collapsed) return false;
+        const rects = range.getClientRects();
+        if (!rects.length) return true;
+        const caret = rects[0];
+        const textRect = element.getBoundingClientRect();
+        const lineHeight = caret.height || parseFloat(getComputedStyle(element).lineHeight) || 16;
+        return edge === 'first'
+          ? caret.top - textRect.top < lineHeight * 0.6
+          : textRect.bottom - caret.bottom < lineHeight * 0.6;
+      };
+      const moveTaskFocus = (currentRow, step, event) => {
+        const rows = $$('.task-row');
+        const target = rows[rows.indexOf(currentRow) + step];
+        const targetText = target ? $('.task-text', target) : null;
+        if (!targetText) return false;
+        targetText.focus();
+        const range = document.createRange();
+        range.selectNodeContents(targetText);
+        range.collapse(false); // 光标定位到待办的最后一个字符之后。
+        const selection = getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        event.preventDefault();
+        return true;
+      };
       const taskRows = $$('.task-row');
       taskRows.forEach(row => {
         const task = item.tasks.find(entry => entry.id === row.dataset.taskId);
@@ -1724,7 +1797,10 @@
             document.execCommand('insertLineBreak');
             return;
           }
-          if (event.key === 'Enter') { event.preventDefault(); addTask(item); }
+          if (event.key === 'Enter') { event.preventDefault(); addTask(item); return; }
+          const textEl = $('.task-text', row);
+          if (event.key === 'ArrowUp' && caretOnEdgeLine(textEl, 'first')) moveTaskFocus(row, -1, event);
+          else if (event.key === 'ArrowDown' && caretOnEdgeLine(textEl, 'last')) moveTaskFocus(row, 1, event);
         });
         if (ordered) {
           $('.move-task-up', row).addEventListener('click', () => moveTask(task.id, -1));
@@ -1765,6 +1841,33 @@
         doneGroup.hidden = !open;
         doneToggle.classList.toggle('is-open', open);
         doneToggle.setAttribute('aria-expanded', String(open));
+      });
+      // 已完成子任务按完成时间正/倒序切换：仅重排分组内已有节点（不重建
+      // 事件绑定），并用 FLIP 动画从原位滑到新位，展开状态保持不变。
+      const doneSortButton = byId('taskDoneSort');
+      doneSortButton?.addEventListener('click', () => {
+        const next = uiSettings.subtaskDoneSort === 'desc' ? 'asc' : 'desc';
+        uiSettings.subtaskDoneSort = next;
+        saveUISettings();
+        doneSortButton.classList.toggle('is-desc', next === 'desc');
+        doneSortButton.setAttribute('aria-pressed', String(next === 'desc'));
+        if (!doneGroup || doneGroup.hidden) return;
+        const direction = next === 'desc' ? -1 : 1;
+        const rows = new Map([...doneGroup.children].map(entry => [entry.dataset.taskId, entry]));
+        const order = [...(item.tasks || [])].filter(entry => entry.done)
+          .sort((a, b) => String(a.completedAt || '').localeCompare(String(b.completedAt || '')) * direction);
+        if (!order.length) return;
+        const previousRects = new Map([...doneGroup.children].map(entry => [entry, entry.getBoundingClientRect()]));
+        order.forEach(entry => { const node = rows.get(entry.id); if (node) doneGroup.appendChild(node); });
+        if (!reduceWindowMotion()) {
+          [...doneGroup.children].forEach(entry => {
+            const previous = previousRects.get(entry);
+            if (!previous) return;
+            const dy = previous.top - entry.getBoundingClientRect().top;
+            if (Math.abs(dy) < 2) return;
+            try { entry.animate([{ transform: `translateY(${dy}px)` }, { transform: 'translate(0, 0)' }], { duration: 420, easing: 'cubic-bezier(.16, 1, .3, 1)' }); } catch { /* 动画失败不影响落位 */ }
+          });
+        }
       });
       byId('addTask').addEventListener('click', () => addTask(item));
       byId('bulkAddTask')?.addEventListener('click', () => openBulkTaskDialog(item));
@@ -4001,6 +4104,12 @@
   defaultViewSetting.value = uiSettings.defaultView;
   compactModeSetting.checked = Boolean(uiSettings.compact);
   reduceMotionSetting.checked = Boolean(uiSettings.reduceMotion);
+  const backdropCloseSetting = byId('backdropCloseSetting');
+  backdropCloseSetting.value = ['none', 'single', 'double'].includes(uiSettings.backdropClose) ? uiSettings.backdropClose : 'double';
+  backdropCloseSetting.addEventListener('change', () => {
+    uiSettings.backdropClose = backdropCloseSetting.value;
+    saveUISettings();
+  });
 
   function applyGeneralSettings() {
     document.body.classList.toggle('acta-compact', Boolean(uiSettings.compact));
@@ -4851,6 +4960,8 @@
       trustOn:'已开启「信任此局域网」：其他设备现在可以不经确认读取或写入本机行记数据。',
       trustOff:'已关闭「信任此局域网」：其他设备的读取与写入需要逐次确认。',
       pullAction:'导入到本机', pushAction:'发送到对方',
+      radarTitle:'设备雷达', radarSubtitle:'同一网络中的 Acta 设备会以气泡出现在本机周围',
+      radarHint:'点击设备气泡，提取或发送行记数据', radarSelfName:'本机',
       pullTitle:'导入到本机', pushTitle:'发送到对方', incomingTitle:'收到同步请求',
       pullSubtitle:'从 {0} 获取行记数据到本机（需要对方开启「信任此局域网」）',
       pushSubtitle:'把选定的行记数据发送给 {0}；对方开启「信任此局域网」时自动接收，否则需对方确认',
@@ -4912,6 +5023,8 @@
       trustOn:'“Trust this network” is on: other devices can now read or write this device’s Acta data without confirmation.',
       trustOff:'“Trust this network” is off: reads and writes from other devices require confirmation each time.',
       pullAction:'Import here', pushAction:'Send over',
+      radarTitle:'Device radar', radarSubtitle:'Acta devices on the same network appear as bubbles around this device',
+      radarHint:'Tap a device bubble to import or send Acta data', radarSelfName:'This device',
       pullTitle:'Import to this device', pushTitle:'Send to the other device', incomingTitle:'Sync request received',
       pullSubtitle:'Fetch Acta data from {0} (requires “Trust this network” on the other device)',
       pushSubtitle:'Send the selected Acta data to {0}; trusted networks receive automatically, otherwise the other side confirms',
@@ -4973,6 +5086,8 @@
       trustOn:'已開啟「信任此區域網路」：其他裝置現在不經確認即可讀取或寫入本機行記資料。',
       trustOff:'已關閉「信任此區域網路」：其他裝置的讀取與寫入需要逐次確認。',
       pullAction:'匯入到本機', pushAction:'傳送到對方',
+      radarTitle:'裝置雷達', radarSubtitle:'同一網路中的 Acta 裝置會以氣泡出現在本機周圍',
+      radarHint:'點擊裝置氣泡，提取或傳送行記資料', radarSelfName:'本機',
       pullTitle:'匯入到本機', pushTitle:'傳送到對方', incomingTitle:'收到同步請求',
       pullSubtitle:'從 {0} 取得行記資料到本機（需要對方開啟「信任此區域網路」）',
       pushSubtitle:'把選定的行記資料傳送給 {0}；對方開啟「信任此區域網路」時自動接收，否則需對方確認',
@@ -5092,7 +5207,6 @@
   const setLanStatus = (message, state = '') => setStatus(byId('lanSyncStatus'), message, state);
 
   function updateLanStateUI() {
-    byId('lanScanButton').disabled = lanScanning;
     const state = byId('lanSyncState');
     if (lanServiceRunning) {
       state.dataset.state = lanDiscoverable ? 'on' : 'partial';
@@ -5100,6 +5214,13 @@
     } else {
       state.dataset.state = 'off';
       state.textContent = lanText('stateOff');
+    }
+    // 设备雷达：本机气泡的扩散环跟随服务状态。
+    const stage = byId('lanRadarStage');
+    if (stage) {
+      stage.classList.toggle('lan-service-on', lanServiceRunning && lanDiscoverable);
+      const radarSwitch = byId('lanRadarDiscoverable');
+      if (radarSwitch) radarSwitch.checked = lanDiscoverable;
     }
   }
 
@@ -5216,31 +5337,97 @@
     return null;
   }
 
+  // —— 设备雷达 ——
+  // 本机居中，开启「允许被发现」后播放圆形扩散环；扫描到的设备以圆形
+  // 气泡从中心非线性滑出渐入（cubic-bezier(.16,1,.3,1)，级联延迟），
+  // 点击气泡在旁边弹出发送/提取操作。气泡按 session 差量更新：新设备
+  // 播放入场，消失的设备先淡出再移除，已知设备只平移到新落点。
+  const lanRadarSeen = new Set();
+  let lanRadarMenuPeer = null;
+
+  const closeLanPeerMenu = () => {
+    byId('lanRadarStage')?.querySelector('.lan-peer-menu')?.remove();
+    lanRadarMenuPeer = null;
+  };
+
+  function openLanPeerMenu(peer, wrapper) {
+    closeLanPeerMenu();
+    const stage = byId('lanRadarStage');
+    if (!stage) return;
+    const menu = document.createElement('div');
+    menu.className = 'lan-peer-menu lan-open';
+    const name = peer.name || lanText('unknownDevice');
+    menu.innerHTML = `<b>${escapeHTML(name)}</b>
+      <button type="button" data-lan-action="pull"><svg><use href="#i-download"/></svg><span>${escapeHTML(lanText('pullAction'))}</span></button>
+      <button type="button" data-lan-action="push"><svg><use href="#i-upload"/></svg><span>${escapeHTML(lanText('pushAction'))}</span></button>`;
+    const x = parseFloat(wrapper.style.left) || 0;
+    const y = parseFloat(wrapper.style.top) || 0;
+    const menuWidth = 168;
+    let left = x + 40;
+    if (left + menuWidth > stage.clientWidth - 8) left = x - 40 - menuWidth;
+    menu.style.left = `${Math.max(8, left)}px`;
+    menu.style.top = `${Math.max(8, Math.min(y - 24, stage.clientHeight - 130))}px`;
+    menu.addEventListener('click', event => {
+      const button = event.target.closest('[data-lan-action]');
+      if (!button) return;
+      const action = button.dataset.lanAction;
+      closeLanPeerMenu();
+      if (action === 'pull') void pullFromPeer(peer);
+      else void pushToPeer(peer);
+    });
+    stage.appendChild(menu);
+    lanRadarMenuPeer = peer;
+  }
+
+  function renderLanRadar() {
+    const stage = byId('lanRadarStage');
+    if (!stage) return;
+    const centerX = (stage.clientWidth || 360) / 2;
+    const centerY = (stage.clientHeight || 300) / 2;
+    const radius = Math.max(64, Math.min(stage.clientWidth || 360, stage.clientHeight || 300) / 2 - 56);
+    const existing = new Map([...stage.querySelectorAll('.lan-radar-peer')].map(node => [node.dataset.session, node]));
+    const present = new Set(lanPeers.map(peer => peer.session));
+    existing.forEach((node, session) => {
+      if (present.has(session)) return;
+      node.classList.add('is-leaving');
+      if (lanRadarMenuPeer?.session === session) closeLanPeerMenu();
+      setTimeout(() => node.remove(), 240);
+    });
+    let freshCount = 0;
+    lanPeers.forEach((peer, index) => {
+      const angle = -Math.PI / 2 + (index / Math.max(lanPeers.length, 1)) * Math.PI * 2;
+      const x = centerX + Math.cos(angle) * radius;
+      const y = centerY + Math.sin(angle) * radius;
+      const name = peer.name || lanText('unknownDevice');
+      let node = existing.get(peer.session);
+      const fresh = !node || !lanRadarSeen.has(peer.session);
+      if (!node) {
+        node = document.createElement('div');
+        node.className = 'lan-radar-peer';
+        node.dataset.session = peer.session;
+        node.innerHTML = `<button type="button" class="lan-peer-bubble" title="${escapeHTML(name)}" aria-label="${escapeHTML(name)}"><svg><use href="#i-database"/></svg></button><span class="lan-peer-name">${escapeHTML(name)}</span>`;
+      }
+      if (fresh) {
+        // 从本机（中心）滑向落点：CSS 变量提供起点偏移，入场带级联延迟。
+        node.style.setProperty('--from-x', `${centerX - x}px`);
+        node.style.setProperty('--from-y', `${centerY - y}px`);
+        node.style.setProperty('--delay', `${Math.min(freshCount * 45, 180)}ms`);
+        // 重新触发动效：已存在的节点先复位动画状态。
+        node.classList.remove('is-leaving');
+        node.style.animation = 'none';
+        void node.offsetWidth;
+        node.style.animation = '';
+        freshCount += 1;
+        lanRadarSeen.add(peer.session);
+        if (!node.isConnected) stage.appendChild(node);
+      }
+      node.style.left = `${x}px`;
+      node.style.top = `${y}px`;
+    });
+  }
+
   function renderLanPeers() {
-    const list = byId('lanPeerList');
-    if (!lanPeers.length) {
-      list.hidden = true;
-      list.innerHTML = '';
-      return;
-    }
-    list.hidden = false;
-    list.innerHTML = lanPeers.map((peer, index) => {
-      const totals = lanPeerTotals(peer);
-      const profileCount = Array.isArray(peer.profiles) ? peer.profiles.length : 0;
-      const meta = [lanPlatformLabel(peer.platform), profileCount ? lanText('profilesCount', profileCount) : ''].filter(Boolean).join(' · ');
-      return `<article class="lan-peer-card" role="listitem" style="--peer-delay:${Math.min(index * 40, 160)}ms">
-        <span class="lan-peer-icon"><svg><use href="#i-database"/></svg></span>
-        <div class="lan-peer-copy">
-          <b>${escapeHTML(peer.name || lanText('unknownDevice'))}</b>
-          <small>${escapeHTML(meta)}</small>
-          <small class="lan-peer-stats">${escapeHTML(lanStatsLine(totals))}</small>
-        </div>
-        <div class="lan-peer-actions">
-          <button class="settings-button secondary" type="button" data-lan-action="pull"><svg><use href="#i-download"/></svg><span>${escapeHTML(lanText('pullAction'))}</span></button>
-          <button class="settings-button secondary" type="button" data-lan-action="push"><svg><use href="#i-upload"/></svg><span>${escapeHTML(lanText('pushAction'))}</span></button>
-        </div>
-      </article>`;
-    }).join('');
+    renderLanRadar();
   }
 
   async function scanLanPeers() {
@@ -5249,18 +5436,23 @@
     updateLanStateUI();
     byId('lanPeersHint').textContent = lanText('scanning');
     setLanStatus(lanText('scanning'), 'info');
+    const radarStatus = byId('lanRadarStatus');
+    if (radarStatus) radarStatus.textContent = lanText('scanning');
     try {
       const peers = await lanBridge.discover(1800);
       lanPeers = Array.isArray(peers) ? peers : [];
-      renderLanPeers();
+      renderLanRadar();
       if (lanPeers.length) {
         setLanStatus(lanText('foundPeers', lanPeers.length), 'success');
         byId('lanPeersHint').textContent = lanText('peersHint');
+        if (radarStatus) radarStatus.textContent = lanText('foundPeers', lanPeers.length);
       } else {
         setLanStatus(lanText('noPeers'), '');
+        if (radarStatus) radarStatus.textContent = lanText('noPeers');
       }
     } catch (error) {
       setLanStatus(`${lanText('scanFail')}${error.message}`, 'error');
+      if (radarStatus) radarStatus.textContent = `${lanText('scanFail')}${error.message}`;
     } finally {
       lanScanning = false;
       updateLanStateUI();
@@ -5770,18 +5962,62 @@
       lanSyncUpdateMeta();
       setLanStatus(lanText(lanTrustLan ? 'trustOn' : 'trustOff'), lanTrustLan ? 'success' : '');
     });
-    byId('lanScanButton').addEventListener('click', () => { void scanLanPeers(); });
-    byId('lanPeerList').addEventListener('click', event => {
-      const button = event.target.closest('[data-lan-action]');
-      const card = event.target.closest('.lan-peer-card');
-      if (!button || !card) return;
-      const index = [...byId('lanPeerList').querySelectorAll('.lan-peer-card')].indexOf(card);
-      const peer = lanPeers[index];
-      if (!peer) return;
-      if (button.dataset.lanAction === 'pull') void pullFromPeer(peer);
-      else void pushToPeer(peer);
+    // —— 设备雷达入口：弹出雷达窗口并持续扫描 ——
+    const lanRadarDialog = byId('lanRadarDialog');
+    let lanRadarScanTimer = null;
+    const setRadarCopy = () => {
+      byId('lanRadarTitle').textContent = lanText('radarTitle');
+      byId('lanRadarSubtitle').textContent = lanText('radarSubtitle');
+      byId('lanRadarHint').textContent = lanText('radarHint');
+      byId('lanRadarSelfName').textContent = lanText('radarSelfName');
+    };
+    const openLanRadar = async () => {
+      setRadarCopy();
+      updateLanStateUI();
+      openAnimatedDialog(lanRadarDialog);
+      // 本机名称从服务状态读取（未开启服务时留空显示兜底文案）。
+      try {
+        const status = await lanBridge.serviceStatus();
+        if (status?.device) byId('lanRadarSelfName').textContent = status.device;
+      } catch { /* 状态读取失败不影响窗口 */ }
+      void scanLanPeers();
+      clearInterval(lanRadarScanTimer);
+      lanRadarScanTimer = setInterval(() => { void scanLanPeers(); }, 3200);
+    };
+    const closeLanRadar = () => {
+      closeAnimatedDialog(lanRadarDialog);
+      closeLanPeerMenu();
+      clearInterval(lanRadarScanTimer);
+      lanRadarScanTimer = null;
+    };
+    byId('lanRadarOpen').addEventListener('click', () => { void openLanRadar(); });
+    byId('closeLanRadar').addEventListener('click', closeLanRadar);
+    lanRadarDialog.addEventListener('cancel', event => { event.preventDefault(); closeLanRadar(); });
+    // 雷达窗口内的发现开关与设置页同步：改设置页原生控件再派发 change，
+    // 复用同一套启动/停止服务逻辑。
+    byId('lanRadarDiscoverable').addEventListener('change', () => {
+      const setting = byId('lanDiscoverableSetting');
+      if (setting.checked !== byId('lanRadarDiscoverable').checked) {
+        setting.checked = byId('lanRadarDiscoverable').checked;
+        setting.dispatchEvent(new Event('change'));
+      }
     });
-
+    // 气泡点击弹出操作菜单；点击空白处收起。
+    byId('lanRadarStage').addEventListener('click', event => {
+      const bubble = event.target.closest('.lan-peer-bubble');
+      if (!bubble) {
+        closeLanPeerMenu();
+        return;
+      }
+      const wrapper = bubble.closest('.lan-radar-peer');
+      const peer = lanPeers.find(entry => entry.session === wrapper?.dataset.session);
+      if (!peer) return;
+      if (lanRadarMenuPeer?.session === peer.session) {
+        closeLanPeerMenu();
+        return;
+      }
+      openLanPeerMenu(peer, wrapper);
+    });
     // 对话框控件：选择与模式变化即时重算展示。
     const lanDialogRefresh = () => lanRefreshDialog(lanConfirmPlan);
     byId('lanSyncSendProfile').addEventListener('change', lanDialogRefresh);
@@ -6488,6 +6724,7 @@
     defaultViewSetting.value = uiSettings.defaultView;
     compactModeSetting.checked = Boolean(uiSettings.compact);
     reduceMotionSetting.checked = Boolean(uiSettings.reduceMotion);
+    backdropCloseSetting.value = ['none', 'single', 'double'].includes(uiSettings.backdropClose) ? uiSettings.backdropClose : 'double';
     splashAnimationSetting.checked = uiSettings.splashAnimationEnabled !== false;
     splashPresetSetting.value = uiSettings.splashAnimationPreset;
     splashSpeedSetting.value = String(splashDurationToSpeed(uiSettings.splashAnimationSpeed));

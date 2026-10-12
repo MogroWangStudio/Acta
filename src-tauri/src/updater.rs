@@ -377,13 +377,65 @@ fn install_worker(app: AppHandle, manifest_path: PathBuf) {
             // 任务单、安装包与挂载残留都完成使命，一并清理；失败时保留供手动恢复。
             let _ = fs::remove_dir_all(update_work_dir());
             set_stage(&app, "done", &message);
+            // 自动重启保证：新版本进程被检测到后才安静退出；迟迟未出现
+            // 则明确告知更新已完成、需手动启动，避免向导消失后应用也不见。
             let handle = app.clone();
             std::thread::spawn(move || {
-                std::thread::sleep(Duration::from_millis(1500));
+                let deadline = Instant::now() + Duration::from_secs(10);
+                while Instant::now() < deadline {
+                    if launched_running(&manifest.target) {
+                        // 给新版本留出完成启动的时间，再收掉向导窗口。
+                        std::thread::sleep(Duration::from_millis(800));
+                        handle.exit(0);
+                        return;
+                    }
+                    std::thread::sleep(Duration::from_millis(500));
+                }
+                set_stage(&handle, "error", "更新已完成，但新版本未能自动启动，请手动打开 Acta。");
+                std::thread::sleep(Duration::from_secs(8));
                 handle.exit(0);
             });
         }
         Err(error) => set_stage(&app, "error", &error),
+    }
+}
+
+/// 检测安装目标的新版本进程是否已在运行：自动重启的验收依据。
+/// 注意向导自身与目标同名同路径，必须排除自身 pid。
+fn launched_running(target: &Path) -> bool {
+    let image = target
+        .file_name()
+        .and_then(|name| name.to_str())
+        .map(str::to_string)
+        .unwrap_or_default();
+    if image.is_empty() {
+        return false;
+    }
+    let own = std::process::id().to_string();
+    #[cfg(target_os = "windows")]
+    {
+        Command::new("tasklist")
+            .args(["/FI", &format!("IMAGENAME eq {image}"), "/FO", "CSV", "/NH"])
+            .output()
+            .map(|output| {
+                String::from_utf8_lossy(&output.stdout)
+                    .lines()
+                    .any(|line| line.contains(&format!("\"{image}\"")) && !line.contains(&format!("\"{own}\"")))
+            })
+            .unwrap_or(false)
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        Command::new("pgrep")
+            .args(["-f", &image])
+            .output()
+            .map(|output| {
+                String::from_utf8_lossy(&output.stdout)
+                    .lines()
+                    .filter_map(|line| line.trim().parse::<u32>().ok())
+                    .any(|pid| pid.to_string() != own)
+            })
+            .unwrap_or(false)
     }
 }
 

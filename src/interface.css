@@ -1182,6 +1182,12 @@ html[data-acta-theme="mono-dark"] .quick-capture-types button.active { backgroun
    用右向 chevron，展开时转 90° 朝下；组内行略微淡化以示层级。 */
 .task-done-section { margin-top: 2px; }
 .task-done-section[hidden] { display: none; }
+.task-done-head { display: flex; align-items: center; gap: 4px; }
+.task-done-head .task-done-toggle { flex: 1; min-width: 0; }
+.task-done-sort { flex: 0 0 auto; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--faint); display: grid; place-items: center; cursor: pointer; transition: color .15s ease, background .15s ease; }
+.task-done-sort:hover { color: var(--muted); background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.task-done-sort svg { width: 13px; height: 13px; transition: transform .25s var(--ease-out); }
+.task-done-sort.is-desc svg { transform: rotate(180deg); }
 .task-done-toggle { display: flex; align-items: center; gap: 7px; width: 100%; padding: 6px 4px; border: 0; border-radius: 8px; background: transparent; color: var(--faint); font: inherit; font-size: calc(12px * var(--acta-font-scale)); cursor: pointer; text-align: left; }
 .task-done-toggle:hover { color: var(--muted); background: color-mix(in srgb, var(--ink) 4%, transparent); }
 .task-done-toggle svg { width: 12px; flex: 0 0 auto; transition: transform .2s var(--ease-out); }
@@ -2260,16 +2266,47 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 /* ===== Acta 局域网同步（数据同步面板）===== */
 .lan-sync-state { flex: 0 0 auto; padding: 4px 10px; border-radius: 999px; background: var(--panel); color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; transition: background .2s var(--ease-out), color .2s var(--ease-out); }
 .lan-sync-state[data-state="on"], .lan-sync-state[data-state="partial"] { background: var(--sage-2); color: var(--sage); }
-.lan-peer-list { display: grid; gap: 8px; padding: 2px 15px 13px; }
-.lan-peer-card { --peer-delay: 0ms; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 11px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 55%, transparent); animation: dataProfileEnter .35s cubic-bezier(.16,1,.3,1) both; animation-delay: var(--peer-delay); }
-.lan-peer-icon { width: 32px; height: 32px; border-radius: 10px; background: var(--panel); color: var(--muted); display: grid; place-items: center; }
-.lan-peer-icon svg { width: 15px; height: 15px; }
-.lan-peer-copy { min-width: 0; display: grid; gap: 3px; }
-.lan-peer-copy b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(10px * var(--acta-font-scale)); }
-.lan-peer-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
-.lan-peer-copy .lan-peer-stats { color: var(--muted); }
-.lan-peer-actions { display: flex; gap: 6px; }
-.lan-peer-actions .settings-button { min-height: 31px; padding: 0 10px; }
+
+/* —— 设备雷达窗口 ——
+   本机居中气泡，开启发现后播放圆形扩散环；扫描到的设备以气泡渐入
+   （从中心滑出 + 缩放 + 淡入，cubic-bezier(.16,1,.3,1)），点击气泡
+   弹出发送/提取操作。 */
+.lan-radar-dialog { width: min(420px, calc(100vw - 28px)); }
+.lan-radar-body { display: grid; gap: 10px; }
+.lan-radar-stage { position: relative; height: 300px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--panel) 55%, transparent); overflow: hidden; }
+.lan-radar-ring { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--sage) 55%, transparent); opacity: 0; pointer-events: none; }
+.lan-radar-stage.lan-service-on .lan-radar-ring { animation: lanRadarRipple 2.6s cubic-bezier(.16,1,.3,1) infinite; }
+.lan-radar-stage.lan-service-on .lan-radar-ring:nth-child(2) { animation-delay: .85s; }
+.lan-radar-stage.lan-service-on .lan-radar-ring:nth-child(3) { animation-delay: 1.7s; }
+@keyframes lanRadarRipple { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(4.4); opacity: 0; } }
+.lan-radar-self { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 6px; pointer-events: none; }
+.lan-radar-self-bubble { width: 64px; height: 64px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--sage) 40%, var(--line)); background: var(--white); color: var(--sage); display: grid; place-items: center; box-shadow: 0 2px 8px -2px rgba(31,35,30,.18); transition: opacity .25s ease, border-color .25s ease; }
+.lan-radar-self-bubble svg { width: 22px; height: 22px; }
+.lan-radar-stage:not(.lan-service-on) .lan-radar-self-bubble { opacity: .45; }
+.lan-radar-self small, .lan-peer-name { max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: calc(8.5px * var(--acta-font-scale)); text-align: center; }
+.lan-radar-stage:not(.lan-service-on) .lan-radar-ring { display: none; }
+.lan-radar-peer { position: absolute; opacity: 0; animation: lanPeerEnter .52s cubic-bezier(.16,1,.3,1) both; animation-delay: var(--delay, 0ms); display: grid; justify-items: center; gap: 5px; }
+@keyframes lanPeerEnter { from { opacity: 0; transform: translate(calc(-50% + var(--from-x, 0px)), calc(-50% + var(--from-y, 0px))) scale(.4); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+.lan-radar-peer.is-leaving { animation: lanPeerLeave .22s ease both; }
+@keyframes lanPeerLeave { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -50%) scale(.55); } }
+.lan-peer-bubble { width: 56px; height: 56px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--white); color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: transform .18s cubic-bezier(.16,1,.3,1), border-color .18s ease, color .18s ease, box-shadow .18s ease; }
+.lan-peer-bubble:hover { transform: scale(1.08); border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); color: var(--sage); box-shadow: 0 3px 10px -3px rgba(31,35,30,.22); }
+.lan-peer-bubble:active { transform: scale(.96); }
+.lan-peer-bubble svg { width: 18px; height: 18px; }
+.lan-peer-menu { position: absolute; z-index: 3; display: grid; gap: 5px; min-width: 148px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); box-shadow: 0 3px 9px -2px rgba(31,35,30,.16), 0 10px 26px -10px rgba(31,35,30,.2); opacity: 0; transform: scale(.92); transform-origin: 50% 0; transition: opacity .14s ease, transform .2s cubic-bezier(.16,1,.3,1); pointer-events: none; }
+.lan-peer-menu.lan-open { opacity: 1; transform: scale(1); pointer-events: auto; }
+.lan-peer-menu b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(9px * var(--acta-font-scale)); padding: 1px 2px 3px; }
+.lan-peer-menu button { display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 9px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-size: calc(9px * var(--acta-font-scale)); font-weight: 600; cursor: pointer; transition: background .13s ease; }
+.lan-peer-menu button:hover { background: var(--panel); }
+.lan-peer-menu button svg { width: 13px; height: 13px; color: var(--muted); }
+.lan-radar-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.lan-radar-discoverable { display: inline-flex; align-items: center; gap: 7px; font-size: calc(9px * var(--acta-font-scale)); color: var(--muted); cursor: pointer; }
+.lan-radar-hint { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); text-align: right; }
+@media (prefers-reduced-motion: reduce) {
+  .lan-radar-stage.lan-service-on .lan-radar-ring { animation: none; opacity: .3; }
+  .lan-radar-peer, .lan-radar-peer.is-leaving { animation: none; opacity: 1; transform: translate(-50%, -50%); }
+  .lan-peer-menu { transition: opacity .01ms; transform: none; }
+}
 
 /* 覆盖确认对话框：左右两张卡片表达数据流向，下方列出将要写入的文件。 */
 .lan-sync-dialog { width: min(500px, calc(100vw - 28px)); }
@@ -2321,13 +2358,8 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 @media (prefers-reduced-motion: reduce) { .lan-sync-steps li[data-state="active"] .lan-step-dot { animation: none; } }
 
 @media (max-width: 800px) {
-  .lan-peer-card { grid-template-columns: 32px minmax(0, 1fr); }
-  .lan-peer-actions { grid-column: 1 / -1; justify-content: flex-end; }
   .lan-sync-flow { grid-template-columns: 1fr; }
   .lan-sync-flow-arrow { transform: rotate(90deg); justify-self: center; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lan-peer-card { animation: none; }
 }
 
 /* —— 子任务批量添加与导出对话框 —— */

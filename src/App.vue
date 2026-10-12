@@ -277,6 +277,7 @@
                 <label class="settings-row"><span><b>默认启动页面</b><small>打开应用时优先进入的智能视图</small></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
                 <label class="settings-row"><span><b>紧凑列表</b><small>在中栏显示更多笔记和待办</small></span><input id="compactModeSetting" type="checkbox"/></label>
                 <label class="settings-row"><span><b>减少动态效果</b><small>降低转场和弹性动画，减少视觉干扰</small></span><input id="reduceMotionSetting" type="checkbox"/></label>
+                <label class="settings-row"><span><b>点击空白处</b><small>弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容</small></span><select id="backdropCloseSetting"><option value="none">不关闭（防误触）</option><option value="single">单击关闭</option><option value="double">双击关闭</option></select></label>
                 <div class="settings-row"><span><b>初始设置向导</b><small>重新体验首次启动的 OOBE 引导，逐步确认数据位置、主题与启动动画</small></span><button class="settings-button secondary" id="openOobeButton" type="button"><svg><use href="#i-spark"/></svg><span>重新运行引导</span></button></div>
                 <div class="settings-row"><span><b>缓存与页面</b><small>清除应用缓存并重新加载最新页面，不会删除笔记、待办或设置。</small></span><button class="settings-button secondary" id="clearCacheReload" type="button"><svg><use href="#i-refresh"/></svg><span>清除缓存重新加载</span></button></div>
               </div>
@@ -385,9 +386,8 @@
                 <label class="settings-row"><span><b>信任此局域网（自动确认）</b><small>开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启</small></span><input id="lanTrustSetting" type="checkbox"/></label>
                 <div class="settings-row">
                   <span><b>附近的设备</b><small id="lanPeersHint"></small></span>
-                  <button class="settings-button secondary" id="lanScanButton" type="button"><svg><use href="#i-refresh"/></svg><span>搜索设备</span></button>
+                  <button class="settings-button secondary" id="lanRadarOpen" type="button"><svg><use href="#i-radar"/></svg><span>设备雷达</span></button>
                 </div>
-                <div class="lan-peer-list" id="lanPeerList" hidden></div>
                 <p class="settings-status" id="lanSyncStatus" role="status"></p>
               </div>
               <div class="settings-group">
@@ -414,8 +414,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta 行记" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta · 行记</b></div>
-              <div><small>版本</small><b id="aboutVersion">3.6.0</b></div>
-              <div><small>本版更新日期</small><b>2026-10-07</b></div>
+              <div><small>版本</small><b id="aboutVersion">3.7.0</b></div>
+              <div><small>本版更新日期</small><b>2026-10-12</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <div class="about-update">
@@ -484,6 +484,26 @@
       <header class="relation-dialog-head"><span><svg><use href="#i-cloud"/></svg></span><div><h3 id="lanNoticeTitle"></h3><small id="lanNoticeFrom"></small></div></header>
       <div class="relation-dialog-body"><p class="lan-notice-text" id="lanNoticeText"></p></div>
       <footer class="settings-actions delete-confirm-actions"><button class="settings-button secondary" id="lanNoticeReject" type="button"></button><button class="settings-button" id="lanNoticeDetail" type="button"><svg><use href="#i-chevron"/></svg><span id="lanNoticeDetailLabel"></span></button></footer>
+    </dialog>
+
+    <dialog class="relation-dialog lan-radar-dialog" id="lanRadarDialog" aria-labelledby="lanRadarTitle">
+      <header class="relation-dialog-head"><span><svg><use href="#i-radar"/></svg></span><div><h3 id="lanRadarTitle"></h3><small id="lanRadarSubtitle"></small></div><button class="relation-dialog-close" id="closeLanRadar" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
+      <div class="relation-dialog-body lan-radar-body">
+        <div class="lan-radar-stage" id="lanRadarStage">
+          <span class="lan-radar-ring" aria-hidden="true"></span>
+          <span class="lan-radar-ring" aria-hidden="true"></span>
+          <span class="lan-radar-ring" aria-hidden="true"></span>
+          <div class="lan-radar-self">
+            <span class="lan-radar-self-bubble"><svg><use href="#i-database"/></svg></span>
+            <small id="lanRadarSelfName">本机</small>
+          </div>
+        </div>
+        <p class="settings-status" id="lanRadarStatus" role="status"></p>
+      </div>
+      <footer class="settings-actions lan-radar-footer">
+        <label class="lan-radar-discoverable"><input type="checkbox" id="lanRadarDiscoverable"/><span>允许被其他设备发现</span></label>
+        <span class="lan-radar-hint" id="lanRadarHint"></span>
+      </footer>
     </dialog>
 
     <dialog class="relation-dialog quick-capture-dialog" id="quickCaptureDialog" aria-labelledby="quickCaptureTitle">

@@ -3017,7 +3017,10 @@ function focusNewTaskRow(taskId, anchorTop = null) {
     const paneRect = pane.getBoundingClientRect();
     const rowRect = row.getBoundingClientRect();
     const fullyVisible = rowRect.top >= paneRect.top && rowRect.bottom <= paneRect.bottom;
-    if (!fullyVisible) {
+    // 没有锚点（从标题、正文或「添加子任务」按钮触发）时，无论新行是否
+    // 可见都把视角平移到让新行居中；有锚点（从正在编辑的行接力）且新行
+    // 已完整可见时保持当前视角不动，避免无意义的抖动。
+    if (!fullyVisible || anchorTop === null) {
       // 用 offsetTop 链定位：getBoundingClientRect 会把新行入场动画的
       // transform 位移算进坐标，造成落点偏差。
       let rowContentTop = 0;

@@ -1,6 +1,6 @@
 [package]
 name = "acta"
-version = "3.6.0"
+version = "3.7.0"
 description = "Acta · 行记"
 authors = ["MogroWang Studio"]
 edition = "2021"
@@ -16,6 +16,8 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 base64 = "0.22"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+# 局域网同步的逐接口定向广播需要枚举本机 IPv4 地址（std 无此能力）。
+if-addrs = "0.13"
 reqwest = { version = "0.12", default-features = false, features = ["charset", "http2", "json", "rustls-tls", "stream"] }
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 serde = { version = "1", features = ["derive"] }
