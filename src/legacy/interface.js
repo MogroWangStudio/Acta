@@ -584,27 +584,39 @@
   // 设计约定：弹出窗口不因误触空白处丢内容；默认需要双击（明确的关闭
   // 意图）才触发各弹窗已有的 cancel 关闭逻辑（含传输中锁定等守卫），
   // 可在 常规设置 中改为单击关闭或完全不响应（防误触）。
-  // 点击 ::backdrop 时 event.target 是 dialog 元素自身；rect 检查把落在
-  // 弹窗内容盒内的点击（如 padding 空白）排除，只把真正落在弹窗外的
-  // 点击当作“空白处”。
-  const backdropClickState = { dialog: null, at: 0 };
+  // 点击 ::backdrop 时 event.target 是 dialog 元素自身；设置面板这类 div
+  // 遮罩则是遮罩元素本身——两者统一按「event.target 就是弹层表面」判定，
+  // dialog 仍派发 cancel 走各自的守卫，设置面板直接 closeSettings()。
+  // OOBE 是分步引导，空白处点击不关闭。
+  const backdropClickState = { surface: null, at: 0 };
   document.addEventListener('click', event => {
-    const dialog = event.target instanceof Element ? event.target.closest('dialog') : null;
-    if (!dialog?.open || event.target !== dialog) return;
-    const rect = dialog.getBoundingClientRect();
-    if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) return;
+    if (!(event.target instanceof Element)) return;
+    const surface = event.target.closest('dialog, .settings-backdrop');
+    if (!surface || event.target !== surface) return;
+    const isOpen = surface instanceof HTMLDialogElement ? surface.open : surface.classList.contains('open');
+    if (!isOpen) return;
+    // dialog 的 rect 就是弹窗本体；div 遮罩的 rect 是整个视口，rect 检查对它
+    // 没有意义——target 已经保证点击落在遮罩上而不是弹窗内容里。
+    if (surface instanceof HTMLDialogElement) {
+      const rect = surface.getBoundingClientRect();
+      if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) return;
+    }
     const mode = ['none', 'single', 'double'].includes(uiSettings.backdropClose) ? uiSettings.backdropClose : 'double';
     if (mode === 'none') return;
+    const dismiss = () => {
+      if (surface instanceof HTMLDialogElement) surface.dispatchEvent(new Event('cancel', { cancelable: true }));
+      else closeSettings();
+    };
     if (mode === 'single') {
-      dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+      dismiss();
       return;
     }
     const now = performance.now();
-    if (backdropClickState.dialog === dialog && now - backdropClickState.at < 450) {
-      backdropClickState.dialog = null;
-      dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+    if (backdropClickState.surface === surface && now - backdropClickState.at < 450) {
+      backdropClickState.surface = null;
+      dismiss();
     } else {
-      backdropClickState.dialog = dialog;
+      backdropClickState.surface = surface;
       backdropClickState.at = now;
     }
   }, true);

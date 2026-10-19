@@ -215,23 +215,61 @@
     // 就拖不动了。所以判定不看元素层级，只看落点是否属于“窗口 chrome”：
     // 标题栏、沉浸编辑的自绘顶栏、弹层打开时视口顶部的标题栏条带，
     // 以及弹层自己的标题栏。控件与内容区一律不参与。
+    //
+    // 拖动与「点击空白处关闭」共用同一块弹层表面：startDragging 一旦交给
+    // 系统，webview 就收不到后续 mouseup，click 不会发生。所以按下后先等
+    // 指针挪出死区再真正拖动，原样松手就让 click 照常发生——否则弹层打开时
+    // 顶部条带附近的单击 / 双击关闭会全部失灵。同理，双击最大化只留给窗口
+    // 自身的 chrome；弹层表面的双击属于「点击空白处关闭」，不能抢。
     const DRAG_BLOCKERS = 'button, a, input, select, textarea, [contenteditable], [role="button"], .acdt-panel, .acx-menu';
     const OVERLAY_SELECTOR = '.settings-backdrop.open, .oobe-backdrop.open, dialog[open]';
     const OVERLAY_CHROME = '.settings-header, .oobe-head, .relation-dialog-head';
+    const DRAG_DEAD_ZONE = 6;
     const titlebarStripHeight = () => document.querySelector('.titlebar')?.getBoundingClientRect().height || 52;
-    const isWindowChromePress = event => {
+    // 'chrome' = 窗口自身 chrome（标题栏 / 沉浸顶栏），双击可最大化；
+    // 'overlay' = 弹层打开时的 chrome 表面，点击与双击归「空白处关闭」。
+    const chromePressKind = event => {
       const target = event.target;
-      if (!(target instanceof Element) || target.closest(DRAG_BLOCKERS)) return false;
-      if (target.closest('.titlebar, .note-focus-header')) return true;
-      if (!target.closest(OVERLAY_SELECTOR)) return false;
-      // 遮罩之下就是标题栏，顶部这条条带仍然按标题栏对待。
-      return event.clientY <= titlebarStripHeight() || Boolean(target.closest(OVERLAY_CHROME));
+      if (!(target instanceof Element) || target.closest(DRAG_BLOCKERS)) return null;
+      if (target.closest('.titlebar, .note-focus-header')) return 'chrome';
+      if (!target.closest(OVERLAY_SELECTOR)) return null;
+      // 遮罩之下就是标题栏，顶部这条条带仍然按 chrome 对待。
+      return event.clientY <= titlebarStripHeight() || target.closest(OVERLAY_CHROME) ? 'overlay' : null;
+    };
+    let windowDragStartedAt = 0;
+    const armWindowDrag = event => {
+      const startX = event.clientX;
+      const startY = event.clientY;
+      const detach = () => {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', detach);
+        window.removeEventListener('pointercancel', detach);
+      };
+      const onMove = move => {
+        if (Math.hypot(move.clientX - startX, move.clientY - startY) < DRAG_DEAD_ZONE) return;
+        detach();
+        windowDragStartedAt = Date.now();
+        currentWindow.startDragging().catch(() => {});
+      };
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', detach, { once: true });
+      window.addEventListener('pointercancel', detach, { once: true });
     };
     document.addEventListener('mousedown', event => {
-      if (event.button !== 0 || !isWindowChromePress(event)) return;
+      if (event.button !== 0) return;
+      const kind = chromePressKind(event);
+      if (!kind) return;
       event.preventDefault();
-      if (event.detail === 2) currentWindow.toggleMaximize().catch(() => {});
-      else currentWindow.startDragging().catch(() => {});
+      armWindowDrag(event);
+      if (kind === 'chrome' && event.detail === 2) currentWindow.toggleMaximize().catch(() => {});
+    }, true);
+    // 系统拖动收尾时 webview 可能补发合成 click：拖完窗口的松手不是点击，
+    // 不能顺手把弹层关掉。
+    document.addEventListener('click', event => {
+      if (!windowDragStartedAt) return;
+      const consumed = Date.now() - windowDragStartedAt <= 350;
+      windowDragStartedAt = 0;
+      if (consumed) event.stopImmediatePropagation();
     }, true);
     document.querySelector('[data-window-action="minimize"]')?.addEventListener('click', () => {
       currentWindow.minimize().catch(() => {});
