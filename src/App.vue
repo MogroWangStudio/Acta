@@ -31,7 +31,7 @@
                   </g>
               </g>
           </svg>
-          <span class="brand-version" aria-label="当前版本 3.7.0">3.7.0</span>
+          <span class="brand-version" aria-label="当前版本 3.8.0">3.8.0</span>
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
@@ -436,8 +436,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta 行记" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta · 行记</b></div>
-              <div><small>版本</small><b id="aboutVersion">3.7.0</b></div>
-              <div><small>本版更新日期</small><b>2026-10-12</b></div>
+              <div><small>版本</small><b id="aboutVersion">3.8.0</b></div>
+              <div><small>本版更新日期</small><b>2026-10-19</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <div class="about-update">

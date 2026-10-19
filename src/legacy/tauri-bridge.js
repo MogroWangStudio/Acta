@@ -208,25 +208,31 @@
     }
   });
 
-  const titlebar = document.querySelector('.titlebar');
-  if (titlebar && currentWindow) {
-    titlebar.addEventListener('mousedown', event => {
-      if (
-        event.button !== 0 ||
-        event.target.closest('button, a, input, select, textarea, [contenteditable], [role="button"]')
-      ) return;
+  if (currentWindow) {
+    // 窗口拖动统一在这里判定，挂在 document 的捕获阶段。
+    // 二级弹层（设置、OOBE、各类 dialog）的遮罩铺满视口并带模糊，压在标题栏
+    // 之上，直接监听 .titlebar 的 mousedown 永远收不到事件——弹层打开时窗口
+    // 就拖不动了。所以判定不看元素层级，只看落点是否属于“窗口 chrome”：
+    // 标题栏、沉浸编辑的自绘顶栏、弹层打开时视口顶部的标题栏条带，
+    // 以及弹层自己的标题栏。控件与内容区一律不参与。
+    const DRAG_BLOCKERS = 'button, a, input, select, textarea, [contenteditable], [role="button"], .acdt-panel, .acx-menu';
+    const OVERLAY_SELECTOR = '.settings-backdrop.open, .oobe-backdrop.open, dialog[open]';
+    const OVERLAY_CHROME = '.settings-header, .oobe-head, .relation-dialog-head';
+    const titlebarStripHeight = () => document.querySelector('.titlebar')?.getBoundingClientRect().height || 52;
+    const isWindowChromePress = event => {
+      const target = event.target;
+      if (!(target instanceof Element) || target.closest(DRAG_BLOCKERS)) return false;
+      if (target.closest('.titlebar, .note-focus-header')) return true;
+      if (!target.closest(OVERLAY_SELECTOR)) return false;
+      // 遮罩之下就是标题栏，顶部这条条带仍然按标题栏对待。
+      return event.clientY <= titlebarStripHeight() || Boolean(target.closest(OVERLAY_CHROME));
+    };
+    document.addEventListener('mousedown', event => {
+      if (event.button !== 0 || !isWindowChromePress(event)) return;
+      event.preventDefault();
       if (event.detail === 2) currentWindow.toggleMaximize().catch(() => {});
       else currentWindow.startDragging().catch(() => {});
-    });
-    // 沉浸编辑模式的自绘顶栏同样承担窗口拖动；仅 Tauri 桌面环境注册。
-    const focusHeader = document.querySelector('.note-focus-header');
-    focusHeader?.addEventListener('mousedown', event => {
-      if (
-        event.button !== 0 ||
-        event.target.closest('button, a, input, select, textarea, [contenteditable], [role="button"]')
-      ) return;
-      currentWindow.startDragging().catch(() => {});
-    });
+    }, true);
     document.querySelector('[data-window-action="minimize"]')?.addEventListener('click', () => {
       currentWindow.minimize().catch(() => {});
     });

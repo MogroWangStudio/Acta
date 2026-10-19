@@ -2115,7 +2115,7 @@ async function main() {
     assert.match(tauriLibSource, /persist_app_icon_bytes\(&app,\s*if is_known_preset \{ Some\(&bytes\) \} else \{ None \}\)\?/);
     assert.match(tauriLibSource, /fn resolve_app_data_dir\(app: AppHandle\)/);
     assert.match(tauriLibSource, /fn prepare_app_data_dir\(app: AppHandle, path: String\)/);
-    assert.match(tauriLibSource, /\.setup\(\|app\|/);
+    assert.match(tauriLibSource, /\.setup\(move \|app\|/);
 
     const bridgePage = await browser.newPage();
     await bridgePage.setViewport({ width:1280, height:800, deviceScaleFactor:1 });

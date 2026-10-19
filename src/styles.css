@@ -202,8 +202,9 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
   background: transparent; display: flex; align-items: center; justify-content: space-between;
   cursor: pointer; color: #63685f; transition: background .18s ease, color .18s ease, transform .18s var(--ease-out);
 }
-/* 页面跳转栏设置隐藏的页面：作者样式会覆盖 UA 的 [hidden] 规则，需显式声明。 */
-.nav-section button[hidden] { display: none !important; }
+/* 页面跳转栏设置里取消勾选的页面只在桌面侧边栏隐藏；移动端底栏由
+   mobile-slot-N 决定四个位置，同一个按钮在两处可以得出不同结论。 */
+@media (min-width: 801px) { .nav-section button.nav-page-hidden { display: none; } }
 .nav-section button > span { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .nav-section button svg { width: 16px; height: 16px; color: #747970; }
 .nav-section button em { font-style: normal; color: #989b94; font-size: calc(11px * var(--acta-font-scale)); min-width: 18px; text-align: right; }

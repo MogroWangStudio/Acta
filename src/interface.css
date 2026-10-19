@@ -2396,4 +2396,12 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 .nav-page-grid label:hover { border-color: color-mix(in srgb, var(--sage) 32%, var(--line)); }
 .nav-page-grid label:has(input:checked) { border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); background: color-mix(in srgb, var(--sage) 8%, transparent); }
 .nav-page-grid label span { font-size: calc(10px * var(--acta-font-scale)); font-weight: 600; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 勾选框自绘：原生勾选框在这套浅色纸面上是灰白小方块，勾选态几乎看不出差别。
+   这里用强调色重绘，尺寸与同一行的标签文字对齐；勾号是描边而不是位图，
+   缩放到任意倍率都不发虚。 */
+.nav-page-grid input[type="checkbox"] { appearance: none; -webkit-appearance: none; flex: 0 0 auto; width: 17px; height: 17px; margin: 0; border: 1px solid color-mix(in srgb, var(--faint) 42%, var(--line)); border-radius: 5px; background: var(--white) center / 12px 12px no-repeat; cursor: pointer; transition: background-color .16s var(--ease-out), border-color .16s var(--ease-out), transform .12s var(--ease-out); }
+.nav-page-grid input[type="checkbox"]:hover { border-color: color-mix(in srgb, var(--sage) 48%, var(--line)); }
+.nav-page-grid input[type="checkbox"]:active { transform: scale(.92); }
+.nav-page-grid input[type="checkbox"]:checked { border-color: var(--sage); background-color: var(--sage); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fffefa' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.6 4.6 4.6L19 7.4'/%3E%3C/svg%3E"); }
+@media (prefers-reduced-motion: reduce) { .nav-page-grid input[type="checkbox"] { transition: none; } }
 @media (max-width: 800px) { .nav-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

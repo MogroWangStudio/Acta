@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <strong>Current version v3.7.0</strong>
+  <strong>Current version v3.8.0</strong>
 </p>
 
 Acta is a local-first notes and tasks app that brings writing, action, and organization into one calm workspace. The project shares a single web interface across Tauri desktop apps for Windows/macOS, a Capacitor Android app, and a modern-browser PWA.
@@ -31,9 +31,10 @@ Acta is a local-first notes and tasks app that brings writing, action, and organ
 - MWS Light / MWS Dark brand themes (primary #FF6666, secondary #66CC66; the light theme paints the sidebar and titlebar in the brand colors) plus three previewable launch animations with a playback-speed control
 - Deleting offers move-to-trash or delete-now; the trash is never emptied automatically and supports restore, delete-forever, and empty-all
 - Folders, smart views, combinable task/note filters, and unified search
-- Customizable navigation bar: page buttons in the desktop sidebar and mobile bottom bar can be toggled freely (All tasks and All notes are hidden by default and can be re-enabled in settings; the two right-hand slots of the mobile bottom bar can be swapped for any page)
+- Customizable navigation bar: page buttons in the desktop sidebar and mobile bottom bar can be toggled freely and independently of each other (All tasks and All notes are hidden by default and can be re-enabled in settings; the two right-hand slots of the mobile bottom bar can be swapped for any remaining page, while the outer two stay fixed to Inbox and Calendar, and pages already in use are excluded from the menus)
 - Rich-text editing and UTF-8 Markdown import/export for individual notes
 - A desktop context menu on an opaque panel, with cut, copy, paste, and select all for text, plus copy for any selected text
+- Window dragging on desktop: the titlebar and the focus-mode header both move the window, and while settings, onboarding, or any secondary dialog is open (background blurred) the titlebar strip at the top of the viewport and the dialog's own header drag the window too; double-click maximizes or restores
 - Simplified Chinese, Traditional Chinese, and English interfaces with theme and font settings
 - All dropdown menus, scrollbars, sliders, date-time pickers (numeric input or a Material You-style clock dial, switchable any time), and settings toggles are custom-drawn controls; hover feedback uses scale instead of shifting, keeping motion restrained and smooth
 - Local data folders, WebDAV, and Acta LAN sync (BETA): desktop and Android clients can automatically discover other Acta devices on the same network and exchange complete data folders directly. Devices appear in a "Device radar" window — this device sits at the center with a circular ripple, nearby devices fade in as bubbles, and tapping a bubble sends or imports data. Both sides can pick the exact data profiles involved, and choose between replacing a specific profile or copying the data in as a new one; pushes use two-stage confirmation (the other device first gets a notification, then a detailed consent dialog), and devices with "Trust this network" enabled confirm automatically; transfers show per-step progress, and a restorable backup is created automatically before anything is overwritten

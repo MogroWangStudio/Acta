@@ -4120,6 +4120,8 @@
   // 「所有待办」与「所有笔记」默认不在桌面侧栏显示；移动底栏两侧固定为
   // 收集箱、日历，右侧两个槽位由用户在设置中替换。
   const NAV_PAGE_IDS = ['inbox', 'calendar', 'todos', 'notes', 'trash', 'stats'];
+  // 移动底栏左右两端固定为收集箱与日历，中间两个槽位才由用户替换。
+  const MOBILE_FIXED_PAGES = ['inbox', 'calendar'];
   const normalizeNavPages = () => {
     const stored = uiSettings.navPages;
     const pages = {};
@@ -4127,45 +4129,60 @@
     return pages;
   };
   const normalizeMobileSlots = () => {
-    const defaults = ['trash', 'stats'];
-    const slots = Array.isArray(uiSettings.mobileSlots)
-      ? uiSettings.mobileSlots.filter(id => NAV_PAGE_IDS.includes(id))
-      : [];
-    while (slots.length < 2) slots.push(defaults[slots.length]);
-    return slots.slice(0, 2);
+    const pool = NAV_PAGE_IDS.filter(id => !MOBILE_FIXED_PAGES.includes(id));
+    const stored = Array.isArray(uiSettings.mobileSlots) ? uiSettings.mobileSlots : [];
+    const slots = [];
+    // 固定页与重复页都不能占位，否则底栏会空出一格。
+    stored.forEach(id => { if (pool.includes(id) && !slots.includes(id) && slots.length < 2) slots.push(id); });
+    ['trash', 'stats', ...pool].forEach(id => { if (slots.length < 2 && pool.includes(id) && !slots.includes(id)) slots.push(id); });
+    return slots;
+  };
+  const navButtons = () => {
+    const nav = byId('smartNav');
+    const buttons = new Map();
+    if (nav) NAV_PAGE_IDS.forEach(id => buttons.set(id, nav.querySelector(`button[data-view="${id}"]`)));
+    return buttons;
+  };
+  const mobileSlotSelects = () => [byId('mobileSlotOne'), byId('mobileSlotTwo')].filter(Boolean);
+  // 两个槽位互斥：固定占位的收集箱/日历、以及另一槽位已选中的页面都不可再选，
+  // 否则选了也不生效——底栏只会留出一格空位。
+  const syncMobileSlotOptions = () => {
+    const selects = mobileSlotSelects();
+    selects.forEach((select, index) => {
+      const other = selects[1 - index]?.value;
+      [...select.options].forEach(option => {
+        option.disabled = MOBILE_FIXED_PAGES.includes(option.value)
+          || (option.value === other && option.value !== select.value);
+      });
+    });
   };
   function applyNavSettings() {
-    const nav = byId('smartNav');
-    if (!nav) return;
+    const buttons = navButtons();
     const pages = normalizeNavPages();
-    const buttons = new Map();
-    NAV_PAGE_IDS.forEach(id => buttons.set(id, nav.querySelector(`button[data-view="${id}"]`)));
-    buttons.forEach((button, id) => { if (button) button.hidden = pages[id] === false; });
-    // 移动底栏：先清空全部槽位标记再按设置重新分配，避免旧类残留。
+    // 桌面侧边栏与移动底栏是两套独立结论：侧栏用 .nav-page-hidden 隐藏
+    // （只在桌面断点生效），底栏用 mobile-slot-N 决定四个位置。过去两者共用
+    // [hidden]，槽位分配时又把 hidden 置回 false，占着槽位的页面开关因此失效。
+    buttons.forEach((button, id) => { if (button) button.classList.toggle('nav-page-hidden', pages[id] === false); });
+    // 先清空全部槽位标记再按设置重新分配，避免旧类残留。
     buttons.forEach(button => button && button.classList.remove('mobile-slot-1', 'mobile-slot-2', 'mobile-slot-3', 'mobile-slot-4'));
-    const slots = ['inbox', 'calendar', ...normalizeMobileSlots()];
-    const assigned = new Set();
-    slots.forEach((id, index) => {
-      const button = buttons.get(id);
-      if (!button || assigned.has(id)) return; // 同一页面不能同时占两个位置。
-      assigned.add(id);
-      button.classList.add(`mobile-slot-${index + 1}`);
-      button.hidden = false;
+    [...MOBILE_FIXED_PAGES, ...normalizeMobileSlots()].forEach((id, index) => {
+      buttons.get(id)?.classList.add(`mobile-slot-${index + 1}`);
     });
+    syncMobileSlotOptions();
   }
   const navPageGrid = byId('navPageGrid');
   const navPageInputs = navPageGrid ? [...navPageGrid.querySelectorAll('input[data-nav-page]')] : [];
   navPageInputs.forEach(input => {
     input.checked = normalizeNavPages()[input.dataset.navPage] !== false;
     input.addEventListener('change', () => {
-      uiSettings.navPages = normalizeNavPages();
-      uiSettings.navPages[input.dataset.navPage] = input.checked;
+      const pages = normalizeNavPages();
+      pages[input.dataset.navPage] = input.checked;
+      uiSettings.navPages = pages;
       saveUISettings();
       applyNavSettings();
     });
   });
-  const mobileSlotOne = byId('mobileSlotOne');
-  const mobileSlotTwo = byId('mobileSlotTwo');
+  const [mobileSlotOne, mobileSlotTwo] = mobileSlotSelects();
   const syncMobileSlotControls = () => {
     const slots = normalizeMobileSlots();
     mobileSlotOne.value = slots[0];

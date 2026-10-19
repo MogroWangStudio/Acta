@@ -54,10 +54,16 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
 .acdt-time input:focus { border-color: color-mix(in srgb, var(--sage) 55%, var(--line)); }
 /* —— 时钟转盘 —— */
 .acdt-chips { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
-.acdt-chip { min-width: 52px; height: 26px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font: inherit; font-variant-numeric: tabular-nums; font-size: calc(11px * var(--acta-font-scale, 1)); font-weight: 650; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: background .15s ease, color .15s ease; }
+.acdt-chip { min-width: 52px; height: 26px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font: inherit; font-variant-numeric: tabular-nums; font-size: calc(11px * var(--acta-font-scale, 1)); font-weight: 400; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: background .15s ease, color .15s ease; }
+/* 阶段值用 <b> 承载语义，必须显式归零字重：浏览器对 <b> 的 bolder 会
+   在 650 的基础上继续加粗到 900，看起来比转盘数字重得多。 */
+.acdt-chip b { font-weight: 400; }
 .acdt-chip em { font-style: normal; color: var(--faint); font-size: calc(8px * var(--acta-font-scale, 1)); font-weight: 400; }
 .acdt-chip.acdt-active { background: color-mix(in srgb, var(--sage) 12%, transparent); color: var(--sage); }
-.acdt-dial { display: block; width: 216px; height: 216px; margin: 0 auto; touch-action: none; cursor: pointer; outline: none; user-select: none; -webkit-user-select: none; }
+/* 全局 svg 规则（fill:none / stroke:currentColor / stroke-width:1.7）是给图标用的，
+   它会沿继承链灌进转盘：数字被描上一圈深色轮廓，看着像加粗体；旋钮与圆心也
+   多出一圈描边。转盘在这里整体复位描边，只让刻度与指针自己声明。 */
+.acdt-dial { display: block; width: 216px; height: 216px; margin: 0 auto; touch-action: none; cursor: pointer; outline: none; user-select: none; -webkit-user-select: none; stroke: none; }
 .acdt-dial:focus-visible .acdt-dial-face { stroke: color-mix(in srgb, var(--sage) 55%, var(--line)); }
 .acdt-dial-face { fill: var(--panel); stroke: var(--line); }
 .acdt-dial-tick { stroke: var(--line); }
@@ -134,19 +140,18 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
   };
 
   const buildDialSVG = (unit, value) => {
-    const parts = [];
-    parts.push(`<circle class="acdt-dial-face" cx="${DIAL_CENTER}" cy="${DIAL_CENTER}" r="${DIAL_OUTER_R + 16}"/>`);
+    // 刻度与数字先算好，最后再叠到指针与旋钮之上——旋钮正好压住选中数字时，
+    // 反白的数字才能浮在旋钮上；否则当前选择会被旋钮整个盖住。
+    const marks = [];
     if (unit === 'hour') {
       // 24 小时制双环：外环 1-12，内环 13-24；内环数字更小、更弱。
       for (let hour = 1; hour <= 12; hour += 1) {
         const [x, y] = polar(DIAL_OUTER_R, hour * 30);
-        const picked = value === hour;
-        parts.push(`<text class="acdt-dial-num${picked ? ' acdt-picked' : ''}" x="${x}" y="${y}">${hour}</text>`);
+        marks.push(`<text class="acdt-dial-num${value === hour ? ' acdt-picked' : ''}" x="${x}" y="${y}">${hour}</text>`);
       }
       for (let hour = 13; hour <= 24; hour += 1) {
         const [x, y] = polar(DIAL_INNER_R, (hour - 12) * 30);
-        const picked = value === hour % 24;
-        parts.push(`<text class="acdt-dial-num acdt-sub${picked ? ' acdt-picked' : ''}" x="${x}" y="${y}">${hour}</text>`);
+        marks.push(`<text class="acdt-dial-num acdt-sub${value === hour % 24 ? ' acdt-picked' : ''}" x="${x}" y="${y}">${hour}</text>`);
       }
     } else {
       // 分/秒：60 刻度，每 5 格标数字。
@@ -154,19 +159,22 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
         if (tick % 5 === 0) continue;
         const [x1, y1] = polar(DIAL_OUTER_R + 10, tick * 6);
         const [x2, y2] = polar(DIAL_OUTER_R + 14, tick * 6);
-        parts.push(`<line class="acdt-dial-tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="1.5"/>`);
+        marks.push(`<line class="acdt-dial-tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="1.5"/>`);
       }
+      // 只有旋钮正好落在这个刻度上时才反白；否则白色数字落在浅色底盘上会消失。
       for (let tick = 0; tick < 60; tick += 5) {
         const [x, y] = polar(DIAL_OUTER_R, tick * 6);
-        const picked = Math.round(value / 5) * 5 % 60 === tick && Math.abs(value - tick) < 3;
-        parts.push(`<text class="acdt-dial-num${picked ? ' acdt-picked' : ''}" x="${x}" y="${y}">${pad(tick)}</text>`);
+        marks.push(`<text class="acdt-dial-num${value === tick ? ' acdt-picked' : ''}" x="${x}" y="${y}">${pad(tick)}</text>`);
       }
     }
     const [knobX, knobY] = unit === 'hour' ? polar(hourRing(value), hourAngle(value)) : polar(DIAL_OUTER_R, value * 6);
-    parts.push(`<line class="acdt-dial-hand" x1="${DIAL_CENTER}" y1="${DIAL_CENTER}" x2="${knobX}" y2="${knobY}"/>`);
-    parts.push(`<circle class="acdt-dial-knob" cx="${knobX}" cy="${knobY}" r="${unit === 'hour' ? 15 : 13}"/>`);
-    parts.push(`<circle class="acdt-dial-dot" cx="${DIAL_CENTER}" cy="${DIAL_CENTER}" r="4.5"/>`);
-    return parts.join('');
+    return [
+      `<circle class="acdt-dial-face" cx="${DIAL_CENTER}" cy="${DIAL_CENTER}" r="${DIAL_OUTER_R + 16}"/>`,
+      `<line class="acdt-dial-hand" x1="${DIAL_CENTER}" y1="${DIAL_CENTER}" x2="${knobX}" y2="${knobY}"/>`,
+      `<circle class="acdt-dial-knob" cx="${knobX}" cy="${knobY}" r="${unit === 'hour' ? 15 : 13}"/>`,
+      `<circle class="acdt-dial-dot" cx="${DIAL_CENTER}" cy="${DIAL_CENTER}" r="4.5"/>`,
+      ...marks
+    ].join('');
   };
 
   // 指针角度（12 点方向为 0°，顺时针）。
