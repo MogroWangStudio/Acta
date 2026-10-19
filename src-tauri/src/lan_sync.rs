@@ -51,9 +51,23 @@ pub struct LanProfileMeta {
     todos: usize,
 }
 
+// 本机身份的个性化覆盖：名称 / 图标（emoji）/ 服务端口（0 = 自动分配）。
+// 由前端随服务启动与元数据刷新传入；空字段表示沿用默认值。
+#[derive(Clone, Default, Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanIdentity {
+    #[serde(default)]
+    name: String,
+    #[serde(default)]
+    icon: String,
+    #[serde(default)]
+    port: u16,
+}
+
 // 推送方在第一阶段发来的写入计划（不含数据本体）。
 #[derive(Clone)]
 struct PlanInfo {
+    icon: String,
     device: String,
     platform: String,
     profile: String,
@@ -81,6 +95,7 @@ impl PlanInfo {
         }
         Some(PlanInfo {
             device: payload.get("device").and_then(Value::as_str).unwrap_or("Acta").to_string(),
+            icon: payload.get("icon").and_then(Value::as_str).unwrap_or_default().to_string(),
             platform: payload.get("platform").and_then(Value::as_str).unwrap_or_default().to_string(),
             profile: payload.get("profile").and_then(Value::as_str).unwrap_or_default().to_string(),
             mode: mode.to_string(),
@@ -99,7 +114,7 @@ impl PlanInfo {
     fn event_json(&self, auto: bool) -> Value {
         json!({
             "auto": auto,
-            "from": {"name": self.device, "platform": self.platform},
+            "from": {"name": self.device, "platform": self.platform, "icon": self.icon},
             "profile": self.profile,
             "mode": self.mode,
             "targetProfileId": self.target_profile_id,
@@ -132,7 +147,10 @@ struct LanService {
     session: String,
     http_port: u16,
     discovery_socket: bool,
-    device: String,
+    // 显示名与图标用互斥锁承载：身份可在运行中被前端热更新（update_meta），
+    // 发现广播与状态读取直接取当前值。
+    device: Mutex<String>,
+    icon: Mutex<String>,
     platform: String,
     app: AppHandle,
     stop: Arc<AtomicBool>,
@@ -157,6 +175,7 @@ pub struct LanServiceStatus {
     port: u16,
     session: String,
     device: String,
+    icon: String,
     platform: String,
     trusted: bool,
     profiles: Vec<LanProfileMeta>,
@@ -242,6 +261,34 @@ fn sanitized_profile_name(profile: &str) -> String {
     }
 }
 
+// 服务显示名与图标：从互斥锁读取当前身份。
+fn service_device(service: &LanService) -> String {
+    service.device.lock().map(|guard| guard.clone()).unwrap_or_default()
+}
+
+fn service_icon(service: &LanService) -> String {
+    service.icon.lock().map(|guard| guard.clone()).unwrap_or_default()
+}
+
+// 图标是展示用的短 emoji：按字符截断到 8 个，足以容纳组合 emoji，
+// 又能防止把整段文字塞进发现广播。
+fn sanitize_icon(raw: &str) -> String {
+    raw.trim().chars().take(8).collect()
+}
+
+// 把身份覆盖应用到运行中的服务：空名称沿用现有值。
+fn apply_identity(service: &LanService, identity: &LanIdentity) {
+    let name = identity.name.trim();
+    if !name.is_empty() {
+        if let Ok(mut guard) = service.device.lock() {
+            *guard = name.to_string();
+        }
+    }
+    if let Ok(mut guard) = service.icon.lock() {
+        *guard = sanitize_icon(&identity.icon);
+    }
+}
+
 fn meta_json(profiles: &[LanProfileMeta]) -> Value {
     Value::Array(profiles.iter().map(serde_json::to_value).collect::<Result<_, _>>().unwrap_or_default())
 }
@@ -253,17 +300,26 @@ pub fn lan_sync_start_service(
     state: &tauri::State<'_, LanState>,
     profiles: Vec<LanProfileMeta>,
     trusted: bool,
+    identity: Option<LanIdentity>,
 ) -> Result<LanServiceStatus, String> {
     let mut guard = state.service.lock().map_err(|error| error.to_string())?;
     if let Some(running) = guard.as_ref() {
-        // 服务已在运行（幂等调用）：只刷新档案元数据与信任标记，保持端口
-        // 与 session 稳定，对方设备上已显示的连接不会因此失效。
+        // 服务已在运行（幂等调用）：刷新档案元数据、信任标记与身份，保持
+        // 端口与 session 稳定，对方设备上已显示的连接不会因此失效。
         *running.profiles.lock().map_err(|error| error.to_string())? = profiles;
         running.trusted.store(trusted, Ordering::Relaxed);
+        if let Some(identity) = identity.as_ref() {
+            apply_identity(running, identity);
+        }
         return lan_sync_status_inner(state);
     }
 
-    let listener = TcpListener::bind(("0.0.0.0", 0)).map_err(|error| format!("无法启动局域网同步服务：{error}"))?;
+    let identity = identity.unwrap_or_default();
+    let custom_name = identity.name.trim().to_string();
+    // 自定义端口仅作用于数据传输的 TCP 监听；0（或非法值）回落到系统分配。
+    let service_port = if identity.port >= 1024 { identity.port } else { 0 };
+    let listener = TcpListener::bind(("0.0.0.0", service_port))
+        .map_err(|error| format!("无法启动局域网同步服务：{error}"))?;
     let http_port = listener.local_addr().map_err(|error| error.to_string())?.port();
     let discovery_socket = UdpSocket::bind(("0.0.0.0", LAN_DISCOVERY_PORT)).ok();
     let discovery_socket = match discovery_socket {
@@ -276,7 +332,8 @@ pub fn lan_sync_start_service(
         session: format!("{}{}", random_token(), random_token()),
         http_port,
         discovery_socket: discovery_socket.is_some(),
-        device: device_host_name(),
+        device: Mutex::new(if custom_name.is_empty() { device_host_name() } else { custom_name }),
+        icon: Mutex::new(sanitize_icon(&identity.icon)),
         platform: std::env::consts::OS.to_string(),
         app: app.clone(),
         stop: Arc::new(AtomicBool::new(false)),
@@ -316,7 +373,8 @@ pub fn lan_sync_start_service(
                             "protocol": LAN_PROTOCOL,
                             "token": token,
                             "session": service_for_udp.session,
-                            "name": service_for_udp.device,
+                            "name": service_device(&service_for_udp),
+                            "icon": service_icon(&service_for_udp),
                             "platform": service_for_udp.platform,
                             "port": service_for_udp.http_port,
                             "trusted": trusted,
@@ -388,7 +446,8 @@ fn lan_sync_status_inner(state: &tauri::State<'_, LanState>) -> Result<LanServic
             discoverable: service.discovery_socket,
             port: service.http_port,
             session: service.session.clone(),
-            device: service.device.clone(),
+            device: service_device(service),
+            icon: service_icon(service),
             platform: service.platform.clone(),
             trusted: service.trusted.load(Ordering::Relaxed),
             profiles: service.profiles.lock().map_err(|error| error.to_string())?.clone(),
@@ -399,6 +458,7 @@ fn lan_sync_status_inner(state: &tauri::State<'_, LanState>) -> Result<LanServic
             port: 0,
             session: String::new(),
             device: device_host_name(),
+            icon: String::new(),
             platform: std::env::consts::OS.to_string(),
             trusted: false,
             profiles: Vec::new(),
@@ -411,11 +471,15 @@ pub fn lan_sync_update_meta(
     state: &tauri::State<'_, LanState>,
     profiles: Vec<LanProfileMeta>,
     trusted: bool,
+    identity: Option<LanIdentity>,
 ) -> Result<(), String> {
     let guard = state.service.lock().map_err(|error| error.to_string())?;
     if let Some(service) = guard.as_ref() {
         *service.profiles.lock().map_err(|error| error.to_string())? = profiles;
         service.trusted.store(trusted, Ordering::Relaxed);
+        if let Some(identity) = identity.as_ref() {
+            apply_identity(service, identity);
+        }
     }
     Ok(())
 }
@@ -427,6 +491,7 @@ pub struct LanPeer {
     port: u16,
     session: String,
     name: String,
+    icon: String,
     platform: String,
     trusted: bool,
     profiles: Value,
@@ -540,6 +605,7 @@ fn recv_discovery_reply(
                     port,
                     session,
                     name: payload.get("name").and_then(Value::as_str).unwrap_or("Acta").to_string(),
+                    icon: payload.get("icon").and_then(Value::as_str).unwrap_or_default().to_string(),
                     platform: payload.get("platform").and_then(Value::as_str).unwrap_or_default().to_string(),
                     trusted: payload.get("trusted").and_then(Value::as_bool).unwrap_or(false),
                     profiles: payload.get("profiles").cloned().unwrap_or(Value::Array(Vec::new())),
@@ -739,7 +805,8 @@ fn handle_connection(mut stream: TcpStream, service: Arc<LanService>) {
             let body = json!({
                 "app": "acta",
                 "protocol": LAN_PROTOCOL,
-                "name": service.device,
+                "name": service_device(&service),
+                "icon": service_icon(&service),
                 "platform": service.platform,
                 "trusted": trusted,
                 "profiles": profiles
@@ -1021,7 +1088,7 @@ fn handle_push_data(stream: &mut TcpStream, service: &Arc<LanService>, length: u
     let _ = service.app.emit(
         LAN_DATA_EVENT,
         json!({
-            "from": {"name": plan.device, "platform": plan.platform},
+            "from": {"name": plan.device, "platform": plan.platform, "icon": plan.icon},
             "profile": plan.profile,
             "mode": plan.mode,
             "targetProfileId": plan.target_profile_id,

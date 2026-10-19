@@ -166,6 +166,10 @@
     clearAppCache() {
       return invoke('clear_app_cache');
     },
+    // 后台运行：关闭窗口转入系统托盘（Rust 侧拦截 CloseRequested 并隐藏窗口）。
+    setRunInBackground(enabled) {
+      return invoke('set_background_run', { enabled: Boolean(enabled) });
+    },
     setAppIcon(dataUrl = '', preset = '') {
       return invoke('set_app_icon', { dataUrl, preset });
     },
@@ -271,14 +275,15 @@
       windowDragStartedAt = 0;
       if (consumed) event.stopImmediatePropagation();
     }, true);
-    document.querySelector('[data-window-action="minimize"]')?.addEventListener('click', () => {
-      currentWindow.minimize().catch(() => {});
+    // 窗口控件有两处：主标题栏，以及全屏设置页头部（settingsWindowControls）。
+    document.querySelectorAll('[data-window-action="minimize"]').forEach(button => {
+      button.addEventListener('click', () => { currentWindow.minimize().catch(() => {}); });
     });
-    document.querySelector('[data-window-action="maximize"]')?.addEventListener('click', () => {
-      currentWindow.toggleMaximize().catch(() => {});
+    document.querySelectorAll('[data-window-action="maximize"]').forEach(button => {
+      button.addEventListener('click', () => { currentWindow.toggleMaximize().catch(() => {}); });
     });
-    document.querySelector('[data-window-action="close"]')?.addEventListener('click', () => {
-      currentWindow.close().catch(() => {});
+    document.querySelectorAll('[data-window-action="close"]').forEach(button => {
+      button.addEventListener('click', () => { currentWindow.close().catch(() => {}); });
     });
     // 最大化状态实时反映到 <html data-window-maximized>，窗口控件据此切换
     // 最大化/还原图标。旧环境缺少事件 API 时静默跳过。

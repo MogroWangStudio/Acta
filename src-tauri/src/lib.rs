@@ -12,6 +12,8 @@ use std::{
     fs,
     io::{self, ErrorKind},
     path::{Path, PathBuf},
+    sync::atomic::{AtomicBool, Ordering},
+    sync::Mutex,
 };
 use tauri::{AppHandle, Manager, WebviewWindow};
 use url::Url;
@@ -19,6 +21,81 @@ use url::Url;
 mod lan_sync;
 mod single_instance;
 mod updater;
+
+// —— 后台运行 ——
+// 「关闭窗口时转入后台」开启后，CloseRequested 被拦截、主窗口隐藏，进程与
+// 局域网服务继续运行；托盘图标在首次启用时创建，提供恢复窗口与真正退出。
+#[derive(Default)]
+pub struct BackgroundRun(AtomicBool);
+
+#[derive(Default)]
+pub struct TrayHandle(Mutex<Option<tauri::tray::TrayIcon>>);
+
+fn reveal_main_window(app: &AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
+fn ensure_tray(app: &AppHandle) -> Result<(), String> {
+    {
+        let tray = app.state::<TrayHandle>();
+        let mut guard = tray.0.lock().map_err(|error| error.to_string())?;
+        if let Some(icon) = guard.as_ref() {
+            let _ = icon.set_visible(true);
+            return Ok(());
+        }
+    }
+    let show = tauri::menu::MenuItemBuilder::with_id("show", "显示 Acta")
+        .build(app)
+        .map_err(|error| error.to_string())?;
+    let quit = tauri::menu::MenuItemBuilder::with_id("quit", "退出 Acta")
+        .build(app)
+        .map_err(|error| error.to_string())?;
+    let menu = tauri::menu::MenuBuilder::new(app)
+        .item(&show)
+        .separator()
+        .item(&quit)
+        .build()
+        .map_err(|error| error.to_string())?;
+    let tray = tauri::tray::TrayIconBuilder::with_id("acta-background")
+        .icon(app.default_window_icon().cloned().ok_or("缺少应用图标")?)
+        .tooltip("Acta · 行记")
+        .menu(&menu)
+        .on_menu_event(|app, event| match event.id().as_ref() {
+            "show" => reveal_main_window(app),
+            "quit" => app.exit(0),
+            _ => {}
+        })
+        .on_tray_icon_event(|tray, event| {
+            if matches!(event, tauri::tray::TrayIconEvent::Click { .. }) {
+                reveal_main_window(tray.app_handle());
+            }
+        })
+        .build(app)
+        .map_err(|error| error.to_string())?;
+    let tray_state = app.state::<TrayHandle>();
+    *tray_state.0.lock().map_err(|error| error.to_string())? = Some(tray);
+    Ok(())
+}
+
+#[tauri::command]
+fn set_background_run(
+    app: AppHandle,
+    state: tauri::State<'_, BackgroundRun>,
+    tray: tauri::State<'_, TrayHandle>,
+    enabled: bool,
+) -> Result<(), String> {
+    state.0.store(enabled, Ordering::Relaxed);
+    if enabled {
+        ensure_tray(&app)?;
+    } else if let Some(icon) = app.state::<TrayHandle>().0.lock().map_err(|error| error.to_string())?.take() {
+        let _ = icon.set_visible(false);
+    }
+    Ok(())
+}
 
 // 自更新命令的薄包装：#[tauri::command] 的隐藏宏留在 lib.rs 作用域，
 // 避免 generate_handler! 跨模块引用私有宏的可见性问题。
@@ -1766,6 +1843,8 @@ pub fn run() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_opener::init())
         .manage(lan_sync::LanState::default())
+        .manage(BackgroundRun::default())
+        .manage(TrayHandle::default())
         .setup(move |app| {
             if let Some(listener) = show_listener {
                 single_instance::spawn_show_listener(listener, app.handle().clone());
@@ -1860,8 +1939,20 @@ pub fn run() {
                 }
             }
             // The close button is the most deliberate exit path: flush the
-            // current geometry to disk right away.
-            tauri::WindowEvent::CloseRequested { .. } => flush_window_state(window.app_handle()),
+            // current geometry to disk right away. 后台运行开启时改为隐藏窗口，
+            // 进程与局域网服务保留，从托盘恢复或退出。
+            tauri::WindowEvent::CloseRequested { api, .. } => {
+                flush_window_state(window.app_handle());
+                if window
+                    .app_handle()
+                    .state::<BackgroundRun>()
+                    .0
+                    .load(Ordering::Relaxed)
+                {
+                    api.prevent_close();
+                    let _ = window.hide();
+                }
+            }
             _ => {}
         })
         .invoke_handler(tauri::generate_handler![
@@ -1889,6 +1980,7 @@ pub fn run() {
             export_assets,
             clear_app_cache,
             data_folder_stats,
+            set_background_run,
             set_app_icon,
             save_theme_color,
             reveal_window,
@@ -1907,6 +1999,11 @@ pub fn run() {
     app.run(|app_handle, event| {
         if matches!(event, tauri::RunEvent::ExitRequested { .. } | tauri::RunEvent::Exit) {
             flush_window_state(app_handle);
+        }
+        // macOS：点击 Dock 图标把隐藏的后台窗口带回前台。
+        #[cfg(target_os = "macos")]
+        if matches!(event, tauri::RunEvent::Reopen { .. }) {
+            reveal_main_window(app_handle);
         }
     });
 }

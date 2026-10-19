@@ -71,6 +71,7 @@
             <button data-view="notes"><span><svg><use href="#i-note"/></svg><span data-i18n="notes">笔记</span></span><em id="noteCount">0</em></button>
             <button data-view="trash"><span><svg><use href="#i-trash"/></svg><span data-i18n="trash">回收站</span></span><em id="trashCount">0</em></button>
             <button data-view="stats"><span><svg><use href="#i-chart"/></svg><span data-i18n="stats">总结</span></span></button>
+            <button data-nav-action="lan"><span><svg><use href="#i-radar"/></svg><span data-i18n="lanRadarNav">局域网雷达</span></span></button>
           </nav>
 
           <section class="folder-section">
@@ -219,6 +220,10 @@
         <header class="settings-header">
           <span><svg><use href="#i-settings"/></svg></span>
           <div><h2 id="settingsTitle">设置</h2><p>按你的方式使用 Acta</p></div>
+          <div class="settings-window-controls" id="settingsWindowControls" hidden>
+            <button type="button" data-window-action="minimize" aria-label="最小化"><svg><use href="#i-window-minimize"/></svg></button>
+            <button type="button" data-window-action="maximize" aria-label="最大化"><svg><use href="#i-window-maximize"/></svg></button>
+          </div>
           <button class="settings-close" id="settingsClose" type="button" aria-label="关闭设置"><svg><use href="#i-close"/></svg></button>
         </header>
         <div class="settings-layout">
@@ -278,6 +283,7 @@
                 <label class="settings-row"><span><b>默认启动页面</b><small>打开应用时优先进入的智能视图</small></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
                 <label class="settings-row"><span><b>紧凑列表</b><small>在中栏显示更多笔记和待办</small></span><input id="compactModeSetting" type="checkbox"/></label>
                 <label class="settings-row"><span><b>减少动态效果</b><small>降低转场和弹性动画，减少视觉干扰</small></span><input id="reduceMotionSetting" type="checkbox"/></label>
+                <label class="settings-row" id="backgroundRunRow" hidden><span><b>关闭窗口时转入后台</b><small>关闭窗口后 Acta 保留在系统托盘，继续进行局域网发现与自动化同步；从托盘图标恢复窗口或退出</small></span><input id="backgroundRunSetting" type="checkbox"/></label>
                 <label class="settings-row"><span><b>点击空白处</b><small>弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容</small></span><select id="backdropCloseSetting"><option value="none">不关闭（防误触）</option><option value="single">单击关闭</option><option value="double">双击关闭</option></select></label>
                 <div class="settings-row"><span><b>初始设置向导</b><small>重新体验首次启动的 OOBE 引导，逐步确认数据位置、主题与启动动画</small></span><button class="settings-button secondary" id="openOobeButton" type="button"><svg><use href="#i-spark"/></svg><span>重新运行引导</span></button></div>
                 <div class="settings-row"><span><b>缓存与页面</b><small>清除应用缓存并重新加载最新页面，不会删除笔记、待办或设置。</small></span><button class="settings-button secondary" id="clearCacheReload" type="button"><svg><use href="#i-refresh"/></svg><span>清除缓存重新加载</span></button></div>
@@ -301,6 +307,7 @@
                   <label><input type="checkbox" data-nav-page="notes"/><span>所有笔记</span></label>
                   <label><input type="checkbox" data-nav-page="trash"/><span>回收站</span></label>
                   <label><input type="checkbox" data-nav-page="stats"/><span>总结</span></label>
+                  <label><input type="checkbox" data-nav-page="lan"/><span>局域网雷达</span></label>
                 </div>
               </div>
               <div class="settings-group">
@@ -403,13 +410,26 @@
                   <span><b>Acta 局域网同步 <span class="beta-badge">BETA</span></b><small>与同一网络中的其他 Acta 设备直接互相同步行记数据，数据不经过任何服务器。实验性功能，传输完成后请核对数据是否完整。</small></span>
                   <span class="lan-sync-state" id="lanSyncState" data-state="off"></span>
                 </div>
-                <label class="settings-row"><span><b>传输的行记数据</b><small>发送到其他设备时使用的本机档案；导入到本机的数据不受此选择影响</small></span><select id="lanProfileSelect"></select></label>
+                <label class="settings-row"><span><b>设备名称</b><small>其他设备在雷达和同步请求中看到的名字，留空时使用电脑主机名</small></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
+                <label class="settings-row"><span><b>设备图标</b><small>用一个 emoji 作为本机在雷达上的头像，留空显示默认图标</small></span><input id="lanDeviceIcon" type="text" maxlength="8" placeholder="例：🌿" autocomplete="off"/></label>
+                <label class="settings-row"><span><b>服务端口</b><small>数据传输使用的 TCP 端口（1024-65535），留空自动分配；修改后需重新开启「允许被其他设备发现」才会生效</small></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>
                 <label class="settings-row"><span><b>允许被其他设备发现</b><small>开启后这台设备会出现在附近设备的列表中；关闭或退出 Acta 时立即停止</small></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
                 <label class="settings-row"><span><b>信任此局域网（自动确认）</b><small>开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启</small></span><input id="lanTrustSetting" type="checkbox"/></label>
-                <div class="settings-row">
-                  <span><b>附近的设备</b><small id="lanPeersHint"></small></span>
-                  <button class="settings-button secondary" id="lanRadarOpen" type="button"><svg><use href="#i-radar"/></svg><span>设备雷达</span></button>
+                <div class="settings-row"><span><b>附近的设备</b><small id="lanPeersHint"></small></span></div>
+                <div class="lan-radar-inline">
+                  <div class="lan-radar-stage" id="lanRadarStage" role="group" aria-label="设备雷达">
+                    <span class="lan-radar-ring" aria-hidden="true"></span>
+                    <span class="lan-radar-ring" aria-hidden="true"></span>
+                    <span class="lan-radar-ring" aria-hidden="true"></span>
+                    <div class="lan-radar-self">
+                      <span class="lan-radar-self-bubble"><b class="lan-peer-emoji" id="lanRadarSelfIcon" hidden></b><svg id="lanRadarSelfGlyph"><use href="#i-database"/></svg></span>
+                      <small id="lanRadarSelfName">本机</small>
+                    </div>
+                  </div>
+                  <p class="settings-status" id="lanRadarStatus" role="status"></p>
                 </div>
+                <div class="settings-row"><span><b>同步自动化</b><small>把自动备份、冲突检查与收发数据组合成自动化条目，在发现设备或定时到达时自动执行</small></span><button class="settings-button secondary" id="lanAutomationAdd" type="button"><svg><use href="#i-plus"/></svg><span>新建自动化</span></button></div>
+                <div class="lan-automation-list" id="lanAutomationList"></div>
                 <p class="settings-status" id="lanSyncStatus" role="status"></p>
               </div>
               <div class="settings-group">
@@ -506,26 +526,6 @@
       <header class="relation-dialog-head"><span><svg><use href="#i-cloud"/></svg></span><div><h3 id="lanNoticeTitle"></h3><small id="lanNoticeFrom"></small></div></header>
       <div class="relation-dialog-body"><p class="lan-notice-text" id="lanNoticeText"></p></div>
       <footer class="settings-actions delete-confirm-actions"><button class="settings-button secondary" id="lanNoticeReject" type="button"></button><button class="settings-button" id="lanNoticeDetail" type="button"><svg><use href="#i-chevron"/></svg><span id="lanNoticeDetailLabel"></span></button></footer>
-    </dialog>
-
-    <dialog class="relation-dialog lan-radar-dialog" id="lanRadarDialog" aria-labelledby="lanRadarTitle">
-      <header class="relation-dialog-head"><span><svg><use href="#i-radar"/></svg></span><div><h3 id="lanRadarTitle"></h3><small id="lanRadarSubtitle"></small></div><button class="relation-dialog-close" id="closeLanRadar" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
-      <div class="relation-dialog-body lan-radar-body">
-        <div class="lan-radar-stage" id="lanRadarStage">
-          <span class="lan-radar-ring" aria-hidden="true"></span>
-          <span class="lan-radar-ring" aria-hidden="true"></span>
-          <span class="lan-radar-ring" aria-hidden="true"></span>
-          <div class="lan-radar-self">
-            <span class="lan-radar-self-bubble"><svg><use href="#i-database"/></svg></span>
-            <small id="lanRadarSelfName">本机</small>
-          </div>
-        </div>
-        <p class="settings-status" id="lanRadarStatus" role="status"></p>
-      </div>
-      <footer class="settings-actions lan-radar-footer">
-        <label class="lan-radar-discoverable"><input type="checkbox" id="lanRadarDiscoverable"/><span>允许被其他设备发现</span></label>
-        <span class="lan-radar-hint" id="lanRadarHint"></span>
-      </footer>
     </dialog>
 
     <dialog class="relation-dialog quick-capture-dialog" id="quickCaptureDialog" aria-labelledby="quickCaptureTitle">

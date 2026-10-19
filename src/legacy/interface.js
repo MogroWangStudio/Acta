@@ -7,13 +7,15 @@
     appIconPreset: 'default', customAppIcon: '',
     splashAnimationEnabled: true, splashAnimationPreset: 'acta-lines', splashAnimationSpeed: 1, inputFocusAnimation: true, subtaskCompletedDates: true,
     completedTodoSink: true, completedTodoSinkDelay: 1, subtaskDoneSort: 'asc', backdropClose: 'double',
-    navPages: { inbox: true, calendar: true, todos: false, notes: false, trash: true, stats: true },
+    navPages: { inbox: true, calendar: true, todos: false, notes: false, trash: true, stats: true, lan: true },
     mobileSlots: ['trash', 'stats'],
+    runInBackground: false,
+    lanDeviceName: '', lanDeviceIcon: '', lanPort: 0, lanAutomations: [], lanAutomationRuns: {},
     appFont: 'system', customFont: 'Inter', appFontSize: 14,
     noteHeadingH1Size: 32, noteHeadingH2Size: 24, noteHeadingH3Size: 19, noteBaseSize: 17, noteHeadingFont: 'serif', noteHeadingCustomFont: '', noteLineHeight: 1.6, noteParagraphGap: 1,
     noteToolbarPosition: 'bottom', noteToolbarShowLabels: false,
     oneDriveFolder: '', oneDriveLabel: '', workspaceLabel: '',
-    dataProfiles: [], activeDataProfileId: '', lanSendProfileId: '', lanTrustLan: false, webDavServer: '', webDavUsername: '', autoSync: false, autoSyncInterval: 5, lanDiscoverable: false, listPaneWidth: 330, sidebarCollapsed: false, language: ['zh', 'zh-Hant', 'en'].includes(settings.language) ? settings.language : 'zh'
+    dataProfiles: [], activeDataProfileId: '', lanTrustLan: false, webDavServer: '', webDavUsername: '', autoSync: false, autoSyncInterval: 5, lanDiscoverable: false, listPaneWidth: 330, sidebarCollapsed: false, language: ['zh', 'zh-Hant', 'en'].includes(settings.language) ? settings.language : 'zh'
   };
   let uiSettings = { ...defaultUISettings };
   try { uiSettings = { ...uiSettings, ...(JSON.parse(localStorage.getItem(uiStorageKey)) || {}) }; } catch { /* Use safe defaults. */ }
@@ -86,6 +88,23 @@
     copied:'已複製到剪貼簿', copyFailed:'複製失敗'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
+  Object.assign(dictionaries.zh, { lanRadarNav:'局域网雷达' });
+  Object.assign(dictionaries.en, {
+    lanRadarNav:'LAN radar', '局域网雷达':'LAN radar',
+    '设备名称':'Device name', '其他设备在雷达和同步请求中看到的名字，留空时使用电脑主机名':"The name other devices see on the radar and in sync requests; leave empty to use this computer's hostname", '本机主机名':"This computer's hostname",
+    '设备图标':'Device icon', '用一个 emoji 作为本机在雷达上的头像，留空显示默认图标':"Use an emoji as this device's avatar on the radar; leave empty for the default icon", '例：🌿':'e.g. 🌿',
+    '服务端口':'Service port', '数据传输使用的 TCP 端口（1024-65535），留空自动分配；修改后需重新开启「允许被其他设备发现」才会生效':'TCP port for data transfers (1024-65535); leave empty for automatic assignment. Discovery must be toggled again after changing it', '自动分配':'Automatic',
+    '关闭窗口时转入后台':'Keep running in the background', '关闭窗口后 Acta 保留在系统托盘，继续进行局域网发现与自动化同步；从托盘图标恢复窗口或退出':'Closing the window keeps Acta in the system tray so LAN discovery and automations continue; restore or quit from the tray icon',
+    '同步自动化':'Sync automations', '把自动备份、冲突检查与收发数据组合成自动化条目，在发现设备或定时到达时自动执行':'Combine automatic backups, conflict checks, and data transfers into automations that run when a device is found or on a schedule', '新建自动化':'New automation'
+  });
+  Object.assign(dictionaries['zh-Hant'], {
+    lanRadarNav:'區域網路雷達', '局域网雷达':'區域網路雷達',
+    '设备名称':'裝置名稱', '其他设备在雷达和同步请求中看到的名字，留空时使用电脑主机名':'其他裝置在雷達和同步請求中看到的名字，留空時使用電腦主機名稱', '本机主机名':'本機主機名稱',
+    '设备图标':'裝置圖示', '用一个 emoji 作为本机在雷达上的头像，留空显示默认图标':'用一個 emoji 作為本機在雷達上的頭像，留空顯示預設圖示', '例：🌿':'例：🌿',
+    '服务端口':'服務連接埠', '数据传输使用的 TCP 端口（1024-65535），留空自动分配；修改后需重新开启「允许被其他设备发现」才会生效':'資料傳輸使用的 TCP 連接埠（1024-65535），留空自動分配；修改後需重新開啟「允許被其他裝置發現」才會生效', '自动分配':'自動分配',
+    '关闭窗口时转入后台':'關閉視窗時轉入背景', '关闭窗口后 Acta 保留在系统托盘，继续进行局域网发现与自动化同步；从托盘图标恢复窗口或退出':'關閉視窗後 Acta 保留在系統托盤，繼續進行區域網路探索與自動化同步；從托盤圖示還原視窗或結束',
+    '同步自动化':'同步自動化', '把自动备份、冲突检查与收发数据组合成自动化条目，在发现设备或定时到达时自动执行':'把自動備份、衝突檢查與收發資料組合成自動化條目，在發現裝置或定時到達時自動執行', '新建自动化':'新增自動化'
+  });
   Object.assign(dictionaries.zh, { high:'优先处理', medium:'稍后处理', low:'延缓处理' });
   Object.assign(dictionaries.en, { high:'Do first', medium:'Do later', low:'Delay' });
   Object.assign(dictionaries['zh-Hant'], { high:'優先處理', medium:'稍後處理', low:'延緩處理' });
@@ -258,7 +277,6 @@
     '基准字号':'Base font size', '拖动滑块，正文与各级标题会一起缩放':'Drag the slider; body text and headings scale together',
     '通过 WebDAV 服务器或局域网中的其他 Acta 设备同步完整数据文件夹。':'Sync the complete data folder through a WebDAV server or other Acta devices on your LAN.',
     'Acta 局域网同步':'Acta LAN sync', '与同一网络中的其他 Acta 设备直接互相同步行记数据，数据不经过任何服务器。实验性功能，传输完成后请核对数据是否完整。':'Sync your data directly with other Acta devices on the same network. Nothing passes through a server. This is an experimental feature; verify the data after a transfer.',
-    '传输的行记数据':'Acta data to share', '发送到其他设备时使用的本机档案；导入到本机的数据不受此选择影响':'The local profile sent to other devices; imports to this device are not affected by this choice.',
     '允许被其他设备发现':'Be discoverable', '开启后这台设备会出现在附近设备的列表中；关闭或退出 Acta 时立即停止':'This device then appears in nearby device lists; it stops the moment you turn this off or quit Acta',
     '附近的设备':'Nearby devices', '搜索设备':'Scan for devices', '设备雷达':'Device radar',
     '信任此局域网（自动确认）':'Trust this network (auto-confirm)', '开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启':'Other devices can then read any Acta data profile on this device, or write data into it, without confirmation; replaced data is still backed up first. Only enable this on networks you trust.'
@@ -301,7 +319,6 @@
     '基准字号':'基準字級', '拖动滑块，正文与各级标题会一起缩放':'拖動滑桿，正文與各級標題會一起縮放',
     '通过 WebDAV 服务器或局域网中的其他 Acta 设备同步完整数据文件夹。':'透過 WebDAV 伺服器或區域網路中的其他 Acta 裝置同步完整資料資料夾。',
     'Acta 局域网同步':'Acta 區域網路同步', '与同一网络中的其他 Acta 设备直接互相同步行记数据，数据不经过任何服务器。实验性功能，传输完成后请核对数据是否完整。':'與同一網路中的其他 Acta 裝置直接互相同步行記資料，資料不經過任何伺服器。實驗性功能，傳輸完成後請核對資料是否完整。',
-    '传输的行记数据':'傳輸的行記資料', '发送到其他设备时使用的本机档案；导入到本机的数据不受此选择影响':'傳送到其他裝置時使用的本機檔案；匯入到本機的資料不受此選擇影響',
     '允许被其他设备发现':'允許被其他裝置發現', '开启后这台设备会出现在附近设备的列表中；关闭或退出 Acta 时立即停止':'開啟後這台裝置會出現在附近裝置的清單中；關閉或退出 Acta 時立即停止',
     '附近的设备':'附近的裝置', '搜尋裝置':'搜尋裝置', '设备雷达':'裝置雷達',
     '信任此局域网（自动确认）':'信任此區域網路（自動確認）', '开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启':'開啟後其他裝置可以不經確認直接讀取本機任一行記資料，或直接向本機寫入資料；覆寫前仍會自動備份。請僅在可信網路中開啟。'
@@ -341,8 +358,15 @@
   let workspaceAdapter = null;
   let dataProfiles = [];
   // 数据档案列表变化时由 renderDataProfiles 调用（后定义于局域网同步段），
-  // 让「传输的行记数据」选择器保持同步；提前声明避免初始化时的 TDZ 问题。
+  // 刷新对外元数据；提前声明避免初始化时的 TDZ 问题。
   let lanProfilesChangedHook = null;
+  // 设备雷达内嵌在数据同步设置页：设置页的打开/关闭/切页通过该钩子通知
+  // 雷达扫描循环启停（钩子在局域网同步段赋值）。
+  let lanRadarVisibilityHook = null;
+  // 扫描结果落地后调用（同上）：驱动「发现设备」类自动化条目。
+  let lanAutomationEvaluator = null;
+  // 自动化卡片列表重绘（语言切换 / 设置页打开时调用）。
+  let lanAutomationRenderHook = null;
   let editingDataProfileId = '';
   let oneDriveAdapter = null;
   let webDavAdapter = null;
@@ -3364,6 +3388,8 @@
     settingsModal.classList.add('open');
     settingsModal.setAttribute('aria-hidden', 'false');
     switchSettingsPage(page);
+    // 全屏设置页承载了设备雷达：打开即进入扫描循环（钩子只对数据同步页起效）。
+    lanRadarVisibilityHook?.(true);
     syncLanguageChoice();
     applySettingsTranslation();
     updateOneDriveUI();
@@ -3372,6 +3398,7 @@
   function closeSettings() {
     if (!settingsModal.classList.contains('open') || settingsModal.classList.contains('is-closing')) return;
     settingsModal.setAttribute('aria-hidden', 'true');
+    lanRadarVisibilityHook?.(false);
     const finish = () => {
       clearTimeout(settingsCloseTimer);
       settingsCloseTimer = 0;
@@ -3387,6 +3414,8 @@
     document.querySelectorAll('[data-settings-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.settingsPanel === page));
     // 行记数据页内嵌的数据统计随切换刷新，保证容量与计数是最新值。
     if (page === 'workspace') void refreshDataStats();
+    // 设备雷达只在数据同步页可见：离开该页即暂停扫描循环。
+    lanRadarVisibilityHook?.(page === 'cloud');
   }
 
   byId('settingsButton').addEventListener('click', () => openSettings('language'));
@@ -4104,6 +4133,7 @@
       byId('addFolder').setAttribute('aria-label', classificationCopy.add);
       updateFolderActionCopy();
       if (classificationManagerDialog.open) renderClassificationManager();
+      lanAutomationRenderHook?.();
       setStatus(byId('generalStatus'), uiText('settingsStored'));
     }, 0);
     if (notify) showToast(t('languageChanged'));
@@ -4134,10 +4164,13 @@
   const NAV_PAGE_IDS = ['inbox', 'calendar', 'todos', 'notes', 'trash', 'stats'];
   // 移动底栏左右两端固定为收集箱与日历，中间两个槽位才由用户替换。
   const MOBILE_FIXED_PAGES = ['inbox', 'calendar'];
+  // 「局域网雷达」是打开设置页的动作入口而不是视图：可显隐，但不参与
+  // 移动底栏槽位，也不进入视图切换逻辑。
+  const NAV_ACTION_PAGES = ['lan'];
   const normalizeNavPages = () => {
     const stored = uiSettings.navPages;
     const pages = {};
-    NAV_PAGE_IDS.forEach(id => { pages[id] = !(stored && stored[id] === false); });
+    [...NAV_PAGE_IDS, ...NAV_ACTION_PAGES].forEach(id => { pages[id] = !(stored && stored[id] === false); });
     return pages;
   };
   const normalizeMobileSlots = () => {
@@ -4152,7 +4185,10 @@
   const navButtons = () => {
     const nav = byId('smartNav');
     const buttons = new Map();
-    if (nav) NAV_PAGE_IDS.forEach(id => buttons.set(id, nav.querySelector(`button[data-view="${id}"]`)));
+    if (nav) {
+      NAV_PAGE_IDS.forEach(id => buttons.set(id, nav.querySelector(`button[data-view="${id}"]`)));
+      NAV_ACTION_PAGES.forEach(id => buttons.set(id, nav.querySelector(`button[data-nav-action="${id}"]`)));
+    }
     return buttons;
   };
   const mobileSlotSelects = () => [byId('mobileSlotOne'), byId('mobileSlotTwo')].filter(Boolean);
@@ -4210,6 +4246,13 @@
   mobileSlotTwo.addEventListener('change', saveMobileSlots);
   applyNavSettings();
 
+  // 侧边栏「局域网雷达」入口：雷达已内嵌在数据同步设置页，这里直接打开
+  // 设置并定位到该页，不再经过独立的三级窗口。
+  byId('smartNav')?.addEventListener('click', event => {
+    if (!event.target.closest('[data-nav-action="lan"]')) return;
+    openSettings('cloud');
+  });
+
   function applyGeneralSettings() {
     document.body.classList.toggle('acta-compact', Boolean(uiSettings.compact));
     document.body.classList.toggle('acta-reduce-motion', Boolean(uiSettings.reduceMotion));
@@ -4228,6 +4271,27 @@
     uiSettings.reduceMotion = reduceMotionSetting.checked; applyGeneralSettings(); saveUISettings();
     setStatus(byId('generalStatus'), uiText('motionUpdated'), 'success');
   });
+
+  // —— 后台运行（桌面端）：关闭窗口转入系统托盘，局域网发现与自动化继续 ——
+  // 仅桌面 Tauri 环境提供；网页与 Android 没有对应能力，保持隐藏。
+  const backgroundRunSetting = byId('backgroundRunSetting');
+  if (backgroundRunSetting && window.actaDesktop) {
+    byId('backgroundRunRow').hidden = false;
+    backgroundRunSetting.checked = Boolean(uiSettings.runInBackground);
+    // 启动即向原生层同步一次，保证崩溃恢复 / 更新重启后状态一致。
+    window.actaDesktop.setRunInBackground?.(Boolean(uiSettings.runInBackground));
+    backgroundRunSetting.addEventListener('change', () => {
+      uiSettings.runInBackground = backgroundRunSetting.checked;
+      saveUISettings();
+      window.actaDesktop.setRunInBackground?.(backgroundRunSetting.checked);
+      setStatus(byId('generalStatus'), uiText('settingsStored'), 'success');
+    });
+  }
+  // 全屏设置页盖住了系统标题栏：Windows 的最小化 / 最大化改为放在设置头部。
+  if (window.actaDesktop?.platform === 'win32') {
+    const settingsWindowControls = byId('settingsWindowControls');
+    if (settingsWindowControls) settingsWindowControls.hidden = false;
+  }
   byId('clearCacheReload').addEventListener('click', async () => {
     if (autoSyncBusy) {
       setStatus(byId('generalStatus'), uiText('cacheSyncBusy'), 'error');
@@ -5110,7 +5174,30 @@
       pullDone:'已从 {0} 导入完整数据文件夹。', pullFail:'导入失败：',
       pushDone:'{0} 已确认接收，数据同步完成。', pushRefused:'{0} 拒绝了这次同步。',
       pushFail:'发送失败：', waitingPeer:'等待对方确认并写入…',
-      incomingDone:'已应用来自 {0} 的数据。', incomingFail:'处理同步请求失败：'
+      incomingDone:'已应用来自 {0} 的数据。', incomingFail:'处理同步请求失败：',
+      portInvalid:'服务端口需为 1024-65535 之间的数字，或留空自动分配。',
+      autoCurrentProfile:'当前档案', autoNewName:'新自动化', autoNoSteps:'尚无步骤',
+      autoStepBackup:'自动备份本机数据', autoStepConflict:'冲突检查', autoStepPush:'发送数据到设备', autoStepPull:'从设备导入数据',
+      autoBackupSummary:'备份「{0}」的当前内容到本机备份目录',
+      autoConflictSummary:'覆盖目标在上次同步后如有改动，取消并报告',
+      autoPushReplaceSummary:'把「{0}」发送到设备，覆盖对方的同名档案', autoPushCopySummary:'把「{0}」发送到设备，另存为对方的新档案',
+      autoPullReplaceSummary:'从设备取回同名档案，覆盖本机当前档案', autoPullCopySummary:'从设备取回同名档案，另存为本机新档案',
+      autoPushReplaceShort:'覆盖同名档案', autoPushCopyShort:'另存为新档案', autoPullReplaceShort:'覆盖当前档案', autoPullCopyShort:'另存为新档案',
+      autoTriggerDevice:'发现设备时', autoTriggerDevicePattern:'发现名称含「{0}」的设备时', autoTriggerInterval:'每 {0} 分钟', autoTriggerManual:'手动运行',
+      autoTriggerLabel:'触发器', autoTriggerHint:'满足条件时自动按步骤执行',
+      autoTriggerPatternLabel:'设备名包含', autoTriggerPatternHint:'留空匹配任意设备',
+      autoTriggerIntervalLabel:'检查间隔', autoTriggerIntervalHint:'仅在 Acta 运行且局域网同步开启时检查',
+      autoAddStep:'添加步骤', autoAddStepPlaceholder:'选择要添加的步骤…',
+      autoSave:'保存', autoCancel:'取消', autoRun:'运行', autoEdit:'编辑', autoDelete:'删除', autoMoveUp:'上移', autoMoveDown:'下移',
+      autoNameLabel:'名称', autoEnabledLabel:'启用该自动化', autoSummaryJoin:' · ',
+      autoEmpty:'还没有自动化条目。点击「新建自动化」，把备份、冲突检查与收发数据组合成自动流程。',
+      autoLastRun:'上次运行 {0}', autoNeverRun:'从未运行',
+      autoConfirmDelete:'删除自动化「{0}」？',
+      autoRunDone:'自动化「{0}」执行完成。', autoRunFail:'自动化「{0}」执行失败：',
+      autoConflictFound:'检测到冲突：「{0}」在上次自动化同步后又有改动，已取消并保留原数据。可先运行自动备份，或手动核对后再试。',
+      autoNoPeer:'附近没有匹配的设备，自动化「{0}」本次未执行。', autoPeerGone:'设备不可达：{0}',
+      autoBusy:'手动同步正在进行，自动化「{0}」已跳过本次触发。',
+      autoBackupDone:'已备份「{0}」', autoPushTargetMissing:'对方设备上没有同名档案「{0}」，可改用「另存为新档案」。', autoPullNothing:'对方设备上没有可导入的行记数据。'
     },
     en: {
       stateOff:'Off', stateOn:'Discoverable', stateNoDiscovery:'On',
@@ -5173,7 +5260,30 @@
       pullDone:'Imported the complete data folder from {0}.', pullFail:'Import failed: ',
       pushDone:'{0} accepted the data; sync is complete.', pushRefused:'{0} declined this sync.',
       pushFail:'Send failed: ', waitingPeer:'Waiting for the other device to confirm and write…',
-      incomingDone:'Applied the data from {0}.', incomingFail:'Failed to handle the sync request: '
+      incomingDone:'Applied the data from {0}.', incomingFail:'Failed to handle the sync request: ',
+      portInvalid:'The service port must be a number between 1024 and 65535, or left empty for automatic assignment.',
+      autoCurrentProfile:'Current profile', autoNewName:'New automation', autoNoSteps:'No steps yet',
+      autoStepBackup:'Back up local data', autoStepConflict:'Conflict check', autoStepPush:'Send data to device', autoStepPull:'Import from device',
+      autoBackupSummary:'Back up the current contents of “{0}” into the local backup folder',
+      autoConflictSummary:'Cancel and report if the overwrite target changed since the last sync',
+      autoPushReplaceSummary:'Send “{0}” to the device, replacing its same-name profile', autoPushCopySummary:'Send “{0}” to the device, saved as a new profile there',
+      autoPullReplaceSummary:'Fetch the same-name profile and replace the local current profile', autoPullCopySummary:'Fetch the same-name profile and save it as a new local profile',
+      autoPushReplaceShort:'Replace same-name profile', autoPushCopyShort:'Save as new profile', autoPullReplaceShort:'Replace current profile', autoPullCopyShort:'Save as new profile',
+      autoTriggerDevice:'When a device is found', autoTriggerDevicePattern:'When a device named like “{0}” is found', autoTriggerInterval:'Every {0} minutes', autoTriggerManual:'Run manually',
+      autoTriggerLabel:'Trigger', autoTriggerHint:'Steps run automatically when the condition is met',
+      autoTriggerPatternLabel:'Device name contains', autoTriggerPatternHint:'Leave empty to match any device',
+      autoTriggerIntervalLabel:'Check interval', autoTriggerIntervalHint:'Checked only while Acta is running with LAN sync on',
+      autoAddStep:'Add step', autoAddStepPlaceholder:'Pick a step to add…',
+      autoSave:'Save', autoCancel:'Cancel', autoRun:'Run', autoEdit:'Edit', autoDelete:'Delete', autoMoveUp:'Move up', autoMoveDown:'Move down',
+      autoNameLabel:'Name', autoEnabledLabel:'Enable this automation', autoSummaryJoin:' · ',
+      autoEmpty:'No automations yet. Click “New automation” to combine backups, conflict checks, and data transfers into an automatic flow.',
+      autoLastRun:'Last run {0}', autoNeverRun:'Never run',
+      autoConfirmDelete:'Delete automation “{0}”?',
+      autoRunDone:'Automation “{0}” finished.', autoRunFail:'Automation “{0}” failed: ',
+      autoConflictFound:'Conflict detected: “{0}” changed since the last automated sync; cancelled and nothing was overwritten. Run an automatic backup first, or review manually and retry.',
+      autoNoPeer:'No matching device nearby; automation “{0}” did not run this time.', autoPeerGone:'Device unreachable: {0}',
+      autoBusy:'A manual sync is in progress; automation “{0}” skipped this trigger.',
+      autoBackupDone:'Backed up “{0}”', autoPushTargetMissing:'The device has no same-name profile “{0}”; use “Save as new profile” instead.', autoPullNothing:'The device has no profile to import.'
     },
     'zh-Hant': {
       stateOff:'未開啟', stateOn:'可被發現', stateNoDiscovery:'已開啟',
@@ -5236,7 +5346,30 @@
       pullDone:'已從 {0} 匯入完整資料資料夾。', pullFail:'匯入失敗：',
       pushDone:'{0} 已確認接收，資料同步完成。', pushRefused:'{0} 拒絕了這次同步。',
       pushFail:'傳送失敗：', waitingPeer:'等待對方確認並寫入…',
-      incomingDone:'已套用來自 {0} 的資料。', incomingFail:'處理同步請求失敗：'
+      incomingDone:'已套用來自 {0} 的資料。', incomingFail:'處理同步請求失敗：',
+      portInvalid:'服務連接埠需為 1024-65535 之間的數字，或留空自動分配。',
+      autoCurrentProfile:'目前檔案', autoNewName:'新自動化', autoNoSteps:'尚無步驟',
+      autoStepBackup:'自動備份本機資料', autoStepConflict:'衝突檢查', autoStepPush:'傳送資料到裝置', autoStepPull:'從裝置匯入資料',
+      autoBackupSummary:'備份「{0}」的目前內容到本機備份目錄',
+      autoConflictSummary:'覆寫目標在上次同步後如有變更，取消並報告',
+      autoPushReplaceSummary:'把「{0}」傳送到裝置，覆寫對方的同名檔案', autoPushCopySummary:'把「{0}」傳送到裝置，另存為對方的新檔案',
+      autoPullReplaceSummary:'從裝置取回同名檔案，覆寫本機目前檔案', autoPullCopySummary:'從裝置取回同名檔案，另存為本機新檔案',
+      autoPushReplaceShort:'覆寫同名檔案', autoPushCopyShort:'另存為新檔案', autoPullReplaceShort:'覆寫目前檔案', autoPullCopyShort:'另存為新檔案',
+      autoTriggerDevice:'發現裝置時', autoTriggerDevicePattern:'發現名稱含「{0}」的裝置時', autoTriggerInterval:'每 {0} 分鐘', autoTriggerManual:'手動執行',
+      autoTriggerLabel:'觸發器', autoTriggerHint:'滿足條件時自動按步驟執行',
+      autoTriggerPatternLabel:'裝置名稱包含', autoTriggerPatternHint:'留空符合任意裝置',
+      autoTriggerIntervalLabel:'檢查間隔', autoTriggerIntervalHint:'僅在 Acta 執行且區域網路同步開啟時檢查',
+      autoAddStep:'新增步驟', autoAddStepPlaceholder:'選擇要新增的步驟…',
+      autoSave:'儲存', autoCancel:'取消', autoRun:'執行', autoEdit:'編輯', autoDelete:'刪除', autoMoveUp:'上移', autoMoveDown:'下移',
+      autoNameLabel:'名稱', autoEnabledLabel:'啟用此自動化', autoSummaryJoin:' · ',
+      autoEmpty:'還沒有自動化條目。點擊「新增自動化」，把備份、衝突檢查與收發資料組合成自動流程。',
+      autoLastRun:'上次執行 {0}', autoNeverRun:'從未執行',
+      autoConfirmDelete:'刪除自動化「{0}」？',
+      autoRunDone:'自動化「{0}」執行完成。', autoRunFail:'自動化「{0}」執行失敗：',
+      autoConflictFound:'偵測到衝突：「{0}」在上次自動化同步後又有變更，已取消並保留原資料。可先執行自動備份，或手動核對後再試。',
+      autoNoPeer:'附近沒有符合的裝置，自動化「{0}」本次未執行。', autoPeerGone:'裝置無法連接：{0}',
+      autoBusy:'手動同步正在進行，自動化「{0}」已跳過本次觸發。',
+      autoBackupDone:'已備份「{0}」', autoPushTargetMissing:'對方裝置上沒有同名檔案「{0}」，可改用「另存為新檔案」。', autoPullNothing:'對方裝置上沒有可匯入的行記資料。'
     }
   };
   const lanText = (key, ...values) => values.reduce((message, value, index) => message.replace(`{${index}}`, value), (lanMessages[uiSettings.language] || lanMessages.zh)[key] || '');
@@ -5265,8 +5398,7 @@
   let lanSendMode = 'replace';
   // 传输进行中时锁定对话框，防止中途关闭造成半写入状态。
   let lanTransferActive = false;
-  // 推送档案选择：默认跟随当前档案；切换到其他档案后快照只构建一次。
-  let lanSendProfileId = '';
+  // 发送档案的快照缓存：发送对话框里选定档案后只构建一次。
   let lanSendSnapshot = null;
   // 第二阶段数据到达时的写入上下文（含步骤显示）。
   let lanActiveReceiver = null;
@@ -5283,7 +5415,6 @@
   };
   const lanFormatBytes = bytes => lanText('bytesInfo', lanRawBytes(bytes));
   const lanProfileLabel = () => activeDataProfile()?.name || uiText('actaData');
-  const lanSendProfile = () => dataProfileById(lanSendProfileId) || activeDataProfile();
   const lanLocalStats = () => ({
     profile: lanProfileLabel(),
     notes: library.items.filter(item => item.type === 'note' && !isTrashed(item)).length,
@@ -5315,12 +5446,27 @@
       state.textContent = lanText('stateOff');
     }
     // 设备雷达：本机气泡的扩散环跟随服务状态。
-    const stage = byId('lanRadarStage');
-    if (stage) {
-      stage.classList.toggle('lan-service-on', lanServiceRunning && lanDiscoverable);
-      const radarSwitch = byId('lanRadarDiscoverable');
-      if (radarSwitch) radarSwitch.checked = lanDiscoverable;
-    }
+    byId('lanRadarStage')?.classList.toggle('lan-service-on', lanServiceRunning && lanDiscoverable);
+  }
+
+  // 本机气泡显示自定义名称与图标：优先取服务状态（与对外广播一致），
+  // 服务未启动时退回本地设置。
+  async function lanRenderSelfIdentity() {
+    const nameEl = byId('lanRadarSelfName');
+    const iconEl = byId('lanRadarSelfIcon');
+    const glyph = byId('lanRadarSelfGlyph');
+    if (!nameEl || !iconEl || !glyph) return;
+    let name = lanIdentity().name || lanText('radarSelfName');
+    let icon = lanIdentity().icon;
+    try {
+      const status = await lanBridge?.serviceStatus?.();
+      if (status?.device) name = status.device;
+      if (typeof status?.icon === 'string' && status.icon) icon = status.icon;
+    } catch { /* 服务未启动，使用本地设置 */ }
+    nameEl.textContent = name;
+    iconEl.textContent = icon;
+    iconEl.hidden = !icon;
+    glyph.hidden = Boolean(icon);
   }
 
   // 构建指定档案的完整数据包与统计：当前档案直接来自内存；其他档案从它
@@ -5351,18 +5497,32 @@
     };
   }
 
-  // 档案列表或信任标记变化时刷新本机服务的元数据（轻量，不含数据本体）。
+  // 本机身份（名称 / 图标 / 端口）：桌面端随服务启动与元数据刷新传给原生
+  // 层；Android 桥暂不支持扩展参数，保持主机名与自动端口。
+  const lanIdentity = () => ({
+    name: String(uiSettings.lanDeviceName || '').trim().slice(0, 40),
+    icon: String(uiSettings.lanDeviceIcon || '').trim().slice(0, 8),
+    port: Math.min(Math.max(Number(uiSettings.lanPort) || 0, 0), 65535)
+  });
+  // 档案列表、信任标记或本机身份变化时刷新运行中服务的元数据（轻量，
+  // 不含数据本体）；端口的重新绑定由设置变更处显式重启服务完成。
   function lanSyncUpdateMeta() {
     if (!lanBridge || !lanServiceRunning) return;
-    lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan).catch(() => {});
+    const call = window.actaDesktop
+      ? lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan, lanIdentity())
+      : lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan);
+    call.catch(() => {});
   }
 
   async function lanStartService() {
     if (!lanBridge) return;
     try {
-      const status = await lanBridge.startService(lanProfilesMeta(), lanTrustLan);
+      const status = await (window.actaDesktop
+        ? lanBridge.startService(lanProfilesMeta(), lanTrustLan, lanIdentity())
+        : lanBridge.startService(lanProfilesMeta(), lanTrustLan));
       lanServiceRunning = Boolean(status.running);
       lanDiscoverable = Boolean(status.discoverable);
+      void lanRenderSelfIdentity();
     } catch (error) {
       lanServiceRunning = false;
       lanDiscoverable = false;
@@ -5504,7 +5664,14 @@
         node = document.createElement('div');
         node.className = 'lan-radar-peer';
         node.dataset.session = peer.session;
-        node.innerHTML = `<button type="button" class="lan-peer-bubble" title="${escapeHTML(name)}" aria-label="${escapeHTML(name)}"><svg><use href="#i-database"/></svg></button><span class="lan-peer-name">${escapeHTML(name)}</span>`;
+        node.innerHTML = `<button type="button" class="lan-peer-bubble" title="${escapeHTML(name)}" aria-label="${escapeHTML(name)}">${peer.icon ? `<b class="lan-peer-emoji">${escapeHTML(peer.icon)}</b>` : '<svg><use href="#i-database"/></svg>'}</button><span class="lan-peer-name">${escapeHTML(name)}</span>`;
+      }
+      // 已知设备更新时同步图标（对端可能中途自定义了 emoji）。
+      const iconMarkup = peer.icon ? `<b class="lan-peer-emoji">${escapeHTML(peer.icon)}</b>` : '<svg><use href="#i-database"/></svg>';
+      if (node.dataset.icon !== (peer.icon || '')) {
+        node.dataset.icon = peer.icon || '';
+        const bubble = node.querySelector('.lan-peer-bubble');
+        if (bubble) bubble.innerHTML = iconMarkup;
       }
       if (fresh) {
         // 从本机（中心）滑向落点：CSS 变量提供起点偏移，入场带级联延迟。
@@ -5541,6 +5708,8 @@
       const peers = await lanBridge.discover(1800);
       lanPeers = Array.isArray(peers) ? peers : [];
       renderLanRadar();
+      // 扫描结果落地：驱动「发现设备 / 定时」类自动化条目。
+      lanAutomationEvaluator?.();
       if (lanPeers.length) {
         setLanStatus(lanText('foundPeers', lanPeers.length), 'success');
         byId('lanPeersHint').textContent = lanText('peersHint');
@@ -5671,7 +5840,8 @@
     error.textContent = '';
 
     if (isPush) {
-      lanFillSelect(byId('lanSyncSendProfile'), lanProfilesMeta(), lanSendProfileId || activeDataProfile()?.id);
+      // 发送档案默认跟随当前档案；传输里可临时改选，确认后记录在 plan 上。
+      lanFillSelect(byId('lanSyncSendProfile'), lanProfilesMeta(), activeDataProfile()?.id);
       lanFillSelect(byId('lanSyncTargetProfile'), plan.peer.profiles || [], plan.peer.profiles?.[0]?.id || '');
       lanSendMode = 'replace';
       lanConfirmMode = 'replace';
@@ -6009,36 +6179,53 @@
     resolve(result);
   }
 
-  byId('lanSyncGroup').hidden = !lanBridge;
-  if (lanBridge) {
-    const lanDiscoverableSetting = byId('lanDiscoverableSetting');
-    const lanTrustSetting = byId('lanTrustSetting');
-    lanDiscoverableSetting.checked = Boolean(uiSettings.lanDiscoverable);
-    lanTrustLan = Boolean(uiSettings.lanTrustLan);
-    lanTrustSetting.checked = lanTrustLan;
-    byId('lanPeersHint').textContent = lanText('peersHint');
-    // 「传输的行记数据」选择器：跟随档案列表变化，在档案变更钩子里保持同步。
-    lanSendProfileId = dataProfileById(uiSettings.lanSendProfileId)?.id || activeDataProfile()?.id || '';
-    const lanRenderProfileSelect = () => {
-      const select = byId('lanProfileSelect');
-      if (!lanSendProfileId || !dataProfileById(lanSendProfileId)) lanSendProfileId = activeDataProfile()?.id || '';
-      if (!lanSendProfileId) { select.innerHTML = ''; select.disabled = true; return; }
-      select.disabled = false;
-      lanFillSelect(select, lanProfilesMeta(), lanSendProfileId);
-      uiSettings.lanSendProfileId = lanSendProfileId;
-    };
-    lanProfilesChangedHook = () => { lanRenderProfileSelect(); lanSyncUpdateMeta(); };
-    lanRenderProfileSelect();
-    byId('lanProfileSelect').addEventListener('change', () => {
-      const id = byId('lanProfileSelect').value;
-      if (!dataProfileById(id) || id === lanSendProfileId) return;
-      lanSendProfileId = id;
-      lanSendSnapshot = null;
-      uiSettings.lanSendProfileId = id;
-      saveUISettings();
-      setLanStatus(lanText('snapshotReady', dataProfileById(id)?.name || ''), '');
-    });
-    updateLanStateUI();
+    byId('lanSyncGroup').hidden = !lanBridge;
+    if (lanBridge) {
+      const lanDiscoverableSetting = byId('lanDiscoverableSetting');
+      const lanTrustSetting = byId('lanTrustSetting');
+      lanDiscoverableSetting.checked = Boolean(uiSettings.lanDiscoverable);
+      lanTrustLan = Boolean(uiSettings.lanTrustLan);
+      lanTrustSetting.checked = lanTrustLan;
+      byId('lanPeersHint').textContent = lanText('peersHint');
+      // 本机身份设置：名称与图标可在服务运行中热更新（元数据刷新），
+      // 端口改变需要重新绑定，运行中时显式重启服务。
+      const lanDeviceNameInput = byId('lanDeviceName');
+      const lanDeviceIconInput = byId('lanDeviceIcon');
+      const lanPortInput = byId('lanPortSetting');
+      lanDeviceNameInput.value = String(uiSettings.lanDeviceName || '');
+      lanDeviceIconInput.value = String(uiSettings.lanDeviceIcon || '');
+      lanPortInput.value = Number(uiSettings.lanPort) > 0 ? String(Number(uiSettings.lanPort)) : '';
+      const lanIdentityChanged = async restart => {
+        saveUISettings();
+        if (restart && lanServiceRunning) {
+          await lanStopService();
+          await lanStartService();
+          if (lanServiceRunning) setLanStatus(lanText('serviceOn'), 'success');
+          return;
+        }
+        lanSyncUpdateMeta();
+        void lanRenderSelfIdentity();
+      };
+      lanDeviceNameInput.addEventListener('change', () => {
+        uiSettings.lanDeviceName = lanDeviceNameInput.value;
+        void lanIdentityChanged(false);
+      });
+      lanDeviceIconInput.addEventListener('change', () => {
+        uiSettings.lanDeviceIcon = lanDeviceIconInput.value;
+        void lanIdentityChanged(false);
+      });
+      lanPortInput.addEventListener('change', () => {
+        const port = Math.floor(Number(lanPortInput.value) || 0);
+        if (port !== 0 && (port < 1024 || port > 65535)) {
+          setLanStatus(lanText('portInvalid'), 'error');
+          lanPortInput.value = Number(uiSettings.lanPort) > 0 ? String(Number(uiSettings.lanPort)) : '';
+          return;
+        }
+        uiSettings.lanPort = port;
+        lanPortInput.value = port > 0 ? String(port) : '';
+        void lanIdentityChanged(true);
+      });
+      updateLanStateUI();
     setLanStatus(lanText('serviceOff'), '');
     if (lanDiscoverableSetting.checked) {
       void lanStartService().then(() => { if (lanServiceRunning) setLanStatus(lanText('serviceOn'), 'success'); });
@@ -6061,46 +6248,31 @@
       lanSyncUpdateMeta();
       setLanStatus(lanText(lanTrustLan ? 'trustOn' : 'trustOff'), lanTrustLan ? 'success' : '');
     });
-    // —— 设备雷达入口：弹出雷达窗口并持续扫描 ——
-    const lanRadarDialog = byId('lanRadarDialog');
+    // —— 设备雷达（内嵌在数据同步设置页）：面板可见时持续扫描 ——
+    let lanRadarVisible = false;
     let lanRadarScanTimer = null;
-    const setRadarCopy = () => {
-      byId('lanRadarTitle').textContent = lanText('radarTitle');
-      byId('lanRadarSubtitle').textContent = lanText('radarSubtitle');
-      byId('lanRadarHint').textContent = lanText('radarHint');
-      byId('lanRadarSelfName').textContent = lanText('radarSelfName');
-    };
-    const openLanRadar = async () => {
-      setRadarCopy();
-      updateLanStateUI();
-      openAnimatedDialog(lanRadarDialog);
-      // 本机名称从服务状态读取（未开启服务时留空显示兜底文案）。
-      try {
-        const status = await lanBridge.serviceStatus();
-        if (status?.device) byId('lanRadarSelfName').textContent = status.device;
-      } catch { /* 状态读取失败不影响窗口 */ }
-      void scanLanPeers();
-      clearInterval(lanRadarScanTimer);
-      lanRadarScanTimer = setInterval(() => { void scanLanPeers(); }, 3200);
-    };
-    const closeLanRadar = () => {
-      closeAnimatedDialog(lanRadarDialog);
-      closeLanPeerMenu();
-      clearInterval(lanRadarScanTimer);
-      lanRadarScanTimer = null;
-    };
-    byId('lanRadarOpen').addEventListener('click', () => { void openLanRadar(); });
-    byId('closeLanRadar').addEventListener('click', closeLanRadar);
-    lanRadarDialog.addEventListener('cancel', event => { event.preventDefault(); closeLanRadar(); });
-    // 雷达窗口内的发现开关与设置页同步：改设置页原生控件再派发 change，
-    // 复用同一套启动/停止服务逻辑。
-    byId('lanRadarDiscoverable').addEventListener('change', () => {
-      const setting = byId('lanDiscoverableSetting');
-      if (setting.checked !== byId('lanRadarDiscoverable').checked) {
-        setting.checked = byId('lanRadarDiscoverable').checked;
-        setting.dispatchEvent(new Event('change'));
+    const radarPanelActive = () => document.querySelector('[data-settings-panel="cloud"]')?.classList.contains('active') || false;
+    const syncRadarScanning = () => {
+      const wanted = lanRadarVisible && radarPanelActive();
+      if (wanted && !lanRadarScanTimer) {
+        void scanLanPeers();
+        lanRadarScanTimer = setInterval(() => { void scanLanPeers(); }, 3200);
+      } else if (!wanted && lanRadarScanTimer) {
+        clearInterval(lanRadarScanTimer);
+        lanRadarScanTimer = null;
       }
-    });
+    };
+    // 设置页显隐钩子（openSettings / closeSettings / switchSettingsPage 调用）。
+    lanRadarVisibilityHook = visible => {
+      lanRadarVisible = visible;
+      if (visible) {
+        updateLanStateUI();
+        void lanRenderSelfIdentity();
+      } else {
+        closeLanPeerMenu();
+      }
+      syncRadarScanning();
+    };
     // 气泡点击弹出操作菜单；点击空白处收起。
     byId('lanRadarStage').addEventListener('click', event => {
       const bubble = event.target.closest('.lan-peer-bubble');
@@ -6117,6 +6289,479 @@
       }
       openLanPeerMenu(peer, wrapper);
     });
+
+    // —— 同步自动化：模块化条目（触发器 + 步骤序列）——
+    // 步骤即命令：自动备份 / 冲突检查 / 发送到设备 / 从设备导入，自由增删
+    // 排序。执行复用手动传输的同一套桥接与写入路径；自动化运行时手动传输
+    // 被锁定（lanBusy），手动传输进行中时自动化让位，双方不会互相穿插。
+    const LAN_STEP_ICONS = { backup: 'i-copy', conflict: 'i-undo', push: 'i-upload', pull: 'i-download' };
+    const lanAutomationListNode = byId('lanAutomationList');
+    const lanAutomations = () => (Array.isArray(uiSettings.lanAutomations) ? uiSettings.lanAutomations : []);
+    const lanAutomationRecords = () => (uiSettings.lanAutomationRuns && typeof uiSettings.lanAutomationRuns === 'object' ? uiSettings.lanAutomationRuns : {});
+    let lanAutomationEditingId = '';
+    let lanAutomationDraft = null;
+    let lanAutomationRunning = false;
+    let lanAutomationSeen = new Set();
+    const lanAutomationCooldown = new Map();
+    const LAN_AUTOMATION_COOLDOWN_MS = 10 * 60 * 1000;
+    const lanPeerKey = peer => `${peer?.name || ''}|${peer?.ip || ''}`;
+
+    const lanSaveAutomations = () => {
+      uiSettings.lanAutomations = lanAutomations();
+      saveUISettings();
+    };
+    const lanRecordRun = (entry, patch) => {
+      const runs = lanAutomationRecords();
+      runs[entry.id] = { ...(runs[entry.id] || {}), at: new Date().toISOString(), ...patch };
+      uiSettings.lanAutomationRuns = runs;
+      saveUISettings();
+    };
+    const lanStepSummary = step => {
+      if (step.type === 'backup') return lanText('autoBackupSummary', dataProfileById(step.profileId)?.name || lanText('autoCurrentProfile'));
+      if (step.type === 'conflict') return lanText('autoConflictSummary');
+      const source = dataProfileById(step.profileId)?.name || lanText('autoCurrentProfile');
+      if (step.type === 'push') return step.mode === 'copy' ? lanText('autoPushCopySummary', source) : lanText('autoPushReplaceSummary', source);
+      return step.mode === 'copy' ? lanText('autoPullCopySummary') : lanText('autoPullReplaceSummary');
+    };
+    const lanTriggerSummary = entry => {
+      const trigger = entry.trigger || {};
+      if (trigger.type === 'interval') return lanText('autoTriggerInterval', trigger.minutes || 15);
+      if (trigger.type === 'manual') return lanText('autoTriggerManual');
+      return trigger.pattern ? lanText('autoTriggerDevicePattern', trigger.pattern) : lanText('autoTriggerDevice');
+    };
+    const lanTriggerMatches = (entry, peer) => {
+      const pattern = String(entry.trigger?.pattern || '').trim();
+      return !pattern || (peer.name || '').includes(pattern);
+    };
+    const lanAutomationScanDue = () => lanServiceRunning && lanAutomations().some(entry => entry.enabled && entry.trigger?.type !== 'manual');
+
+    // —— 执行 ——
+    async function lanRunAutomation(entry, peer) {
+      if (!lanBridge || !entry?.steps?.length) return;
+      if (lanBusy || lanTransferActive || lanAutomationRunning || lanIncomingActive || lanDataBusy) {
+        const message = lanText('autoBusy', entry.name);
+        setLanStatus(message, 'error');
+        showSyncNotice(message, 'error');
+        return;
+      }
+      lanAutomationRunning = true;
+      lanBusy = true;
+      const notice = message => showSyncNotice(`${entry.name} · ${message}`);
+      try {
+        const resolved = peer ? await lanResolvePeer(peer) : null;
+        if (!resolved) throw { message: lanText('autoPeerGone', peer?.name || lanText('unknownDevice')) };
+        for (let index = 0; index < entry.steps.length; index += 1) {
+          const step = entry.steps[index];
+          if (step.type === 'backup') {
+            const profile = dataProfileById(step.profileId) || activeDataProfile();
+            if (!profile) continue;
+            const snapshot = profile.id === activeDataProfile()?.id ? library : await loadDataProfileSnapshot(profile, false);
+            const backup = await lanBridge.backupLocal(createPortableDataFolderBundle(clearLegacyTags(JSON.parse(JSON.stringify(snapshot)))), profile.name);
+            notice(lanText('autoBackupDone', profile.name) + (backup?.path ? ` ${backup.path}` : ''));
+          } else if (step.type === 'conflict') {
+            // 冲突检查作用于其后第一个收发步骤的覆盖目标：目标规模与上次
+            // 自动化成功写入的记录不一致，说明对方（或本机）又有改动，
+            // 覆盖可能丢数据——取消整个条目并报告，宁可不同步。
+            const next = entry.steps.slice(index + 1).find(candidate => candidate.type === 'push' || candidate.type === 'pull');
+            if (!next || next.mode === 'copy') continue;
+            const record = lanAutomationRecords()[entry.id];
+            if (!record?.sent || record.peerKey !== lanPeerKey(resolved)) continue;
+            let target;
+            if (next.type === 'push') {
+              const sourceName = dataProfileById(next.profileId)?.name || activeDataProfile()?.name;
+              target = (resolved.profiles || []).find(candidate => candidate.name === sourceName);
+            } else {
+              const local = dataProfileById(next.targetProfileId) || activeDataProfile();
+              target = local ? { name: local.name, notes: profileStats(local).notes, todos: profileStats(local).todos } : null;
+            }
+            if (target && (Number(target.notes) !== Number(record.sent.notes) || Number(target.todos) !== Number(record.sent.todos))) {
+              throw { conflict: true, message: lanText('autoConflictFound', target.name || lanText('unknownDevice')) };
+            }
+          } else if (step.type === 'push') {
+            const sendProfile = dataProfileById(step.profileId) || activeDataProfile();
+            if (!sendProfile) throw { message: lanText('targetMissing') };
+            const mode = step.mode === 'copy' ? 'copy' : 'replace';
+            const { bundle, info } = await lanBuildSendBundle(sendProfile);
+            const sameName = (resolved.profiles || []).find(candidate => candidate.name === sendProfile.name);
+            if (mode === 'replace' && !sameName) throw { message: lanText('autoPushTargetMissing', sendProfile.name) };
+            const status = await lanBridge.serviceStatus().catch(() => null);
+            const token = await lanBridge.pushPlan(resolved.ip, resolved.port, resolved.session, {
+              device: status?.device || 'Acta',
+              platform: status?.platform || '',
+              profile: info.profile,
+              mode,
+              targetProfileId: mode === 'replace' ? sameName.id : '',
+              targetProfileName: mode === 'replace' ? sameName.name : '',
+              notes: info.notes,
+              todos: info.todos,
+              classifications: info.classifications
+            });
+            const applied = await lanBridge.pushData(resolved.ip, resolved.port, resolved.session, token, bundle);
+            if (!applied) throw { message: lanText('pushRefused', resolved.name || lanText('unknownDevice')) };
+            notice(lanText('pushDone', resolved.name || lanText('unknownDevice')));
+            lanRecordRun(entry, { result: 'ok', peerKey: lanPeerKey(resolved), peerName: resolved.name || '', sent: { notes: info.notes, todos: info.todos }, message: lanText('pushDone', resolved.name || '') });
+          } else if (step.type === 'pull') {
+            if (!resolved.trusted) throw { message: lanText('peerUntrusted') };
+            const mode = step.mode === 'copy' ? 'copy' : 'replace';
+            const localName = activeDataProfile()?.name || '';
+            const peerProfile = (resolved.profiles || []).find(candidate => candidate.name === localName) || (resolved.profiles || [])[0];
+            if (!peerProfile) throw { message: lanText('autoPullNothing') };
+            const bundle = await lanRetry(() => lanBridge.fetchProfileBundle(resolved.ip, resolved.port, resolved.session, peerProfile.id));
+            if (mode === 'copy') {
+              const profile = await lanCopyBundleAsProfile(bundle, peerProfile.name, false);
+              notice(lanText('copyDone', profile.name));
+            } else {
+              const target = activeDataProfile();
+              if (!target) throw { message: lanText('targetMissing') };
+              const backup = await lanWriteIntoProfile(target, bundle, null, -1, -1);
+              notice(`${lanText('replaceDone', target.name)} ${lanText('backupDoneAt', backup.path)}`);
+            }
+            lanRecordRun(entry, { result: 'ok', peerKey: lanPeerKey(resolved), peerName: resolved.name || '', sent: { notes: peerProfile.notes || 0, todos: peerProfile.todos || 0 }, message: lanText('pullDone', resolved.name || '') });
+          }
+        }
+        setLanStatus(lanText('autoRunDone', entry.name), 'success');
+        showSyncNotice(lanText('autoRunDone', entry.name), 'success');
+      } catch (error) {
+        const detail = error?.conflict ? error.message : `${lanText('autoRunFail', entry.name)}${error?.message || error}`;
+        setLanStatus(detail, 'error');
+        showSyncNotice(detail, 'error');
+        lanRecordRun(entry, { result: error?.conflict ? 'conflict' : 'fail', message: error?.message ? String(error.message) : String(error) });
+      } finally {
+        lanAutomationRunning = false;
+        lanBusy = false;
+        lanRenderAutomations();
+      }
+    }
+
+    // —— 触发器评估：扫描结果落地后调用 ——
+    // 设备在扫描间抖动（掉线又上线）时按条目+设备做 10 分钟冷却，
+    // 避免同一条目对同一设备反复执行。
+    function lanEvaluateAutomations() {
+      if (!lanServiceRunning || lanAutomationRunning || lanBusy) return;
+      const now = Date.now();
+      const presentKeys = new Set(lanPeers.map(lanPeerKey));
+      lanAutomations().forEach(entry => {
+        if (!entry.enabled) return;
+        const trigger = entry.trigger || {};
+        if (trigger.type === 'interval') {
+          const minutes = Math.max(Number(trigger.minutes) || 15, 1);
+          const last = Date.parse(entry.lastRunAt || '') || 0;
+          if (now - last < minutes * 60000) return;
+          const peer = lanPeers.find(candidate => lanTriggerMatches(entry, candidate));
+          if (peer) void lanRunAutomation(entry, peer);
+          return;
+        }
+        if (trigger.type === 'manual') return;
+        // device-found：本轮新出现的设备。
+        lanPeers.forEach(peer => {
+          const key = lanPeerKey(peer);
+          if (presentKeys.has(key) && lanAutomationSeen.has(key)) return;
+          if (lanAutomationSeen.has(key)) return;
+          if (!lanTriggerMatches(entry, peer)) return;
+          const cooldownKey = `${entry.id}::${key}`;
+          if (now - (lanAutomationCooldown.get(cooldownKey) || 0) < LAN_AUTOMATION_COOLDOWN_MS) return;
+          lanAutomationCooldown.set(cooldownKey, now);
+          void lanRunAutomation(entry, peer);
+        });
+      });
+      lanAutomationSeen = presentKeys;
+    }
+
+    // —— 卡片与编辑器 ——
+    const lanAutomationMetaButton = (label, icon) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'settings-button secondary';
+      button.innerHTML = `<svg><use href="#${icon}"/></svg><span>${escapeHTML(label)}</span>`;
+      return button;
+    };
+    const lanBuildAutomationCard = entry => {
+      const card = document.createElement('div');
+      card.className = 'lan-automation-card';
+      card.dataset.automationId = entry.id;
+      const head = document.createElement('div');
+      head.className = 'settings-row';
+      const copy = document.createElement('span');
+      const stepsSummary = entry.steps.map(lanStepSummary).join(lanText('autoSummaryJoin')) || lanText('autoNoSteps');
+      copy.innerHTML = `<b>${escapeHTML(entry.name || lanText('autoNewName'))}</b><small>${escapeHTML(lanTriggerSummary(entry))}${escapeHTML(lanText('autoSummaryJoin'))}${escapeHTML(stepsSummary)}</small>`;
+      const toggle = document.createElement('input');
+      toggle.type = 'checkbox';
+      toggle.checked = entry.enabled !== false;
+      toggle.setAttribute('aria-label', lanText('autoEnabledLabel'));
+      toggle.addEventListener('change', () => {
+        entry.enabled = toggle.checked;
+        lanSaveAutomations();
+      });
+      head.append(copy, toggle);
+      const last = document.createElement('p');
+      last.className = 'lan-automation-last';
+      const resultText = entry.lastResult?.message ? ` · ${entry.lastResult.message}` : '';
+      last.textContent = entry.lastRunAt ? `${lanText('autoLastRun', formatDateTimeSeconds(entry.lastRunAt))}${resultText}` : lanText('autoNeverRun');
+      const actions = document.createElement('div');
+      actions.className = 'lan-automation-actions';
+      const runButton = lanAutomationMetaButton(lanText('autoRun'), 'i-lightning');
+      runButton.addEventListener('click', () => {
+        const peer = lanPeers.find(candidate => lanTriggerMatches(entry, candidate));
+        if (!peer) {
+          const message = lanText('autoNoPeer', entry.name);
+          setLanStatus(message, 'error');
+          showSyncNotice(message, 'error');
+          return;
+        }
+        void lanRunAutomation(entry, peer);
+      });
+      const editButton = lanAutomationMetaButton(lanText('autoEdit'), 'i-edit');
+      editButton.addEventListener('click', () => {
+        lanAutomationEditingId = entry.id;
+        lanAutomationDraft = JSON.parse(JSON.stringify(entry));
+        lanRenderAutomations();
+      });
+      const deleteButton = lanAutomationMetaButton(lanText('autoDelete'), 'i-trash');
+      deleteButton.addEventListener('click', () => {
+        if (!window.confirm(lanText('autoConfirmDelete', entry.name || lanText('autoNewName')))) return;
+        const list = lanAutomations();
+        list.splice(list.findIndex(candidate => candidate.id === entry.id), 1);
+        lanSaveAutomations();
+        lanRenderAutomations();
+      });
+      actions.append(runButton, editButton, deleteButton);
+      card.append(head, last, actions);
+      return card;
+    };
+
+    const lanBuildAutomationEditor = draft => {
+      const card = document.createElement('div');
+      card.className = 'lan-automation-card';
+      const nameRow = document.createElement('label');
+      nameRow.className = 'settings-row';
+      nameRow.innerHTML = `<span><b>${escapeHTML(lanText('autoNameLabel'))}</b></span>`;
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.maxLength = 40;
+      nameInput.value = draft.name || '';
+      nameInput.addEventListener('change', () => { draft.name = nameInput.value; });
+      nameRow.appendChild(nameInput);
+      const triggerRow = document.createElement('label');
+      triggerRow.className = 'settings-row';
+      triggerRow.innerHTML = `<span><b>${escapeHTML(lanText('autoTriggerLabel'))}</b><small>${escapeHTML(lanText('autoTriggerHint'))}</small></span>`;
+      const triggerSelect = document.createElement('select');
+      [['device-found', 'autoTriggerDevice'], ['interval', 'autoTriggerIntervalLabel'], ['manual', 'autoTriggerManual']].forEach(([value, key]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = lanText(key);
+        triggerSelect.appendChild(option);
+      });
+      triggerSelect.value = draft.trigger?.type || 'device-found';
+      triggerRow.appendChild(triggerSelect);
+      const patternRow = document.createElement('label');
+      patternRow.className = 'settings-row';
+      patternRow.innerHTML = `<span><b>${escapeHTML(lanText('autoTriggerPatternLabel'))}</b><small>${escapeHTML(lanText('autoTriggerPatternHint'))}</small></span>`;
+      const patternInput = document.createElement('input');
+      patternInput.type = 'text';
+      patternInput.maxLength = 40;
+      patternInput.value = draft.trigger?.pattern || '';
+      patternInput.addEventListener('change', () => { draft.trigger.pattern = patternInput.value; });
+      patternRow.appendChild(patternInput);
+      const intervalRow = document.createElement('label');
+      intervalRow.className = 'settings-row';
+      intervalRow.innerHTML = `<span><b>${escapeHTML(lanText('autoTriggerIntervalLabel'))}</b><small>${escapeHTML(lanText('autoTriggerIntervalHint'))}</small></span>`;
+      const intervalSelect = document.createElement('select');
+      [5, 15, 30, 60].forEach(minutes => {
+        const option = document.createElement('option');
+        option.value = String(minutes);
+        option.textContent = lanText('autoTriggerInterval', minutes);
+        intervalSelect.appendChild(option);
+      });
+      intervalSelect.value = String(draft.trigger?.minutes || 15);
+      intervalSelect.addEventListener('change', () => { draft.trigger.minutes = Number(intervalSelect.value); });
+      intervalRow.appendChild(intervalSelect);
+      const syncTriggerRows = () => {
+        patternRow.hidden = triggerSelect.value !== 'device-found';
+        intervalRow.hidden = triggerSelect.value !== 'interval';
+      };
+      triggerSelect.addEventListener('change', () => {
+        draft.trigger.type = triggerSelect.value;
+        syncTriggerRows();
+      });
+      const stepsBox = document.createElement('div');
+      stepsBox.className = 'lan-automation-steps';
+      const renderSteps = () => {
+        stepsBox.innerHTML = '';
+        draft.steps.forEach((step, index) => {
+          const row = document.createElement('div');
+          row.className = 'lan-automation-step';
+          const tag = document.createElement('span');
+          tag.className = 'lan-automation-step-tag';
+          tag.textContent = String(index + 1);
+          const body = document.createElement('span');
+          body.className = 'lan-automation-step-body';
+          const title = document.createElement('b');
+          title.textContent = lanText(step.type === 'backup' ? 'autoStepBackup' : step.type === 'conflict' ? 'autoStepConflict' : step.type === 'push' ? 'autoStepPush' : 'autoStepPull');
+          body.appendChild(title);
+          const profileOptions = [{ id: '', name: lanText('autoCurrentProfile') }, ...lanProfilesMeta()];
+          if (step.type === 'backup' || step.type === 'push') {
+            const summary = document.createElement('small');
+            summary.textContent = lanStepSummary(step);
+            body.appendChild(summary);
+            const profileSelect = document.createElement('select');
+            profileOptions.forEach(optionMeta => {
+              const option = document.createElement('option');
+              option.value = optionMeta.id;
+              option.textContent = optionMeta.name;
+              profileSelect.appendChild(option);
+            });
+            profileSelect.value = step.profileId || '';
+            profileSelect.addEventListener('change', () => { step.profileId = profileSelect.value; summary.textContent = lanStepSummary(step); });
+            body.appendChild(profileSelect);
+          }
+          if (step.type === 'push' || step.type === 'pull') {
+            const modeSelect = document.createElement('select');
+            [['replace', step.type === 'push' ? 'autoPushReplaceShort' : 'autoPullReplaceShort'], ['copy', step.type === 'push' ? 'autoPushCopyShort' : 'autoPullCopyShort']].forEach(([value, key]) => {
+              const option = document.createElement('option');
+              option.value = value;
+              option.textContent = lanText(key);
+              modeSelect.appendChild(option);
+            });
+            modeSelect.value = step.mode === 'copy' ? 'copy' : 'replace';
+            modeSelect.addEventListener('change', () => {
+              step.mode = modeSelect.value;
+              body.querySelector('small')?.remove?.();
+              const summary = document.createElement('small');
+              summary.textContent = lanStepSummary(step);
+              body.insertBefore(summary, modeSelect);
+            });
+            body.appendChild(modeSelect);
+          }
+          if (step.type === 'conflict') {
+            const summary = document.createElement('small');
+            summary.textContent = lanStepSummary(step);
+            body.appendChild(summary);
+          }
+          const tools = document.createElement('span');
+          tools.className = 'lan-automation-step-tools';
+          const upButton = document.createElement('button');
+          upButton.type = 'button';
+          upButton.title = lanText('autoMoveUp');
+          upButton.disabled = index === 0;
+          upButton.innerHTML = '<svg style="transform:rotate(-90deg)"><use href="#i-chevron"/></svg>';
+          upButton.addEventListener('click', () => {
+            draft.steps.splice(index - 1, 0, draft.steps.splice(index, 1)[0]);
+            renderSteps();
+          });
+          const downButton = document.createElement('button');
+          downButton.type = 'button';
+          downButton.title = lanText('autoMoveDown');
+          downButton.disabled = index === draft.steps.length - 1;
+          downButton.innerHTML = '<svg style="transform:rotate(90deg)"><use href="#i-chevron"/></svg>';
+          downButton.addEventListener('click', () => {
+            draft.steps.splice(index + 1, 0, draft.steps.splice(index, 1)[0]);
+            renderSteps();
+          });
+          const removeButton = document.createElement('button');
+          removeButton.type = 'button';
+          removeButton.title = lanText('autoDelete');
+          removeButton.innerHTML = '<svg><use href="#i-close"/></svg>';
+          removeButton.addEventListener('click', () => {
+            draft.steps.splice(index, 1);
+            renderSteps();
+          });
+          tools.append(upButton, downButton, removeButton);
+          row.append(tag, body, tools);
+          stepsBox.appendChild(row);
+        });
+      };
+      renderSteps();
+      const addRow = document.createElement('label');
+      addRow.className = 'settings-row';
+      addRow.innerHTML = `<span><b>${escapeHTML(lanText('autoAddStep'))}</b></span>`;
+      const addSelect = document.createElement('select');
+      [['', 'autoAddStepPlaceholder'], ['backup', 'autoStepBackup'], ['conflict', 'autoStepConflict'], ['push', 'autoStepPush'], ['pull', 'autoStepPull']].forEach(([value, key]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = lanText(key);
+        addSelect.appendChild(option);
+      });
+      addSelect.addEventListener('change', () => {
+        if (!addSelect.value) return;
+        if (addSelect.value === 'backup') draft.steps.push({ type: 'backup', profileId: '' });
+        else if (addSelect.value === 'conflict') draft.steps.push({ type: 'conflict' });
+        else if (addSelect.value === 'push') draft.steps.push({ type: 'push', profileId: '', mode: 'replace' });
+        else draft.steps.push({ type: 'pull', mode: 'replace' });
+        addSelect.value = '';
+        renderSteps();
+      });
+      addRow.appendChild(addSelect);
+      const actions = document.createElement('div');
+      actions.className = 'lan-automation-actions';
+      const saveButton = lanAutomationMetaButton(lanText('autoSave'), 'i-check');
+      saveButton.classList.remove('secondary');
+      saveButton.addEventListener('click', () => {
+        const list = lanAutomations();
+        const index = list.findIndex(candidate => candidate.id === draft.id);
+        if (index >= 0) list[index] = JSON.parse(JSON.stringify(draft));
+        lanAutomationEditingId = '';
+        lanAutomationDraft = null;
+        lanSaveAutomations();
+        lanRenderAutomations();
+      });
+      const cancelButton = lanAutomationMetaButton(lanText('autoCancel'), 'i-close');
+      cancelButton.addEventListener('click', () => {
+        lanAutomationEditingId = '';
+        lanAutomationDraft = null;
+        lanRenderAutomations();
+      });
+      actions.append(saveButton, cancelButton);
+      card.append(nameRow, triggerRow, patternRow, intervalRow, stepsBox, addRow, actions);
+      syncTriggerRows();
+      return card;
+    };
+
+    function lanRenderAutomations() {
+      if (!lanAutomationListNode) return;
+      const entries = lanAutomations();
+      if (!entries.length && !lanAutomationEditingId) {
+        lanAutomationListNode.innerHTML = `<p class="lan-automation-empty">${escapeHTML(lanText('autoEmpty'))}</p>`;
+        return;
+      }
+      lanAutomationListNode.innerHTML = '';
+      entries.forEach(entry => {
+        lanAutomationListNode.appendChild(entry.id === lanAutomationEditingId && lanAutomationDraft
+          ? lanBuildAutomationEditor(lanAutomationDraft)
+          : lanBuildAutomationCard(entry));
+      });
+    }
+    byId('lanAutomationAdd')?.addEventListener('click', () => {
+      const entry = {
+        id: uid(),
+        name: lanText('autoNewName'),
+        enabled: true,
+        trigger: { type: 'device-found', pattern: '', minutes: 15 },
+        steps: [{ type: 'backup', profileId: '' }, { type: 'push', profileId: '', mode: 'replace' }],
+        lastRunAt: '',
+        lastResult: null
+      };
+      lanAutomations().push(entry);
+      lanSaveAutomations();
+      lanAutomationEditingId = entry.id;
+      lanAutomationDraft = JSON.parse(JSON.stringify(entry));
+      lanRenderAutomations();
+      lanAutomationListNode?.lastElementChild?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+    lanAutomationRenderHook = () => lanRenderAutomations();
+    lanAutomationEvaluator = () => lanEvaluateAutomations();
+    // 后台扫描循环：雷达可见时跟手（3.2s 一轮）；不可见时只为自动化保活
+    //（约 16s 一轮），服务未开启时不做任何扫描。
+    let lanScanTick = 0;
+    setInterval(() => {
+      if (!lanServiceRunning) return;
+      lanScanTick += 1;
+      if (lanRadarVisible && radarPanelActive()) {
+        void scanLanPeers();
+        return;
+      }
+      if (lanAutomationScanDue() && lanScanTick % 5 === 0) void scanLanPeers();
+    }, 3200);
+    lanRenderAutomations();
     // 对话框控件：选择与模式变化即时重算展示。
     const lanDialogRefresh = () => lanRefreshDialog(lanConfirmPlan);
     byId('lanSyncSendProfile').addEventListener('change', lanDialogRefresh);
