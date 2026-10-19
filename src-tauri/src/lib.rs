@@ -42,7 +42,7 @@ fn reveal_main_window(app: &AppHandle) {
 fn ensure_tray(app: &AppHandle) -> Result<(), String> {
     {
         let tray = app.state::<TrayHandle>();
-        let mut guard = tray.0.lock().map_err(|error| error.to_string())?;
+        let guard = tray.0.lock().map_err(|error| error.to_string())?;
         if let Some(icon) = guard.as_ref() {
             let _ = icon.set_visible(true);
             return Ok(());
@@ -91,7 +91,7 @@ fn set_background_run(
     state.0.store(enabled, Ordering::Relaxed);
     if enabled {
         ensure_tray(&app)?;
-    } else if let Some(icon) = app.state::<TrayHandle>().0.lock().map_err(|error| error.to_string())?.take() {
+    } else if let Some(icon) = tray.0.lock().map_err(|error| error.to_string())?.take() {
         let _ = icon.set_visible(false);
     }
     Ok(())
@@ -129,8 +129,9 @@ fn lan_sync_start_service(
     state: tauri::State<'_, lan_sync::LanState>,
     profiles: Vec<lan_sync::LanProfileMeta>,
     trusted: bool,
+    identity: Option<lan_sync::LanIdentity>,
 ) -> Result<lan_sync::LanServiceStatus, String> {
-    lan_sync::lan_sync_start_service(app, &state, profiles, trusted)
+    lan_sync::lan_sync_start_service(app, &state, profiles, trusted, identity)
 }
 
 #[tauri::command]
@@ -138,8 +139,9 @@ fn lan_sync_update_meta(
     state: tauri::State<'_, lan_sync::LanState>,
     profiles: Vec<lan_sync::LanProfileMeta>,
     trusted: bool,
+    identity: Option<lan_sync::LanIdentity>,
 ) -> Result<(), String> {
-    lan_sync::lan_sync_update_meta(&state, profiles, trusted)
+    lan_sync::lan_sync_update_meta(&state, profiles, trusted, identity)
 }
 
 #[tauri::command]
