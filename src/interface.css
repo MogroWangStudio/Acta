@@ -116,7 +116,7 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-window-controls svg { width: 13px; height: 13px; }
 html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 /* 设置内容居中收窄：全屏后左右留给导航与留白，阅读宽度保持舒适。 */
-.settings-content { width: 100%; max-width: 920px; margin: 0 auto; }
+
 @media (min-width: 801px) {
   html[data-desktop-platform="darwin"] .settings-header { padding-left: 84px; }
 }
@@ -135,6 +135,9 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 .settings-nav button.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 3px rgba(47,50,43,.05); }
 .settings-nav svg { width: 15px; }
 .settings-content { min-width: 0; overflow: hidden auto; padding: 34px 40px 42px; }
+/* 面板列居中收窄到 920px 保持阅读宽度；滚动容器仍是整窗宽的内容区，
+   滚动条贴住窗口右缘（此前滚动条跟着 920px 列悬在半空）。 */
+.settings-panel { max-width: 920px; margin: 0 auto; }
 .settings-panel { display: none; animation: editorReveal .35s var(--ease-out) both; }
 .settings-panel.active { display: block; }
 .settings-panel > header { margin-bottom: 25px; }
