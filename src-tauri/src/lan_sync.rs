@@ -276,13 +276,13 @@ fn sanitize_icon(raw: &str) -> String {
     raw.trim().chars().take(8).collect()
 }
 
-// 把身份覆盖应用到运行中的服务：空名称沿用现有值。
+// 把身份覆盖应用到运行中的服务：名称留空表示恢复主机名（与前端
+// 「留空使用主机名」的语义一致），这样自定义名随时可撤销。
 fn apply_identity(service: &LanService, identity: &LanIdentity) {
     let name = identity.name.trim();
-    if !name.is_empty() {
-        if let Ok(mut guard) = service.device.lock() {
-            *guard = name.to_string();
-        }
+    let resolved = if name.is_empty() { device_host_name() } else { name.to_string() };
+    if let Ok(mut guard) = service.device.lock() {
+        *guard = resolved;
     }
     if let Ok(mut guard) = service.icon.lock() {
         *guard = sanitize_icon(&identity.icon);

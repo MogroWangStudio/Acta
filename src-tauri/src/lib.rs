@@ -1870,6 +1870,11 @@ pub fn run() {
                 app_handle,
                 window_config.as_ref().ok_or("主窗口配置缺失")?,
             )?;
+            #[cfg(target_os = "macos")]
+            {
+                // 红绿灯垂直居中于 52px 标题栏、贴左侧并留出少量间距。
+                window_builder = window_builder.traffic_light_position(tauri::LogicalPosition::new(12.0, 20.0));
+            }
             #[cfg(target_os = "windows")]
             if let Some(portable) = portable_data_dir() {
                 if fs::create_dir_all(&portable).is_ok() {

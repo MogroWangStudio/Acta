@@ -88,22 +88,38 @@
     copied:'已複製到剪貼簿', copyFailed:'複製失敗'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
-  Object.assign(dictionaries.zh, { lanRadarNav:'局域网雷达' });
+  Object.assign(dictionaries.zh, { lanRadarNav:'局域网雷达', '返回':'返回' });
+  Object.assign(dictionaries.en, { '返回':'Back' });
+  Object.assign(dictionaries['zh-Hant'], { '返回':'返回' });
   Object.assign(dictionaries.en, {
     lanRadarNav:'LAN radar', '局域网雷达':'LAN radar',
     '设备名称':'Device name', '其他设备在雷达和同步请求中看到的名字，留空时使用电脑主机名':"The name other devices see on the radar and in sync requests; leave empty to use this computer's hostname", '本机主机名':"This computer's hostname",
     '设备图标':'Device icon', '用一个 emoji 作为本机在雷达上的头像，留空显示默认图标':"Use an emoji as this device's avatar on the radar; leave empty for the default icon", '例：🌿':'e.g. 🌿',
-    '服务端口':'Service port', '数据传输使用的 TCP 端口（1024-65535），留空自动分配；修改后需重新开启「允许被其他设备发现」才会生效':'TCP port for data transfers (1024-65535); leave empty for automatic assignment. Discovery must be toggled again after changing it', '自动分配':'Automatic',
-    '关闭窗口时转入后台':'Keep running in the background', '关闭窗口后 Acta 保留在系统托盘，继续进行局域网发现与自动化同步；从托盘图标恢复窗口或退出':'Closing the window keeps Acta in the system tray so LAN discovery and automations continue; restore or quit from the tray icon',
-    '同步自动化':'Sync automations', '把自动备份、冲突检查与收发数据组合成自动化条目，在发现设备或定时到达时自动执行':'Combine automatic backups, conflict checks, and data transfers into automations that run when a device is found or on a schedule', '新建自动化':'New automation'
+    '服务端口':'Service port', 'TCP 端口，留空自动分配；修改后需重开发现':'TCP port; empty means automatic', '自动分配':'Automatic',
+    '关闭窗口时转入后台':'Keep running in the background', '关闭窗口后保留在系统托盘，局域网同步继续；可从托盘恢复或退出':'Closing the window keeps Acta in the tray; LAN sync continues. Restore or quit from the tray',
+    '同步自动化':'Sync automations', '组合备份、冲突检查与收发步骤，按触发器自动执行':'Compose backups, conflict checks, and transfers; run by trigger', '新建自动化':'New automation',
+    '保存 Acta 自身的设置；行记数据仍按数据档案的位置存储。':'Stores Acta\'s own settings; data profiles keep their own locations.',
+    '更改后立即迁移现有设置':'Existing settings migrate immediately',
+    '勾选框旁显示完成日期，悬停看时刻':'Show completion dates next to checkboxes',
+    '列表与归类视图默认显示已完成待办':'Show completed tasks in lists and folders by default',
+    '完成后先停留再移到列表末尾，可撤回':'Completed cards linger, then glide to the end',
+    '完成到开始移动的等待时间':'Wait before a completed card moves',
+    '点击右侧按钮可预览':'Preview with the button on the right',
+    '数值越大播放越快':'Higher values play faster',
+    '聚焦时边框与光环淡入':'Focus ring fades in on inputs',
+    '留空时使用主机名':'Empty means this computer\'s hostname',
+    '雷达头像，留空用默认图标':'Emoji avatar on the radar',
+    '每个档案都包含完整的归类、笔记和待办，可保存在本地或指定文件夹。':'Each profile holds classifications, notes, and tasks; local or folder-backed.',
+    '空间不足时浏览器可能清理本地数据，请定期导出备份。':'Browsers may evict local data; export backups regularly.',
+    '当前档案的容量与内容概览':'Size and content of the active profile'
   });
   Object.assign(dictionaries['zh-Hant'], {
     lanRadarNav:'區域網路雷達', '局域网雷达':'區域網路雷達',
-    '设备名称':'裝置名稱', '其他设备在雷达和同步请求中看到的名字，留空时使用电脑主机名':'其他裝置在雷達和同步請求中看到的名字，留空時使用電腦主機名稱', '本机主机名':'本機主機名稱',
-    '设备图标':'裝置圖示', '用一个 emoji 作为本机在雷达上的头像，留空显示默认图标':'用一個 emoji 作為本機在雷達上的頭像，留空顯示預設圖示', '例：🌿':'例：🌿',
-    '服务端口':'服務連接埠', '数据传输使用的 TCP 端口（1024-65535），留空自动分配；修改后需重新开启「允许被其他设备发现」才会生效':'資料傳輸使用的 TCP 連接埠（1024-65535），留空自動分配；修改後需重新開啟「允許被其他裝置發現」才會生效', '自动分配':'自動分配',
-    '关闭窗口时转入后台':'關閉視窗時轉入背景', '关闭窗口后 Acta 保留在系统托盘，继续进行局域网发现与自动化同步；从托盘图标恢复窗口或退出':'關閉視窗後 Acta 保留在系統托盤，繼續進行區域網路探索與自動化同步；從托盤圖示還原視窗或結束',
-    '同步自动化':'同步自動化', '把自动备份、冲突检查与收发数据组合成自动化条目，在发现设备或定时到达时自动执行':'把自動備份、衝突檢查與收發資料組合成自動化條目，在發現裝置或定時到達時自動執行', '新建自动化':'新增自動化'
+    '设备名称':'裝置名稱', '留空时使用主机名':'留空時使用主機名稱', '本机主机名':'本機主機名稱',
+    '设备图标':'裝置圖示', '雷达头像，留空用默认图标':'雷達頭像，留空用預設圖示', '例：🌿':'例：🌿',
+    '服务端口':'服務連接埠', 'TCP 端口，留空自动分配；修改后需重开发现':'TCP 連接埠，留空自動分配；修改後需重開探索', '自动分配':'自動分配',
+    '关闭窗口时转入后台':'關閉視窗時轉入背景', '关闭窗口后保留在系统托盘，局域网同步继续；可从托盘恢复或退出':'關閉視窗後保留在系統托盤，區域網路同步繼續；可從托盤還原或結束',
+    '同步自动化':'同步自動化', '组合备份、冲突检查与收发步骤，按触发器自动执行':'組合備份、衝突檢查與收發步驟，按觸發器自動執行', '新建自动化':'新增自動化'
   });
   Object.assign(dictionaries.zh, { high:'优先处理', medium:'稍后处理', low:'延缓处理' });
   Object.assign(dictionaries.en, { high:'Do first', medium:'Do later', low:'Delay' });
@@ -201,45 +217,55 @@
     en: {
       '设置':'Settings', '按你的方式使用 Acta':'Make Acta work your way', '关闭设置':'Close settings', '设置页面':'Settings pages',
       '语言':'Language', '工作区':'Workspace', '行记数据':'Acta Data', '数据同步':'Data sync', '常规设置':'General', '外观设置':'Appearance', '关于':'About',
-      '切换 Acta 的界面语言，笔记内容不会被翻译或修改。':'Change the interface language. Your note content is never translated or modified.', '简体中文':'Simplified Chinese', '繁體中文':'Traditional Chinese', '英语':'English',
+      '切换界面语言，不影响笔记内容。':'Switch the interface language; notes are untouched.', '简体中文':'Simplified Chinese', '繁體中文':'Traditional Chinese', '英语':'English',
       '整个资料库保存在所选文件夹内唯一的':'The entire library is stored in a single', '文件中。':'file inside the selected folder.', '演示工作区':'Demo workspace', '演示行记数据':'Demo Acta Data', '尚未选择文件夹；本次修改不会保存。':'No folder selected; changes in this session will not be saved.',
       '选择本地文件夹':'Choose local folder', '立即保存':'Save now', '从文件重载':'Reload from file', '返回演示工作区':'Return to demo workspace', '返回演示行记数据':'Return to demo Acta Data', '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is the demo workspace. Its content resets when you close or refresh the page and is not written to browser storage.', '当前是演示行记数据。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is demo Acta Data. Its content resets when you close or refresh the page and is not written to browser storage.',
-      '调整启动位置、内容密度和动效偏好。':'Adjust the startup view, content density, and motion.', '默认启动页面':'Default startup view', '打开应用时优先进入的智能视图':'The smart view shown when Acta opens', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '已完成':'Completed',
-      '紧凑列表':'Compact lists', '在中栏显示更多笔记和待办':'Show more notes and tasks in the middle pane', '减少动态效果':'Reduce motion', '降低转场和弹性动画，减少视觉干扰':'Reduce transitions and spring animations', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
-      '点击空白处':'Click outside dialogs', '弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容':'How clicks on the blank area outside a dialog behave; double click is required by default so accidental clicks never discard what you typed', '不关闭（防误触）':"Don't close (accident protection)", '单击关闭':'Single click closes', '双击关闭':'Double click closes',
-      '页面跳转栏':'Navigation bar', '自定义桌面端侧边栏与移动端底栏显示哪些页面跳转按钮。':'Choose which page shortcuts appear in the desktop sidebar and the mobile bottom bar.', '桌面端侧边栏':'Desktop sidebar', '勾选要显示的页面；「所有待办」与「所有笔记」默认不显示，可在此重新开启':'Tick the pages to show; All tasks and All notes are hidden by default and can be re-enabled here', '移动端底栏':'Mobile bottom bar', '底栏右侧预留两个可替换的位置，选择要放入的页面；两侧固定为收集箱与日历':'The right side of the bar reserves two replaceable slots — pick the pages to put there; the left side is fixed to Inbox and Calendar', '槽位一':'Slot one', '槽位二':'Slot two', '回收站':'Trash',
+      '启动、密度与动效偏好。':'Startup, density, and motion.', '默认启动页面':'Default startup view', '启动时进入的视图':'The view shown at launch', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '已完成':'Completed',
+      '紧凑列表':'Compact lists', '中栏密度更高':'Denser middle pane', '减少动态效果':'Reduce motion', '降低转场与弹性动画':'Fewer transitions and springs', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
+      '点击空白处':'Click outside dialogs', '点空白处如何关闭弹窗，默认双击防误触':'How clicks on blank areas close dialogs; double click by default', '不关闭（防误触）':"Don't close (accident protection)", '单击关闭':'Single click closes', '双击关闭':'Double click closes',
+      '页面跳转栏':'Navigation bar', '侧边栏与底栏显示哪些入口。':'Which shortcuts the sidebar and bottom bar show.', '桌面端侧边栏':'Desktop sidebar', '勾选要显示的页面；待办与笔记默认隐藏':'Tick the pages to show; tasks and notes are hidden by default', '移动端底栏':'Mobile bottom bar', '两个槽位可替换；两端固定为收集箱与日历':'Two replaceable slots; Inbox and Calendar stay fixed', '槽位一':'Slot one', '槽位二':'Slot two', '回收站':'Trash',
       '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes only change the appearance; your notes and tasks are unaffected.', '黑白浅色':'Monochrome light', '黑白深色':'Monochrome dark', '蓝黄':'Blue and yellow', '纸色护眼':'Eye-comfort paper', '默认':'Default', '自定义':'Custom',
-      '纸张颜色':'Paper color', '侧栏颜色':'Sidebar color', '强调颜色':'Accent color', '界面字体':'Interface font', '同时应用到列表、编辑器和设置页面':'Applied to lists, the editor, and settings', '系统默认':'System default', '衬线字体':'Serif', '圆体':'Rounded', '等宽字体':'Monospace', '自定义字体':'Custom font',
-      '字体家族':'Font family', '输入设备上已安装的字体，例如 Inter 或 Microsoft YaHei':'Enter a font installed on this device, such as Inter or Microsoft YaHei', '字体大小':'Font size', '统一调整界面、列表、编辑器与设置页':'Scale the interface, lists, editor, and settings together', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capture, then act. Acta connects notes and tasks naturally.',
+      '纸张颜色':'Paper color', '侧栏颜色':'Sidebar color', '强调颜色':'Accent color', '界面字体':'Interface font', '应用于列表、编辑器与设置页':'Applies to lists, editor, and settings', '系统默认':'System default', '衬线字体':'Serif', '圆体':'Rounded', '等宽字体':'Monospace', '自定义字体':'Custom font',
+      '字体家族':'Font family', '本机已安装的字体，如 Inter':'A font installed on this device, e.g. Inter', '字体大小':'Font size', '界面整体缩放':'Scale the whole interface', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capture, then act. Acta connects notes and tasks naturally.',
       '先支持 OneDrive 本地同步文件夹；上传与下载均使用完整资料库数据文件。':'OneDrive local sync folders are supported first. Upload and download both use the complete library file.', '尚未选择 OneDrive 同步文件夹':'No OneDrive sync folder selected', 'OneDrive 文件操作':'OneDrive file access', '由 OneDrive 客户端把 acta-library.json 同步到云端':'The OneDrive client syncs acta-library.json to the cloud', '选择文件夹':'Choose folder',
-      '自动同步':'Automatic sync', '本地内容变化后自动上传，并定时检查 OneDrive 文件中的更新':'Upload local changes automatically and periodically check the OneDrive file for updates', '检查频率':'Check frequency', '仅在 Acta 保持运行时执行':'Runs only while Acta remains open', '每 1 分钟':'Every minute', '每 5 分钟':'Every 5 minutes', '每 15 分钟':'Every 15 minutes',
+      '自动同步':'Automatic sync', '本地内容变化后自动上传，并定时检查 OneDrive 文件中的更新':'Upload local changes automatically and periodically check the OneDrive file for updates', '检查频率':'Check frequency', '仅 Acta 运行时执行':'Only while Acta is running', '每 1 分钟':'Every minute', '每 5 分钟':'Every 5 minutes', '每 15 分钟':'Every 15 minutes',
       '从 OneDrive 下载':'Download from OneDrive', '上传到 OneDrive':'Upload to OneDrive', '请选择电脑或网页文件选择器中的 OneDrive 同步文件夹。':'Choose your OneDrive sync folder using the desktop or web folder picker.', 'Acta 不会获取你的 OneDrive 账号或密码；文件传输由系统文件夹与 OneDrive 客户端完成。':'Acta never accesses your OneDrive account or password. The system folder and OneDrive client transfer the file.',
       '关于 Acta':'About Acta', '检查更新':'Check for updates', '让笔记与行动在一个安静、可掌控的本地空间中自然连接。':'Connect notes and actions naturally in a calm, controllable local space.', '产品':'Product', '版本':'Version', '本版更新日期':'Version date', '桌面框架':'Desktop framework', '笔记、待办和设置默认保存在当前设备；只有在你主动操作时才会导入、导出或同步。':'Notes, tasks, and settings stay on this device by default. Import, export, and sync occur only when you choose them.', '作者：':'Author: ', '。项目开源、免费，欢迎学习、使用与共同改进。':'. Open source and free for learning, use, and collaboration.',
       '完整数据文件夹由 acta-manifest.json、classifications.json、notes/ 和 todos/ 组成；每则笔记与待办分别保存。':'A complete data folder contains acta-manifest.json, classifications.json, notes/, and todos/; every note and task is stored separately.', '保存完整数据文件夹':'Save complete data folder', '从数据文件夹重载':'Reload data folder', '导出数据文件夹':'Export data folder',
       'OneDrive 上传、下载和自动同步均处理完整数据文件夹，笔记与待办不会合并成单个资料库文件。':'OneDrive upload, download, and automatic sync all process the complete data folder; notes and tasks are never merged into one library file.', 'OneDrive 文件夹操作':'OneDrive folder access', '由 OneDrive 客户端同步清单、归类、notes 和 todos 整套文件夹':'The OneDrive client syncs the manifest, classifications, notes, and todos as one complete folder.', '下载完整数据文件夹':'Download complete data folder', '上传完整数据文件夹':'Upload complete data folder', '本地内容变化后自动上传，并定时检查 OneDrive 数据文件夹中的更新':'Upload local changes automatically and periodically check the OneDrive data folder for updates',
       '选择 OneDrive 本地文件夹，由系统 OneDrive 客户端负责上传和下载。':'Choose a local OneDrive folder. The system OneDrive client handles cloud transfers.', 'OneDrive 本地文件夹':'Local OneDrive folder', '尚未选择 OneDrive 本地文件夹':'No local OneDrive folder selected', '文件夹同步':'Folder sync', 'Acta 读写完整数据文件夹，云端传输由 OneDrive 客户端完成':'Acta reads and writes the complete data folder; the OneDrive client handles cloud transfers.', '选择 OneDrive 文件夹':'Choose OneDrive folder', '断开文件夹':'Disconnect folder', '请先选择电脑中的 OneDrive 本地文件夹。':'Choose a local OneDrive folder on this device first.', 'Acta 不连接 Microsoft Graph，也不获取微软账号信息；请确保系统 OneDrive 客户端正在运行。':'Acta does not connect to Microsoft Graph or read Microsoft account information. Keep the system OneDrive client running.',
-      '通过 WebDAV 服务器同步完整数据文件夹。':'Sync the complete data folder through a WebDAV server.', 'WebDAV 密码仅保存在当前设备；网页版需要服务器允许跨域访问。':'The WebDAV password stays on this device; web access requires the server to allow cross-origin requests.', '同步模式':'Sync mode', '切换后使用对应位置进行上传、下载与自动同步':'Use the selected location for upload, download, and automatic sync.', '仅建议 Windows 用户使用；云端传输由 OneDrive 客户端完成':'Recommended only for Windows users; the OneDrive client handles cloud transfers.', '服务器地址':'Server URL', '填写用于保存 Acta 完整数据文件夹的 WebDAV 目录地址':'Enter the WebDAV directory URL that stores the complete Acta data folder.', '账号':'Account', 'WebDAV 用户名':'WebDAV username', '密码':'Password', '建议使用服务商提供的应用专用密码':'Use an app-specific password from your provider when available.', 'WebDAV 连接':'WebDAV connection', '尚未连接 WebDAV':'WebDAV is not connected', '保存并测试连接':'Save and test connection', '内容变化后自动上传，并定时检查同步位置中的更新':'Upload changes automatically and periodically check the sync location.', '断开同步位置':'Disconnect sync location', '请先选择同步模式并完成连接。':'Choose a sync mode and connect it first.', 'OneDrive 模式不连接 Microsoft Graph；WebDAV 密码仅保存在当前设备，网页版需要服务器允许跨域访问。':'OneDrive mode does not use Microsoft Graph. The WebDAV password stays on this device; web access requires the server to allow cross-origin requests.'
+      '通过 WebDAV 服务器同步完整数据文件夹。':'Sync the complete data folder through a WebDAV server.', '密码仅保存在本机；网页版需服务器允许跨域。':'The password stays on this device; CORS required on web.', '同步模式':'Sync mode', '切换后使用对应位置进行上传、下载与自动同步':'Use the selected location for upload, download, and automatic sync.', '仅建议 Windows 用户使用；云端传输由 OneDrive 客户端完成':'Recommended only for Windows users; the OneDrive client handles cloud transfers.', '服务器地址':'Server URL', 'WebDAV 目录地址':'WebDAV directory URL', '账号':'Account', 'WebDAV 用户名':'WebDAV username', '密码':'Password', '建议使用应用专用密码':'An app-specific password is recommended', 'WebDAV 连接':'WebDAV connection', '尚未连接 WebDAV':'WebDAV is not connected', '保存并测试连接':'Save and test connection', '变化后自动上传，定时检查更新':'Upload on change; poll for updates', '断开同步位置':'Disconnect sync location', '请先选择同步模式并完成连接。':'Choose a sync mode and connect it first.', 'OneDrive 模式不连接 Microsoft Graph；WebDAV 密码仅保存在当前设备，网页版需要服务器允许跨域访问。':'OneDrive mode does not use Microsoft Graph. The WebDAV password stays on this device; web access requires the server to allow cross-origin requests.'
     },
     'zh-Hant': {
       '设置':'設定', '按你的方式使用 Acta':'依照你的方式使用 Acta', '关闭设置':'關閉設定', '设置页面':'設定頁面', '语言':'語言', '工作区':'工作區', '行记数据':'行記資料', '数据同步':'資料同步', '常规设置':'一般設定', '外观设置':'外觀設定', '关于':'關於',
-      '切换 Acta 的界面语言，笔记内容不会被翻译或修改。':'切換 Acta 的介面語言，筆記內容不會被翻譯或修改。', '简体中文':'簡體中文', '英语':'英文',
+      '切换界面语言，不影响笔记内容。':'切換介面語言，不影響筆記內容。', '简体中文':'簡體中文', '英语':'英文',
       '整个资料库保存在所选文件夹内唯一的':'整個資料庫儲存在所選資料夾內唯一的', '文件中。':'檔案中。', '演示工作区':'示範工作區', '尚未选择文件夹；本次修改不会保存。':'尚未選擇資料夾；本次修改不會儲存。', '选择本地文件夹':'選擇本機資料夾', '立即保存':'立即儲存', '从文件重载':'從檔案重新載入', '返回演示工作区':'返回示範工作區',
-      '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '调整启动位置、内容密度和动效偏好。':'調整啟動位置、內容密度和動效偏好。', '默认启动页面':'預設啟動頁面', '打开应用时优先进入的智能视图':'開啟應用程式時優先進入的智慧檢視', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '紧凑列表':'緊湊清單', '在中栏显示更多笔记和待办':'在中欄顯示更多筆記和待辦', '减少动态效果':'減少動態效果', '降低转场和弹性动画，减少视觉干扰':'降低轉場和彈性動畫，減少視覺干擾', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
-      '点击空白处':'點擊空白處', '弹出窗口的空白处点击行为，默认需要双击才会关闭，防止误触丢失已输入的内容':'彈出視窗的空白處點擊行為，預設需要雙擊才會關閉，防止誤觸遺失已輸入的內容', '不关闭（防误触）':'不關閉（防誤觸）', '单击关闭':'單擊關閉', '双击关闭':'雙擊關閉',
-      '页面跳转栏':'頁面跳轉欄', '自定义桌面端侧边栏与移动端底栏显示哪些页面跳转按钮。':'自訂桌面端側邊欄與行動端底欄顯示哪些頁面跳轉按鈕。', '桌面端侧边栏':'桌面端側邊欄', '勾选要显示的页面；「所有待办」与「所有笔记」默认不显示，可在此重新开启':'勾選要顯示的頁面；「所有待办」與「所有笔记」預設不顯示，可在此重新開啟', '移动端底栏':'行動端底欄', '底栏右侧预留两个可替换的位置，选择要放入的页面；两侧固定为收集箱与日历':'底欄右側預留兩個可替換的位置，選擇要放入的頁面；兩側固定為收集箱與日曆', '槽位一':'槽位一', '槽位二':'槽位二',
+      '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '启动、密度与动效偏好。':'啟動、密度與動效偏好。', '默认启动页面':'預設啟動頁面', '启动时进入的视图':'啟動時進入的視圖', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '紧凑列表':'緊湊清單', '中栏密度更高':'中欄密度更高', '减少动态效果':'減少動態效果', '降低转场与弹性动画':'降低轉場與彈性動畫', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
+      '点击空白处':'點擊空白處', '点空白处如何关闭弹窗，默认双击防误触':'點空白處如何關閉彈窗，預設雙擊防誤觸', '不关闭（防误触）':'不關閉（防誤觸）', '单击关闭':'單擊關閉', '双击关闭':'雙擊關閉',
+      '页面跳转栏':'頁面跳轉欄', '侧边栏与底栏显示哪些入口。':'側邊欄與底欄顯示哪些入口。', '桌面端侧边栏':'桌面端側邊欄', '勾选要显示的页面；待办与笔记默认隐藏':'勾選要顯示的頁面；待辦與筆記預設隱藏', '移动端底栏':'行動端底欄', '两个槽位可替换；两端固定为收集箱与日历':'兩個槽位可替換；兩端固定為收集箱與日曆', '槽位一':'槽位一', '槽位二':'槽位二',
+      '勾选框旁显示完成日期，悬停看时刻':'勾選框旁顯示完成日期，懸停看時刻',
+      '列表与归类视图默认显示已完成待办':'清單與歸類視圖預設顯示已完成待辦',
+      '完成后先停留再移到列表末尾，可撤回':'完成後先停留再移到清單結尾，可撤回',
+      '完成到开始移动的等待时间':'完成到開始移動的等待時間',
+      '点击右侧按钮可预览':'點擊右側按鈕可預覽',
+      '数值越大播放越快':'數值越大播放越快',
+      '聚焦时边框与光环淡入':'聚焦時邊框與光環淡入',
+      '每个档案都包含完整的归类、笔记和待办，可保存在本地或指定文件夹。':'每個檔案都包含完整的歸類、筆記和待辦，可保存在本機或指定資料夾。',
+      '空间不足时浏览器可能清理本地数据，请定期导出备份。':'空間不足時瀏覽器可能清理本機資料，請定期匯出備份。',
+      '当前档案的容量与内容概览':'目前檔案的容量與內容概覽',
       '回收站':'回收站',
-      '主题只改变显示效果，不会影响任何笔记或待办数据。':'主題只改變顯示效果，不會影響任何筆記或待辦資料。', '黑白浅色':'黑白淺色', '黑白深色':'黑白深色', '蓝黄':'藍黃', '纸色护眼':'紙色護眼', '默认':'預設', '自定义':'自訂', '纸张颜色':'紙張顏色', '侧栏颜色':'側欄顏色', '强调颜色':'強調顏色', '界面字体':'介面字型', '同时应用到列表、编辑器和设置页面':'同時套用到清單、編輯器和設定頁面', '系统默认':'系統預設', '衬线字体':'襯線字型', '圆体':'圓體', '等宽字体':'等寬字型', '自定义字体':'自訂字型', '字体家族':'字型家族', '输入设备上已安装的字体，例如 Inter 或 Microsoft YaHei':'輸入裝置上已安裝的字型，例如 Inter 或 Microsoft YaHei', '字体大小':'字型大小', '统一调整界面、列表、编辑器与设置页':'統一調整介面、清單、編輯器與設定頁', '记录，然后行动。Acta 让笔记与待办自然连接。':'記錄，然後行動。Acta 讓筆記與待辦自然連接。',
-      '先支持 OneDrive 本地同步文件夹；上传与下载均使用完整资料库数据文件。':'目前支援 OneDrive 本機同步資料夾；上傳與下載均使用完整資料庫檔案。', '尚未选择 OneDrive 同步文件夹':'尚未選擇 OneDrive 同步資料夾', 'OneDrive 文件操作':'OneDrive 檔案操作', '由 OneDrive 客户端把 acta-library.json 同步到云端':'由 OneDrive 用戶端把 acta-library.json 同步到雲端', '选择文件夹':'選擇資料夾', '自动同步':'自動同步', '本地内容变化后自动上传，并定时检查 OneDrive 文件中的更新':'本機內容變更後自動上傳，並定時檢查 OneDrive 檔案中的更新', '检查频率':'檢查頻率', '仅在 Acta 保持运行时执行':'僅在 Acta 保持執行時運作', '每 1 分钟':'每 1 分鐘', '每 5 分钟':'每 5 分鐘', '每 15 分钟':'每 15 分鐘', '从 OneDrive 下载':'從 OneDrive 下載', '上传到 OneDrive':'上傳到 OneDrive', '请选择电脑或网页文件选择器中的 OneDrive 同步文件夹。':'請從電腦或網頁資料夾選擇器選擇 OneDrive 同步資料夾。', 'Acta 不会获取你的 OneDrive 账号或密码；文件传输由系统文件夹与 OneDrive 客户端完成。':'Acta 不會取得你的 OneDrive 帳號或密碼；檔案傳輸由系統資料夾與 OneDrive 用戶端完成。',
+      '主题只改变显示效果，不会影响任何笔记或待办数据。':'主題只改變顯示效果，不會影響任何筆記或待辦資料。', '黑白浅色':'黑白淺色', '黑白深色':'黑白深色', '蓝黄':'藍黃', '纸色护眼':'紙色護眼', '默认':'預設', '自定义':'自訂', '纸张颜色':'紙張顏色', '侧栏颜色':'側欄顏色', '强调颜色':'強調顏色', '界面字体':'介面字型', '应用于列表、编辑器与设置页':'應用於清單、編輯器與設定頁', '系统默认':'系統預設', '衬线字体':'襯線字型', '圆体':'圓體', '等宽字体':'等寬字型', '自定义字体':'自訂字型', '字体家族':'字型家族', '本机已安装的字体，如 Inter':'本機已安裝的字型，如 Inter', '字体大小':'字型大小', '界面整体缩放':'介面整體縮放', '记录，然后行动。Acta 让笔记与待办自然连接。':'記錄，然後行動。Acta 讓筆記與待辦自然連接。',
+      '先支持 OneDrive 本地同步文件夹；上传与下载均使用完整资料库数据文件。':'目前支援 OneDrive 本機同步資料夾；上傳與下載均使用完整資料庫檔案。', '尚未选择 OneDrive 同步文件夹':'尚未選擇 OneDrive 同步資料夾', 'OneDrive 文件操作':'OneDrive 檔案操作', '由 OneDrive 客户端把 acta-library.json 同步到云端':'由 OneDrive 用戶端把 acta-library.json 同步到雲端', '选择文件夹':'選擇資料夾', '自动同步':'自動同步', '本地内容变化后自动上传，并定时检查 OneDrive 文件中的更新':'本機內容變更後自動上傳，並定時檢查 OneDrive 檔案中的更新', '检查频率':'檢查頻率', '仅 Acta 运行时执行':'僅 Acta 執行時運作', '每 1 分钟':'每 1 分鐘', '每 5 分钟':'每 5 分鐘', '每 15 分钟':'每 15 分鐘', '从 OneDrive 下载':'從 OneDrive 下載', '上传到 OneDrive':'上傳到 OneDrive', '请选择电脑或网页文件选择器中的 OneDrive 同步文件夹。':'請從電腦或網頁資料夾選擇器選擇 OneDrive 同步資料夾。', 'Acta 不会获取你的 OneDrive 账号或密码；文件传输由系统文件夹与 OneDrive 客户端完成。':'Acta 不會取得你的 OneDrive 帳號或密碼；檔案傳輸由系統資料夾與 OneDrive 用戶端完成。',
       '关于 Acta':'關於 Acta', '检查更新':'檢查更新', '让笔记与行动在一个安静、可掌控的本地空间中自然连接。':'讓筆記與行動在一個安靜、可掌控的本機空間中自然連接。', '产品':'產品', '版本':'版本', '本版更新日期':'本版更新日期', '桌面框架':'桌面框架', '笔记、待办和设置默认保存在当前设备；只有在你主动操作时才会导入、导出或同步。':'筆記、待辦和設定預設儲存在目前裝置；只有在你主動操作時才會匯入、匯出或同步。',
       '完整数据文件夹由 acta-manifest.json、classifications.json、notes/ 和 todos/ 组成；每则笔记与待办分别保存。':'完整資料資料夾由 acta-manifest.json、classifications.json、notes/ 和 todos/ 組成；每則筆記與待辦分別儲存。', '保存完整数据文件夹':'儲存完整資料資料夾', '从数据文件夹重载':'從資料資料夾重新載入', '导出数据文件夹':'匯出資料資料夾',
       'OneDrive 上传、下载和自动同步均处理完整数据文件夹，笔记与待办不会合并成单个资料库文件。':'OneDrive 上傳、下載和自動同步都會處理完整資料資料夾，筆記與待辦不會合併成單一資料庫檔案。', 'OneDrive 文件夹操作':'OneDrive 資料夾操作', '由 OneDrive 客户端同步清单、归类、notes 和 todos 整套文件夹':'由 OneDrive 用戶端同步清單、歸類、notes 和 todos 整套資料夾。', '下载完整数据文件夹':'下載完整資料資料夾', '上传完整数据文件夹':'上傳完整資料資料夾', '本地内容变化后自动上传，并定时检查 OneDrive 数据文件夹中的更新':'本機內容變更後自動上傳，並定時檢查 OneDrive 資料資料夾中的更新',
       '选择 OneDrive 本地文件夹，由系统 OneDrive 客户端负责上传和下载。':'選擇 OneDrive 本機資料夾，由系統 OneDrive 用戶端負責上傳和下載。', 'OneDrive 本地文件夹':'OneDrive 本機資料夾', '尚未选择 OneDrive 本地文件夹':'尚未選擇 OneDrive 本機資料夾', '文件夹同步':'資料夾同步', 'Acta 读写完整数据文件夹，云端传输由 OneDrive 客户端完成':'Acta 讀寫完整資料資料夾，雲端傳輸由 OneDrive 用戶端完成。', '选择 OneDrive 文件夹':'選擇 OneDrive 資料夾', '断开文件夹':'中斷資料夾', '请先选择电脑中的 OneDrive 本地文件夹。':'請先選擇電腦中的 OneDrive 本機資料夾。', 'Acta 不连接 Microsoft Graph，也不获取微软账号信息；请确保系统 OneDrive 客户端正在运行。':'Acta 不連接 Microsoft Graph，也不取得 Microsoft 帳號資訊；請確保系統 OneDrive 用戶端正在執行。',
-      '通过 WebDAV 服务器同步完整数据文件夹。':'透過 WebDAV 伺服器同步完整資料資料夾。', 'WebDAV 密码仅保存在当前设备；网页版需要服务器允许跨域访问。':'WebDAV 密碼僅儲存在目前裝置；網頁版需要伺服器允許跨來源存取。', '同步模式':'同步模式', '切换后使用对应位置进行上传、下载与自动同步':'切換後使用對應位置進行上傳、下載與自動同步。', '仅建议 Windows 用户使用；云端传输由 OneDrive 客户端完成':'僅建議 Windows 使用者使用；雲端傳輸由 OneDrive 用戶端完成。', '服务器地址':'伺服器地址', '填写用于保存 Acta 完整数据文件夹的 WebDAV 目录地址':'填寫用於儲存 Acta 完整資料資料夾的 WebDAV 目錄地址。', '账号':'帳號', 'WebDAV 用户名':'WebDAV 使用者名稱', '密码':'密碼', '建议使用服务商提供的应用专用密码':'建議使用服務商提供的應用程式專用密碼。', 'WebDAV 连接':'WebDAV 連接', '尚未连接 WebDAV':'尚未連接 WebDAV', '保存并测试连接':'儲存並測試連接', '内容变化后自动上传，并定时检查同步位置中的更新':'內容變更後自動上傳，並定時檢查同步位置中的更新。', '断开同步位置':'中斷同步位置', '请先选择同步模式并完成连接。':'請先選擇同步模式並完成連接。', 'OneDrive 模式不连接 Microsoft Graph；WebDAV 密码仅保存在当前设备，网页版需要服务器允许跨域访问。':'OneDrive 模式不連接 Microsoft Graph；WebDAV 密碼僅儲存在目前裝置，網頁版需要伺服器允許跨來源存取。'
+      '通过 WebDAV 服务器同步完整数据文件夹。':'透過 WebDAV 伺服器同步完整資料資料夾。', '密码仅保存在本机；网页版需服务器允许跨域。':'密碼僅保存在本機；網頁版需伺服器允許跨域。', '同步模式':'同步模式', '切换后使用对应位置进行上传、下载与自动同步':'切換後使用對應位置進行上傳、下載與自動同步。', '仅建议 Windows 用户使用；云端传输由 OneDrive 客户端完成':'僅建議 Windows 使用者使用；雲端傳輸由 OneDrive 用戶端完成。', '服务器地址':'伺服器地址', 'WebDAV 目录地址':'WebDAV 目錄位址', '账号':'帳號', 'WebDAV 用户名':'WebDAV 使用者名稱', '密码':'密碼', '建议使用应用专用密码':'建議使用應用專用密碼', 'WebDAV 连接':'WebDAV 連接', '尚未连接 WebDAV':'尚未連接 WebDAV', '保存并测试连接':'儲存並測試連接', '变化后自动上传，定时检查更新':'變更後自動上傳，定時檢查更新', '断开同步位置':'中斷同步位置', '请先选择同步模式并完成连接。':'請先選擇同步模式並完成連接。', 'OneDrive 模式不连接 Microsoft Graph；WebDAV 密码仅保存在当前设备，网页版需要服务器允许跨域访问。':'OneDrive 模式不連接 Microsoft Graph；WebDAV 密碼僅儲存在目前裝置，網頁版需要伺服器允許跨來源存取。'
     }
   };
   Object.assign(interfaceTranslations.en, {
     '缓存与页面':'Cache and page',
-    '清除应用缓存并重新加载最新页面，不会删除笔记、待办或设置。':'Clear the app cache and reload the latest page. Notes, tasks, and settings are not deleted.',
+    '清空缓存并重新加载，不删数据。':'Clear caches and reload; data is kept.',
     '清除缓存重新加载':'Clear cache and reload',
     '森林晨雾':'Forest mist', '海盐晚霞':'Sea-salt sunset', '糖果气泡':'Candy pop', '深夜霓虹':'Midnight neon', '极光夜色':'Aurora night', '多彩浅色':'Colorful light', '深色发光':'Dark glow', '特殊主题':'Special theme',
     'MWS 浅色':'MWS Light', 'MWS 深色':'MWS Dark', '品牌主题':'Brand theme', '品牌深色':'Brand dark',
@@ -248,42 +274,42 @@
     '已就绪，软件设置将保存在这里。':'Ready - Acta will keep its settings here.', '无法使用该文件夹：':'Cannot use this folder: ',
     '无法确定默认位置，请点击「选择文件夹」手动指定。':'Could not determine a default location - pick one with "Choose folder".',
     '软件数据位置':'Software data location', '位置操作':'Location actions', '打开文件夹':'Open folder', '更改位置':'Change location',
-    '更改后会立即把当前设置迁移到新文件夹':'Current settings migrate to the new folder immediately',
-    '保存 Acta 自身的设置与偏好；笔记、待办等行记数据仍按数据档案的位置存储。便携版默认读取软件目录下的 data 文件夹。':'Stores Acta\'s own preferences; notes and tasks stay in their data profiles. Portable builds read the data folder next to the app by default.',
+    '更改后立即迁移现有设置':'更改後立即遷移現有設定',
+    '保存 Acta 自身的设置；行记数据仍按数据档案的位置存储。':'保存 Acta 自身的設定；行記資料仍按資料檔案的位置儲存。',
     '先选择软件数据文件夹':'Choose the software data folder first', '使用默认位置':'Use default location', '选择文件夹…':'Choose folder…',
     '选择主题、字体与大小':'Choose theme, font, and size', '选择启动动画':'Choose the launch animation',
     '基础界面':'Base interface', '内容类型':'Content types', '待办主题色':'Task accent', '待办浅色背景':'Task soft background', '笔记主题色':'Note accent', '笔记浅色背景':'Note soft background', '日历主题色':'Calendar accent', '日历浅色背景':'Calendar soft background',
     '应用图标':'App icon', '应用于 Tauri 桌面客户端和 Capacitor 移动客户端；网页标签页图标保持默认。':'Used by the Tauri desktop client and Capacitor mobile client; the browser tab icon stays unchanged.',
     '默认书页':'Default page', '正·书页':'True · Page', '勾勒·书页':'Outline · Page', '初版简洁':'Original minimal', '恢复默认图标':'Restore default icon',
-    '应用图标':'App icon', '应用于 Capacitor 移动客户端；网页标签页图标保持默认。':'Used by the Capacitor mobile client; the browser tab icon stays unchanged.',
+    '应用图标':'App icon', '仅用于 Android 桌面图标。':'Android launcher icon only.',
     '四个预设仅用于 Android 客户端；切换后桌面启动器可能需要稍候刷新。':'The four presets are for the Android client only; launchers may take a moment to refresh after switching.',
     '桌面框架':'Desktop framework', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
     '默认图标已恢复。':'Default icon restored.', '应用图标应用失败。':'Failed to apply the app icon.',
-    '启动动画':'Splash animation', '启动时的过渡画面，关闭后直接进入工作区':'The transition screen shown at launch; turn it off to enter the workspace directly.',
+    '启动动画':'Splash animation', '启动过渡画面，可关闭':'Launch splash; can be turned off',
     '动画预设':'Animation preset', '启动画面的演绎方式，可预览效果':'How the splash plays out; preview to compare.', 'Acta 线构（默认）':'Acta lines (default)', '静谧淡入':'Calm fade', '聚焦缩放':'Focus zoom',
     '动画时间':'Animation speed', '启动动画的整体播放倍率':'Overall playback speed of the splash animation', '预览动画':'Preview animation',
-    '笔记编辑器':'Note editor', '调整 Markdown 渲染标题与格式工具栏。':'Customize Markdown headings and the formatting toolbar.',
-    '一级标题字号':'Heading 1 size', 'Markdown 渲染后的一级标题大小':'Rendered Markdown heading 1 size',
-    '二级标题字号':'Heading 2 size', 'Markdown 渲染后的二级标题大小':'Rendered Markdown heading 2 size',
-    '三级标题字号':'Heading 3 size', 'Markdown 渲染后的三级标题大小':'Rendered Markdown heading 3 size',
-    '标题字体':'Heading font', 'Markdown 渲染后标题使用的字体':'Heading font for the rendered Markdown', '跟随界面':'Follow app font', '标题字体家族':'Heading font family', '输入设备上已安装的字体，例如 Georgia 或 Songti SC':'Enter a font installed on this device, such as Georgia or Songti SC',
-    '工具栏位置':'Toolbar position', '固定在笔记编辑器的上方或下方':'Pin the toolbar above or below the note editor',
-    '上方':'Top', '下方':'Bottom', '显示工具名称':'Show tool names', '在图标旁显示工具名称，空间不足时自动换行':'Show names beside icons; wrap automatically when space is limited',
+    '笔记编辑器':'Note editor', 'Markdown 渲染与格式工具栏。':'Markdown rendering and the format toolbar.',
+    '一级标题字号':'Heading 1 size', 'Markdown 一级标题大小':'H1 size after Markdown rendering',
+    '二级标题字号':'Heading 2 size', 'Markdown 二级标题大小':'H2 size after Markdown rendering',
+    '三级标题字号':'Heading 3 size', 'Markdown 三级标题大小':'H3 size after Markdown rendering',
+    '标题字体':'Heading font', 'Markdown 标题字体':'Font for rendered headings', '跟随界面':'Follow app font', '标题字体家族':'Heading font family', '本机已安装的字体，如 Georgia':'A font installed on this device, e.g. Georgia',
+    '工具栏位置':'Toolbar position', '编辑器上方或下方':'Above or below the editor',
+    '上方':'Top', '下方':'Bottom', '显示工具名称':'Show tool names', '图标旁显示工具名称':'Show tool names next to icons',
     '标题预览':'Heading preview', '一级标题':'Heading 1', '二级标题':'Heading 2', '三级标题':'Heading 3',
-    '正文行间距':'Body line spacing', '调节段落内部文字行与行的距离':'Distance between lines of text inside a paragraph',
-    '段落块间距':'Paragraph spacing', '调节段落与段落之间的留白':'Whitespace between paragraphs',
+    '正文行间距':'Body line spacing', '段落内行与行的距离':'Spacing between lines in a paragraph',
+    '段落块间距':'Paragraph spacing', '段落之间的留白':'Spacing between paragraphs',
     '总结':'Summary',
-    '初始设置向导':'Setup guide', '重新体验首次启动的 OOBE 引导，逐步确认数据位置、主题与启动动画':'Walk through the first-run guide again to revisit data location, theme, and launch animation', '重新运行引导':'Run the guide again',
-    '基准字号':'Base font size', '拖动滑块，正文与各级标题会一起缩放':'Drag the slider; body text and headings scale together',
-    '通过 WebDAV 服务器或局域网中的其他 Acta 设备同步完整数据文件夹。':'Sync the complete data folder through a WebDAV server or other Acta devices on your LAN.',
-    'Acta 局域网同步':'Acta LAN sync', '与同一网络中的其他 Acta 设备直接互相同步行记数据，数据不经过任何服务器。实验性功能，传输完成后请核对数据是否完整。':'Sync your data directly with other Acta devices on the same network. Nothing passes through a server. This is an experimental feature; verify the data after a transfer.',
-    '允许被其他设备发现':'Be discoverable', '开启后这台设备会出现在附近设备的列表中；关闭或退出 Acta 时立即停止':'This device then appears in nearby device lists; it stops the moment you turn this off or quit Acta',
+    '初始设置向导':'Setup guide', '重新运行首次启动引导':'Run the first-launch onboarding again', '重新运行引导':'Run the guide again',
+    '基准字号':'Base font size', '正文与各级标题一起缩放':'Scales body text and headings together',
+    '通过 WebDAV 或局域网设备同步完整数据文件夹。':'Sync via WebDAV or LAN devices.',
+    'Acta 局域网同步':'Acta LAN sync', '与局域网内其他 Acta 设备直接互传，不经过服务器；实验功能，传完请核对数据。':'Direct device-to-device sync over the LAN; experimental.',
+    '允许被其他设备发现':'Be discoverable', '出现在附近设备的列表中':'List this device to nearby devices',
     '附近的设备':'Nearby devices', '搜索设备':'Scan for devices', '设备雷达':'Device radar',
-    '信任此局域网（自动确认）':'Trust this network (auto-confirm)', '开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启':'Other devices can then read any Acta data profile on this device, or write data into it, without confirmation; replaced data is still backed up first. Only enable this on networks you trust.'
+    '信任此局域网（自动确认）':'Trust this network (auto-confirm)', '其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络':'Other devices read/write without confirmation; trusted networks only'
   });
   Object.assign(interfaceTranslations['zh-Hant'], {
     '缓存与页面':'快取與頁面',
-    '清除应用缓存并重新加载最新页面，不会删除笔记、待办或设置。':'清除應用程式快取並重新載入最新頁面，不會刪除筆記、待辦或設定。',
+    '清空缓存并重新加载，不删数据。':'清空快取並重新載入，不刪資料。',
     '清除缓存重新加载':'清除快取並重新載入',
     '森林晨雾':'森林晨霧', '海盐晚霞':'海鹽晚霞', '糖果气泡':'糖果氣泡', '深夜霓虹':'深夜霓虹', '极光夜色':'極光夜色', '多彩浅色':'多彩淺色', '深色发光':'深色發光', '特殊主题':'特殊主題',
     'MWS 浅色':'MWS 淺色', 'MWS 深色':'MWS 深色', '品牌主题':'品牌主題', '品牌深色':'品牌深色',
@@ -295,33 +321,33 @@
     '先选择软件数据文件夹':'先選擇軟體資料資料夾', '使用默认位置':'使用預設位置', '选择文件夹…':'選擇資料夾…',
     '选择主题、字体与大小':'選擇主題、字型與大小', '选择启动动画':'選擇啟動動畫',
     '基础界面':'基礎介面', '内容类型':'內容類型', '待办主题色':'待辦主題色', '待办浅色背景':'待辦淺色背景', '笔记主题色':'筆記主題色', '笔记浅色背景':'筆記淺色背景', '日历主题色':'日曆主題色', '日历浅色背景':'日曆淺色背景',
-    '应用图标':'應用程式圖示', '应用于 Capacitor 移动客户端；网页标签页图标保持默认。':'套用於 Capacitor 行動用戶端；瀏覽器分頁圖示維持預設。',
+    '应用图标':'應用程式圖示', '仅用于 Android 桌面图标。':'僅用於 Android 桌面圖示。',
     '四个预设仅用于 Android 客户端；切换后桌面启动器可能需要稍候刷新。':'四個預設僅適用於 Android 用戶端；切換後桌面啟動器可能需要稍候重新整理。',
     '默认书页':'預設書頁', '正·书页':'正·書頁', '勾勒·书页':'勾勒·書頁', '初版简洁':'初版簡潔', '恢复默认图标':'恢復預設圖示',
 
     '桌面框架':'桌面框架', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri（Windows/macOS），Capacitor（Android）',
     '默认图标已恢复。':'預設圖示已恢復。', '应用图标应用失败。':'套用應用程式圖示失敗。',
-    '启动动画':'啟動動畫', '启动时的过渡画面，关闭后直接进入工作区':'啟動時的過渡畫面，關閉後直接進入工作區',
+    '启动动画':'啟動動畫', '启动过渡画面，可关闭':'啟動過渡畫面，可關閉',
     '动画预设':'動畫預設', '启动画面的演绎方式，可预览效果':'啟動畫面的演繹方式，可預覽效果', 'Acta 线构（默认）':'Acta 線構（預設）', '静谧淡入':'靜謐淡入', '聚焦缩放':'聚焦縮放',
     '动画时间':'動畫時間', '启动动画的整体播放倍率':'啟動動畫的整體播放倍率', '预览动画':'預覽動畫',
-    '笔记编辑器':'筆記編輯器', '调整 Markdown 渲染标题与格式工具栏。':'調整 Markdown 轉譯標題與格式工具列。',
-    '一级标题字号':'一級標題字級', 'Markdown 渲染后的一级标题大小':'Markdown 轉譯後的一級標題大小',
-    '二级标题字号':'二級標題字級', 'Markdown 渲染后的二级标题大小':'Markdown 轉譯後的二級標題大小',
-    '三级标题字号':'三級標題字級', 'Markdown 渲染后的三级标题大小':'Markdown 轉譯後的三級標題大小',
-    '标题字体':'標題字型', 'Markdown 渲染后标题使用的字体':'Markdown 轉譯後標題使用的字型', '跟随界面':'跟隨介面', '标题字体家族':'標題字型家族', '输入设备上已安装的字体，例如 Georgia 或 Songti SC':'輸入裝置上已安裝的字型，例如 Georgia 或 Songti SC',
-    '工具栏位置':'工具列位置', '固定在笔记编辑器的上方或下方':'固定在筆記編輯器的上方或下方',
-    '上方':'上方', '下方':'下方', '显示工具名称':'顯示工具名稱', '在图标旁显示工具名称，空间不足时自动换行':'在圖示旁顯示工具名稱，空間不足時自動換行',
+    '笔记编辑器':'筆記編輯器', 'Markdown 渲染与格式工具栏。':'Markdown 渲染與格式工具列。',
+    '一级标题字号':'一級標題字級', 'Markdown 一级标题大小':'Markdown 一級標題大小',
+    '二级标题字号':'二級標題字級', 'Markdown 二级标题大小':'Markdown 二級標題大小',
+    '三级标题字号':'三級標題字級', 'Markdown 三级标题大小':'Markdown 三級標題大小',
+    '标题字体':'標題字型', 'Markdown 标题字体':'Markdown 標題字型', '跟随界面':'跟隨介面', '标题字体家族':'標題字型家族', '本机已安装的字体，如 Georgia':'本機已安裝的字型，如 Georgia',
+    '工具栏位置':'工具列位置', '编辑器上方或下方':'編輯器上方或下方',
+    '上方':'上方', '下方':'下方', '显示工具名称':'顯示工具名稱', '图标旁显示工具名称':'圖示旁顯示工具名稱',
     '标题预览':'標題預覽', '一级标题':'一級標題', '二级标题':'二級標題', '三级标题':'三級標題',
-    '正文行间距':'正文行距', '调节段落内部文字行与行的距离':'調整段落內文字行與行的距離',
-    '段落块间距':'段落塊間距', '调节段落与段落之间的留白':'調整段落與段落之間的留白',
+    '正文行间距':'正文行距', '段落内行与行的距离':'段落內行與行的距離',
+    '段落块间距':'段落塊間距', '段落之间的留白':'段落之間的留白',
     '总结':'總結',
-    '初始设置向导':'初始設定精靈', '重新体验首次启动的 OOBE 引导，逐步确认数据位置、主题与启动动画':'重新體驗首次啟動的引導，逐步確認資料位置、主題與啟動動畫', '重新运行引导':'重新執行引導',
-    '基准字号':'基準字級', '拖动滑块，正文与各级标题会一起缩放':'拖動滑桿，正文與各級標題會一起縮放',
-    '通过 WebDAV 服务器或局域网中的其他 Acta 设备同步完整数据文件夹。':'透過 WebDAV 伺服器或區域網路中的其他 Acta 裝置同步完整資料資料夾。',
-    'Acta 局域网同步':'Acta 區域網路同步', '与同一网络中的其他 Acta 设备直接互相同步行记数据，数据不经过任何服务器。实验性功能，传输完成后请核对数据是否完整。':'與同一網路中的其他 Acta 裝置直接互相同步行記資料，資料不經過任何伺服器。實驗性功能，傳輸完成後請核對資料是否完整。',
-    '允许被其他设备发现':'允許被其他裝置發現', '开启后这台设备会出现在附近设备的列表中；关闭或退出 Acta 时立即停止':'開啟後這台裝置會出現在附近裝置的清單中；關閉或退出 Acta 時立即停止',
+    '初始设置向导':'初始設定精靈', '重新运行首次启动引导':'重新執行首次啟動引導', '重新运行引导':'重新執行引導',
+    '基准字号':'基準字級', '正文与各级标题一起缩放':'正文與各級標題一起縮放',
+    '通过 WebDAV 或局域网设备同步完整数据文件夹。':'透過 WebDAV 或區域網路裝置同步完整資料資料夾。',
+    'Acta 局域网同步':'Acta 區域網路同步', '与局域网内其他 Acta 设备直接互传，不经过服务器；实验功能，传完请核对数据。':'與區域網路內其他 Acta 裝置直接互傳，不經過伺服器；實驗功能，傳完請核對資料。',
+    '允许被其他设备发现':'允許被其他裝置發現', '出现在附近设备的列表中':'出現在附近裝置的清單中',
     '附近的设备':'附近的裝置', '搜尋裝置':'搜尋裝置', '设备雷达':'裝置雷達',
-    '信任此局域网（自动确认）':'信任此區域網路（自動確認）', '开启后其他设备可以不经确认直接读取本机任一行记数据，或直接向本机写入数据；覆盖前仍会自动备份。请仅在可信网络中开启':'開啟後其他裝置可以不經確認直接讀取本機任一行記資料，或直接向本機寫入資料；覆寫前仍會自動備份。請僅在可信網路中開啟。'
+    '信任此局域网（自动确认）':'信任此區域網路（自動確認）', '其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络':'其他裝置可免確認讀寫本機資料；覆寫前仍自動備份，僅限可信任網路'
   });
 
   const settingsTextEntries = [];
@@ -4291,6 +4317,14 @@
   if (window.actaDesktop?.platform === 'win32') {
     const settingsWindowControls = byId('settingsWindowControls');
     if (settingsWindowControls) settingsWindowControls.hidden = false;
+    // Windows 习惯把返回 / 关闭放到左下角：右上只留最小化与最大化。
+    const settingsClose = byId('settingsClose');
+    if (settingsClose) settingsClose.hidden = true;
+    const backDock = byId('settingsBackDock');
+    if (backDock) {
+      backDock.hidden = false;
+      backDock.addEventListener('click', () => closeSettings());
+    }
   }
   byId('clearCacheReload').addEventListener('click', async () => {
     if (autoSyncBusy) {
@@ -5197,7 +5231,9 @@
       autoConflictFound:'检测到冲突：「{0}」在上次自动化同步后又有改动，已取消并保留原数据。可先运行自动备份，或手动核对后再试。',
       autoNoPeer:'附近没有匹配的设备，自动化「{0}」本次未执行。', autoPeerGone:'设备不可达：{0}',
       autoBusy:'手动同步正在进行，自动化「{0}」已跳过本次触发。',
-      autoBackupDone:'已备份「{0}」', autoPushTargetMissing:'对方设备上没有同名档案「{0}」，可改用「另存为新档案」。', autoPullNothing:'对方设备上没有可导入的行记数据。'
+      autoBackupDone:'已备份「{0}」', autoPushTargetMissing:'对方设备上没有同名档案「{0}」，可改用「另存为新档案」。', autoPullNothing:'对方设备上没有可导入的行记数据。',
+      radarCountFound:'已发现 {0} 台设备', radarCountEmpty:'未发现设备', radarSearching:'查找中…', radarIdle:'自动刷新',
+      peerAddress:'地址', peerPort:'端口', peerSystem:'操作系统', peerBrand:'设备品牌', autoRunCount:'已运行 {0} 次'
     },
     en: {
       stateOff:'Off', stateOn:'Discoverable', stateNoDiscovery:'On',
@@ -5283,7 +5319,9 @@
       autoConflictFound:'Conflict detected: “{0}” changed since the last automated sync; cancelled and nothing was overwritten. Run an automatic backup first, or review manually and retry.',
       autoNoPeer:'No matching device nearby; automation “{0}” did not run this time.', autoPeerGone:'Device unreachable: {0}',
       autoBusy:'A manual sync is in progress; automation “{0}” skipped this trigger.',
-      autoBackupDone:'Backed up “{0}”', autoPushTargetMissing:'The device has no same-name profile “{0}”; use “Save as new profile” instead.', autoPullNothing:'The device has no profile to import.'
+      autoBackupDone:'Backed up “{0}”', autoPushTargetMissing:'The device has no same-name profile “{0}”; use “Save as new profile” instead.', autoPullNothing:'The device has no profile to import.',
+      radarCountFound:'{0} devices found', radarCountEmpty:'No devices found', radarSearching:'Searching…', radarIdle:'Auto refresh',
+      peerAddress:'Address', peerPort:'Port', peerSystem:'OS', peerBrand:'Brand', autoRunCount:'Ran {0} times'
     },
     'zh-Hant': {
       stateOff:'未開啟', stateOn:'可被發現', stateNoDiscovery:'已開啟',
@@ -5369,7 +5407,9 @@
       autoConflictFound:'偵測到衝突：「{0}」在上次自動化同步後又有變更，已取消並保留原資料。可先執行自動備份，或手動核對後再試。',
       autoNoPeer:'附近沒有符合的裝置，自動化「{0}」本次未執行。', autoPeerGone:'裝置無法連接：{0}',
       autoBusy:'手動同步正在進行，自動化「{0}」已跳過本次觸發。',
-      autoBackupDone:'已備份「{0}」', autoPushTargetMissing:'對方裝置上沒有同名檔案「{0}」，可改用「另存為新檔案」。', autoPullNothing:'對方裝置上沒有可匯入的行記資料。'
+      autoBackupDone:'已備份「{0}」', autoPushTargetMissing:'對方裝置上沒有同名檔案「{0}」，可改用「另存為新檔案」。', autoPullNothing:'對方裝置上沒有可匯入的行記資料。',
+      radarCountFound:'已發現 {0} 台裝置', radarCountEmpty:'未發現裝置', radarSearching:'搜尋中…', radarIdle:'自動重新整理',
+      peerAddress:'位址', peerPort:'連接埠', peerSystem:'作業系統', peerBrand:'裝置品牌', autoRunCount:'已執行 {0} 次'
     }
   };
   const lanText = (key, ...values) => values.reduce((message, value, index) => message.replace(`{${index}}`, value), (lanMessages[uiSettings.language] || lanMessages.zh)[key] || '');
@@ -5460,8 +5500,11 @@
     let icon = lanIdentity().icon;
     try {
       const status = await lanBridge?.serviceStatus?.();
-      if (status?.device) name = status.device;
-      if (typeof status?.icon === 'string' && status.icon) icon = status.icon;
+      // 服务未运行时原生层只知道主机名：本地设置优先，自定义名才不会丢。
+      if (status?.running) {
+        if (status.device) name = status.device;
+        if (typeof status.icon === 'string' && status.icon) icon = status.icon;
+      }
     } catch { /* 服务未启动，使用本地设置 */ }
     nameEl.textContent = name;
     iconEl.textContent = icon;
@@ -5522,6 +5565,7 @@
         : lanBridge.startService(lanProfilesMeta(), lanTrustLan));
       lanServiceRunning = Boolean(status.running);
       lanDiscoverable = Boolean(status.discoverable);
+      if (status?.session) lanOwnSession = status.session;
       void lanRenderSelfIdentity();
     } catch (error) {
       lanServiceRunning = false;
@@ -5581,10 +5625,10 @@
     try {
       const peers = await lanBridge.discover(1800);
       const candidates = Array.isArray(peers) ? peers : [];
-      const fresh = candidates.find(candidate => candidate.name === peer.name && candidate.platform === peer.platform)
-        || candidates.find(candidate => candidate.ip === peer.ip);
-      if (fresh) {
-        resolved = await verify(fresh);
+      // 名称 + 系统匹配的全部候选逐个验证：多网卡设备的另一个地址可能才通。
+      const fresh = candidates.filter(candidate => (candidate.name === peer.name && candidate.platform === peer.platform) || candidate.ip === peer.ip);
+      for (const candidate of fresh) {
+        resolved = await verify(candidate);
         if (resolved) {
           const index = lanPeers.indexOf(peer);
           if (index >= 0) lanPeers[index] = resolved;
@@ -5609,6 +5653,7 @@
     lanRadarMenuPeer = null;
   };
 
+  const lanBrandLabel = platform => ({ macos: 'Apple', windows: 'Microsoft', android: 'Android', ios: 'Apple' })[platform] || '—';
   function openLanPeerMenu(peer, wrapper) {
     closeLanPeerMenu();
     const stage = byId('lanRadarStage');
@@ -5617,11 +5662,17 @@
     menu.className = 'lan-peer-menu lan-open';
     const name = peer.name || lanText('unknownDevice');
     menu.innerHTML = `<b>${escapeHTML(name)}</b>
+      <div class="lan-peer-meta">
+        <span>${escapeHTML(lanText('peerAddress'))}</span><code>${escapeHTML(peer.ip || '—')}</code>
+        <span>${escapeHTML(lanText('peerPort'))}</span><code>${peer.port || '—'}</code>
+        <span>${escapeHTML(lanText('peerSystem'))}</span><code>${escapeHTML(lanPlatformLabel(peer.platform))}</code>
+        <span>${escapeHTML(lanText('peerBrand'))}</span><code>${escapeHTML(lanBrandLabel(peer.platform))}</code>
+      </div>
       <button type="button" data-lan-action="pull"><svg><use href="#i-download"/></svg><span>${escapeHTML(lanText('pullAction'))}</span></button>
       <button type="button" data-lan-action="push"><svg><use href="#i-upload"/></svg><span>${escapeHTML(lanText('pushAction'))}</span></button>`;
     const x = parseFloat(wrapper.style.left) || 0;
     const y = parseFloat(wrapper.style.top) || 0;
-    const menuWidth = 168;
+    const menuWidth = 208;
     let left = x + 40;
     if (left + menuWidth > stage.clientWidth - 8) left = x - 40 - menuWidth;
     menu.style.left = `${Math.max(8, left)}px`;
@@ -5638,19 +5689,28 @@
     lanRadarMenuPeer = peer;
   }
 
+  const lanRadarRemoveTimers = new Map();
   function renderLanRadar() {
     const stage = byId('lanRadarStage');
     if (!stage) return;
     const centerX = (stage.clientWidth || 360) / 2;
-    const centerY = (stage.clientHeight || 300) / 2;
-    const radius = Math.max(64, Math.min(stage.clientWidth || 360, stage.clientHeight || 300) / 2 - 56);
+    const centerY = (stage.clientHeight || 340) / 2;
+    // 半径必须把「气泡 + 名称」整体推到本机气泡之外：太小（小舞台 + 贴边
+    // 余量）时设备会与本机气泡和名称相互压叠，这是重叠反馈的主要来源。
+    const radius = Math.max(96, Math.min(stage.clientWidth || 360, stage.clientHeight || 340) / 2 - 62);
     const existing = new Map([...stage.querySelectorAll('.lan-radar-peer')].map(node => [node.dataset.session, node]));
     const present = new Set(lanPeers.map(peer => peer.session));
     existing.forEach((node, session) => {
       if (present.has(session)) return;
-      node.classList.add('is-leaving');
+      lanRadarSeen.delete(session);
       if (lanRadarMenuPeer?.session === session) closeLanPeerMenu();
-      setTimeout(() => node.remove(), 240);
+      const timer = lanRadarRemoveTimers.get(session);
+      if (timer) clearTimeout(timer);
+      node.classList.add('is-leaving');
+      lanRadarRemoveTimers.set(session, setTimeout(() => {
+        node.remove();
+        lanRadarRemoveTimers.delete(session);
+      }, 240));
     });
     let freshCount = 0;
     lanPeers.forEach((peer, index) => {
@@ -5674,6 +5734,12 @@
         if (bubble) bubble.innerHTML = iconMarkup;
       }
       if (fresh) {
+        // 设备在离场动画期间重新出现：取消移除计时器，原地恢复。
+        const removeTimer = lanRadarRemoveTimers.get(peer.session);
+        if (removeTimer) {
+          clearTimeout(removeTimer);
+          lanRadarRemoveTimers.delete(peer.session);
+        }
         // 从本机（中心）滑向落点：CSS 变量提供起点偏移，入场带级联延迟。
         node.style.setProperty('--from-x', `${centerX - x}px`);
         node.style.setProperty('--from-y', `${centerY - y}px`);
@@ -5696,33 +5762,52 @@
     renderLanRadar();
   }
 
+  // 本机 session：过滤「自己被当成设备列出」的应答（自身广播回环时原生层
+  // 偶尔拦不住），这也是雷达上出现多个自己的直接来源。
+  let lanOwnSession = '';
+  async function lanRefreshOwnSession() {
+    try {
+      const status = await lanBridge?.serviceStatus?.();
+      if (status?.session) lanOwnSession = status.session;
+    } catch { /* 服务未启动 */ }
+  }
+  // 同一设备会从多个网卡各应答一次（session 相同、ip 不同）：按 session
+  // 合并，只留最先到达的一份，雷达不再列出重复设备。
+  const lanNormalizePeers = peers => {
+    const merged = new Map();
+    peers.forEach(peer => {
+      if (!peer?.session || (lanOwnSession && peer.session === lanOwnSession)) return;
+      if (!merged.has(peer.session)) merged.set(peer.session, peer);
+    });
+    return [...merged.values()];
+  };
+  // 雷达状态行：已发现数量与查找状态并列。
+  const lanRenderRadarStatus = scanning => {
+    const count = byId('lanRadarCount');
+    const phase = byId('lanRadarPhase');
+    if (count) count.textContent = lanPeers.length ? lanText('radarCountFound', lanPeers.length) : lanText('radarCountEmpty');
+    if (phase) phase.textContent = scanning ? lanText('radarSearching') : lanText('radarIdle');
+  };
+
   async function scanLanPeers() {
     if (!lanBridge || lanScanning) return;
     lanScanning = true;
     updateLanStateUI();
-    byId('lanPeersHint').textContent = lanText('scanning');
+    if (!lanOwnSession) void lanRefreshOwnSession();
+    lanRenderRadarStatus(true);
     setLanStatus(lanText('scanning'), 'info');
-    const radarStatus = byId('lanRadarStatus');
-    if (radarStatus) radarStatus.textContent = lanText('scanning');
     try {
       const peers = await lanBridge.discover(1800);
-      lanPeers = Array.isArray(peers) ? peers : [];
+      lanPeers = lanNormalizePeers(Array.isArray(peers) ? peers : []);
       renderLanRadar();
       // 扫描结果落地：驱动「发现设备 / 定时」类自动化条目。
       lanAutomationEvaluator?.();
-      if (lanPeers.length) {
-        setLanStatus(lanText('foundPeers', lanPeers.length), 'success');
-        byId('lanPeersHint').textContent = lanText('peersHint');
-        if (radarStatus) radarStatus.textContent = lanText('foundPeers', lanPeers.length);
-      } else {
-        setLanStatus(lanText('noPeers'), '');
-        if (radarStatus) radarStatus.textContent = lanText('noPeers');
-      }
+      setLanStatus(lanPeers.length ? lanText('foundPeers', lanPeers.length) : lanText('noPeers'), lanPeers.length ? 'success' : '');
     } catch (error) {
       setLanStatus(`${lanText('scanFail')}${error.message}`, 'error');
-      if (radarStatus) radarStatus.textContent = `${lanText('scanFail')}${error.message}`;
     } finally {
       lanScanning = false;
+      lanRenderRadarStatus(false);
       updateLanStateUI();
     }
   }
@@ -6310,9 +6395,12 @@
       uiSettings.lanAutomations = lanAutomations();
       saveUISettings();
     };
-    const lanRecordRun = (entry, patch) => {
+    const lanRecordRun = (entry, patch = {}) => {
       const runs = lanAutomationRecords();
-      runs[entry.id] = { ...(runs[entry.id] || {}), at: new Date().toISOString(), ...patch };
+      const previous = runs[entry.id] || {};
+      // count 只由「运行结束」的记录递增；步骤内部的记录沿用已有计数。
+      const bump = Number(patch.count) || 0;
+      runs[entry.id] = { ...previous, ...patch, at: new Date().toISOString(), count: (Number(previous.count) || 0) + bump };
       uiSettings.lanAutomationRuns = runs;
       saveUISettings();
     };
@@ -6429,6 +6517,8 @@
       } finally {
         lanAutomationRunning = false;
         lanBusy = false;
+        // 运行次数在这里统一 +1：无论成功、失败还是冲突，跑过一次就算一次。
+        lanRecordRun(entry, { count: 1 });
         lanRenderAutomations();
       }
     }
@@ -6495,8 +6585,12 @@
       head.append(copy, toggle);
       const last = document.createElement('p');
       last.className = 'lan-automation-last';
-      const resultText = entry.lastResult?.message ? ` · ${entry.lastResult.message}` : '';
-      last.textContent = entry.lastRunAt ? `${lanText('autoLastRun', formatDateTimeSeconds(entry.lastRunAt))}${resultText}` : lanText('autoNeverRun');
+      // 运行记录是唯一事实来源（次数 / 时间 / 结果都在 record 上）。
+      const record = lanAutomationRecords()[entry.id] || {};
+      const resultText = record.message ? ` · ${record.message}` : '';
+      last.textContent = record.count
+        ? `${lanText('autoRunCount', record.count)} · ${lanText('autoLastRun', record.at ? formatDateTimeSeconds(record.at) : '—')}${resultText}`
+        : lanText('autoNeverRun');
       const actions = document.createElement('div');
       actions.className = 'lan-automation-actions';
       const runButton = lanAutomationMetaButton(lanText('autoRun'), 'i-lightning');

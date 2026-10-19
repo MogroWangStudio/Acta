@@ -48,11 +48,12 @@
       return invoke('web_dav_request', { requestUrl, requestOptions });
     },
     lanSync: {
-      startService(profiles, trusted) {
-        return invoke('lan_sync_start_service', { profiles, trusted });
+      // identity：设备名 / 图标 / 端口（Android 桥不传，保持主机名与自动端口）。
+      startService(profiles, trusted, identity) {
+        return invoke('lan_sync_start_service', { profiles, trusted, identity });
       },
-      updateMeta(profiles, trusted) {
-        return invoke('lan_sync_update_meta', { profiles, trusted });
+      updateMeta(profiles, trusted, identity) {
+        return invoke('lan_sync_update_meta', { profiles, trusted, identity });
       },
       stopService() {
         return invoke('lan_sync_stop_service');

@@ -100,7 +100,11 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
    最小化 / 最大化按钮放进设置头部（settingsWindowControls）。 */
 .settings-backdrop { position: fixed; inset: 0; z-index: 110; background: var(--paper); opacity: 0; pointer-events: none; transition: opacity .24s ease; }
 .settings-backdrop.open { opacity: 1; pointer-events: auto; }
-.settings-window { width: 100vw; height: 100vh; border: 0; border-radius: 0; background: var(--paper); color: var(--ink); overflow: hidden; display: grid; grid-template-rows: 67px minmax(0,1fr); transform: translateY(12px); transition: transform .32s var(--ease-out); }
+.settings-window { position: relative; width: 100vw; height: 100vh; border: 0; border-radius: 0; background: var(--paper); color: var(--ink); overflow: hidden; display: grid; grid-template-rows: 67px minmax(0,1fr); transform: translateY(12px); transition: transform .32s var(--ease-out); }
+.settings-back-dock { position: absolute; left: 16px; bottom: 16px; z-index: 5; height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 72%, transparent); color: var(--muted); display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: calc(10px * var(--acta-font-scale)); transition: color .15s ease, border-color .15s ease, background .15s ease; }
+.settings-back-dock:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); background: var(--white); }
+.settings-back-dock svg { width: 12px; height: 12px; }
+html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-backdrop.open .settings-window { transform: translateY(0); }
 .settings-backdrop.open.is-closing { pointer-events: none; animation: actaWindowBackdropOut .24s cubic-bezier(.4,0,1,1) both; }
 .settings-backdrop.open.is-closing .settings-window { animation: actaWindowClose .24s cubic-bezier(.4,0,.7,.2) both; }
@@ -540,10 +544,12 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .relation-dialog[open]::backdrop { animation: actaDialogBackdropIn .28s ease-out both; }
 .relation-dialog[open].is-closing { pointer-events: none; animation: actaWindowClose .24s cubic-bezier(.4,0,.7,.2) both; }
 .relation-dialog[open].is-closing::backdrop { animation: actaWindowBackdropOut .24s cubic-bezier(.4,0,1,1) both; }
-.relation-dialog-head { height: 58px; padding: 0 14px 0 19px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 9px; }
-.relation-dialog-head > span { width: 30px; height: 30px; border-radius: 9px; background: var(--violet-soft); color: var(--violet); display: grid; place-items: center; }
-.relation-dialog-head svg { width: 14px; }
-.relation-dialog-head h3 { margin: 0; font: 600 calc(17px * var(--acta-font-scale)) var(--acta-font-display); }
+.relation-dialog-head { min-height: 58px; padding: 10px 14px 10px 19px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 11px; }
+.relation-dialog-head > span { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 10px; background: var(--violet-soft); color: var(--violet); display: grid; place-items: center; }
+.relation-dialog-head svg { width: 15px; height: 15px; }
+.relation-dialog-head > div { min-width: 0; flex: 1; display: grid; gap: 3px; }
+.relation-dialog-head h3 { margin: 0; font: 600 calc(16px * var(--acta-font-scale))/1.3 var(--acta-font-display); overflow-wrap: anywhere; }
+.relation-dialog-head small { color: var(--faint); font-size: calc(8.5px * var(--acta-font-scale)); line-height: 1.5; overflow-wrap: anywhere; }
 .relation-dialog-close { margin-left: auto; width: 29px; height: 29px; padding: 0; border: 0; border-radius: 8px; background: var(--panel); display: grid; place-items: center; cursor: pointer; }
 .relation-dialog-body { padding: 17px; }
 .relation-dialog-body .link-picker { display: grid !important; }
@@ -1464,18 +1470,31 @@ html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: 
 .brand-logo { position: relative; z-index: 1; }
 .brand-version { position: relative; z-index: 1; top: 8px; flex: 0 0 auto; max-width: 76px; overflow: hidden; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--white) 48%, transparent); font: 700 calc(7px * var(--acta-font-scale))/1 "Segoe UI Variable", "PingFang SC", sans-serif; letter-spacing: .035em; white-space: nowrap; opacity: 1; transform: translateX(0); transition: max-width .42s cubic-bezier(.2,.82,.2,1), padding .42s cubic-bezier(.2,.82,.2,1), border-width .28s ease, opacity .18s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
 @media (min-width: 801px) {
-  html[data-desktop-platform="darwin"] .titlebar { grid-template-columns: var(--acta-sidebar-width) minmax(0,1fr); }
+  /* macOS：logo 居中，版本号脱排到标题栏右缘，保存状态紧随其左；
+     红绿灯由原生定位（traffic_light_position）垂直居中、贴左侧留间距。 */
+  html[data-desktop-platform="darwin"] .titlebar { grid-template-columns: minmax(0,1fr); }
   html[data-desktop-platform="darwin"] .brand {
     position: absolute;
     top: 0;
-    right: 14px;
+    left: 50%;
     height: 100%;
     padding-left: 0;
-    flex-direction: row-reverse;
-    transform-origin: right center;
-    --logo-center-x: calc(100% - 58px);
+    transform: translateX(-50%) translateZ(0);
+    transform-origin: center;
+    --logo-center-x: 50%;
   }
-  html[data-desktop-platform="darwin"] .brand-mini-logo { left: auto; right: 42px; }
+  html[data-desktop-platform="darwin"] .brand:hover,
+  html[data-desktop-platform="darwin"] .brand:focus-visible { transform: translateX(-50%) translate3d(0,-1px,0) scale(1.018); }
+  html[data-desktop-platform="darwin"] .brand:active { transform: translateX(-50%) translate3d(0,0,0) scale(.988); transition-duration: .1s; }
+  html[data-desktop-platform="darwin"] .brand-version {
+    position: absolute;
+    left: auto;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: none;
+  }
+  html[data-desktop-platform="darwin"] body.sidebar-collapsed .brand-mini-logo { opacity: 0; }
 }
 
 body { --acta-sidebar-expanded-width: 248px; --acta-sidebar-width: var(--acta-sidebar-expanded-width); }
@@ -2287,7 +2306,9 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
    弹出发送/提取操作。 */
 .lan-radar-inline { display: grid; gap: 8px; padding: 12px 15px 14px; border-top: 1px solid var(--line); }
 .lan-radar-inline .settings-status { margin: 0; }
-.lan-radar-stage { position: relative; height: 250px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--panel) 55%, transparent); overflow: hidden; }
+.lan-radar-status { display: flex; align-items: baseline; gap: 8px; }
+.lan-radar-divider { color: var(--faint); }
+.lan-radar-stage { position: relative; height: 360px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--panel) 55%, transparent); overflow: hidden; }
 .lan-radar-ring { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--sage) 55%, transparent); opacity: 0; pointer-events: none; }
 .lan-radar-stage.lan-service-on .lan-radar-ring { animation: lanRadarRipple 2.6s cubic-bezier(.16,1,.3,1) infinite; }
 .lan-radar-stage.lan-service-on .lan-radar-ring:nth-child(2) { animation-delay: .85s; }
@@ -2307,7 +2328,10 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 .lan-peer-bubble:hover { transform: scale(1.08); border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); color: var(--sage); box-shadow: 0 3px 10px -3px rgba(31,35,30,.22); }
 .lan-peer-bubble:active { transform: scale(.96); }
 .lan-peer-bubble svg { width: 18px; height: 18px; }
-.lan-peer-menu { position: absolute; z-index: 3; display: grid; gap: 5px; min-width: 148px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); box-shadow: 0 3px 9px -2px rgba(31,35,30,.16), 0 10px 26px -10px rgba(31,35,30,.2); opacity: 0; transform: scale(.92); transform-origin: 50% 0; transition: opacity .14s ease, transform .2s cubic-bezier(.16,1,.3,1); pointer-events: none; }
+.lan-peer-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: 3px 12px; padding: 1px 2px 5px; border-bottom: 1px solid var(--line); margin-bottom: 3px; }
+.lan-peer-meta span { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
+.lan-peer-meta code { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: calc(8.5px * var(--acta-font-scale)); }
+.lan-peer-menu { position: absolute; z-index: 3; display: grid; gap: 5px; min-width: 208px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); box-shadow: 0 3px 9px -2px rgba(31,35,30,.16), 0 10px 26px -10px rgba(31,35,30,.2); opacity: 0; transform: scale(.92); transform-origin: 50% 0; transition: opacity .14s ease, transform .2s cubic-bezier(.16,1,.3,1); pointer-events: none; }
 .lan-peer-menu.lan-open { opacity: 1; transform: scale(1); pointer-events: auto; }
 .lan-peer-menu b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(9px * var(--acta-font-scale)); padding: 1px 2px 3px; }
 .lan-peer-menu button { display: flex; align-items: center; gap: 7px; height: 30px; padding: 0 9px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-size: calc(9px * var(--acta-font-scale)); font-weight: 600; cursor: pointer; transition: background .13s ease; }
@@ -2423,7 +2447,7 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
    远离系统红绿灯；brand 脱离文档流后 titlebar-center 会顶进第一列，
    必须显式固定到第二列。 */
 @media (min-width: 801px) {
-  html[data-desktop-platform="darwin"] .titlebar-center { grid-column: 2; justify-content: flex-end; padding: 0 190px 0 16px; border-left: 0; }
+  html[data-desktop-platform="darwin"] .titlebar-center { grid-column: 1; justify-content: flex-end; padding: 0 70px 0 16px; border-left: 0; }
 }
 
 /* —— 页面跳转栏设置 —— */
