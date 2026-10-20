@@ -1081,8 +1081,10 @@ function syncCalendarShell() {
   document.body.classList.toggle('calendar-view', active);
   document.body.classList.toggle('calendar-week-active', active && calendarViewMode === 'week');
   document.body.classList.toggle('inbox-view', currentView === 'inbox');
+  document.body.classList.toggle('folder-view', currentView.startsWith('folder:'));
   document.body.classList.toggle('stats-view', currentView === 'stats');
   document.body.classList.toggle('trash-view', currentView === 'trash');
+  document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
   const toolbar = $('#calendarToolbar');
   if (toolbar) {
     toolbar.hidden = !active;

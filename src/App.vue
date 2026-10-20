@@ -108,15 +108,15 @@
 
         <section class="item-pane">
           <div class="item-header">
-            <div><h1 id="viewTitle">收集箱</h1></div>
+            <div class="item-title-row">
+              <h1 id="viewTitle">收集箱</h1>
+              <button class="view-title-menu" id="viewTitleMenu" type="button" aria-label="查看归类" aria-haspopup="true" aria-expanded="false"><svg class="view-title-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+            </div>
             <label class="filter-select todo-completed-toggle" id="todoCompletedToggle" hidden>
               <input id="todoShowCompleted" type="checkbox"/>
               <svg><use href="#i-check"/></svg>
               <span data-i18n="showCompletedTodos">显示已完成</span>
             </label>
-            <div class="mobile-list-shortcuts">
-              <button class="mobile-classifications-trigger" id="mobileClassifications" type="button" aria-label="查看归类" aria-haspopup="dialog"><svg><use href="#i-folder"/></svg><span>查看归类</span><svg class="shortcut-chevron"><use href="#i-chevron"/></svg></button>
-            </div>
             <div class="calendar-toolbar" id="calendarToolbar" hidden>
               <div class="calendar-navigation" role="group" aria-label="日历导航">
                 <button type="button" data-calendar-shift="-1" title="上一月"><svg><use href="#i-chevron"/></svg><span data-calendar-shift-label>上一月</span></button>
@@ -129,6 +129,9 @@
                 <button type="button" data-calendar-mode="week" data-i18n="weekView">周</button>
                 <button type="button" data-calendar-mode="day" data-i18n="dayView">日</button>
               </div>
+            </div>
+            <div class="view-title-menu-panel" id="viewTitleMenuPanel" hidden>
+              <nav class="mobile-classification-list" id="mobileClassificationList" aria-label="所有归类"></nav>
             </div>
           </div>
           <label class="search-box">
@@ -576,11 +579,6 @@
       <div class="history-actions">
         <button class="history-clear-button" id="clearHistory" type="button"><svg><use href="#i-trash"/></svg><span>清空历史记录</span></button>
       </div>
-    </dialog>
-
-    <dialog class="relation-dialog mobile-classification-dialog" id="mobileClassificationDialog" aria-labelledby="mobileClassificationTitle">
-      <header class="relation-dialog-head"><span><svg><use href="#i-folder"/></svg></span><div><h3 id="mobileClassificationTitle">所有归类</h3><small id="mobileClassificationCount">0 个归类</small></div><button class="relation-dialog-close" id="closeMobileClassifications" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
-      <nav class="mobile-classification-list" id="mobileClassificationList" aria-label="所有归类"></nav>
     </dialog>
 
     <dialog class="relation-dialog classification-manager-dialog" id="classificationManagerDialog">

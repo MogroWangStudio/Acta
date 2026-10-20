@@ -1275,25 +1275,26 @@ async function main() {
         return getComputedStyle(button).display === 'grid' && rect.width >= 35 && rect.height >= 35;
       });
       document.querySelector('[data-view="inbox"]').click();
-      const mobileClassificationTrigger = document.querySelector('#mobileClassifications');
-      const mobileClassificationTriggerRect = mobileClassificationTrigger.getBoundingClientRect();
+      const mobileTitleMenu = document.querySelector('#viewTitleMenu');
+      const mobileTitleMenuRect = mobileTitleMenu.getBoundingClientRect();
       const mobileInboxTitleRect = document.querySelector('#viewTitle').getBoundingClientRect();
       const mobileTitlebarActionsRect = document.querySelector('.mobile-titlebar-actions').getBoundingClientRect();
-      const mobileClassificationRelocated = mobileClassificationTrigger.textContent.trim() === '查看归类'
-        && mobileClassificationTriggerRect.top >= mobileTitlebarActionsRect.bottom - 1
-        && Math.abs((mobileClassificationTriggerRect.top + mobileClassificationTriggerRect.height / 2) - (mobileInboxTitleRect.top + mobileInboxTitleRect.height / 2)) <= 8
-        && mobileClassificationTriggerRect.right <= document.querySelector('.item-pane').getBoundingClientRect().right + 1;
-      document.querySelector('#mobileClassifications').click();
-      const mobileClassificationTransition = mobileClassificationTrigger.classList.contains('is-launching')
-        && getComputedStyle(mobileClassificationTrigger).animationTimingFunction.includes('cubic-bezier');
-      await waitFor(() => document.querySelector('#mobileClassificationDialog').open);
-      const mobileClassificationDialog = document.querySelector('#mobileClassificationDialog');
-      const mobileClassificationRect = mobileClassificationDialog.getBoundingClientRect();
+      const mobileClassificationMenuAttached = getComputedStyle(mobileTitleMenu).display === 'grid'
+        && mobileTitleMenuRect.width >= 27 && mobileTitleMenuRect.height >= 27
+        && mobileTitleMenuRect.left >= mobileInboxTitleRect.right - 1
+        && Math.abs((mobileTitleMenuRect.top + mobileTitleMenuRect.height / 2) - (mobileInboxTitleRect.top + mobileInboxTitleRect.height / 2)) <= 6
+        && mobileTitleMenuRect.top >= mobileTitlebarActionsRect.bottom - 1
+        && mobileTitleMenuRect.right <= document.querySelector('.item-pane').getBoundingClientRect().right + 1;
+      mobileTitleMenu.click();
+      await waitFor(() => document.querySelector('#viewTitleMenuPanel').classList.contains('is-open'));
+      const mobileClassificationMenuTransition = getComputedStyle(document.querySelector('#viewTitleMenuPanel')).transitionDuration !== '0s';
+      const mobileClassificationPanel = document.querySelector('#viewTitleMenuPanel');
+      const mobileClassificationRect = mobileClassificationPanel.getBoundingClientRect();
       const mobileClassificationListComplete = document.querySelectorAll('#mobileClassificationList [data-view^="folder:"]').length === library.folders.length;
       const mobileClassificationEditButtonsComplete = document.querySelectorAll('#mobileClassificationList [data-classification-edit]').length === library.folders.length;
       const mobileClassificationIconsUpright = [...document.querySelectorAll('#mobileClassificationList .folder-dot, #mobileClassificationList .folder-short-name')]
         .every(icon => getComputedStyle(icon).fontStyle === 'normal');
-      const nativeDialogPositionFixed = getComputedStyle(mobileClassificationDialog).position === 'fixed'
+      const mobileClassificationPanelInViewport = getComputedStyle(mobileClassificationPanel).position === 'absolute'
         && mobileClassificationRect.left >= -1
         && mobileClassificationRect.top >= -1
         && mobileClassificationRect.right <= innerWidth + 1
@@ -1734,13 +1735,13 @@ async function main() {
         classificationTodoListPopulated,
         classificationItemOpened,
         mobileTitlebarButtonsVisible,
-        mobileClassificationRelocated,
-        mobileClassificationTransition,
+        mobileClassificationMenuAttached,
+        mobileClassificationMenuTransition,
         mobileClassificationListComplete,
         mobileClassificationEditButtonsComplete,
         mobileClassificationEditOpensTarget,
         mobileClassificationIconsUpright,
-        nativeDialogPositionFixed,
+        mobileClassificationPanelInViewport,
         mobileTrashOpensTrashView,
         expandedBrandVersionVisible,
         collapsedSidebarAligned,
@@ -2058,13 +2059,13 @@ async function main() {
     assert.equal(result.classificationTodoListPopulated, true);
     assert.equal(result.classificationItemOpened, true);
     assert.equal(result.mobileTitlebarButtonsVisible, true);
-    assert.equal(result.mobileClassificationRelocated, true);
-    assert.equal(result.mobileClassificationTransition, true);
+    assert.equal(result.mobileClassificationMenuAttached, true);
+    assert.equal(result.mobileClassificationMenuTransition, true);
     assert.equal(result.mobileClassificationListComplete, true);
     assert.equal(result.mobileClassificationEditButtonsComplete, true);
     assert.equal(result.mobileClassificationEditOpensTarget, true);
     assert.equal(result.mobileClassificationIconsUpright, true);
-    assert.equal(result.nativeDialogPositionFixed, true);
+    assert.equal(result.mobileClassificationPanelInViewport, true);
     assert.equal(result.mobileTrashOpensTrashView, true);
     assert.equal(result.expandedBrandVersionVisible, true);
     assert.equal(result.collapsedSidebarAligned, true, JSON.stringify(result.collapsedSidebarOffsets));

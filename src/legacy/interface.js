@@ -586,7 +586,8 @@
   const classificationText = () => classificationMessages[uiSettings.language] || classificationMessages.zh;
 
   const classificationManagerDialog = byId('classificationManagerDialog');
-  const mobileClassificationDialog = byId('mobileClassificationDialog');
+  const mobileClassificationPanel = byId('viewTitleMenuPanel');
+  const mobileClassificationTrigger = byId('viewTitleMenu');
   const quickCaptureDialog = byId('quickCaptureDialog');
   const quickCaptureForm = byId('quickCaptureForm');
   const quickCaptureTitleInput = byId('quickCaptureItemTitle');
@@ -866,68 +867,103 @@
   const normalizedFolderShortName = normalizeFolderShortName;
   function renderMobileClassifications() {
     const copy = classificationText();
-    byId('mobileClassificationTitle').textContent = copy.mobileTitle;
-    byId('mobileClassificationCount').textContent = formatClassificationMessage(copy.listCount, library.folders.length);
-    byId('mobileClassificationList').setAttribute('aria-label', copy.mobileTitle);
-    byId('closeMobileClassifications').setAttribute('aria-label', copy.close);
-    byId('mobileClassificationList').innerHTML = library.folders.map(folder => {
-      const count = library.items.filter(item => item.folderId === folder.id && !isTrashed(item)).length;
-      const shortName = folderShortName(folder);
-      const shortNameClasses = ['folder-short-name', folderShortNameUsesEmoji(shortName) ? 'is-emoji' : '', folderShortSegments(shortName).length > 2 ? 'is-long' : ''].filter(Boolean).join(' ');
-      const name = folderName(folder);
-      return `<div class="mobile-classification-row ${currentView === `folder:${folder.id}` ? 'active' : ''}" style="--folder-color:${escapeHTML(normalizedClassificationColor(folder.color))}">
-        <button class="mobile-classification-open" type="button" data-view="folder:${escapeHTML(folder.id)}">
-          <i class="folder-dot"><b class="${shortNameClasses}">${escapeHTML(shortName)}</b></i>
-          <span><strong>${escapeHTML(name)}</strong><small>${escapeHTML(formatClassificationMessage(copy.itemCount, count))}</small></span><em>${count}</em>
-        </button>
-        <button class="mobile-classification-edit" type="button" data-classification-edit="${escapeHTML(folder.id)}" title="${escapeHTML(copy.editClassification)}" aria-label="${escapeHTML(`${copy.editClassification}：${name}`)}"><svg><use href="#i-edit"/></svg></button>
-      </div>`;
-    }).join('');
+    const list = byId('mobileClassificationList');
+    list.setAttribute('aria-label', copy.mobileTitle);
+    list.innerHTML = library.folders.length
+      ? library.folders.map(folder => {
+        const count = library.items.filter(item => item.folderId === folder.id && !isTrashed(item)).length;
+        const shortName = folderShortName(folder);
+        const shortNameClasses = ['folder-short-name', folderShortNameUsesEmoji(shortName) ? 'is-emoji' : '', folderShortSegments(shortName).length > 2 ? 'is-long' : ''].filter(Boolean).join(' ');
+        const name = folderName(folder);
+        return `<div class="mobile-classification-row ${currentView === `folder:${folder.id}` ? 'active' : ''}" style="--folder-color:${escapeHTML(normalizedClassificationColor(folder.color))}">
+          <button class="mobile-classification-open" type="button" data-view="folder:${escapeHTML(folder.id)}">
+            <i class="folder-dot"><b class="${shortNameClasses}">${escapeHTML(shortName)}</b></i>
+            <span><strong>${escapeHTML(name)}</strong><small>${escapeHTML(formatClassificationMessage(copy.itemCount, count))}</small></span><em>${count}</em>
+          </button>
+          <button class="mobile-classification-edit" type="button" data-classification-edit="${escapeHTML(folder.id)}" title="${escapeHTML(copy.editClassification)}" aria-label="${escapeHTML(`${copy.editClassification}：${name}`)}"><svg><use href="#i-edit"/></svg></button>
+        </div>`;
+      }).join('')
+      : `<button class="mobile-classification-empty" type="button" data-classification-add><svg><use href="#i-plus"/></svg><span>${escapeHTML(copy.add)}</span></button>`;
   }
+  let mobileClassificationCloseTimer = 0;
   function openMobileClassifications() {
+    clearTimeout(mobileClassificationCloseTimer);
     renderMobileClassifications();
-    openAnimatedDialog(mobileClassificationDialog);
-    requestAnimationFrame(() => byId('mobileClassificationList').querySelector('.mobile-classification-row.active .mobile-classification-open, .mobile-classification-open')?.focus());
+    mobileClassificationPanel.hidden = false;
+    mobileClassificationTrigger.setAttribute('aria-expanded', 'true');
+    requestAnimationFrame(() => {
+      mobileClassificationPanel.classList.add('is-open');
+      byId('mobileClassificationList').querySelector('.mobile-classification-row.active .mobile-classification-open, .mobile-classification-open, .mobile-classification-empty')?.focus({ preventScroll: true });
+    });
+  }
+  function closeMobileClassifications(restoreFocus = false) {
+    mobileClassificationPanel.classList.remove('is-open');
+    mobileClassificationTrigger.setAttribute('aria-expanded', 'false');
+    clearTimeout(mobileClassificationCloseTimer);
+    mobileClassificationCloseTimer = setTimeout(() => {
+      if (!mobileClassificationPanel.classList.contains('is-open')) mobileClassificationPanel.hidden = true;
+    }, 220);
+    if (restoreFocus) mobileClassificationTrigger.focus();
+  }
+  function toggleMobileClassifications() {
+    if (mobileClassificationPanel.classList.contains('is-open')) closeMobileClassifications();
+    else openMobileClassifications();
   }
   function updateFolderActionCopy() {
     const copy = classificationText();
     const mobileViewLabel = uiSettings.language === 'en' ? 'View classifications' : uiSettings.language === 'zh-Hant' ? '查看歸類' : '查看归类';
     folderActionsMenu.title = copy.menu;
     folderActionsMenu.setAttribute('aria-label', copy.menu);
-    byId('mobileClassifications').title = mobileViewLabel;
-    byId('mobileClassifications').setAttribute('aria-label', mobileViewLabel);
-    byId('mobileClassifications').querySelector('span').textContent = mobileViewLabel;
+    mobileClassificationTrigger.title = mobileViewLabel;
+    mobileClassificationTrigger.setAttribute('aria-label', mobileViewLabel);
     const mobileDataLabel = uiSettings.language === 'en' ? 'Acta Data' : uiSettings.language === 'zh-Hant' ? '行記資料' : '行记数据';
     byId('folderMenuAddTitle').textContent = copy.add;
     byId('folderMenuAddHint').textContent = copy.addHint;
     byId('folderMenuManageTitle').textContent = copy.manage;
     byId('folderMenuManageHint').textContent = copy.manageHint;
   }
-  byId('mobileClassifications').addEventListener('click', event => {
+  mobileClassificationTrigger.addEventListener('click', event => {
     event.preventDefault();
-    const trigger = event.currentTarget;
-    trigger.classList.remove('is-launching');
-    void trigger.offsetWidth;
-    trigger.classList.add('is-launching');
-    setTimeout(() => trigger.classList.remove('is-launching'), 430);
-    openMobileClassifications();
+    event.stopPropagation();
+    toggleMobileClassifications();
   });
-  byId('closeMobileClassifications').addEventListener('click', () => closeAnimatedDialog(mobileClassificationDialog));
-  mobileClassificationDialog.addEventListener('cancel', event => {
-    event.preventDefault();
-    closeAnimatedDialog(mobileClassificationDialog);
+  byId('viewTitle').addEventListener('click', event => {
+    if (!matchMedia('(max-width: 800px)').matches) return;
+    if (!document.body.classList.contains('inbox-view') && !document.body.classList.contains('folder-view')) return;
+    event.stopPropagation();
+    toggleMobileClassifications();
   });
   byId('mobileClassificationList').addEventListener('click', event => {
+    const addButton = event.target.closest('[data-classification-add]');
+    if (addButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      closeMobileClassifications();
+      byId('addFolder').click();
+      return;
+    }
     const editButton = event.target.closest('[data-classification-edit]');
     if (editButton) {
       event.preventDefault();
       event.stopPropagation();
-      if (mobileClassificationDialog.open) mobileClassificationDialog.close();
-      mobileClassificationDialog.classList.remove('is-closing');
+      closeMobileClassifications();
       openClassificationManager(editButton.dataset.classificationEdit);
       return;
     }
-    if (event.target.closest('[data-view^="folder:"]')) closeAnimatedDialog(mobileClassificationDialog);
+    if (event.target.closest('[data-view^="folder:"]')) closeMobileClassifications();
+  });
+  document.addEventListener('click', event => {
+    if (!mobileClassificationPanel.classList.contains('is-open')) return;
+    if (event.target.closest('#viewTitleMenuPanel, #viewTitleMenu, #viewTitle')) return;
+    closeMobileClassifications();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !mobileClassificationPanel.classList.contains('is-open') || isImeComposing(event)) return;
+    event.preventDefault();
+    closeMobileClassifications(true);
+  });
+  document.addEventListener('acta:view-changed', () => {
+    if (mobileClassificationPanel.classList.contains('is-open')) closeMobileClassifications();
   });
   function closeFolderActionMenu() {
     folderActionMenu.classList.remove('open');
@@ -4187,6 +4223,23 @@
   // —— 页面跳转栏：桌面侧边栏显隐 + 移动底栏槽位 ——
   // 「所有待办」与「所有笔记」默认不在桌面侧栏显示；移动底栏两侧固定为
   // 收集箱、日历，右侧两个槽位由用户在设置中替换。
+  // 页面入口的图标描线层：每个按钮只写一份主图标，这里再复制一份作为
+  // 覆盖层。主图标始终可见，CSS 只让覆盖层在选中时描线；切换时主图标
+  // 淡变颜色、旧描线淡出，不会出现选中/未选中之间的硬切。
+  function prepareNavIconTraces() {
+    document.querySelectorAll('.nav-section button > span > svg').forEach(svg => {
+      if (svg.parentElement?.classList.contains('nav-icon')) return;
+      const stack = document.createElement('span');
+      stack.className = 'nav-icon';
+      svg.replaceWith(stack);
+      stack.appendChild(svg);
+      const trace = svg.cloneNode(true);
+      trace.classList.add('nav-icon-trace');
+      trace.setAttribute('aria-hidden', 'true');
+      stack.appendChild(trace);
+    });
+  }
+  prepareNavIconTraces();
   const NAV_PAGE_IDS = ['inbox', 'calendar', 'todos', 'notes', 'trash', 'stats'];
   // 移动底栏左右两端固定为收集箱与日历，中间两个槽位才由用户替换。
   const MOBILE_FIXED_PAGES = ['inbox', 'calendar'];

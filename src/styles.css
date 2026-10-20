@@ -207,18 +207,23 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
    mobile-slot-N 决定四个位置，同一个按钮在两处可以得出不同结论。 */
 @media (min-width: 801px) { .nav-section button.nav-page-hidden { display: none; } }
 .nav-section button > span { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.nav-section button svg { width: 16px; height: 16px; color: #747970; transition: color .22s var(--ease-out); }
+.nav-icon { position: relative; display: inline-flex; flex: 0 0 auto; width: 16px; height: 16px; }
+.nav-icon > svg { width: 100%; height: 100%; }
+.nav-section button svg { width: 16px; height: 16px; color: #747970; transition: color .3s var(--ease-out); }
+/* 描线层是主图标的强调色副本：主图标始终可见，只有这层会随选中重绘。
+   画完再淡出，切换时旧层淡出、新层重画，选中与未选中之间没有硬切。 */
+.nav-icon > .nav-icon-trace { position: absolute; inset: 0; pointer-events: none; opacity: 0; stroke-width: 2.2; transition: opacity .26s ease; }
 .nav-section button em { font-style: normal; color: #989b94; font-size: calc(11px * var(--acta-font-scale)); min-width: 18px; text-align: right; }
 .nav-section button:hover { background: rgba(255,255,255,.45); color: var(--ink); transform: translateX(2px); }
 .nav-section button.active { background: rgba(255,255,255,.72); color: var(--ink); box-shadow: 0 1px 0 rgba(255,255,255,.75), 0 4px 10px rgba(56,55,49,.05); }
-/* 选中状态：图标沿着自身路径描线出形。dash 长度大于任何图标的路径
-   总长，动画结束后整条线完整覆盖，不会留下断口；类名切换才会重播。 */
 @keyframes navIconTrace {
-  from { stroke-dasharray: 200; stroke-dashoffset: 200; opacity: .45; }
-  60% { opacity: 1; }
-  to { stroke-dasharray: 200; stroke-dashoffset: 0; opacity: 1; }
+  0% { stroke-dasharray: 220; stroke-dashoffset: 220; }
+  100% { stroke-dasharray: 220; stroke-dashoffset: 0; }
 }
-.nav-section button.active svg { color: var(--sage); animation: navIconTrace .6s cubic-bezier(.4, 0, .2, 1) both; }
+.nav-section button.active svg { color: var(--sage); }
+/* 只动画 dash，不碰 opacity：透明度交给 transition，选中与取消选中
+   都能平滑淡入淡出；旧描线改用 CSS 过渡退场，新描线同时重绘。 */
+.nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1s cubic-bezier(.4, 0, .2, 1) both; }
 
 .folder-section { margin-top: 23px; min-height: 0; overflow: hidden auto; }
 .section-label { height: 28px; padding: 0 9px; display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; letter-spacing: .12em; color: #989b94; font-size: calc(9px * var(--acta-font-scale)); font-weight: 700; }
@@ -248,6 +253,8 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
    列表与编辑器的起点相应上移。 */
 .item-header { height: 66px; padding: 15px 18px 10px 21px; display: flex; justify-content: space-between; align-items: flex-end; }
 .item-header h1 { margin: 0; font: 600 calc(23px * var(--acta-font-scale))/1.15 var(--acta-font-display); letter-spacing: -.03em; }
+.item-title-row { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.view-title-menu { display: none; }
 .icon-button { width: 32px; height: 32px; border: 0; border-radius: 9px; display: grid; place-items: center; background: transparent; color: var(--muted); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
 .icon-button:hover { background: rgba(255,255,255,.8); color: var(--ink); transform: scale(1.07); }
 .icon-button svg { width: 17px; }
@@ -587,6 +594,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .smart-nav button.mobile-slot-3 { display: flex; grid-column: 4; }
   .smart-nav button.mobile-slot-4 { display: flex; grid-column: 5; }
   .smart-nav button > span { flex-direction: column; gap: 4px; font-size: calc(10px * var(--acta-font-scale)); line-height: 1.05; }
+  .smart-nav button .nav-icon { width: 19px; height: 19px; }
   .smart-nav button svg { width: 19px; height: 19px; }
   .smart-nav button em { display: none; }
   .smart-nav button.active { background: color-mix(in srgb, var(--white) 78%, transparent); box-shadow: none; }
@@ -616,11 +624,11 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .folder-section, .sidebar-bottom { display: none; }
   .list-resizer { display: none; }
   .item-pane { width: 100%; height: 100%; border: 0; padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
-  .item-header { height: 76px; padding: 17px 17px 9px 20px; }
-  .item-header h1 { font-size: calc(26px * var(--acta-font-scale)); }
-  .search-box { height: 42px; margin: 7px 15px 11px; }
+  .item-header { height: 58px; padding: 8px 14px 6px 16px; }
+  .item-header h1 { font-size: calc(24px * var(--acta-font-scale)); }
+  .search-box { height: 40px; margin: 4px 14px 8px; }
   .search-box kbd { display: none; }
-  .filter-row { padding: 0 15px 9px; }
+  .filter-row { padding: 0 14px 7px; }
   .item-list { padding: 9px; }
   .item-card { min-height: 108px; padding: 14px; }
   .item-card h3 { font-size: calc(14px * var(--acta-font-scale)); }
