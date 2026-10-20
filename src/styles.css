@@ -207,11 +207,18 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
    mobile-slot-N 决定四个位置，同一个按钮在两处可以得出不同结论。 */
 @media (min-width: 801px) { .nav-section button.nav-page-hidden { display: none; } }
 .nav-section button > span { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.nav-section button svg { width: 16px; height: 16px; color: #747970; }
+.nav-section button svg { width: 16px; height: 16px; color: #747970; transition: color .22s var(--ease-out); }
 .nav-section button em { font-style: normal; color: #989b94; font-size: calc(11px * var(--acta-font-scale)); min-width: 18px; text-align: right; }
 .nav-section button:hover { background: rgba(255,255,255,.45); color: var(--ink); transform: translateX(2px); }
 .nav-section button.active { background: rgba(255,255,255,.72); color: var(--ink); box-shadow: 0 1px 0 rgba(255,255,255,.75), 0 4px 10px rgba(56,55,49,.05); }
-.nav-section button.active svg { color: var(--sage); }
+/* 选中状态：图标沿着自身路径描线出形。dash 长度大于任何图标的路径
+   总长，动画结束后整条线完整覆盖，不会留下断口；类名切换才会重播。 */
+@keyframes navIconTrace {
+  from { stroke-dasharray: 200; stroke-dashoffset: 200; opacity: .45; }
+  60% { opacity: 1; }
+  to { stroke-dasharray: 200; stroke-dashoffset: 0; opacity: 1; }
+}
+.nav-section button.active svg { color: var(--sage); animation: navIconTrace .6s cubic-bezier(.4, 0, .2, 1) both; }
 
 .folder-section { margin-top: 23px; min-height: 0; overflow: hidden auto; }
 .section-label { height: 28px; padding: 0 9px; display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; letter-spacing: .12em; color: #989b94; font-size: calc(9px * var(--acta-font-scale)); font-weight: 700; }
