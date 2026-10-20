@@ -48,7 +48,7 @@
       return invoke('web_dav_request', { requestUrl, requestOptions });
     },
     lanSync: {
-      // identity：设备名 / 图标 / 端口（Android 桥不传，保持主机名与自动端口）。
+      // identity：设备名 / 图标 / 端口（Android 桥使用同一组参数，两端协议一致）。
       startService(profiles, trusted, identity) {
         return invoke('lan_sync_start_service', { profiles, trusted, identity });
       },

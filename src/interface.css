@@ -2386,8 +2386,6 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 .lan-sync-files ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
 .lan-sync-files li { padding: 7px 10px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 45%, transparent); color: var(--muted); font-size: calc(8.5px * var(--acta-font-scale)); }
 .lan-sync-backup-note { margin: 0; color: var(--muted); font-size: calc(8.5px * var(--acta-font-scale)); line-height: 1.6; }
-/* BETA 标记：实验性功能的轻量提示，只用边框与文字，不加色彩装饰。 */
-.beta-badge { display: inline-block; margin-left: 7px; padding: 1px 7px 2px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: calc(8px * var(--acta-font-scale)); font-weight: 700; letter-spacing: .09em; line-height: 1.5; vertical-align: 1.5px; }
 /* 接收方式：与数据流向卡片同一套边框卡片语言，选中态用主题色描边。 */
 .lan-sync-mode { display: grid; gap: 7px; }
 .lan-mode-heading { font-size: calc(9px * var(--acta-font-scale)); }

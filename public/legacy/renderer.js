@@ -3495,8 +3495,8 @@ function getSyncBridge() {
     return null;
   };
   const lanSync = {
-    startService: (profiles, trusted) => native.startService({ profiles, trusted }),
-    updateMeta: (profiles, trusted) => native.updateMeta({ profiles, trusted }),
+    startService: (profiles, trusted, identity) => native.startService({ profiles, trusted, identity }),
+    updateMeta: (profiles, trusted, identity) => native.updateMeta({ profiles, trusted, identity }),
     stopService: () => native.stopService(),
     serviceStatus: () => native.serviceStatus(),
     discover: (timeoutMs = 1800) => native.discover({ timeoutMs }).then(result => result?.peers || []),

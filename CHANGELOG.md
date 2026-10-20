@@ -1,5 +1,19 @@
 # Acta · 行记 更新日志
 
+## v3.9.0（2026-10-20）
+
+### 修复
+
+- **Android 与桌面端局域网同步无法通信（两侧预检全部失败）**：桌面端每次发送或提取前都会先请求对方的 `GET /acta-lan/v2/info`，并用响应里的 `app: "acta"` 校验对端身份；Android 原生插件返回的 `/info` 只有 `running / port / session / device / profiles`，没有 `app`、`protocol`、`name` 与 `icon`，于是桌面端把手机判为「不是有效的 Acta 设备」，重搜后仍然失败，最终提示设备已离线。Android 自己的 `fetchInfo` 也检查同一个 `app` 字段，因此 Android 之间同样无法收发。现在 Android 的 `/info`、发现广播与状态读取共用一份与 `lan_sync.rs` 对齐的响应：补齐 `app`、`protocol`、`name`、`icon`，并保留前端需要的 `device`、`session`、`discoverable` 等字段
+- **Android 端自定义设备名 / 图标 / 端口不生效**：Android 桥接层此前只转发 `profiles` 与 `trusted`，设置页里的身份参数被静默丢弃，服务始终使用系统设备名与随机端口。现在 `startService` / `updateMeta` 会一并转发 `identity`，名称与图标运行中热更新，端口在启动时绑定（1024-65535，修改后按既有逻辑重启服务）
+- **Android 雷达不显示桌面端的设备图标**：发现响应已带 `icon`，但 Android 解析对端时没有写入 peer，雷达只能显示默认图标；现已同步
+- **手机连着「无互联网 Wi-Fi」时发现不到设备或连不上**：系统默认网络可能是移动数据或 VPN，未绑定的 UDP 广播与 HTTP 请求会从错误网卡发出。Android 现在把搜索 / 应答 socket 以及所有局域网 HTTP 请求绑定到 Wi-Fi / 以太网网络（优先当前网络，否则从全部网络中挑选），并在扫描窗口内每 700ms 重发一轮，避免 Wi-Fi 省电丢包导致设备时有时无
+
+### 变更
+
+- **精简局域网同步标题**：移除「BETA」胶囊标记，标题只保留功能名；说明文字改为更具体的「覆盖前自动备份」，不再用「实验功能」重复提示（`kill-ai-slop` / `apple-design` 复核：状态与提示不叠加装饰）
+- **版本号更新至 3.9.0**：`package.json`、`tauri.conf.json`、`Cargo.toml`、`Cargo.lock` 与应用内版本显示同步；Web 端 Service Worker 缓存名升级为 `acta-3.9.0-vite`，重新打开页面即取得新资源
+
 ## v3.8.0（2026-10-19）
 
 ### 新增

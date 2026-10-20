@@ -1,6 +1,9 @@
 package com.mws.acta;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
@@ -54,6 +57,10 @@ import org.json.JSONObject;
  * session 令牌。推送走两段式确认——先发写入计划、接收端确认后再传数据；
  * 开启「信任此局域网」的设备自动确认。数据读取按需进行：HTTP 服务收到
  * bundle 请求后通过 lanFetch 事件请求数据包打包最新内容。
+ *
+ * 身份（设备名 / 图标 / 服务端口）与桌面端一致：名称与图标可运行中热更新，
+ * 端口在启动时绑定。GET /info 的响应字段必须与桌面端 lan_sync.rs 完全一致：
+ * 桌面端用 `app` 字段校验对端身份，缺一不可。
  */
 @CapacitorPlugin(name = "ActaLan")
 public class ActaLanPlugin extends Plugin {
@@ -159,7 +166,11 @@ public class ActaLanPlugin extends Plugin {
         final String session = randomToken();
         final int httpPort;
         final boolean discoveryBound;
-        final String device;
+        // 显示名与图标可在运行中热更新（updateMeta），发现广播、/info 与
+        // 状态读取直接取当前值；清空名称时回落到系统设备名。
+        final String defaultDevice;
+        volatile String device;
+        volatile String icon = "";
         final String platform = "android";
         final EventSink sink;
         final Context appContext;
@@ -173,13 +184,17 @@ public class ActaLanPlugin extends Plugin {
         PendingApply pendingApply;
         final Map<String, FetchRequest> fetches = new LinkedHashMap<>();
 
-        LanService(Context context, EventSink sink, JSONArray profiles, boolean trusted) throws Exception {
+        LanService(Context context, EventSink sink, JSONArray profiles, boolean trusted, JSONObject identity) throws Exception {
             this.appContext = context.getApplicationContext();
             this.sink = sink;
-            this.device = deviceName(this.appContext);
+            this.defaultDevice = deviceName(this.appContext);
+            this.device = identityName(identity, this.defaultDevice);
+            this.icon = sanitizeIcon(identity == null ? "" : identity.optString("icon", ""));
             this.profiles = profiles == null ? new JSONArray() : profiles;
             this.trusted = trusted;
-            this.listener = new ServerSocket(0);
+            // 自定义端口与桌面端一致：仅接受 1024 以上，其余回落到系统分配。
+            int requestedPort = identity == null ? 0 : identity.optInt("port", 0);
+            this.listener = new ServerSocket(requestedPort >= 1024 && requestedPort <= 65535 ? requestedPort : 0);
             this.httpPort = listener.getLocalPort();
             DatagramSocket udp = null;
             try {
@@ -192,6 +207,17 @@ public class ActaLanPlugin extends Plugin {
             }
             this.discoveryBound = udp != null;
             this.udpSocket = udp;
+            if (udp != null) {
+                // 回应也要从 Wi-Fi / 以太网发出：未绑定的 socket 走系统
+                // 默认网络，移动数据优先时会把回应从蜂窝网络发丢。
+                Network lan = lanNetwork(this.appContext);
+                if (lan != null) {
+                    try {
+                        lan.bindSocket(udp);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
             try {
                 WifiManager wifi = (WifiManager) this.appContext.getSystemService(Context.WIFI_SERVICE);
                 if (wifi != null) {
@@ -240,9 +266,13 @@ public class ActaLanPlugin extends Plugin {
             }
         }
 
-        synchronized void updateMeta(JSONArray nextProfiles, boolean nextTrusted) {
+        synchronized void updateMeta(JSONArray nextProfiles, boolean nextTrusted, JSONObject identity) {
             if (nextProfiles != null) profiles = nextProfiles;
             trusted = nextTrusted;
+            if (identity != null) {
+                device = identityName(identity, defaultDevice);
+                icon = sanitizeIcon(identity.optString("icon", ""));
+            }
         }
 
         private void runDiscoveryResponder() {
@@ -267,6 +297,7 @@ public class ActaLanPlugin extends Plugin {
                     response.put("token", token);
                     response.put("session", session);
                     response.put("name", device);
+                    response.put("icon", icon);
                     response.put("platform", platform);
                     response.put("port", httpPort);
                     response.put("trusted", trusted);
@@ -318,8 +349,28 @@ public class ActaLanPlugin extends Plugin {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
+    // 身份名称留空表示沿用系统设备名（与桌面端「留空使用主机名」一致）。
+    private static String identityName(JSONObject identity, String fallback) {
+        String name = identity == null ? "" : identity.optString("name", "").trim();
+        return name.isEmpty() ? fallback : name;
+    }
+
+    // 图标是展示用的短 emoji：按码点截断到 8 个，避免把代理对切坏。
+    private static String sanitizeIcon(String raw) {
+        String trimmed = raw == null ? "" : raw.trim();
+        if (trimmed.isEmpty()) return "";
+        int chars = Math.min(trimmed.codePointCount(0, trimmed.length()), 8);
+        return trimmed.substring(0, trimmed.offsetByCodePoints(0, chars));
+    }
+
     private static JSObject metaJson(LanService current) {
         JSObject meta = new JSObject();
+        // /info 与桌面端 lan_sync.rs 使用同一组字段：app 是对方校验身份的
+        // 依据，name/icon 用于对端雷达与同步对话框展示。
+        meta.put("app", "acta");
+        meta.put("protocol", LAN_PROTOCOL);
+        meta.put("name", current == null ? "Acta" : current.device);
+        meta.put("icon", current == null ? "" : current.icon);
         meta.put("running", current != null);
         meta.put("discoverable", current != null && current.discoveryBound);
         meta.put("port", current == null ? 0 : current.httpPort);
@@ -335,13 +386,56 @@ public class ActaLanPlugin extends Plugin {
         return service;
     }
 
+    // 找到承载局域网的网络（Wi-Fi / 以太网）。优先当前网络；若当前网络是
+    // 移动数据或 VPN，则从全部网络中挑一个可用的 Wi-Fi / 以太网。
+    private static Network lanNetwork(Context context) {
+        try {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (manager == null) return null;
+            Network active = manager.getActiveNetwork();
+            if (isLanTransport(manager, active)) return active;
+            for (Network network : manager.getAllNetworks()) {
+                if (isLanTransport(manager, network)) return network;
+            }
+        } catch (Exception ignored) {
+            // 权限或系统限制：退回系统默认路由。
+        }
+        return null;
+    }
+
+    private static boolean isLanTransport(ConnectivityManager manager, Network network) {
+        if (network == null) return false;
+        NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
+        return capabilities != null
+            && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET));
+    }
+
+    private void bindToLanNetwork(DatagramSocket socket) {
+        try {
+            Network lan = lanNetwork(getContext());
+            if (lan != null) lan.bindSocket(socket);
+        } catch (Exception ignored) {
+            // 绑定失败时退回系统默认路由。
+        }
+    }
+
+    // 局域网内的 HTTP 客户端同样显式走局域网网络，避免移动数据优先时
+    // 连向 192.168.x.x 的请求从蜂窝网络发出而失败。
+    private HttpURLConnection openLanConnection(String url) throws Exception {
+        URL target = new URL(url);
+        Network lan = lanNetwork(getContext());
+        return (HttpURLConnection) (lan != null ? lan.openConnection(target) : target.openConnection());
+    }
+
     private void startOrUpdate(PluginCall call, boolean start) {
         JSONArray profiles = call.getArray("profiles");
         boolean trusted = Boolean.TRUE.equals(call.getBoolean("trusted"));
+        JSONObject identity = call.getObject("identity");
         synchronized (this) {
             LanService current = service;
             if (current != null) {
-                current.updateMeta(profiles, trusted);
+                current.updateMeta(profiles, trusted, identity);
                 call.resolve(metaJson(current));
                 return;
             }
@@ -355,7 +449,7 @@ public class ActaLanPlugin extends Plugin {
                         notifyListeners(event, JSObject.fromJSONObject(payload));
                     } catch (Exception ignored) {
                     }
-                }, profiles, trusted);
+                }, profiles, trusted, identity);
             } catch (Exception error) {
                 service = null;
                 call.reject("无法启动局域网同步服务：" + error.getMessage());
@@ -408,6 +502,9 @@ public class ActaLanPlugin extends Plugin {
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
                 socket.setSoTimeout(200);
+                // 手机可能同时连着「无互联网的 Wi-Fi」与移动数据，此时系统
+                // 默认网络是移动数据：不显式绑定 Wi-Fi，广播会从错误网卡发出。
+                bindToLanNetwork(socket);
                 String token = randomToken();
                 byte[] message = (LAN_DISCOVERY_MAGIC + " " + token).getBytes(StandardCharsets.UTF_8);
                 List<InetAddress> targets = new ArrayList<>();
@@ -428,15 +525,21 @@ public class ActaLanPlugin extends Plugin {
                     targets.add(InetAddress.getByName("127.0.0.1"));
                 } catch (Exception ignored) {
                 }
-                for (InetAddress target : targets) {
-                    try {
-                        socket.send(new DatagramPacket(message, message.length, target, LAN_DISCOVERY_PORT));
-                    } catch (Exception ignored) {
-                    }
-                }
                 long deadline = System.currentTimeMillis() + timeout;
+                // 每 700ms 重发一轮：Wi-Fi 省电时第一轮广播经常被网卡丢掉，
+                // 单次发送会让设备在对方列表里时有时无。
+                long nextSend = System.currentTimeMillis();
                 byte[] buffer = new byte[8192];
                 while (System.currentTimeMillis() < deadline) {
+                    if (System.currentTimeMillis() >= nextSend) {
+                        nextSend = System.currentTimeMillis() + 700;
+                        for (InetAddress target : targets) {
+                            try {
+                                socket.send(new DatagramPacket(message, message.length, target, LAN_DISCOVERY_PORT));
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }
                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                     try {
                         socket.receive(packet);
@@ -459,6 +562,7 @@ public class ActaLanPlugin extends Plugin {
                             peer.put("port", port);
                             peer.put("session", session);
                             peer.put("name", payload.optString("name", "Acta"));
+                            peer.put("icon", payload.optString("icon", ""));
                             peer.put("platform", payload.optString("platform", ""));
                             peer.put("trusted", payload.optBoolean("trusted", false));
                             JSONArray profiles = payload.optJSONArray("profiles");
@@ -487,7 +591,7 @@ public class ActaLanPlugin extends Plugin {
     private void peerGet(final PluginCall call, final String url, final long timeoutMs, final String wrapKey) {
         Thread worker = new Thread(() -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                HttpURLConnection connection = openLanConnection(url);
                 connection.setConnectTimeout(LAN_CONNECT_TIMEOUT_MS);
                 connection.setReadTimeout((int) timeoutMs);
                 connection.setRequestMethod("GET");
@@ -536,7 +640,7 @@ public class ActaLanPlugin extends Plugin {
         final String url = peerUrl(ip, port, "bundle", session) + "&profile=" + encoded;
         Thread worker = new Thread(() -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                HttpURLConnection connection = openLanConnection(url);
                 connection.setConnectTimeout(LAN_CONNECT_TIMEOUT_MS);
                 connection.setReadTimeout((int) (LAN_FETCH_WAIT_MS + 30000L));
                 connection.setRequestMethod("GET");
@@ -575,7 +679,7 @@ public class ActaLanPlugin extends Plugin {
         }
         Thread worker = new Thread(() -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(peerUrl(ip, port, "plan", session)).openConnection();
+                HttpURLConnection connection = openLanConnection(peerUrl(ip, port, "plan", session));
                 connection.setConnectTimeout(LAN_CONNECT_TIMEOUT_MS);
                 connection.setReadTimeout((int) (LAN_DECIDE_WAIT_MS + 30000L));
                 connection.setRequestMethod("PUT");
@@ -614,7 +718,7 @@ public class ActaLanPlugin extends Plugin {
     private void sendPushDataAsync(final PluginCall call, final String ip, final int port, final String session, final String token, final byte[] body) {
         Thread worker = new Thread(() -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(peerUrl(ip, port, "data", session) + "&plan=" + token).openConnection();
+                HttpURLConnection connection = openLanConnection(peerUrl(ip, port, "data", session) + "&plan=" + token);
                 connection.setConnectTimeout(LAN_CONNECT_TIMEOUT_MS);
                 connection.setReadTimeout((int) (LAN_APPLY_WAIT_MS + 30000L));
                 connection.setRequestMethod("PUT");
@@ -1235,6 +1339,7 @@ public class ActaLanPlugin extends Plugin {
         JSONObject from = new JSONObject();
         from.put("name", pending.plan.optString("device", "Acta"));
         from.put("platform", pending.plan.optString("platform", ""));
+        from.put("icon", pending.plan.optString("icon", ""));
         event.put("from", from);
         event.put("profile", pending.plan.optString("profile", ""));
         event.put("mode", pending.plan.optString("mode", ""));
@@ -1266,6 +1371,7 @@ public class ActaLanPlugin extends Plugin {
         JSONObject from = new JSONObject();
         from.put("name", plan.optString("device", "Acta"));
         from.put("platform", plan.optString("platform", ""));
+        from.put("icon", plan.optString("icon", ""));
         event.put("from", from);
         event.put("profile", plan.optString("profile", ""));
         event.put("mode", plan.optString("mode", ""));
@@ -1285,6 +1391,7 @@ public class ActaLanPlugin extends Plugin {
             if ("replace".equals(mode) && targetProfileId.isEmpty()) return null;
             JSONObject plan = new JSONObject();
             plan.put("device", payload.optString("device", "Acta"));
+            plan.put("icon", payload.optString("icon", ""));
             plan.put("platform", payload.optString("platform", ""));
             plan.put("profile", payload.optString("profile", ""));
             plan.put("mode", mode);

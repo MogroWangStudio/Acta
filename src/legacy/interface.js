@@ -5540,8 +5540,8 @@
     };
   }
 
-  // 本机身份（名称 / 图标 / 端口）：桌面端随服务启动与元数据刷新传给原生
-  // 层；Android 桥暂不支持扩展参数，保持主机名与自动端口。
+  // 本机身份（名称 / 图标 / 端口）：桌面端与 Android 端共用同一组参数；
+  // 名称与图标可运行中热更新，端口变更由设置处显式重启服务生效。
   const lanIdentity = () => ({
     name: String(uiSettings.lanDeviceName || '').trim().slice(0, 40),
     icon: String(uiSettings.lanDeviceIcon || '').trim().slice(0, 8),
@@ -5551,18 +5551,14 @@
   // 不含数据本体）；端口的重新绑定由设置变更处显式重启服务完成。
   function lanSyncUpdateMeta() {
     if (!lanBridge || !lanServiceRunning) return;
-    const call = window.actaDesktop
-      ? lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan, lanIdentity())
-      : lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan);
+    const call = lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan, lanIdentity());
     call.catch(() => {});
   }
 
   async function lanStartService() {
     if (!lanBridge) return;
     try {
-      const status = await (window.actaDesktop
-        ? lanBridge.startService(lanProfilesMeta(), lanTrustLan, lanIdentity())
-        : lanBridge.startService(lanProfilesMeta(), lanTrustLan));
+      const status = await lanBridge.startService(lanProfilesMeta(), lanTrustLan, lanIdentity());
       lanServiceRunning = Boolean(status.running);
       lanDiscoverable = Boolean(status.discoverable);
       if (status?.session) lanOwnSession = status.session;
@@ -6208,6 +6204,7 @@
         // 否则等对方在界面上两步确认后才返回令牌。
         const token = await lanBridge.pushPlan(resolved.ip, resolved.port, resolved.session, {
           device: status?.device || 'Acta',
+          icon: status?.icon || '',
           platform: status?.platform || '',
           profile: info.profile,
           mode: plan.sendMode,
@@ -6475,6 +6472,7 @@
             const status = await lanBridge.serviceStatus().catch(() => null);
             const token = await lanBridge.pushPlan(resolved.ip, resolved.port, resolved.session, {
               device: status?.device || 'Acta',
+              icon: status?.icon || '',
               platform: status?.platform || '',
               profile: info.profile,
               mode,

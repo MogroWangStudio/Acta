@@ -31,7 +31,7 @@
                   </g>
               </g>
           </svg>
-          <span class="brand-version" aria-label="当前版本 3.8.0">3.8.0</span>
+          <span class="brand-version" aria-label="当前版本 3.9.0">3.9.0</span>
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
@@ -408,7 +408,7 @@
               <header><h3>数据同步</h3><p>通过 WebDAV 或局域网设备同步完整数据文件夹。</p></header>
               <div class="settings-group lan-sync-group" id="lanSyncGroup" hidden>
                 <div class="settings-row lan-sync-head-row">
-                  <span><b>Acta 局域网同步 <span class="beta-badge">BETA</span></b><small>与局域网内其他 Acta 设备直接互传，不经过服务器；实验功能，传完请核对数据。</small></span>
+                  <span><b>Acta 局域网同步</b><small>与局域网内其他 Acta 设备直接互传，不经过服务器；覆盖前自动备份。</small></span>
                   <span class="lan-sync-state" id="lanSyncState" data-state="off"></span>
                 </div>
                 <label class="settings-row"><span><b>设备名称</b><small>留空时使用主机名</small></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
@@ -457,8 +457,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta 行记" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta · 行记</b></div>
-              <div><small>版本</small><b id="aboutVersion">3.8.0</b></div>
-              <div><small>本版更新日期</small><b>2026-10-19</b></div>
+              <div><small>版本</small><b id="aboutVersion">3.9.0</b></div>
+              <div><small>本版更新日期</small><b>2026-10-20</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <div class="about-update">
