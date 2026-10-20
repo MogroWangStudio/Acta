@@ -21,9 +21,10 @@
   --list-pane-width: 330px;
   --acta-font-scale: 1;
   /* 移动端底栏的圆形「新建」按钮：按正方形占位（直径 + 两侧净空），
-     底栏网格据此留出中列，入口按钮不与圆形交叉。 */
-  --mobile-new-button-size: 52px;
-  --mobile-new-button-clearance: 8px;
+     底栏网格据此留出中列，入口按钮不与圆形交叉。圆形略高于底栏上缘，
+     形成悬浮的主操作按钮；占位同步加大，避免压住两侧入口。 */
+  --mobile-new-button-size: 68px;
+  --mobile-new-button-clearance: 12px;
 }
 
 * { box-sizing: border-box; }
@@ -582,10 +583,15 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .smart-nav button svg { width: 19px; height: 19px; }
   .smart-nav button em { display: none; }
   .smart-nav button.active { background: color-mix(in srgb, var(--white) 78%, transparent); box-shadow: none; }
+  /* 触屏没有真正的 hover：点按后的悬停态会一直粘住，原来的横向位移
+     会让入口看起来「错位」。移动端改为按下时轻微放大，松手即回正。 */
+  .smart-nav button:hover { background: transparent; color: #63685f; transform: none; }
+  .smart-nav button.active:hover { background: color-mix(in srgb, var(--white) 78%, transparent); color: var(--ink); }
+  .smart-nav button:active { transform: scale(1.06); transition-duration: .1s; }
   /* 与底栏同处一个定位容器：left 50% 就是中列（占位方块）中心，
      窗口尺寸或滚动条变化时不会与中列错位。 */
   .new-button {
-    position: absolute; z-index: 48; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom));
+    position: absolute; z-index: 48; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom));
     width: var(--mobile-new-button-size); height: var(--mobile-new-button-size);
     padding: 0; border-radius: 50%;
     transform: translateX(-50%); justify-content: center;
@@ -594,15 +600,15 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .new-button:hover { transform: translateX(-50%) scale(1.04); background: #30362f; }
   .new-button:active { transform: translateX(-50%) scale(.96); }
   .new-button span, .new-button kbd { display: none; }
-  .new-button svg { width: 21px; height: 21px; }
+  .new-button svg { width: 26px; height: 26px; }
   .create-menu {
     position: fixed; z-index: 60; top: auto; left: 14px; right: 14px;
-    bottom: calc(79px + env(safe-area-inset-bottom));
+    bottom: calc(94px + env(safe-area-inset-bottom));
     padding: 8px; border-radius: 18px; transform-origin: 50% 100%;
   }
   .folder-section, .sidebar-bottom { display: none; }
   .list-resizer { display: none; }
-  .item-pane { width: 100%; height: 100%; border: 0; padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .item-pane { width: 100%; height: 100%; border: 0; padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   .item-header { height: 76px; padding: 17px 17px 9px 20px; }
   .item-header h1 { font-size: calc(26px * var(--acta-font-scale)); }
   .search-box { height: 42px; margin: 7px 15px 11px; }
@@ -613,7 +619,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .item-card h3 { font-size: calc(14px * var(--acta-font-scale)); }
   .item-card p { font-size: calc(11px * var(--acta-font-scale)); }
   .list-footer { display: none; }
-  .toast { bottom: calc(86px + env(safe-area-inset-bottom)); }
+  .toast { bottom: calc(94px + env(safe-area-inset-bottom)); }
   .editor-pane {
     position: fixed; z-index: 35;
     inset: calc(54px + env(safe-area-inset-top)) 0 0;

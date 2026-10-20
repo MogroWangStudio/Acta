@@ -2165,7 +2165,9 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
   body.note-focus-mode .note-toolbar button { min-width: 40px; height: 38px; }
   body.note-focus-mode .note-block-format { width: 84px; height: 38px; }
   .note-markdown-source { min-height: 64vh; padding: 17px 15px; }
-  .new-button { bottom: calc(10px + env(safe-area-inset-bottom)); left:50%; }
+  /* 圆形新建按钮向上超出底栏上缘，底栏高度仍保持 70px；
+     此处的 bottom 必须与 styles.css 的移动端规则一致，否则会被覆盖回栏内。 */
+  .new-button { bottom: calc(16px + env(safe-area-inset-bottom)); left: 50%; }
   .editor-title { font-size: calc(34px * var(--acta-font-scale)); }
   .sync-notice { top: calc(64px + env(safe-area-inset-top)); right: 12px; }
   html[data-acta-theme="mono-dark"] .sidebar { background: color-mix(in srgb, var(--sidebar) 94%, transparent); }
