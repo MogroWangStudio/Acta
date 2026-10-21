@@ -206,6 +206,12 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 /* 底栏图标样式只影响移动端布局，桌面设置页不展示。 */
 .mobile-nav-settings { display: none; }
 @media (max-width: 800px) { .mobile-nav-settings { display: block; } }
+/* 页面跳转栏设置按当前端显示：桌面只看侧边栏分组，移动只看底栏与顶栏分组。 */
+.nav-mobile-settings-only { display: none; }
+@media (max-width: 800px) {
+  .nav-mobile-settings-only { display: block; }
+  .nav-desktop-settings-only { display: none; }
+}
 
 /* 打卡式待办：编辑器打卡区与列表卡片徽标。 */
 .checkin-section { margin-top: 16px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--white) 54%, transparent); display: grid; gap: 16px; }
@@ -2002,7 +2008,13 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
   .calendar-subtask { min-height: 29px; }
   .calendar-subtask-title { font-size: calc(11px * var(--acta-font-scale)); }
   .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(env(safe-area-inset-top) + 9px); display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
-  .mobile-titlebar-action { width: 36px; height: 36px; display: grid; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 82%, transparent); color: var(--muted); -webkit-app-region: no-drag; }
+  /* 顶栏右上角是自定义按钮区：候选按钮全部隐藏，由设置中的三个槽位
+     （mobile-title-slot-N）决定显示哪三个；设置按钮固定在末尾。 */
+  .mobile-titlebar-action { width: 36px; height: 36px; display: none; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 82%, transparent); color: var(--muted); -webkit-app-region: no-drag; }
+  .mobile-titlebar-action.mobile-title-slot-1 { order: 1; display: grid; }
+  .mobile-titlebar-action.mobile-title-slot-2 { order: 2; display: grid; }
+  .mobile-titlebar-action.mobile-title-slot-3 { order: 3; display: grid; }
+  .mobile-titlebar-action.mobile-list-settings { order: 4; display: grid; }
   .mobile-titlebar-action:disabled { opacity: .58; cursor: progress; }
   html[data-acta-theme="mono-dark"] .mobile-titlebar-action { background: #292929; color: #e6e6e6; }
   .search-box { margin-bottom: 6px; }

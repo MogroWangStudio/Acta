@@ -37,10 +37,14 @@
         <span class="brand-version" aria-label="当前版本 3.9.0">3.9.0</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
-        <div class="mobile-titlebar-actions">
+        <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
+          <button class="icon-button mobile-titlebar-action" id="mobileTitleTodos" type="button" data-view="todos" aria-label="所有待办"><svg><use href="#i-check"/></svg></button>
+          <button class="icon-button mobile-titlebar-action" id="mobileTitleNotes" type="button" data-view="notes" aria-label="所有笔记"><svg><use href="#i-note"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileTrash" type="button" data-view="trash" aria-label="回收站"><svg><use href="#i-trash"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileStats" type="button" data-view="stats" aria-label="总结"><svg><use href="#i-chart"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileDataRefresh" type="button" aria-label="刷新数据"><svg><use href="#i-refresh"/></svg></button>
+          <button class="icon-button mobile-titlebar-action" id="mobileHistoryButton" type="button" aria-label="历史记录"><svg><use href="#i-clock"/></svg></button>
+          <button class="icon-button mobile-titlebar-action" id="mobileLanAction" type="button" data-nav-action="lan" aria-label="局域网雷达"><svg><use href="#i-radar"/></svg></button>
           <button class="icon-button mobile-titlebar-action mobile-list-settings" id="mobileListSettings" type="button" aria-label="设置"><svg><use href="#i-settings"/></svg></button>
         </div>
         <div class="desktop-window-controls" aria-label="窗口控制">
@@ -302,8 +306,8 @@
             </section>
 
             <section class="settings-panel" data-settings-panel="nav">
-              <header><h3>页面跳转栏</h3><p>侧边栏与底栏显示哪些入口。</p></header>
-              <div class="settings-group">
+              <header><h3>页面跳转栏</h3><p>按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。</p></header>
+              <div class="settings-group nav-desktop-settings-only">
                 <div class="settings-row"><span><b>桌面端侧边栏</b><small>勾选要显示的页面；待办与笔记默认隐藏</small></span></div>
                 <div class="nav-page-grid" id="navPageGrid">
                   <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
@@ -315,10 +319,16 @@
                   <label><input type="checkbox" data-nav-page="lan"/><span>局域网雷达</span></label>
                 </div>
               </div>
-              <div class="settings-group">
+              <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端底栏</b><small>两个槽位可替换；两端固定为收集箱与日历</small></span></div>
                 <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
                 <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
+              </div>
+              <div class="settings-group nav-mobile-settings-only">
+                <div class="settings-row"><span><b>移动端顶栏</b><small>右上角三个按钮可自定义；设置按钮固定显示</small></span></div>
+                <label class="settings-row"><span><b>顶栏槽位一</b></span><select id="mobileTitleOne"><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
+                <label class="settings-row"><span><b>顶栏槽位二</b></span><select id="mobileTitleTwo"><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
+                <label class="settings-row"><span><b>顶栏槽位三</b></span><select id="mobileTitleThree"><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
               </div>
               <p class="settings-status" id="navSettingsStatus">设置会自动保存在当前设备。</p>
             </section>
