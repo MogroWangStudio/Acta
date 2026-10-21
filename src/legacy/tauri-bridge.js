@@ -284,6 +284,8 @@
       button.addEventListener('click', () => { currentWindow.toggleMaximize().catch(() => {}); });
     });
     document.querySelectorAll('[data-window-action="close"]').forEach(button => {
+      // 设置页头部的关闭按钮只关闭设置页（interface.js 单独接线），不关窗口。
+      if (button.closest('#settingsWindowControls')) return;
       button.addEventListener('click', () => { currentWindow.close().catch(() => {}); });
     });
     // 最大化状态实时反映到 <html data-window-maximized>，窗口控件据此切换

@@ -31,10 +31,10 @@
                   </g>
               </g>
           </svg>
-          <span class="brand-version" aria-label="当前版本 3.9.0">3.9.0</span>
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
+        <span class="brand-version" aria-label="当前版本 3.9.0">3.9.0</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
         <div class="mobile-titlebar-actions">
@@ -226,6 +226,7 @@
           <div class="settings-window-controls" id="settingsWindowControls" hidden>
             <button type="button" data-window-action="minimize" aria-label="最小化"><svg><use href="#i-window-minimize"/></svg></button>
             <button type="button" data-window-action="maximize" aria-label="最大化"><svg><use href="#i-window-maximize"/></svg></button>
+            <button type="button" class="settings-control-close" data-window-action="close" aria-label="关闭设置"><svg><use href="#i-close"/></svg></button>
           </div>
           <button class="settings-close" id="settingsClose" type="button" aria-label="关闭设置"><svg><use href="#i-close"/></svg></button>
         </header>

@@ -274,8 +274,8 @@
     '已就绪，软件设置将保存在这里。':'Ready - Acta will keep its settings here.', '无法使用该文件夹：':'Cannot use this folder: ',
     '无法确定默认位置，请点击「选择文件夹」手动指定。':'Could not determine a default location - pick one with "Choose folder".',
     '软件数据位置':'Software data location', '位置操作':'Location actions', '打开文件夹':'Open folder', '更改位置':'Change location',
-    '更改后立即迁移现有设置':'更改後立即遷移現有設定',
-    '保存 Acta 自身的设置；行记数据仍按数据档案的位置存储。':'保存 Acta 自身的設定；行記資料仍按資料檔案的位置儲存。',
+    '更改后立即迁移现有设置':'Existing settings migrate immediately after the change',
+    '保存 Acta 自身的设置；行记数据仍按数据档案的位置存储。':"Stores Acta's own settings; data profiles keep their storage locations.",
     '先选择软件数据文件夹':'Choose the software data folder first', '使用默认位置':'Use default location', '选择文件夹…':'Choose folder…',
     '选择主题、字体与大小':'Choose theme, font, and size', '选择启动动画':'Choose the launch animation',
     '基础界面':'Base interface', '内容类型':'Content types', '待办主题色':'Task accent', '待办浅色背景':'Task soft background', '笔记主题色':'Note accent', '笔记浅色背景':'Note soft background', '日历主题色':'Calendar accent', '日历浅色背景':'Calendar soft background',
@@ -307,6 +307,25 @@
     '允许被其他设备发现':'Be discoverable', '出现在附近设备的列表中':'List this device to nearby devices',
     '附近的设备':'Nearby devices', '搜索设备':'Scan for devices', '设备雷达':'Device radar',
     '信任此局域网（自动确认）':'Trust this network (auto-confirm)', '其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络':'Other devices read/write without confirmation; trusted networks only'
+  });
+  Object.assign(interfaceTranslations.en, {
+    '返回':'Back', '待办设置':'Tasks', '数据统计':'Data stats', '局域网雷达':'LAN radar',
+    '当前档案的容量与内容概览':'Capacity and content overview of the current profile', '文件总大小':'Total size', '文件数':'Files', '笔记':'Notes', '待办':'Tasks', '归类':'Classifications',
+    '关闭窗口时转入后台':'Keep running in the background', '关闭窗口后保留在系统托盘，局域网同步继续；可从托盘恢复或退出':'Closing the window keeps Acta in the tray; LAN sync continues. Restore or quit from the tray', '读取中…':'Reading…',
+    '调整待办与子任务的显示偏好，不会修改任何待办数据。':'Adjust how tasks and subtasks are displayed; task data is never modified.',
+    '子任务完成时间':'Subtask completion time', '勾选框旁显示完成日期，悬停看时刻':'Show the completion date next to the checkbox; hover for the exact time',
+    '显示已完成待办':'Show completed tasks', '列表与归类视图默认显示已完成待办':'Completed tasks show by default in lists and classifications',
+    '已完成待办自动置底':'Completed tasks sink to the bottom', '完成后先停留再移到列表末尾，可撤回':'Completed tasks linger before moving to the end of the list, with undo',
+    '置底延迟':'Sink delay', '完成到开始移动的等待时间':'How long a completed task waits before moving',
+    '点击右侧按钮可预览':'Preview with the button on the right', '动画速度':'Animation speed', '数值越大播放越快':'Higher values play faster',
+    '输入框选中动画':'Input focus animation', '聚焦时边框与光环淡入':'The border and a focus ring fade in on focus',
+    '与局域网内其他 Acta 设备直接互传，不经过服务器；覆盖前自动备份。':'Exchange data directly with other Acta devices on the LAN — no server involved; a backup is created before anything is overwritten.',
+    '设备名称':'Device name', '留空时使用主机名':'Leave empty to use the hostname', '设备图标':'Device icon', '雷达头像，留空用默认图标':'Radar avatar; leave empty for the default icon',
+    '服务端口':'Service port', 'TCP 端口，留空自动分配；修改后需重开发现':'TCP port; leave empty for automatic assignment. Re-enable discovery after changing it',
+    '本机':'This device', '同步自动化':'Sync automations', '新建自动化':'New automation',
+    '组合备份、冲突检查与收发步骤，按触发器自动执行':'Compose backups, conflict checks, and transfers; run by trigger',
+    '最小化':'Minimize', '最大化':'Maximize', '中华人民共和国国旗':'Flag of China', '美国国旗':'Flag of the United States', '预览启动动画':'Preview the splash animation',
+    '本机主机名':'Device hostname', '例：🌿':'e.g. 🌿', '自动分配':'Automatic'
   });
   Object.assign(interfaceTranslations['zh-Hant'], {
     '缓存与页面':'快取與頁面',
@@ -351,6 +370,24 @@
     '附近的设备':'附近的裝置', '搜尋裝置':'搜尋裝置', '设备雷达':'裝置雷達',
     '信任此局域网（自动确认）':'信任此區域網路（自動確認）', '其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络':'其他裝置可免確認讀寫本機資料；覆寫前仍自動備份，僅限可信任網路'
   });
+  Object.assign(interfaceTranslations['zh-Hant'], {
+    '返回':'返回', '待办设置':'待辦設置', '数据统计':'資料統計', '局域网雷达':'區域網路雷達',
+    '当前档案的容量与内容概览':'目前檔案的容量與內容概覽', '文件总大小':'檔案總大小', '文件数':'檔案數', '笔记':'筆記', '待办':'待辦', '归类':'歸類',
+    '关闭窗口时转入后台':'關閉視窗時轉入背景', '关闭窗口后保留在系统托盘，局域网同步继续；可从托盘恢复或退出':'關閉視窗後保留在系統匣，區域網路同步繼續；可從系統匣恢復或結束', '读取中…':'讀取中…',
+    '调整待办与子任务的显示偏好，不会修改任何待办数据。':'調整待辦與子任務的顯示偏好，不會修改任何待辦資料。',
+    '子任务完成时间':'子任務完成時間', '勾选框旁显示完成日期，悬停看时刻':'勾選框旁顯示完成日期，懸停查看時刻',
+    '显示已完成待办':'顯示已完成待辦', '列表与归类视图默认显示已完成待办':'清單與歸類視圖預設顯示已完成待辦',
+    '已完成待办自动置底':'已完成待辦自動置底', '完成后先停留再移到列表末尾，可撤回':'完成後先停留再移到清單結尾，可撤銷',
+    '置底延迟':'置底延遲', '完成到开始移动的等待时间':'完成到開始移動的等待時間',
+    '点击右侧按钮可预览':'點擊右側按鈕可預覽', '动画速度':'動畫速度', '数值越大播放越快':'數值越大播放越快',
+    '输入框选中动画':'輸入框選中動畫', '聚焦时边框与光环淡入':'聚焦時邊框與光環淡入',
+    '与局域网内其他 Acta 设备直接互传，不经过服务器；覆盖前自动备份。':'與區域網路內其他 Acta 裝置直接互傳，不經過伺服器；覆寫前自動備份。',
+    '设备名称':'裝置名稱', '留空时使用主机名':'留空時使用主機名稱', '设备图标':'裝置圖示', '雷达头像，留空用默认图标':'雷達頭像，留空用預設圖示',
+    '服务端口':'服務連接埠', 'TCP 端口，留空自动分配；修改后需重开发现':'TCP 連接埠，留空自動分配；修改後需重新開啟探索',
+    '本机':'本機', '同步自动化':'同步自動化', '新建自动化':'新建自動化',
+    '最小化':'最小化', '最大化':'最大化', '中华人民共和国国旗':'中華人民共和國國旗', '美国国旗':'美國國旗', '预览启动动画':'預覽啟動動畫',
+    '本机主机名':'本機主機名稱', '例：🌿':'例：🌿', '自动分配':'自動分配'
+  });
 
   const settingsTextEntries = [];
   const settingsWalker = document.createTreeWalker(settingsModal, NodeFilter.SHOW_TEXT);
@@ -358,7 +395,7 @@
     const node = settingsWalker.currentNode;
     const source = node.nodeValue.trim();
     if (!source) continue;
-    if (node.parentElement?.closest('#workspaceSettingsTitle,#workspaceFolderPath,#workspaceStatus,#generalStatus,#oneDriveStatus,#appFontSizeValue,#splashSpeedValue,#appDataPath')) continue;
+    if (node.parentElement?.closest('#workspaceSettingsTitle,#workspaceFolderPath,#workspaceStatus,#generalStatus,#oneDriveStatus,#appFontSizeValue,#splashSpeedValue,#completedTodoSinkDelayValue')) continue;
     settingsTextEntries.push({ node, source, leading: node.nodeValue.match(/^\s*/)[0], trailing: node.nodeValue.match(/\s*$/)[0] });
   }
   const settingsAttributeEntries = [];
@@ -4452,7 +4489,10 @@
   if (window.actaDesktop?.platform === 'win32') {
     const settingsWindowControls = byId('settingsWindowControls');
     if (settingsWindowControls) settingsWindowControls.hidden = false;
-    // Windows 习惯把返回 / 关闭放到左下角：右上只留最小化与最大化。
+    // 与主标题栏同位的三枚窗口按钮：最小化 / 最大化 / 关闭设置页。
+    const settingsCloseControl = settingsWindowControls?.querySelector('[data-window-action="close"]');
+    if (settingsCloseControl) settingsCloseControl.addEventListener('click', () => closeSettings());
+    // Windows 习惯把返回放到左下角：右上只留窗口按钮。
     const settingsClose = byId('settingsClose');
     if (settingsClose) settingsClose.hidden = true;
     const backDock = byId('settingsBackDock');
@@ -4700,6 +4740,18 @@
 
   const currentSystemBarColor = () => getComputedStyle(document.documentElement).getPropertyValue('--sidebar').trim() || '#e6e6e6';
 
+  // 安卓系统栏颜色跟随标题栏的实际底色：MWS 浅色等主题会整体重绘标题栏
+  // （品牌绿），状态栏若仍取 --sidebar 就会出现配色错位、或看起来「没切换」。
+  const systemBarColorForChrome = () => {
+    const bar = document.querySelector('.titlebar');
+    const background = bar ? getComputedStyle(bar).backgroundColor : '';
+    const match = background.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/);
+    if (!match) return currentSystemBarColor();
+    if (match[4] !== undefined && Number(match[4]) < 0.5) return currentSystemBarColor();
+    const hex = [match[1], match[2], match[3]].map(part => Number(part).toString(16).padStart(2, '0')).join('');
+    return `#${hex}`;
+  };
+
   function syncNativeSystemBar(color = currentSystemBarColor()) {
     const lightIcons = isDarkSystemBarColor(color);
     const nativeSystemBars = window.Capacitor?.Plugins?.ActaSync;
@@ -4741,7 +4793,7 @@
     byId('customSwatchSidebar').style.background = uiSettings.customSidebar;
     byId('customSwatchAccent').style.background = uiSettings.customAccent;
     document.querySelector('meta[name="color-scheme"]').content = isDark ? 'dark' : 'light';
-    const statusColor = currentSystemBarColor();
+    const statusColor = systemBarColorForChrome();
     document.querySelector('meta[name="theme-color"]').content = statusColor;
     syncNativeSystemBar(statusColor);
     // Persist the splash background color (the body's sidebar tone, which the
@@ -4875,7 +4927,7 @@
     document.documentElement.dataset.completedTodoSinkDelay = String(Math.round(seconds * 1000));
     if (completedSinkSetting) completedSinkSetting.checked = uiSettings.completedTodoSink !== false;
     if (completedSinkDelay) completedSinkDelay.value = String(seconds);
-    if (completedSinkDelayValue) completedSinkDelayValue.textContent = `${seconds.toFixed(1)} 秒`;
+    if (completedSinkDelayValue) completedSinkDelayValue.textContent = `${seconds.toFixed(1)}${uiSettings.language === 'en' ? 's' : ' 秒'}`;
   };
   if (completedSinkSetting) {
     completedSinkSetting.addEventListener('change', () => {
@@ -5638,29 +5690,35 @@
     }
     // 设备雷达：本机气泡的扩散环跟随服务状态。
     byId('lanRadarStage')?.classList.toggle('lan-service-on', lanServiceRunning && lanDiscoverable);
+    // 局域网雷达入口（侧边栏动作按钮）：可被发现时播放循环光效。
+    document.body.classList.toggle('lan-radar-live', lanServiceRunning && lanDiscoverable);
   }
 
-  // 本机气泡显示自定义名称与图标：优先取服务状态（与对外广播一致），
-  // 服务未启动时退回本地设置。
+  // 本机气泡显示自定义名称与图标：自定义值始终优先——设置后占位符图标与
+  // 原（主机）名称一并隐藏，只显示自定义内容；仅当本机未自定义时才回退
+  // 服务状态（与对外广播一致）和「本机」占位。
   async function lanRenderSelfIdentity() {
     const nameEl = byId('lanRadarSelfName');
     const iconEl = byId('lanRadarSelfIcon');
     const glyph = byId('lanRadarSelfGlyph');
     if (!nameEl || !iconEl || !glyph) return;
-    let name = lanIdentity().name || lanText('radarSelfName');
-    let icon = lanIdentity().icon;
+    const identity = lanIdentity();
+    let name = identity.name;
+    let icon = identity.icon;
     try {
       const status = await lanBridge?.serviceStatus?.();
-      // 服务未运行时原生层只知道主机名：本地设置优先，自定义名才不会丢。
+      // 服务未运行时原生层只知道主机名：仅在本机未自定义时采用。
       if (status?.running) {
-        if (status.device) name = status.device;
-        if (typeof status.icon === 'string' && status.icon) icon = status.icon;
+        if (!name && status.device) name = status.device;
+        if (!icon && typeof status.icon === 'string' && status.icon) icon = status.icon;
       }
     } catch { /* 服务未启动，使用本地设置 */ }
-    nameEl.textContent = name;
+    nameEl.textContent = name || lanText('radarSelfName');
     iconEl.textContent = icon;
-    iconEl.hidden = !icon;
-    glyph.hidden = Boolean(icon);
+    // svg 元素（SVGElement）没有 hidden 属性：必须操作 attribute，否则
+    // 占位符图标会一直显示并与自定义 emoji 叠在一起。
+    iconEl.toggleAttribute('hidden', !icon);
+    glyph.toggleAttribute('hidden', Boolean(icon));
   }
 
   // 构建指定档案的完整数据包与统计：当前档案直接来自内存；其他档案从它
@@ -5700,10 +5758,11 @@
   });
   // 档案列表、信任标记或本机身份变化时刷新运行中服务的元数据（轻量，
   // 不含数据本体）；端口的重新绑定由设置变更处显式重启服务完成。
+  // 返回元数据刷新的 Promise：调用方等待它完成后再重读本机身份，避免
+  // serviceStatus 读到旧值把自定义名覆盖回主机名。
   function lanSyncUpdateMeta() {
-    if (!lanBridge || !lanServiceRunning) return;
-    const call = lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan, lanIdentity());
-    call.catch(() => {});
+    if (!lanBridge || !lanServiceRunning) return Promise.resolve();
+    return lanBridge.updateMeta(lanProfilesMeta(), lanTrustLan, lanIdentity()).catch(() => {});
   }
 
   async function lanStartService() {
@@ -6436,7 +6495,7 @@
           if (lanServiceRunning) setLanStatus(lanText('serviceOn'), 'success');
           return;
         }
-        lanSyncUpdateMeta();
+        await lanSyncUpdateMeta();
         void lanRenderSelfIdentity();
       };
       lanDeviceNameInput.addEventListener('change', () => {

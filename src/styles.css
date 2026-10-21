@@ -224,6 +224,13 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 /* 只动画 dash，不碰 opacity：透明度交给 transition，选中与取消选中
    都能平滑淡入淡出；旧描线改用 CSS 过渡退场，新描线同时重绘。 */
 .nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1s cubic-bezier(.4, 0, .2, 1) both; }
+/* 局域网雷达入口：可被发现（服务运行中）时播放循环扩散光效，与雷达的
+   涟漪同语言；跟随「减少动态效果」关闭。 */
+@keyframes lanLivePulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--sage) 42%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 8px transparent; }
+}
+body.lan-radar-live .smart-nav [data-nav-action="lan"] { animation: lanLivePulse 2.2s var(--ease-out) infinite; }
 
 .folder-section { margin-top: 23px; min-height: 0; overflow: hidden auto; }
 .section-label { height: 28px; padding: 0 9px; display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; letter-spacing: .12em; color: #989b94; font-size: calc(9px * var(--acta-font-scale)); font-weight: 700; }
@@ -354,7 +361,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .editor-find.is-open { opacity: 1; transform: none; }
 .editor-find.is-closing { opacity: 0; transform: translateY(-7px) scale(.97); transition: opacity .13s ease, transform .13s ease; pointer-events: none; }
 .editor-find > svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--muted); }
-.editor-find input { width: 168px; height: 26px; padding: 0 7px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); font: inherit; font-size: calc(10.5px * var(--acta-font-scale)); outline: 0; }
+.editor-find input { width: 168px; height: 26px; padding: 0 7px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); font: inherit; font-size: calc(11px * var(--acta-font-scale)); outline: 0; }
 .editor-find input::placeholder { color: var(--faint); }
 .editor-find-count { min-width: 44px; text-align: center; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .editor-find button { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background .14s ease, color .14s ease; }
@@ -559,6 +566,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     border-bottom-color: var(--line);
   }
   .brand { padding-left: 16px; }
+  .brand-version { left: 141px; }
   .titlebar-center, .window-spacer { display: none; }
   .desktop-window-controls,
   html[data-desktop-platform="win32"] .desktop-window-controls { display: none; }
@@ -675,4 +683,5 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  body.lan-radar-live .smart-nav [data-nav-action="lan"] { animation: none; }
 }
