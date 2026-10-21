@@ -8,7 +8,7 @@
     splashAnimationEnabled: true, splashAnimationPreset: 'acta-lines', splashAnimationSpeed: 1, inputFocusAnimation: true, subtaskCompletedDates: true,
     completedTodoSink: true, completedTodoSinkDelay: 1, subtaskDoneSort: 'asc', backdropClose: 'double',
     navPages: { inbox: true, calendar: true, todos: false, notes: false, trash: true, stats: true, lan: true },
-    mobileSlots: ['trash', 'stats'],
+    mobileSlots: ['trash', 'stats'], mobileNavStyle: 'labeled',
     runInBackground: false,
     lanDeviceName: '', lanDeviceIcon: '', lanPort: 0, lanAutomations: [], lanAutomationRuns: {},
     appFont: 'system', customFont: 'Inter', appFontSize: 14,
@@ -285,6 +285,7 @@
     '四个预设仅用于 Android 客户端；切换后桌面启动器可能需要稍候刷新。':'The four presets are for the Android client only; launchers may take a moment to refresh after switching.',
     '桌面框架':'Desktop framework', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
     '默认图标已恢复。':'Default icon restored.', '应用图标应用失败。':'Failed to apply the app icon.',
+    '底栏图标':'Bottom bar icons', '图标和文字':'Icons and labels', '仅图标':'Icons only',
     '启动动画':'Splash animation', '启动过渡画面，可关闭':'Launch splash; can be turned off',
     '动画预设':'Animation preset', '启动画面的演绎方式，可预览效果':'How the splash plays out; preview to compare.', 'Acta 线构（默认）':'Acta lines (default)', '静谧淡入':'Calm fade', '聚焦缩放':'Focus zoom',
     '动画时间':'Animation speed', '启动动画的整体播放倍率':'Overall playback speed of the splash animation', '预览动画':'Preview animation',
@@ -327,6 +328,7 @@
 
     '桌面框架':'桌面框架', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri（Windows/macOS），Capacitor（Android）',
     '默认图标已恢复。':'預設圖示已恢復。', '应用图标应用失败。':'套用應用程式圖示失敗。',
+    '底栏图标':'底欄圖示', '图标和文字':'圖示與文字', '仅图标':'僅圖示',
     '启动动画':'啟動動畫', '启动过渡画面，可关闭':'啟動過渡畫面，可關閉',
     '动画预设':'動畫預設', '启动画面的演绎方式，可预览效果':'啟動畫面的演繹方式，可預覽效果', 'Acta 线构（默认）':'Acta 線構（預設）', '静谧淡入':'靜謐淡入', '聚焦缩放':'聚焦縮放',
     '动画时间':'動畫時間', '启动动画的整体播放倍率':'啟動動畫的整體播放倍率', '预览动画':'預覽動畫',
@@ -4961,6 +4963,22 @@
     setStatus(appIconStatus, appearanceText(applied ? '默认图标已恢复。' : '应用图标应用失败。'), applied ? 'success' : 'error');
   });
   void applyAppIcon();
+
+  // 移动端底栏图标：图标+文字（默认）或仅图标。仅图标时 CSS 隐藏文字、
+  // 放大并居中图标；未选中的图标统一 50% 不透明度。桌面端不生效。
+  const mobileNavStyleSetting = byId('mobileNavStyleSetting');
+  if (!['labeled', 'icon'].includes(uiSettings.mobileNavStyle)) uiSettings.mobileNavStyle = 'labeled';
+  const applyMobileNavStyle = () => {
+    if (uiSettings.mobileNavStyle === 'icon') document.documentElement.dataset.mobileNav = 'icon';
+    else delete document.documentElement.dataset.mobileNav;
+  };
+  mobileNavStyleSetting.value = uiSettings.mobileNavStyle;
+  mobileNavStyleSetting.addEventListener('change', () => {
+    uiSettings.mobileNavStyle = mobileNavStyleSetting.value === 'icon' ? 'icon' : 'labeled';
+    applyMobileNavStyle();
+    saveUISettings();
+  });
+  applyMobileNavStyle();
 
   const appFontSetting = byId('appFontSetting');
   const customFontFamily = byId('customFontFamily');

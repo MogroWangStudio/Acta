@@ -596,6 +596,14 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .smart-nav button > span { flex-direction: column; gap: 4px; font-size: calc(10px * var(--acta-font-scale)); line-height: 1.05; }
   .smart-nav button .nav-icon { width: 19px; height: 19px; }
   .smart-nav button svg { width: 19px; height: 19px; }
+  /* 未选中的入口图标淡化到 50%；选中项恢复实心，描线层不受影响。 */
+  .smart-nav button svg:not(.nav-icon-trace) { opacity: .5; transition: opacity .2s var(--ease-out), color .3s var(--ease-out); }
+  .smart-nav button.active svg:not(.nav-icon-trace) { opacity: 1; }
+  /* 仅图标模式：隐藏文字，图标放大填补文字位置并居中。 */
+  html[data-mobile-nav="icon"] .smart-nav button > span > span:not(.nav-icon) { display: none; }
+  html[data-mobile-nav="icon"] .smart-nav button > span { gap: 0; }
+  html[data-mobile-nav="icon"] .smart-nav button .nav-icon,
+  html[data-mobile-nav="icon"] .smart-nav button svg { width: 26px; height: 26px; }
   .smart-nav button em { display: none; }
   .smart-nav button.active { background: color-mix(in srgb, var(--white) 78%, transparent); box-shadow: none; }
   /* 触屏没有真正的 hover：点按后的悬停态会一直粘住，原来的横向位移

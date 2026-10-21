@@ -380,6 +380,9 @@
                 <label class="color-field">日历主题色<input id="customCalendarColor" type="color" value="#4f7656"/></label>
                 <label class="color-field">日历浅色背景<input id="customCalendarSoftColor" type="color" value="#dcebdd"/></label>
               </div>
+              <div class="settings-group mobile-nav-settings" style="margin-top:18px">
+                <label class="settings-row"><span><b>底栏图标</b></span><select id="mobileNavStyleSetting"><option value="labeled">图标和文字</option><option value="icon">仅图标</option></select></label>
+              </div>
               <div class="appearance-subsection app-icon-settings" data-mobile-app-icon-only>
                 <header><b>应用图标</b><small>仅用于 Android 桌面图标。</small></header>
                 <div class="app-icon-options">

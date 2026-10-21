@@ -202,6 +202,9 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 .app-icon-option b { max-width: 100%; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font-size: calc(8px * var(--acta-font-scale)); }
 .app-icon-settings .settings-actions { margin-top: 12px; }
 .app-icon-settings .settings-status { margin-bottom: 0; }
+/* 底栏图标样式只影响移动端布局，桌面设置页不展示。 */
+.mobile-nav-settings { display: none; }
+@media (max-width: 800px) { .mobile-nav-settings { display: block; } }
 
 /* 打卡式待办：编辑器打卡区与列表卡片徽标。 */
 .checkin-section { margin-top: 16px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--white) 54%, transparent); display: grid; gap: 16px; }
