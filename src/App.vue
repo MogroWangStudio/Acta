@@ -533,23 +533,33 @@
     </dialog>
 
     <dialog class="relation-dialog quick-capture-dialog" id="quickCaptureDialog" aria-labelledby="quickCaptureTitle">
-      <header class="relation-dialog-head quick-capture-head"><span><svg><use href="#i-lightning"/></svg></span><div><h3 id="quickCaptureTitle">速记</h3><small id="quickCaptureSubtitle">快速创建后自动保存</small></div><button class="relation-dialog-close" id="closeQuickCapture" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
+      <header class="relation-dialog-head quick-capture-head"><span><svg><use href="#i-lightning"/></svg></span><div><h3 id="quickCaptureTitle">速记</h3><small id="quickCaptureSubtitle">快速创建后自动保存</small></div><button class="relation-dialog-close" id="closeQuickCapture" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button><div class="quick-capture-progress" id="quickCaptureProgress" role="progressbar" aria-label="步骤进度" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1"><i></i><i></i><i></i></div></header>
       <form class="quick-capture-form" id="quickCaptureForm" novalidate>
         <div class="quick-capture-body">
           <p class="quick-capture-intro" id="quickCaptureIntro">选好类型，写下重点，Acta 会创建并自动保存。</p>
-          <section class="quick-capture-step">
+          <section class="quick-capture-step" data-quick-step="1">
             <header><span>1</span><strong id="quickCaptureTypeLabel">创建什么？</strong></header>
             <div class="quick-capture-types" role="group" aria-labelledby="quickCaptureTypeLabel">
               <button type="button" data-quick-type="todo" aria-pressed="true"><span><svg><use href="#i-check"/></svg></span><b id="quickCaptureTodoLabel">待办</b><small id="quickCaptureTodoHint">记录一个需要行动的事项</small></button>
               <button type="button" data-quick-type="note" aria-pressed="false"><span><svg><use href="#i-note"/></svg></span><b id="quickCaptureNoteLabel">笔记</b><small id="quickCaptureNoteHint">捕捉想法、灵感或片段</small></button>
               <button type="button" data-quick-type="checkin" aria-pressed="false"><span><svg><use href="#i-task-list"/></svg></span><b id="quickCaptureCheckinLabel">打卡待办</b><small id="quickCaptureCheckinHint">每天打卡，养成习惯</small></button>
             </div>
+            <div class="quick-capture-fields quick-capture-title-fields">
+              <label class="quick-capture-field quick-capture-field-wide" for="quickCaptureItemTitle"><span id="quickCaptureItemTitleLabel">标题</span><input id="quickCaptureItemTitle" maxlength="160" autocomplete="off" required placeholder="要完成什么？"/></label>
+            </div>
           </section>
-          <section class="quick-capture-step">
+          <section class="quick-capture-step" data-quick-step="2">
             <header><span>2</span><strong id="quickCaptureContentLabel">写下内容</strong></header>
             <div class="quick-capture-fields">
-              <label class="quick-capture-field quick-capture-field-wide" for="quickCaptureItemTitle"><span id="quickCaptureItemTitleLabel">标题</span><input id="quickCaptureItemTitle" maxlength="160" autocomplete="off" required placeholder="要完成什么？"/></label>
+              <label class="quick-capture-field quick-capture-field-wide" id="quickCaptureTasksField" for="quickCaptureTasks"><span id="quickCaptureTasksLabel">子事件</span><textarea id="quickCaptureTasks" rows="3" maxlength="6000" placeholder="每行输入一个子事件…"></textarea><small id="quickCaptureTasksHint">每个非空行都会创建为一个独立子事件。</small></label>
+              <label class="quick-capture-field quick-capture-field-wide" for="quickCaptureBody"><span id="quickCaptureBodyLabel">补充说明</span><textarea id="quickCaptureBody" rows="5" maxlength="12000" placeholder="补充背景或需要记住的细节…"></textarea><small id="quickCaptureBodyHint">创建后仍可继续添加子任务和关联内容。</small></label>
+            </div>
+          </section>
+          <section class="quick-capture-step" data-quick-step="3">
+            <header><span>3</span><strong id="quickCaptureArrangeLabel">安排与归类</strong></header>
+            <div class="quick-capture-fields">
               <label class="quick-capture-field" for="quickCaptureFolder"><span id="quickCaptureFolderLabel">归类</span><select id="quickCaptureFolder"></select></label>
+              <label class="quick-capture-field" id="quickCapturePriorityField" for="quickCapturePriority"><span id="quickCapturePriorityLabel">优先级</span><select id="quickCapturePriority"><option value="high">优先处理</option><option value="medium" selected>稍后处理</option><option value="low">延缓处理</option></select></label>
               <div class="quick-capture-field quick-capture-datetime-field" id="quickCaptureStartField">
                 <span class="quick-capture-field-heading"><label id="quickCaptureStartLabel" for="quickCaptureStart">开始日期时间</label><button id="clearQuickCaptureStart" type="button">取消</button></span>
                 <input id="quickCaptureStart" type="datetime-local" step="1"/>
@@ -558,15 +568,12 @@
                 <span class="quick-capture-field-heading"><label id="quickCaptureDueLabel" for="quickCaptureDue">截止日期时间</label><button id="clearQuickCaptureDue" type="button">取消</button></span>
                 <input id="quickCaptureDue" type="datetime-local" step="1"/>
               </div>
-              <label class="quick-capture-field" id="quickCapturePriorityField" for="quickCapturePriority"><span id="quickCapturePriorityLabel">优先级</span><select id="quickCapturePriority"><option value="high">优先处理</option><option value="medium" selected>稍后处理</option><option value="low">延缓处理</option></select></label>
               <p class="quick-capture-schedule-hint quick-capture-field-wide" id="quickCaptureScheduleHint" role="status">开始或截止时间未设置，此待办将不在日历中显示。</p>
-              <label class="quick-capture-field quick-capture-field-wide" id="quickCaptureTasksField" for="quickCaptureTasks"><span id="quickCaptureTasksLabel">子事件</span><textarea id="quickCaptureTasks" rows="3" maxlength="6000" placeholder="每行输入一个子事件…"></textarea><small id="quickCaptureTasksHint">每个非空行都会创建为一个独立子事件。</small></label>
-              <label class="quick-capture-field quick-capture-field-wide" for="quickCaptureBody"><span id="quickCaptureBodyLabel">补充说明</span><textarea id="quickCaptureBody" rows="5" maxlength="12000" placeholder="补充背景或需要记住的细节…"></textarea><small id="quickCaptureBodyHint">创建后仍可继续添加子任务和关联内容。</small></label>
             </div>
           </section>
           <p class="quick-capture-error" id="quickCaptureError" role="alert" aria-live="polite"></p>
         </div>
-        <footer class="quick-capture-actions"><span id="quickCaptureShortcut">Ctrl/⌘ + Enter 快速创建</span><button class="settings-button secondary" id="cancelQuickCapture" type="button">取消</button><button class="settings-button quick-capture-submit" type="submit"><svg><use href="#i-lightning"/></svg><span id="quickCaptureSubmitLabel">创建待办</span></button></footer>
+        <footer class="quick-capture-actions"><span id="quickCaptureShortcut">Ctrl/⌘ + Enter 快速创建</span><span class="quick-capture-step-label" id="quickCaptureStepLabel" hidden></span><button class="settings-button secondary" id="quickCaptureBack" type="button" hidden>上一步</button><button class="settings-button secondary" id="cancelQuickCapture" type="button">取消</button><button class="settings-button" id="quickCaptureNext" type="button" hidden>下一步</button><button class="settings-button quick-capture-submit" type="submit"><svg><use href="#i-lightning"/></svg><span id="quickCaptureSubmitLabel">创建待办</span></button></footer>
       </form>
     </dialog>
 

@@ -1129,6 +1129,7 @@ html[data-acta-palette="neon-ocean"] .sync-icon { box-shadow: 0 0 14px color-mix
 .create-menu button[data-create="note"]:hover { background: color-mix(in srgb, var(--note-soft) 72%, transparent); }
 
 .quick-capture-dialog { width: min(620px, calc(100vw - 28px)); height: min(760px, calc(100dvh - 28px)); max-height: min(760px, calc(100dvh - 28px)); overflow: hidden; --quick-field-bg: color-mix(in srgb, var(--quick-wash) 54%, var(--white)); }
+.quick-capture-progress { display: none; }
 .quick-capture-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); }
 .quick-capture-head { height: 66px; border-bottom-color: color-mix(in srgb, var(--quick-accent) 20%, var(--line)); background: color-mix(in srgb, var(--quick-soft) 36%, var(--paper)); }
 .quick-capture-head > span { width: 36px; height: 36px; border-radius: 10px; color: var(--quick-accent); background: var(--quick-soft); }
@@ -1176,16 +1177,42 @@ html[data-acta-palette="neon-ocean"] .sync-icon { box-shadow: 0 0 14px color-mix
 html[data-acta-theme="mono-dark"] .quick-capture-dialog { --quick-field-bg: color-mix(in srgb, var(--quick-wash) 72%, var(--white)); }
 html[data-acta-theme="mono-dark"] .quick-capture-types button.active { background: color-mix(in srgb, var(--quick-soft) 72%, var(--paper)); }
 
-@media (max-width: 600px) {
-  .quick-capture-dialog { width: calc(100vw - 18px); height: calc(100dvh - 18px); max-height: calc(100dvh - 18px); }
+@media (max-width: 800px) {
+  /* 速记在手机上占满整屏，按步骤逐屏填写；桌面端保持完整单页表单。 */
+  .quick-capture-dialog { inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+  .quick-capture-dialog[open] { animation: quickCaptureFullscreenIn .3s var(--ease-out) both; }
+  .quick-capture-dialog[open].is-closing { animation: quickCaptureFullscreenOut .22s ease both; }
+  .quick-capture-dialog::backdrop { background: rgba(28,32,27,.18); backdrop-filter: none; }
+  .quick-capture-head { position: relative; height: calc(60px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+  .quick-capture-progress { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; gap: 2px; background: var(--line); }
+  .quick-capture-progress i { background: transparent; transition: background .2s ease; }
+  .quick-capture-progress i.is-done { background: color-mix(in srgb, var(--quick-accent) 42%, var(--line)); }
+  .quick-capture-progress i.is-active { background: var(--quick-accent); }
   .quick-capture-form { max-height: none; }
-  .quick-capture-body { padding: 16px 14px 12px; }
+  .quick-capture-body { padding: 14px 16px 12px; }
+  .quick-capture-intro { display: none; }
+  .quick-capture-step + .quick-capture-step { margin-top: 0; }
+  .quick-capture-step > header { margin-bottom: 12px; }
+  .quick-capture-step > header span { width: 24px; height: 24px; }
+  .quick-capture-step > header strong { font-size: calc(14px * var(--acta-font-scale)); }
+  .quick-capture-title-fields { margin-top: 14px; }
   .quick-capture-fields { grid-template-columns: 1fr; }
   .quick-capture-field-wide { grid-column: auto; }
-  .quick-capture-actions { padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); flex-wrap: wrap; }
-  .quick-capture-actions > span { width: 100%; margin: 0; text-align: right; }
-  .quick-capture-actions .settings-button { flex: 1; }
+  .quick-capture-types { grid-template-columns: 1fr; gap: 8px; }
+  .quick-capture-types button { min-height: 60px; padding: 10px 12px; }
+  .quick-capture-step[data-quick-step="1"] #quickCaptureItemTitle { height: 48px; font-size: calc(15px * var(--acta-font-scale)); font-weight: 600; }
+  .quick-capture-dialog[data-step-direction="forward"] .quick-capture-step.is-active { animation: quickCaptureStepForward .28s var(--ease-out) both; }
+  .quick-capture-dialog[data-step-direction="back"] .quick-capture-step.is-active { animation: quickCaptureStepBack .28s var(--ease-out) both; }
+  .quick-capture-actions { padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); flex-wrap: nowrap; }
+  .quick-capture-actions > span { width: auto; margin: 0; text-align: left; }
+  .quick-capture-step-label { margin-right: auto; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; white-space: nowrap; }
+  .quick-capture-actions .settings-button { flex: 1 1 0; min-width: 0; min-height: 42px; padding: 0 10px; font-size: calc(10px * var(--acta-font-scale)); }
+  #quickCaptureShortcut, #cancelQuickCapture { display: none !important; }
 }
+@keyframes quickCaptureFullscreenIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes quickCaptureFullscreenOut { to { opacity: 0; transform: translateY(12px); } }
+@keyframes quickCaptureStepForward { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@keyframes quickCaptureStepBack { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
 
 .item-card:has(.type-pill.todo):hover { background: color-mix(in srgb, var(--todo-soft) 48%, transparent); }
 .item-card:has(.type-pill.note):hover { background: color-mix(in srgb, var(--note-soft) 52%, transparent); }

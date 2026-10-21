@@ -701,7 +701,7 @@ async function main() {
       document.querySelector('#newButton').click();
       quickMenuAction.click();
       await waitFor(() => document.querySelector('#quickCaptureDialog').open);
-      const quickGuideAvailable = document.querySelectorAll('.quick-capture-step').length === 2 && document.querySelectorAll('[data-quick-type]').length === 3;
+      const quickGuideAvailable = document.querySelectorAll('.quick-capture-step').length === 3 && document.querySelectorAll('[data-quick-type]').length === 3;
       const quickCaptureDialogRect = document.querySelector('#quickCaptureDialog').getBoundingClientRect();
       const quickCaptureActionsRect = document.querySelector('.quick-capture-actions').getBoundingClientRect();
       const quickCaptureDesktopFits = quickCaptureDialogRect.top >= -1
@@ -1137,7 +1137,10 @@ async function main() {
       const pastePlaintextOnly = pasteTarget.textContent.includes('<b>富文本</b>');
       document.getElementById('taskDoneToggle')?.click();
       // 速记支持打卡式待办：类型可选、时间与子任务字段隐藏、提交创建打卡项。
+      // 移动端速记是全屏分步表单，这里切到移动宽度验证步骤推进与创建。
       window.__actaSmokeStep = 'quick-checkin';
+      window.resizeTo(600, 700);
+      await waitFor(() => innerWidth <= 600 && innerHeight <= 700);
       document.querySelector('#createMenu [data-create="quick"]').click();
       await waitFor(() => document.querySelector('#quickCaptureDialog').open);
       document.querySelector('[data-quick-type="checkin"]').click();
@@ -1146,10 +1149,24 @@ async function main() {
         && document.querySelector('#quickCaptureTasksField').hidden
         && document.querySelector('#quickCapturePriorityField').hidden;
       document.querySelector('#quickCaptureItemTitle').value = '速记打卡待办';
+      const quickStepVisible = step => {
+        const visible = [...document.querySelectorAll('.quick-capture-step')].filter(section => !section.hidden);
+        return visible.length === 1 && visible[0].dataset.quickStep === String(step);
+      };
+      const quickCheckinStepFlow = quickStepVisible(1)
+        && getComputedStyle(document.querySelector('#quickCaptureDialog')).position === 'fixed'
+        && document.querySelector('#quickCaptureDialog').getBoundingClientRect().height >= innerHeight - 1;
+      document.querySelector('#quickCaptureNext').click();
+      const quickCheckinStepTwo = quickStepVisible(2);
+      document.querySelector('#quickCaptureNext').click();
+      const quickCheckinStepThree = quickStepVisible(3)
+        && !document.querySelector('.quick-capture-submit').hidden
+        && document.querySelector('#quickCaptureNext').hidden;
       document.querySelector('#quickCaptureForm').requestSubmit();
       await waitFor(() => !document.querySelector('#quickCaptureDialog').open);
       const quickCheckin = library.items.find(item => item.checkin && item.title === '速记打卡待办');
-      const quickCheckinCreated = Boolean(quickCheckin) && quickCheckin.type === 'todo' && Array.isArray(quickCheckin.tasks) && quickCheckin.tasks.length === 0;
+      const quickCheckinCreated = quickCheckinStepFlow && quickCheckinStepTwo && quickCheckinStepThree
+        && Boolean(quickCheckin) && quickCheckin.type === 'todo' && Array.isArray(quickCheckin.tasks) && quickCheckin.tasks.length === 0;
 
       library.items = library.items.filter(item => item.id !== checkinItem.id && item.id !== orderItem.id && item.id !== quickCheckin.id);
       selectedId = checkinTestContext.selectedId;
@@ -1159,6 +1176,8 @@ async function main() {
       mobileEditorOpen = checkinTestContext.mobileEditorOpen;
       persist();
       renderAll();
+      window.resizeTo(1280, 800);
+      await waitFor(() => innerWidth > 800);
 
       const folderCountBeforeAddDialog = library.folders.length;
       document.querySelector('#addFolder').click();

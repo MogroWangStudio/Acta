@@ -488,21 +488,21 @@
       todo:'待办', todoHint:'记录一个需要行动的事项', note:'笔记', noteHint:'捕捉想法、灵感或片段', itemTitle:'标题', todoTitlePlaceholder:'要完成什么？', noteTitlePlaceholder:'这则笔记讲什么？',
       checkin:'打卡待办', checkinHint:'每天打卡，养成习惯', checkinTitlePlaceholder:'要养成什么习惯？', checkinBody:'打卡说明', checkinBodyPlaceholder:'写下打卡目标或规则…', checkinBodyHint:'创建后每天打卡一次，连续天数自动统计。', createCheckin:'创建打卡待办',
       folder:'归类', start:'开始日期时间', due:'截止日期时间', clearStart:'取消开始时间', clearDue:'取消截止时间', calendarHidden:'开始或截止时间未设置，此待办将不在日历中显示。', invalidSchedule:'请输入有效日期时间，且截止时间必须晚于开始时间。', priority:'优先级', childEvents:'子事件', childEventsPlaceholder:'每行输入一个子事件…', childEventsHint:'每个非空行都会创建为一个独立子事件。', todoBody:'补充说明', todoBodyPlaceholder:'补充背景或需要记住的细节…', todoBodyHint:'创建后仍可继续添加子事件和关联内容。',
-      noteBody:'笔记正文', noteBodyPlaceholder:'写下想法；支持 Markdown…', noteBodyHint:'支持标题、列表、引用、任务列表和代码块。', cancel:'取消', clear:'取消', close:'关闭', shortcut:'Ctrl/⌘ + Enter 快速创建', createTodo:'创建待办', createNote:'创建笔记', titleRequired:'请先填写标题。'
+      noteBody:'笔记正文', noteBodyPlaceholder:'写下想法；支持 Markdown…', noteBodyHint:'支持标题、列表、引用、任务列表和代码块。', arrange:'安排与归类', back:'上一步', next:'下一步', stepOf:'步骤 {0} / {1}', cancel:'取消', clear:'取消', close:'关闭', shortcut:'Ctrl/⌘ + Enter 快速创建', createTodo:'创建待办', createNote:'创建笔记', titleRequired:'请先填写标题。'
     },
     en: {
       title:'Quick capture', subtitle:'Create and auto-save', intro:'Choose a type, capture the essentials, and Acta will create and auto-save it.', chooseType:'What are you creating?', writeContent:'Capture the details',
       todo:'Task', todoHint:'Record something that needs action', note:'Note', noteHint:'Capture an idea, spark, or fragment', itemTitle:'Title', todoTitlePlaceholder:'What needs to be done?', noteTitlePlaceholder:'What is this note about?',
       checkin:'Check-in', checkinHint:'Check in daily to build a habit', checkinTitlePlaceholder:'What habit to build?', checkinBody:'Check-in details', checkinBodyPlaceholder:'Describe the goal or rules…', checkinBodyHint:'Check in once a day; streaks are tracked automatically.', createCheckin:'Create check-in',
       folder:'Classification', start:'Start date and time', due:'Due date and time', clearStart:'Clear start time', clearDue:'Clear due time', calendarHidden:'Without both a start and due time, this task will not appear in the calendar.', invalidSchedule:'Enter valid dates and times, with the due time after the start time.', priority:'Priority', childEvents:'Sub-events', childEventsPlaceholder:'Enter one sub-event per line…', childEventsHint:'Each non-empty line becomes a separate sub-event.', todoBody:'Details', todoBodyPlaceholder:'Add context or anything worth remembering…', todoBodyHint:'You can add more sub-events and linked items after creation.',
-      noteBody:'Note body', noteBodyPlaceholder:'Write your idea; Markdown is supported…', noteBodyHint:'Headings, lists, quotes, task lists, and code blocks are supported.', cancel:'Cancel', clear:'Clear', close:'Close', shortcut:'Ctrl/⌘ + Enter to create', createTodo:'Create task', createNote:'Create note', titleRequired:'Enter a title first.'
+      noteBody:'Note body', noteBodyPlaceholder:'Write your idea; Markdown is supported…', noteBodyHint:'Headings, lists, quotes, task lists, and code blocks are supported.', arrange:'Arrange and file', back:'Back', next:'Next', stepOf:'Step {0} of {1}', cancel:'Cancel', clear:'Clear', close:'Close', shortcut:'Ctrl/⌘ + Enter to create', createTodo:'Create task', createNote:'Create note', titleRequired:'Enter a title first.'
     },
     'zh-Hant': {
       title:'速記', subtitle:'快速建立後自動儲存', intro:'選好類型，寫下重點，Acta 會建立並自動儲存。', chooseType:'建立什麼？', writeContent:'寫下內容',
       todo:'待辦', todoHint:'記錄一個需要行動的事項', note:'筆記', noteHint:'捕捉想法、靈感或片段', itemTitle:'標題', todoTitlePlaceholder:'要完成什麼？', noteTitlePlaceholder:'這則筆記在說什麼？',
       checkin:'打卡待辦', checkinHint:'每天打卡，養成習慣', checkinTitlePlaceholder:'要養成什麼習慣？', checkinBody:'打卡說明', checkinBodyPlaceholder:'寫下打卡目標或規則…', checkinBodyHint:'建立後每天打卡一次，連續天數自動統計。', createCheckin:'建立打卡待辦',
       folder:'歸類', start:'開始日期時間', due:'截止日期時間', clearStart:'取消開始時間', clearDue:'取消截止時間', calendarHidden:'開始或截止時間未設定，此待辦將不在日曆中顯示。', invalidSchedule:'請輸入有效日期時間，且截止時間必須晚於開始時間。', priority:'優先順序', childEvents:'子事件', childEventsPlaceholder:'每行輸入一個子事件…', childEventsHint:'每個非空行都會建立為一個獨立子事件。', todoBody:'補充說明', todoBodyPlaceholder:'補充背景或需要記住的細節…', todoBodyHint:'建立後仍可繼續新增子事件和關聯內容。',
-      noteBody:'筆記正文', noteBodyPlaceholder:'寫下想法；支援 Markdown…', noteBodyHint:'支援標題、清單、引用、任務清單和程式碼區塊。', cancel:'取消', clear:'取消', close:'關閉', shortcut:'Ctrl/⌘ + Enter 快速建立', createTodo:'建立待辦', createNote:'建立筆記', titleRequired:'請先填寫標題。'
+      noteBody:'筆記正文', noteBodyPlaceholder:'寫下想法；支援 Markdown…', noteBodyHint:'支援標題、清單、引用、任務清單和程式碼區塊。', arrange:'安排與歸類', back:'上一步', next:'下一步', stepOf:'步驟 {0} / {1}', cancel:'取消', clear:'取消', close:'關閉', shortcut:'Ctrl/⌘ + Enter 快速建立', createTodo:'建立待辦', createNote:'建立筆記', titleRequired:'請先填寫標題。'
     }
   };
   const quickCaptureText = key => (quickCaptureMessages[uiSettings.language] || quickCaptureMessages.zh)[key];
@@ -597,6 +597,9 @@
   const quickCapturePriority = byId('quickCapturePriority');
   const quickCaptureTasks = byId('quickCaptureTasks');
   const quickCaptureBody = byId('quickCaptureBody');
+  const quickCaptureSubmitButton = quickCaptureDialog.querySelector('.quick-capture-submit');
+  const QUICK_CAPTURE_STEPS = 3;
+  let quickCaptureStep = 1;
   let quickCaptureType = 'todo';
   let quickCaptureStartTouched = false;
   const classificationManagerName = byId('classificationManagerName');
@@ -712,6 +715,7 @@
     quickCaptureTitleInput.placeholder = quickCaptureText(titlePlaceholderKey);
     byId('quickCaptureSubmitLabel').textContent = quickCaptureText(submitLabelKey);
     syncQuickCaptureScheduleHint();
+    syncQuickCaptureSteps();
   }
 
   function syncQuickCaptureScheduleHint() {
@@ -722,6 +726,68 @@
     quickCaptureDue.min = quickCaptureStart.value || '';
   }
 
+  function quickCaptureIsMobile() {
+    return matchMedia('(max-width: 800px)').matches;
+  }
+
+  // 移动端分步填写：同一份 DOM 在桌面上全部展开，在手机上只显示当前步骤。
+  function syncQuickCaptureSteps() {
+    const mobile = quickCaptureIsMobile();
+    quickCaptureDialog.querySelectorAll('[data-quick-step]').forEach(section => {
+      const index = Number(section.dataset.quickStep);
+      section.hidden = mobile && index !== quickCaptureStep;
+      section.classList.toggle('is-active', mobile && index === quickCaptureStep);
+    });
+    const progress = byId('quickCaptureProgress');
+    if (progress) {
+      progress.hidden = !mobile;
+      progress.setAttribute('aria-valuenow', String(quickCaptureStep));
+      [...progress.children].forEach((segment, index) => {
+        segment.classList.toggle('is-done', mobile && index + 1 < quickCaptureStep);
+        segment.classList.toggle('is-active', mobile && index + 1 === quickCaptureStep);
+      });
+    }
+    const stepLabel = byId('quickCaptureStepLabel');
+    stepLabel.hidden = !mobile;
+    if (mobile) stepLabel.textContent = quickCaptureText('stepOf').replace('{0}', quickCaptureStep).replace('{1}', QUICK_CAPTURE_STEPS);
+    byId('quickCaptureBack').hidden = !mobile || quickCaptureStep <= 1;
+    byId('quickCaptureNext').hidden = !mobile || quickCaptureStep >= QUICK_CAPTURE_STEPS;
+    quickCaptureSubmitButton.hidden = mobile && quickCaptureStep < QUICK_CAPTURE_STEPS;
+    byId('cancelQuickCapture').hidden = mobile;
+    byId('quickCaptureShortcut').hidden = mobile;
+  }
+
+  function validateQuickCaptureStep(step) {
+    if (step !== 1) return true;
+    const title = quickCaptureTitleInput.value.trim();
+    if (title) {
+      quickCaptureTitleInput.setCustomValidity('');
+      const error = byId('quickCaptureError');
+      if (error.textContent === quickCaptureText('titleRequired')) error.textContent = '';
+      return true;
+    }
+    const message = quickCaptureText('titleRequired');
+    quickCaptureTitleInput.setCustomValidity(message);
+    byId('quickCaptureError').textContent = message;
+    quickCaptureTitleInput.reportValidity();
+    quickCaptureTitleInput.focus();
+    return false;
+  }
+
+  function goQuickCaptureStep(next) {
+    if (!quickCaptureIsMobile()) return;
+    const target = Math.min(QUICK_CAPTURE_STEPS, Math.max(1, next));
+    if (target > quickCaptureStep && !validateQuickCaptureStep(quickCaptureStep)) return;
+    quickCaptureDialog.dataset.stepDirection = target >= quickCaptureStep ? 'forward' : 'back';
+    quickCaptureStep = target;
+    syncQuickCaptureSteps();
+    const body = quickCaptureDialog.querySelector('.quick-capture-body');
+    if (body) body.scrollTop = 0;
+    const section = quickCaptureDialog.querySelector(`[data-quick-step="${quickCaptureStep}"]`);
+    const field = section?.querySelector('input:not([type="hidden"]), textarea, select');
+    requestAnimationFrame(() => field?.focus({ preventScroll: true }));
+  }
+
   function updateQuickCaptureCopy() {
     const copy = quickCaptureText;
     byId('quickCaptureTitle').textContent = copy('title');
@@ -729,6 +795,7 @@
     byId('quickCaptureIntro').textContent = copy('intro');
     byId('quickCaptureTypeLabel').textContent = copy('chooseType');
     byId('quickCaptureContentLabel').textContent = copy('writeContent');
+    byId('quickCaptureArrangeLabel').textContent = copy('arrange');
     byId('quickCaptureTodoLabel').textContent = copy('todo');
     byId('quickCaptureTodoHint').textContent = copy('todoHint');
     byId('quickCaptureNoteLabel').textContent = copy('note');
@@ -754,6 +821,8 @@
     byId('quickCapturePriority').querySelector('[value="medium"]').textContent = t('medium');
     byId('quickCapturePriority').querySelector('[value="low"]').textContent = t('low');
     byId('cancelQuickCapture').textContent = copy('cancel');
+    byId('quickCaptureBack').textContent = copy('back');
+    byId('quickCaptureNext').textContent = copy('next');
     byId('closeQuickCapture').setAttribute('aria-label', copy('close'));
     byId('quickCaptureShortcut').textContent = copy('shortcut');
     populateQuickCaptureFolders();
@@ -769,6 +838,8 @@
     quickCaptureStartTouched = false;
     quickCapturePriority.value = 'medium';
     quickCaptureType = 'todo';
+    quickCaptureStep = 1;
+    quickCaptureDialog.dataset.stepDirection = 'forward';
     updateQuickCaptureCopy();
     populateQuickCaptureFolders('');
     byId('createMenu').classList.remove('open');
@@ -782,6 +853,11 @@
   }));
   byId('closeQuickCapture').addEventListener('click', () => closeAnimatedDialog(quickCaptureDialog));
   byId('cancelQuickCapture').addEventListener('click', () => closeAnimatedDialog(quickCaptureDialog));
+  byId('quickCaptureBack').addEventListener('click', () => goQuickCaptureStep(quickCaptureStep - 1));
+  byId('quickCaptureNext').addEventListener('click', () => goQuickCaptureStep(quickCaptureStep + 1));
+  matchMedia('(max-width: 800px)').addEventListener('change', () => {
+    if (quickCaptureDialog.open) syncQuickCaptureSteps();
+  });
   // 设计约定：弹出窗口不因点击空白处而关闭，避免误触丢失已输入的内容；
   // 关闭只通过明确的关闭/取消按钮或 Esc。
   quickCaptureDialog.addEventListener('cancel', event => { event.preventDefault(); closeAnimatedDialog(quickCaptureDialog); });
@@ -815,6 +891,10 @@
   });
   quickCaptureForm.addEventListener('submit', event => {
     event.preventDefault();
+    if (quickCaptureIsMobile() && quickCaptureStep < QUICK_CAPTURE_STEPS) {
+      goQuickCaptureStep(quickCaptureStep + 1);
+      return;
+    }
     const title = quickCaptureTitleInput.value.trim();
     if (!title) {
       const message = quickCaptureText('titleRequired');
