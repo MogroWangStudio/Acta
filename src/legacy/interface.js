@@ -86,9 +86,16 @@
     statsGroupToday:'今天', statsGroupYesterday:'昨天', statsCheckItem:'加入圖片',
     metaQuickActions:'快捷操作', metaCopyTitle:'複製標題', metaCopyBody:'複製全文', metaCopyNotes:'複製說明', metaCopyMarkdown:'複製 Markdown', metaMarkComplete:'標記完成', metaReopen:'重新開啟', metaViewCalendar:'在日曆查看', metaTrash:'移入回收站',
     copied:'已複製到剪貼簿', copyFailed:'複製失敗',
-    board:'彙總板', boardAllStatus:'全部狀態', boardUnfinished:'未完成', boardFinished:'已完成', boardStatusFilterLabel:'按完成狀態篩選',
-    boardOpenItem:'開啟內容', boardFitView:'總覽全板', boardZoomIn:'放大', boardZoomOut:'縮小',
-    boardEmptyTitle:'畫布上還沒有內容', boardEmptyHint:'建立筆記或待辦後，它們會按歸類鋪在這塊畫布上，可自由拖動與縮放。'
+    board:'彙總板', boardDefaultName:'彙總板', boardOpenItem:'開啟內容', boardFitView:'總覽全板', boardZoomIn:'放大', boardZoomOut:'縮小',
+    boardNewBoard:'新建彙總板', boardRenameBoard:'重新命名彙總板', boardDeleteBoard:'刪除彙總板', boardNamePrompt:'彙總板名稱',
+    boardDeleteConfirm:'刪除「{0}」後，這塊板上的擺放、文字與標註會一併移除，待辦與筆記本身不受影響。', boardSwitchLabel:'切換彙總板',
+    boardAddText:'文字', boardAddMarker:'標註', boardAddItems:'匯入', boardImportTitle:'匯入到彙總板',
+    boardImportHint:'勾選要展示在這塊板上的待辦與筆記；取消勾選已新增的條目會把它從板上移除。',
+    boardImportAdded:'已在板上', boardImportEmpty:'沒有符合的待辦或筆記', boardImportApply:'套用', boardImportChange:'新增 {0} · 移除 {1}',
+    boardTextPlaceholder:'雙擊編輯文字…', boardFontSize:'字號', boardFontLabel:'字型', boardFontApp:'跟隨介面', boardFontSerif:'襯線', boardFontRounded:'圓體', boardFontMono:'等寬',
+    boardAlignLeft:'靠左對齊', boardAlignCenter:'置中對齊', boardAlignRight:'靠右對齊', boardRemoveWidget:'從板上移除',
+    boardMarkerArrow:'箭頭', boardMarkerRect:'方框', boardMarkerEllipse:'橢圓', boardMarkerColor:'標註顏色', boardMarkerDone:'完成標註',
+    boardEmptyTitle:'這塊板還是空的', boardEmptyHint:'用下方工具新增文字與標註，或匯入想展示在這塊板上的待辦與筆記，自由擺放成你的彙總板。'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
   Object.assign(dictionaries.zh, { lanRadarNav:'局域网雷达', '返回':'返回' });
