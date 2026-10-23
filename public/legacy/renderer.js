@@ -215,6 +215,12 @@ const sanitizeNoteHTML = value => (
 
 const folderColor = value => (typeof value === 'string' && /^#[0-9a-f]{3,8}$/i.test(value) ? value : '#999');
 
+// 汇总板的自由摆放坐标（世界坐标，卡片左上角）：非法值一律清掉，
+// 保证同步与旧数据进来时画布不会拿到 NaN 位置。
+const boardCoords = value => (value && Number.isFinite(Number(value.x)) && Number.isFinite(Number(value.y))
+  ? { x: Math.round(Number(value.x)), y: Math.round(Number(value.y)) }
+  : null);
+
 function normalizeLibrary(candidate) {
   if (!candidate || !Array.isArray(candidate.items) || !Array.isArray(candidate.folders)) return createDefaultLibrary();
   const normalized = { ...candidate, version: Math.max(Number(candidate.version) || 1, 1) };
@@ -235,6 +241,9 @@ function normalizeLibrary(candidate) {
         tags: Array.isArray(item.tags) ? item.tags.filter(tag => typeof tag === 'string') : [],
         linkedIds: Array.isArray(item.linkedIds) ? [...new Set(item.linkedIds.filter(id => typeof id === 'string' && id !== item.id && ids.has(id)))] : []
       };
+      const board = boardCoords(item.board);
+      if (board) common.board = board;
+      else delete common.board;
       if (item.type === 'note') return { ...common, body:typeof item.body === 'string' ? sanitizeNoteHTML(item.body) : '<p><br></p>' };
 
       const hasStartAt = Object.prototype.hasOwnProperty.call(item, 'startAt');
@@ -1092,9 +1101,10 @@ function syncCalendarShell() {
   document.body.classList.toggle('trash-view', currentView === 'trash');
   document.body.classList.toggle('board-view', currentView === 'board');
   if (currentView !== 'board') {
-    // 离开汇总板时停掉相机动画循环；下次进入按「首次进入」重新编排入场。
+    // 离开汇总板时停掉相机动画循环并丢弃渲染缓存；下次进入按「首次进入」重新编排入场。
     boardWasActive = false;
     boardStopMotion();
+    boardRenderedCards.clear();
   }
   document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
   const toolbar = $('#calendarToolbar');
@@ -1869,9 +1879,10 @@ function relinkFromTrash(item) {
   item.linkedIds = Array.from(new Set([...(item.linkedIds || []), ...restored]));
 }
 
-// —— 汇总板：按归类分列的无限画布 ——
+// —— 汇总板：可自由摆放的无限画布 ——
 // 相机（x/y/scale）只在内存里跟随手势；筛选与停靠位置持久化到 localStorage。
-// 画布没有固定尺寸：布局由当前内容决定（每归类一列、列内按更新时间堆叠），
+// 卡片本身的摆放坐标持久化在行记数据（item.board），随数据同步一起走。
+// 画布没有固定尺寸：列头是归类锚点，卡片有坐标直接用、没有就按锚点自动安家；
 // 虚拟化只把视口附近的卡片写进 DOM，平移缩放全部走 transform ——「无限大」
 // 只是一个坐标平面，需要多少就渲染多少。
 const BOARD_KEY = 'acta.board.v1';
@@ -1885,6 +1896,7 @@ const BOARD_SCALE_MIN = 0.4;
 const BOARD_SCALE_MAX = 1.75;
 const BOARD_MARGIN = 460;
 const BOARD_GLIDE_DECAY = 0.998; // 每毫秒保留的速度比例（Apple 滚动衰减率）
+const BOARD_PRESS_SLOP = 9;      // 按下后超过该位移才算拖动，之前松手都是点击（触屏按压自带抖动，死区要够宽）
 const boardState = (() => {
   const stored = loadJSON(BOARD_KEY, null) || {};
   return {
@@ -1897,7 +1909,7 @@ const boardState = (() => {
   };
 })();
 const boardCam = { x: 0, y: 0, scale: 1, vX: 0, vY: 0 };
-// motion.mode: 'idle' | 'drag' | 'pinch' | 'glide' | 'settle'；
+// motion.mode: 'idle' | 'drag' | 'pinch' | 'glide' | 'settle'；卡片拖拽用 gesture.mode 'card'。
 // zooming（滚轮/按钮的目标缩放逼近）与 settle（fit / 回边界的目标动画）独立于 mode。
 const boardMotion = { mode: 'idle', raf: 0, last: 0, anchor: null, targetScale: 0, settle: null };
 const boardPointers = new Map();
@@ -1910,9 +1922,9 @@ let boardDataVersion = 0;
 let boardEnterAnimated = false;
 let boardWasActive = false;
 let boardPersistTimer = 0;
-let boardFocusId = null;
-let boardFocusExitTimer = 0;
 let boardSilentSync = false; // 数据驱动的重建：新出现的节点不播入场动画
+const boardRenderedCards = new Map(); // 卡片 id → 已渲染元素（虚拟化的增删基准）
+const boardIsFiltered = () => boardState.type !== 'all' || boardState.folder !== 'all' || boardState.status !== 'all';
 
 function persistBoardState() {
   clearTimeout(boardPersistTimer);
@@ -1936,25 +1948,72 @@ function boardFilteredItems() {
   return items;
 }
 
-// 列 = 归类顺序 + 未归类收尾；未归类列只在有内容时出现，其余空列保留占位，
-// 筛选后画布结构保持稳定，不会整体跳动。
+// 内容外接矩形（含列头区）：相机的边界与 fit 都以它为准。
+function boardBoundsFrom(cards, columnCount) {
+  const width = Math.max((Math.max(columnCount, 1) - 1) * BOARD_COL_STEP + BOARD_COL_W, 0);
+  const cardsMaxX = cards.reduce((max, card) => Math.max(max, card.x + BOARD_COL_W), 0);
+  const cardsMaxY = cards.reduce((max, card) => Math.max(max, card.y + BOARD_CARD_H), 0);
+  return {
+    minX: cards.reduce((min, card) => Math.min(min, card.x), 0),
+    minY: cards.reduce((min, card) => Math.min(min, card.y), 0),
+    maxX: Math.max(width, cardsMaxX) + 24,
+    maxY: Math.max(BOARD_HEAD_H + BOARD_CARD_STEP * 3, cardsMaxY) + 24
+  };
+}
+
+// 布局：列头是归类锚点（固定横排，未归类锚点只在实际存在未归类内容时出现）；
+// 卡片有坐标（item.board）直接用，没有的（新建 / 旧数据）在锚点下方逐格下探，
+// 找到不与任何已有卡片重叠的第一格自动安家并写回数据（随后统一 persist）。
 function boardLayout() {
-  const groups = new Map();
-  library.folders.forEach(folder => groups.set(folder.id, []));
+  const allItems = activeItems();
+  const folderIds = new Set(library.folders.map(folder => folder.id));
+  const hasUnclassified = allItems.some(item => !folderIds.has(item.folderId));
+  const columns = [
+    ...library.folders.map(folder => ({ key: folder.id, folder })),
+    ...(hasUnclassified ? [{ key: 'none', folder: null }] : [])
+  ].map((definition, index) => ({
+    ...definition,
+    name: definition.folder ? folderName(definition.folder) : t('unclassified'),
+    color: definition.folder?.color || '#a3a69e',
+    left: index * BOARD_COL_STEP,
+    count: 0
+  }));
+  const columnByKey = new Map(columns.map(column => [column.key, column]));
+  // 重叠检测用全量已占位卡片（含被当前筛选隐藏的），自动安家不会撞上它们。
+  const occupied = allItems.filter(entry => entry.board).map(entry => ({ x: entry.board.x, y: entry.board.y }));
+  const overlaps = (x, y) => occupied.some(rect => rect.x < x + BOARD_COL_W && rect.x + BOARD_COL_W > x
+    && rect.y < y + BOARD_CARD_H && rect.y + BOARD_CARD_H > y);
+  const cards = [];
+  let assigned = false;
   boardFilteredItems().forEach(item => {
-    const key = groups.has(item.folderId) ? item.folderId : null;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(item);
+    const key = columnByKey.has(item.folderId) ? item.folderId : 'none';
+    const column = columnByKey.get(key) || columnByKey.get('none');
+    if (column) column.count += 1;
+    const card = { item, key: column?.key || 'none', colIndex: 0, rowIndex: 0, x: 0, y: 0 };
+    if (item.board) {
+      card.x = item.board.x;
+      card.y = item.board.y;
+    } else {
+      card.x = column?.left ?? 0;
+      let top = BOARD_HEAD_H;
+      while (overlaps(card.x, top)) top += BOARD_CARD_STEP;
+      card.y = top;
+      item.board = { x: card.x, y: card.y };
+      occupied.push({ x: card.x, y: card.y });
+      assigned = true;
+    }
+    cards.push(card);
   });
-  const columns = [...library.folders.map(folder => folder.id), null]
-    .filter(id => id !== null || (groups.get(null) || []).length)
-    .map(id => {
-      const folder = id ? getFolder(id) : null;
-      const items = (groups.get(id) || []).sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
-      return { key: id || 'none', folder, name: folder ? folderName(folder) : t('unclassified'), color: folder?.color || '#a3a69e', items };
-    });
-  const tallest = columns.reduce((max, column) => Math.max(max, BOARD_HEAD_H + Math.max(column.items.length, 1) * BOARD_CARD_STEP), 0);
-  return { columns, width: Math.max(columns.length, 1) * BOARD_COL_STEP, height: Math.max(tallest, 260) };
+  // 级联入场的序号：先按归类锚点列，再按 y（同列视觉顺序）。
+  const sequence = new Map();
+  cards.sort((a, b) => a.y - b.y || a.x - b.x).forEach(card => {
+    const state = sequence.get(card.key) || { col: Math.max(0, columns.findIndex(column => column.key === card.key)), row: 0 };
+    card.colIndex = state.col;
+    card.rowIndex = state.row;
+    state.row += 1;
+    sequence.set(card.key, state);
+  });
+  return { columns, cards, bounds: boardBoundsFrom(cards, columns.length), assigned };
 }
 
 function boardViewportSize() {
@@ -1962,19 +2021,21 @@ function boardViewportSize() {
   return viewport ? { w: viewport.clientWidth, h: viewport.clientHeight } : { w: 0, h: 0 };
 }
 
-// 相机边界：横向内容窄于视口时居中；纵向内容矮于视口时顶部对齐
-// （列头锚定在画布顶部，画布向下生长），内容不允许被完全拖出视野。
+// 相机边界：内容外接矩形不允许被完全拖出视野；横向内容窄于视口时居中，
+// 纵向内容矮于视口时顶对齐（列头锚定画布顶部）。
 function boardContentBounds() {
   if (!boardLayoutCache) boardLayoutCache = boardLayout();
-  const { width, height } = boardLayoutCache;
+  const { minX, minY, maxX, maxY } = boardLayoutCache.bounds;
   const { w, h } = boardViewportSize();
   const pad = Math.min(72, Math.max(32, w * 0.1));
-  const axis = (content, view, centered) => (content <= view - pad
-    ? (centered
-      ? { min: (view - content) / 2, max: (view - content) / 2 }
-      : { min: 12, max: 12 })
-    : { min: view - pad - content, max: pad });
-  return { x: axis(width * boardCam.scale, w, true), y: axis(height * boardCam.scale, h, false) };
+  const scale = boardCam.scale;
+  const x = (maxX - minX) * scale <= w - pad
+    ? { min: (w - (minX + maxX) * scale) / 2, max: (w - (minX + maxX) * scale) / 2 }
+    : { min: pad - maxX * scale, max: w - pad - minX * scale };
+  const y = (maxY - minY) * scale <= h - pad
+    ? { min: 12 - minY * scale, max: 12 - minY * scale }
+    : { min: pad - maxY * scale, max: h - pad - minY * scale };
+  return { x, y };
 }
 
 const boardClampAxis = (value, { min, max }) => Math.min(max, Math.max(min, value));
@@ -2129,40 +2190,34 @@ function boardVisibleWorldRect() {
   };
 }
 
-// 虚拟化：每列只渲染与可见矩形（外扩 BOARD_MARGIN）相交的卡片；
-// key 命中（范围 + 数据版本一致）的列直接跳过，滚动时只重写边缘变化的列。
+// 虚拟化：卡片与可见矩形（外扩 BOARD_MARGIN）做 AABB 相交，按 id 集合增删 DOM；
+// 位置不变的已渲染元素原样保留，滚动时只补新出现的边缘卡片。
 function boardSyncNodes() {
   if (!boardEls?.world || !boardLayoutCache) return;
   const silent = boardSilentSync;
   boardSilentSync = false;
   const rect = boardVisibleWorldRect();
-  boardLayoutCache.columns.forEach((column, index) => {
-    const columnEl = boardEls.world.children[index];
-    if (!columnEl) return;
-    const left = index * BOARD_COL_STEP;
-    const visibleX = left + BOARD_COL_W >= rect.x && left <= rect.x + rect.w;
-    if (!visibleX) {
-      if (columnEl.dataset.shown !== '0') {
-        columnEl.dataset.shown = '0';
-        columnEl.style.visibility = 'hidden';
-        columnEl.lastElementChild.dataset.key = '';
-      }
-      return;
+  const visibleIds = new Set();
+  boardLayoutCache.cards.forEach(card => {
+    if (card.x + BOARD_COL_W < rect.x || card.x > rect.x + rect.w) return;
+    if (card.y + BOARD_CARD_H < rect.y || card.y > rect.y + rect.h) return;
+    visibleIds.add(card.item.id);
+  });
+  for (const [id, element] of boardRenderedCards) {
+    if (!visibleIds.has(id)) {
+      element.remove();
+      boardRenderedCards.delete(id);
     }
-    if (columnEl.dataset.shown !== '1') {
-      columnEl.dataset.shown = '1';
-      columnEl.style.visibility = '';
+  }
+  boardLayoutCache.cards.forEach(card => {
+    if (!visibleIds.has(card.item.id) || boardRenderedCards.has(card.item.id)) return;
+    const template = document.createElement('template');
+    template.innerHTML = boardNodeHTML(card, silent);
+    const element = template.content.firstElementChild;
+    if (element) {
+      boardEls.world.appendChild(element);
+      boardRenderedCards.set(card.item.id, element);
     }
-    const bodyEl = columnEl.lastElementChild;
-    const first = Math.max(0, Math.floor((rect.y - BOARD_HEAD_H) / BOARD_CARD_STEP));
-    const last = Math.min(column.items.length - 1, Math.ceil((rect.y + rect.h - BOARD_HEAD_H) / BOARD_CARD_STEP));
-    const key = `${first}:${last}:${boardDataVersion}:${silent ? 's' : ''}`;
-    if (bodyEl.dataset.key === key) return;
-    bodyEl.dataset.key = key;
-    const existing = new Set([...bodyEl.children].map(node => node.dataset.id));
-    let html = '';
-    for (let i = first; i <= last; i += 1) html += boardNodeHTML(column.items[i], i, index, silent || existing.has(column.items[i].id));
-    bodyEl.innerHTML = html;
   });
 }
 
@@ -2173,7 +2228,8 @@ function boardNodeCheckinBadge(item) {
   return `<span class="checkin-badge${on ? ' on' : ''}"><svg><use href="#i-check"/></svg>${escapeHTML(on ? t('checkinDone') : t('checkinTodoYet'))}</span>`;
 }
 
-function boardNodeHTML(item, row, column, existing) {
+function boardNodeHTML(card, silent) {
+  const item = card.item;
   const done = item.type === 'todo' && isTodoComplete(item);
   const folder = getFolder(item.folderId);
   const tasks = item.type === 'todo' ? (item.tasks || []) : [];
@@ -2182,10 +2238,12 @@ function boardNodeHTML(item, row, column, existing) {
   const stamp = item.type === 'todo'
     ? (todoScheduleDate(item) ? `<time datetime="${escapeHTML(todoScheduleDate(item))}">${escapeHTML(formatDate(todoScheduleDate(item), true))}</time>` : '')
     : `<time datetime="${escapeHTML(item.updatedAt)}">${escapeHTML(formatDate(item.updatedAt, true))}</time>`;
-  const delay = boardEnterAnimated && !existing ? Math.min(column * 55 + row * 16, 360) : 0;
-  // 首次进入播列内级联（--board-d 承载交错延迟）；滚动中新增的卡片只做短淡入。
-  const motion = boardEnterAnimated && !existing ? ' data-enter="1"' : (!existing ? ' data-new="1"' : '');
-  return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}" data-id="${escapeHTML(item.id)}" data-board-node="${escapeHTML(item.id)}"${motion} style="top:${BOARD_HEAD_H + row * BOARD_CARD_STEP}px;${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
+  const delay = boardEnterAnimated && !silent ? Math.min(card.colIndex * 55 + card.rowIndex * 16, 360) : 0;
+  // 首次进入播列内级联（--board-d 承载交错延迟）；滚动中新增的卡片只做短淡入；
+  // 筛选模式下卡片是只读快照（不可拖动摆放），只有未筛选的画布才能自由拖放。
+  const motion = delay ? ' data-enter="1"' : (!silent ? ' data-new="1"' : '');
+  const draggable = boardIsFiltered() ? '' : ' data-draggable="1"';
+  return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}${item.id === selectedId ? ' active' : ''}" data-id="${escapeHTML(item.id)}" data-board-node="${escapeHTML(item.id)}"${motion}${draggable} style="left:${card.x}px;top:${card.y}px;${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
     <div class="board-node-top"><span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>${item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : ''}${stamp}</div>
     <b class="board-node-title">${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</b>
     <p class="board-node-preview">${escapeHTML(itemPreview(item))}</p>
@@ -2226,21 +2284,20 @@ function renderBoardShell() {
         <button type="button" class="board-zoom-button" id="boardFit" title="${escapeHTML(t('boardFitView'))}" aria-label="${escapeHTML(t('boardFitView'))}"><svg><use href="#i-focus"/></svg></button>
       </div>
     </div>
-    <div class="board-focus-scrim" id="boardFocusScrim" hidden></div>
-    <div class="board-focus" id="boardFocus" hidden></div>
   </div>`;
 }
 
 function boardFitView(instant = false) {
   const layout = boardLayoutCache || (boardLayoutCache = boardLayout());
+  const { minX, minY, maxX, maxY } = layout.bounds;
   const { w, h } = boardViewportSize();
-  const scale = Math.min(Math.max((w - 48) / layout.width, BOARD_SCALE_MIN), 1);
   const pad = Math.min(72, Math.max(32, w * 0.1));
+  const scale = Math.min(Math.max((w - 48) / (maxX - minX), BOARD_SCALE_MIN), 1);
   const target = {
     scale,
-    x: (w - layout.width * scale) / 2,
-    // 与边界规则一致：内容矮于视口时顶对齐，高于视口时内容顶边贴 pad 线。
-    y: layout.height * scale >= h ? pad : 12
+    // 与边界规则一致：横向居中，纵向内容矮于视口时顶对齐、高于视口时顶缘贴 pad 线。
+    x: (w - (minX + maxX) * scale) / 2,
+    y: (maxY - minY) * scale >= h - pad ? pad - minY * scale : 12 - minY * scale
   };
   if (instant || reduceWindowMotion()) {
     boardCam.x = target.x;
@@ -2271,119 +2328,40 @@ function boardZoomAt(screenX, screenY, factor) {
   persistBoardState();
 }
 
-function boardFocusHTML(item) {
-  const folder = getFolder(item.folderId);
-  const done = item.type === 'todo' && isTodoComplete(item);
-  const tasks = item.type === 'todo' ? (item.tasks || []) : [];
-  const completedCount = tasks.filter(task => task.done).length;
-  const linkedCount = getLinkedItems(item).length;
-  const metaChips = [
-    item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : '',
-    item.type === 'todo' && todoScheduleDate(item) ? `<span class="board-focus-chip"><svg><use href="#i-calendar"/></svg>${escapeHTML(t('dueDate'))} ${escapeHTML(formatDate(todoScheduleDate(item), true))}</span>` : '',
-    item.type === 'todo' && item.checkin ? boardNodeCheckinBadge(item) : '',
-    item.type === 'todo' && tasks.length ? `<span class="board-focus-chip"><svg><use href="#i-task-list"/></svg>${escapeHTML(t('progress'))} ${completedCount}/${tasks.length}</span>` : '',
-    linkedCount ? `<span class="board-focus-chip"><svg><use href="#i-link"/></svg>${escapeHTML(t('linkedItems'))} ${linkedCount}</span>` : ''
-  ].filter(Boolean).join('');
-  let body = '';
-  if (item.type === 'note') {
-    const text = stripHTML(item.body);
-    body = `<p>${escapeHTML(text || t('notePlaceholder'))}</p>`;
-  } else {
-    const rows = tasks.slice(0, 8).map(task => `<li class="${task.done ? 'is-done' : ''}"><i><svg><use href="#i-check"/></svg></i><span>${escapeHTML(task.text || '')}</span></li>`).join('');
-    body = `${rows ? `<ul class="board-focus-tasks">${rows}</ul>` : ''}${tasks.length > 8 ? `<p class="board-focus-more">${escapeHTML(t('moreTodos').replace('{0}', tasks.length - 8))}</p>` : ''}${item.notes ? `<p>${escapeHTML(item.notes)}</p>` : ''}`;
-  }
-  return `<div class="board-focus-card" data-board-focus-card>
-    <span class="board-focus-grip" aria-hidden="true"></span>
-    <header class="board-focus-top">
-      <span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>
-      <span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span>
-      <time datetime="${escapeHTML(item.updatedAt)}">${escapeHTML(t('modified'))} ${escapeHTML(formatDate(item.updatedAt, true))}</time>
-      <button type="button" class="board-focus-close" id="boardFocusClose" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button>
-    </header>
-    <h3 class="${done ? 'is-done' : ''}">${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</h3>
-    ${metaChips ? `<div class="board-focus-meta">${metaChips}</div>` : ''}
-    <div class="board-focus-body">${body}</div>
-    <footer class="board-focus-actions"><button type="button" class="board-focus-open" id="boardFocusOpen"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${escapeHTML(t('boardOpenItem'))}</button></footer>
-  </div>`;
-}
-
-function boardOpenFocus(id) {
+// 选中即右侧编辑器：桌面展开三栏、移动端全屏编辑器；点空白或 Esc 收回。
+function boardSelect(id) {
   const item = library.items.find(entry => entry.id === id && !isTrashed(entry));
-  if (!item || !boardEls?.focus) return;
-  clearTimeout(boardFocusExitTimer);
-  boardFocusId = id;
-  boardEls.focus.innerHTML = boardFocusHTML(item);
-  boardEls.focus.hidden = false;
-  boardEls.scrim.hidden = false;
-  boardEls.focus.scrollTop = 0;
-  requestAnimationFrame(() => boardEls.canvas.classList.add('board-focus-open'));
-  $('#boardFocusClose', boardEls.focus)?.addEventListener('click', boardCloseFocus);
-  $('#boardFocusOpen', boardEls.focus)?.addEventListener('click', () => {
-    const target = boardFocusId;
-    boardCloseFocus(true);
-    if (target) openItem(target);
-  });
-  boardBindFocusSheet();
+  if (!item) return;
+  selectedId = id;
+  mobileEditorOpen = true;
+  renderEditor();
+  boardMarkActive(id);
 }
 
-function boardCloseFocus(skipAnimation = false) {
-  if (!boardFocusId || !boardEls?.focus) return;
-  boardFocusId = null;
-  const canvas = boardEls.canvas;
-  if (skipAnimation || reduceWindowMotion()) {
-    canvas.classList.remove('board-focus-open');
-    boardEls.focus.hidden = true;
-    boardEls.scrim.hidden = true;
-    boardEls.focus.innerHTML = '';
-    return;
+function boardDeselect() {
+  selectedId = null;
+  mobileEditorOpen = false;
+  renderEditor();
+  boardMarkActive(null);
+}
+
+function boardMarkActive(id) {
+  boardRenderedCards.forEach((element, cardId) => element.classList.toggle('active', cardId === id));
+}
+
+// 卡片被拖到新位置后：坐标写回行记数据（不触碰 updatedAt —— 摆放不是内容修改），
+// 布局缓存同步更新并重算内容外接矩形，相机的边界立即跟随新的内容范围。
+function boardCommitCardDrag(id, x, y) {
+  const item = library.items.find(entry => entry.id === id);
+  if (!item) return;
+  item.board = { x, y };
+  const card = boardLayoutCache?.cards.find(entry => entry.item.id === id);
+  if (card) {
+    card.x = x;
+    card.y = y;
+    boardLayoutCache.bounds = boardBoundsFrom(boardLayoutCache.cards, boardLayoutCache.columns.length);
   }
-  canvas.classList.remove('board-focus-open');
-  boardFocusExitTimer = setTimeout(() => {
-    boardEls.focus.hidden = true;
-    boardEls.scrim.hidden = true;
-    boardEls.focus.innerHTML = '';
-  }, 240);
-}
-
-// 移动端：浮层是底部 sheet，抓着把手/头部下拖跟手，松手按位移与速度决定去留。
-function boardBindFocusSheet() {
-  const card = $('[data-board-focus-card]', boardEls.focus);
-  if (!card || !matchMedia('(max-width: 800px)').matches) return;
-  const grip = card;
-  let drag = null;
-  grip.addEventListener('pointerdown', event => {
-    if (event.target.closest('.board-focus-body, .board-focus-actions, .board-focus-close, .board-focus-open')) return;
-    drag = { id: event.pointerId, y: event.clientY, moved: false, t: performance.now(), dy: 0, v: 0 };
-    grip.setPointerCapture(event.pointerId);
-  });
-  grip.addEventListener('pointermove', event => {
-    if (!drag || event.pointerId !== drag.id) return;
-    const now = performance.now();
-    drag.v = (event.clientY - drag.y) / Math.max(1, now - drag.t) * 1000;
-    drag.t = now;
-    drag.dy += event.clientY - drag.y;
-    drag.y = event.clientY;
-    if (!drag.moved && Math.abs(drag.dy) > 6) drag.moved = true;
-    if (drag.moved) {
-      card.style.transition = 'none';
-      card.style.transform = `translateY(${Math.max(0, drag.dy)}px)`;
-    }
-  });
-  const finish = event => {
-    if (!drag || event.pointerId !== drag.id) return;
-    const shouldClose = drag.moved && (drag.dy > 110 || drag.v > 650);
-    card.style.transition = '';
-    card.style.transform = '';
-    const pending = drag;
-    drag = null;
-    if (shouldClose) boardCloseFocus();
-    else if (pending.moved) card.animate(
-      [{ transform: `translateY(${Math.max(0, pending.dy)}px)` }, { transform: 'translateY(0)' }],
-      { duration: 260, easing: 'cubic-bezier(.16,1,.3,1)' }
-    );
-  };
-  grip.addEventListener('pointerup', finish);
-  grip.addEventListener('pointercancel', finish);
+  persist();
 }
 
 function bindBoardScene() {
@@ -2397,17 +2375,17 @@ function bindBoardScene() {
     viewport: $('#boardViewport', canvas),
     world: $('#boardWorld', canvas),
     empty: $('#boardEmpty', canvas),
-    scaleLabel: $('#boardZoomLevel', canvas),
-    focus: $('#boardFocus', canvas),
-    scrim: $('#boardFocusScrim', canvas)
+    scaleLabel: $('#boardZoomLevel', canvas)
   };
+  canvas.classList.toggle('is-filtered', boardIsFiltered());
   boardLayoutCache = boardLayout();
-  boardEls.empty.hidden = boardLayoutCache.columns.some(column => column.items.length);
+  // 新卡片自动安家的坐标即刻落库，位置从此是行记数据的一部分。
+  if (boardLayoutCache.assigned) persist();
+  boardEls.empty.hidden = boardLayoutCache.cards.length > 0;
+  // 列头（归类锚点）：数量少，直接全部渲染，不参与虚拟化。
   boardEls.world.innerHTML = boardLayoutCache.columns.map((column, index) => `
-    <section class="board-column" style="left:${index * BOARD_COL_STEP}px">
-      <header class="board-col-head" style="--board-d:${Math.min(index * 55, 360)}ms"><i class="folder-dot" style="background:${escapeHTML(column.color)}"></i><b>${escapeHTML(column.name)}</b><em>${column.items.length}</em></header>
-      <div class="board-col-body" style="height:${Math.max(column.items.length, 1) * BOARD_CARD_STEP}px"></div>
-    </section>`).join('');
+    <header class="board-col-head" style="left:${column.left}px;--board-d:${Math.min(index * 55, 360)}ms"><i class="folder-dot" style="background:${escapeHTML(column.color)}"></i><b>${escapeHTML(column.name)}</b><em>${column.count}</em></header>`).join('');
+  boardRenderedCards.clear();
   if (entering) {
     boardStopMotion();
     boardEnterAnimated = !reduceWindowMotion();
@@ -2428,6 +2406,7 @@ function bindBoardScene() {
   boardSyncNodes();
   boardSilentSync = false;
   boardEnterAnimated = false;
+  boardMarkActive(selectedId);
   persistBoardState();
 
   const viewport = boardEls.viewport;
@@ -2451,7 +2430,8 @@ function bindBoardScene() {
 
   viewport.addEventListener('pointerdown', event => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
-    viewport.setPointerCapture(event.pointerId);
+    // 捕获让指针移出画布也能继续跟踪；合成 / 已失效的指针捕获会抛错，安全跳过。
+    try { viewport.setPointerCapture(event.pointerId); } catch { /* 无活跃指针可捕获 */ }
     boardPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     boardStopMotion();
     if (boardPointers.size >= 2) {
@@ -2464,19 +2444,39 @@ function bindBoardScene() {
         startCam: { x: boardCam.x, y: boardCam.y },
         startMid: { x: (a.x + b.x) / 2 - rect.left, y: (a.y + b.y) / 2 - rect.top }
       };
-    } else {
-      boardMotion.mode = 'drag';
-      boardGesture = {
-        mode: 'pan',
-        lastX: event.clientX,
-        lastY: event.clientY,
-        pressX: event.clientX,
-        pressY: event.clientY,
-        moved: false,
-        pressNode: event.target.closest('[data-board-node]'),
-        history: [{ x: event.clientX, y: event.clientY, t: performance.now() }]
-      };
+      return;
     }
+    boardMotion.mode = 'drag';
+    const pressNode = event.target.closest('[data-board-node]');
+    // 未筛选的画布：空白拖画布、卡片拖卡片（1:1 跟手）；筛选模式下卡片是只读快照，
+    // 按下卡片与按空白一样都拖动画布。
+    if (pressNode && !boardIsFiltered()) {
+      const card = boardLayoutCache?.cards.find(entry => entry.item.id === pressNode.dataset.boardNode);
+      boardGesture = {
+        mode: 'card',
+        node: pressNode,
+        card,
+        originX: event.clientX,
+        originY: event.clientY,
+        cardX: card?.x ?? (Number.parseFloat(pressNode.style.left) || 0),
+        cardY: card?.y ?? (Number.parseFloat(pressNode.style.top) || 0),
+        pendingX: null,
+        pendingY: null,
+        moved: false
+      };
+      pressNode.classList.add('is-dragging');
+      return;
+    }
+    boardGesture = {
+      mode: 'pan',
+      lastX: event.clientX,
+      lastY: event.clientY,
+      pressX: event.clientX,
+      pressY: event.clientY,
+      moved: false,
+      pressNode,
+      history: [{ x: event.clientX, y: event.clientY, t: performance.now() }]
+    };
   });
   viewport.addEventListener('pointermove', event => {
     const point = boardPointers.get(event.pointerId);
@@ -2498,8 +2498,21 @@ function bindBoardScene() {
       boardScheduleSync();
       return;
     }
+    if (boardGesture?.mode === 'card') {
+      const dx = event.clientX - boardGesture.originX;
+      const dy = event.clientY - boardGesture.originY;
+      if (!boardGesture.moved && Math.hypot(dx, dy) > BOARD_PRESS_SLOP) boardGesture.moved = true;
+      if (!boardGesture.moved || !boardGesture.node) return;
+      const x = boardGesture.cardX + dx / boardCam.scale;
+      const y = boardGesture.cardY + dy / boardCam.scale;
+      boardGesture.node.style.left = `${x}px`;
+      boardGesture.node.style.top = `${y}px`;
+      boardGesture.pendingX = Math.round(x);
+      boardGesture.pendingY = Math.round(y);
+      return;
+    }
     if (boardGesture?.mode !== 'pan') return;
-    if (!boardGesture.moved && Math.hypot(event.clientX - boardGesture.pressX, event.clientY - boardGesture.pressY) > 6) {
+    if (!boardGesture.moved && Math.hypot(event.clientX - boardGesture.pressX, event.clientY - boardGesture.pressY) > BOARD_PRESS_SLOP) {
       boardGesture.moved = true;
       boardGesture.pressNode = null;
     }
@@ -2533,12 +2546,33 @@ function bindBoardScene() {
       }
       return;
     }
+    if (boardGesture.mode === 'card') {
+      const gesture = boardGesture;
+      boardGesture = null;
+      boardMotion.mode = 'idle';
+      gesture.node?.classList.remove('is-dragging');
+      if (boardPointers.size) return;
+      if (!gesture.moved) {
+        boardSelect(gesture.node?.dataset.boardNode);
+        return;
+      }
+      if (gesture.node && Number.isFinite(gesture.pendingX) && Number.isFinite(gesture.pendingY)) {
+        boardCommitCardDrag(gesture.node.dataset.boardNode, gesture.pendingX, gesture.pendingY);
+      }
+      return;
+    }
     if (!boardPointers.size) {
       const gesture = boardGesture;
       boardGesture = null;
       if (!gesture.moved && gesture.pressNode) {
         boardMotion.mode = 'idle';
-        boardOpenFocus(gesture.pressNode.dataset.boardNode);
+        boardSelect(gesture.pressNode.dataset.boardNode);
+        return;
+      }
+      if (!gesture.moved && !gesture.pressNode) {
+        // 点击空白：收起右侧编辑器，画布回到全宽。
+        boardMotion.mode = 'idle';
+        if (selectedId) boardDeselect();
         return;
       }
       const first = gesture.history[0];
@@ -2563,6 +2597,7 @@ function bindBoardScene() {
   viewport.addEventListener('pointercancel', event => {
     // 系统打断（滚轮接管、来电等）不算点击也不算释放惯性。
     if (boardGesture?.mode === 'pan') boardGesture.pressNode = null;
+    if (boardGesture?.mode === 'card') boardGesture.moved = true;
     releasePointer(event);
   });
 
@@ -2591,7 +2626,7 @@ function bindBoardScene() {
     boardZoomAt(w / 2, h / 2, 1 / 1.22);
   });
   $('#boardFit', canvas)?.addEventListener('click', () => boardFitView());
-  boardEls.scrim.addEventListener('click', () => boardCloseFocus());
+  $$('.board-col-head', canvas).forEach(head => head.addEventListener('pointerdown', event => event.stopPropagation()));
 
   if (boardResizeObserver) boardResizeObserver.disconnect();
   if ('ResizeObserver' in window) {
@@ -2940,6 +2975,8 @@ function renderEditor() {
   let item = getItem();
   if (item && isTrashed(item)) item = null;
   const pane = $('#editorPane');
+  // 汇总板的编辑器按选中状态展开 / 收起（选中三栏，未选中画布全宽）。
+  if (currentView === 'board') document.body.classList.toggle('board-editor-open', Boolean(item));
   const previousEditorId = $('.editor-wrap', pane)?.dataset.editorId;
   document.body.classList.remove('note-focus-mode', 'note-focus-leaving');
   if (!item) {
@@ -4129,7 +4166,10 @@ function bindShell() {
       mobileEditorOpen = false;
       renderSidebar(); renderList();
       const visible = getVisibleItems();
-      if (!visible.some(item => item.id === selectedId)) selectedId = visible[0]?.id || null;
+      // 进入汇总板不带旧选中：画布以全宽打开，点击卡片再展开编辑器；
+      // 其余视图维持「选中项不在列表时回落到第一项」的既有行为。
+      if (currentView === 'board') selectedId = null;
+      else if (!visible.some(item => item.id === selectedId)) selectedId = visible[0]?.id || null;
       if (currentView !== 'calendar') renderEditor();
     }
     const card = event.target.closest('.item-card');
@@ -4210,7 +4250,8 @@ function bindShell() {
     if (!mod) {
       if (event.key === 'Escape') {
         $('#createMenu').classList.remove('open');
-        boardCloseFocus();
+        // 汇总板：Esc 收起右侧编辑器、回到全宽画布（编辑器与弹窗内的按键不抢）。
+        if (currentView === 'board' && selectedId && !event.target.closest('.editor-pane, dialog')) boardDeselect();
       }
       return;
     }
