@@ -85,7 +85,10 @@
     statsNeedSelection:'請先勾選要產生圖片的條目', statsImageDone:'清單圖片已產生', statsImageFailed:'圖片產生失敗', statsEmptyRange:'這個時間段還沒有內容',
     statsGroupToday:'今天', statsGroupYesterday:'昨天', statsCheckItem:'加入圖片',
     metaQuickActions:'快捷操作', metaCopyTitle:'複製標題', metaCopyBody:'複製全文', metaCopyNotes:'複製說明', metaCopyMarkdown:'複製 Markdown', metaMarkComplete:'標記完成', metaReopen:'重新開啟', metaViewCalendar:'在日曆查看', metaTrash:'移入回收站',
-    copied:'已複製到剪貼簿', copyFailed:'複製失敗'
+    copied:'已複製到剪貼簿', copyFailed:'複製失敗',
+    board:'彙總板', boardAllStatus:'全部狀態', boardUnfinished:'未完成', boardFinished:'已完成', boardStatusFilterLabel:'按完成狀態篩選',
+    boardOpenItem:'開啟內容', boardFitView:'總覽全板', boardZoomIn:'放大', boardZoomOut:'縮小',
+    boardEmptyTitle:'畫布上還沒有內容', boardEmptyHint:'建立筆記或待辦後，它們會按歸類鋪在這塊畫布上，可自由拖動與縮放。'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
   Object.assign(dictionaries.zh, { lanRadarNav:'局域网雷达', '返回':'返回' });
@@ -220,7 +223,7 @@
       '切换界面语言，不影响笔记内容。':'Switch the interface language; notes are untouched.', '简体中文':'Simplified Chinese', '繁體中文':'Traditional Chinese', '英语':'English',
       '整个资料库保存在所选文件夹内唯一的':'The entire library is stored in a single', '文件中。':'file inside the selected folder.', '演示工作区':'Demo workspace', '演示行记数据':'Demo Acta Data', '尚未选择文件夹；本次修改不会保存。':'No folder selected; changes in this session will not be saved.',
       '选择本地文件夹':'Choose local folder', '立即保存':'Save now', '从文件重载':'Reload from file', '返回演示工作区':'Return to demo workspace', '返回演示行记数据':'Return to demo Acta Data', '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is the demo workspace. Its content resets when you close or refresh the page and is not written to browser storage.', '当前是演示行记数据。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is demo Acta Data. Its content resets when you close or refresh the page and is not written to browser storage.',
-      '启动、密度与动效偏好。':'Startup, density, and motion.', '默认启动页面':'Default startup view', '启动时进入的视图':'The view shown at launch', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '已完成':'Completed',
+      '启动、密度与动效偏好。':'Startup, density, and motion.', '默认启动页面':'Default startup view', '启动时进入的视图':'The view shown at launch', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '汇总板':'Board', '已完成':'Completed',
       '紧凑列表':'Compact lists', '中栏密度更高':'Denser middle pane', '减少动态效果':'Reduce motion', '降低转场与弹性动画':'Fewer transitions and springs', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
       '点击空白处':'Click outside dialogs', '点空白处如何关闭弹窗，默认双击防误触':'How clicks on blank areas close dialogs; double click by default', '不关闭（防误触）':"Don't close (accident protection)", '单击关闭':'Single click closes', '双击关闭':'Double click closes',
       '页面跳转栏':'Navigation bar', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'Show the entries for this device — the desktop sidebar, or the mobile bottom bar and titlebar.', '桌面端侧边栏':'Desktop sidebar', '勾选要显示的页面；待办与笔记默认隐藏':'Tick the pages to show; tasks and notes are hidden by default', '移动端底栏':'Mobile bottom bar', '两个槽位可替换；两端固定为收集箱与日历':'Two replaceable slots; Inbox and Calendar stay fixed', '槽位一':'Slot one', '槽位二':'Slot two', '移动端顶栏':'Mobile titlebar', '右上角三个按钮可自定义；设置按钮固定显示':'Customize the three top-right buttons; Settings stays fixed', '顶栏槽位一':'Titlebar slot one', '顶栏槽位二':'Titlebar slot two', '顶栏槽位三':'Titlebar slot three', '刷新数据':'Refresh data', '历史记录':'History', '回收站':'Trash',
@@ -240,7 +243,7 @@
       '设置':'設定', '按你的方式使用 Acta':'依照你的方式使用 Acta', '关闭设置':'關閉設定', '设置页面':'設定頁面', '语言':'語言', '工作区':'工作區', '行记数据':'行記資料', '数据同步':'資料同步', '常规设置':'一般設定', '外观设置':'外觀設定', '关于':'關於',
       '切换界面语言，不影响笔记内容。':'切換介面語言，不影響筆記內容。', '简体中文':'簡體中文', '英语':'英文',
       '整个资料库保存在所选文件夹内唯一的':'整個資料庫儲存在所選資料夾內唯一的', '文件中。':'檔案中。', '演示工作区':'示範工作區', '尚未选择文件夹；本次修改不会保存。':'尚未選擇資料夾；本次修改不會儲存。', '选择本地文件夹':'選擇本機資料夾', '立即保存':'立即儲存', '从文件重载':'從檔案重新載入', '返回演示工作区':'返回示範工作區',
-      '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '启动、密度与动效偏好。':'啟動、密度與動效偏好。', '默认启动页面':'預設啟動頁面', '启动时进入的视图':'啟動時進入的視圖', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '紧凑列表':'緊湊清單', '中栏密度更高':'中欄密度更高', '减少动态效果':'減少動態效果', '降低转场与弹性动画':'降低轉場與彈性動畫', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
+      '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '启动、密度与动效偏好。':'啟動、密度與動效偏好。', '默认启动页面':'預設啟動頁面', '启动时进入的视图':'啟動時進入的視圖', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '汇总板':'彙總板', '紧凑列表':'緊湊清單', '中栏密度更高':'中欄密度更高', '减少动态效果':'減少動態效果', '降低转场与弹性动画':'降低轉場與彈性動畫', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
       '点击空白处':'點擊空白處', '点空白处如何关闭弹窗，默认双击防误触':'點空白處如何關閉彈窗，預設雙擊防誤觸', '不关闭（防误触）':'不關閉（防誤觸）', '单击关闭':'單擊關閉', '双击关闭':'雙擊關閉',
       '页面跳转栏':'頁面跳轉欄', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'按目前裝置顯示桌面側邊欄或行動端底欄與頂欄的入口。', '桌面端侧边栏':'桌面端側邊欄', '勾选要显示的页面；待办与笔记默认隐藏':'勾選要顯示的頁面；待辦與筆記預設隱藏', '移动端底栏':'行動端底欄', '两个槽位可替换；两端固定为收集箱与日历':'兩個槽位可替換；兩端固定為收集箱與日曆', '槽位一':'槽位一', '槽位二':'槽位二', '移动端顶栏':'行動端頂欄', '右上角三个按钮可自定义；设置按钮固定显示':'右上角三個按鈕可自訂；設定按鈕固定顯示', '顶栏槽位一':'頂欄槽位一', '顶栏槽位二':'頂欄槽位二', '顶栏槽位三':'頂欄槽位三', '刷新数据':'重新整理資料', '历史记录':'歷史記錄',
       '勾选框旁显示完成日期，悬停看时刻':'勾選框旁顯示完成日期，懸停看時刻',
@@ -3894,6 +3897,8 @@
     };
     pullList.addEventListener('touchstart', event => {
       if (!pullMobileQuery.matches || pullBusy) return;
+      // 汇总板的画布手势占满中栏（列表本体不滚动），竖直拖动是平移而不是下拉刷新。
+      if (document.body.classList.contains('board-view')) return;
       if (pullList.scrollTop > 0) { pullArmed = false; return; }
       pullArmed = true;
       pullStartY = event.touches[0].clientY;
@@ -4359,7 +4364,7 @@
     });
   }
   prepareNavIconTraces();
-  const NAV_PAGE_IDS = ['inbox', 'calendar', 'todos', 'notes', 'trash', 'stats'];
+  const NAV_PAGE_IDS = ['inbox', 'calendar', 'board', 'todos', 'notes', 'trash', 'stats'];
   // 移动底栏左右两端固定为收集箱与日历，中间两个槽位才由用户替换。
   const MOBILE_FIXED_PAGES = ['inbox', 'calendar'];
   // 「局域网雷达」是打开设置页的动作入口而不是视图：可显隐，但不参与
@@ -4381,7 +4386,7 @@
     return slots;
   };
   // 移动端顶栏右上角的自定义按钮区：三个槽位 + 固定的设置按钮。
-  const MOBILE_TITLE_POOL = ['todos', 'notes', 'trash', 'stats', 'refresh', 'history', 'lan'];
+  const MOBILE_TITLE_POOL = ['todos', 'notes', 'board', 'trash', 'stats', 'refresh', 'history', 'lan'];
   const MOBILE_TITLE_DEFAULTS = ['trash', 'stats', 'refresh'];
   const normalizeMobileTitleActions = () => {
     const stored = Array.isArray(uiSettings.mobileTitleActions) ? uiSettings.mobileTitleActions : [];
@@ -4396,7 +4401,7 @@
     const bar = byId('mobileTitlebarActions');
     const buttons = new Map();
     if (bar) {
-      ['todos', 'notes', 'trash', 'stats'].forEach(id => buttons.set(id, bar.querySelector(`button[data-view="${id}"]`)));
+      ['todos', 'notes', 'board', 'trash', 'stats'].forEach(id => buttons.set(id, bar.querySelector(`button[data-view="${id}"]`)));
       buttons.set('refresh', byId('mobileDataRefresh'));
       buttons.set('history', byId('mobileHistoryButton'));
       buttons.set('lan', byId('mobileLanAction'));

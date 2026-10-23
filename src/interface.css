@@ -1893,6 +1893,186 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
 .trash-empty h3 { margin: 0 0 6px; color: var(--ink); font: 600 calc(16px * var(--acta-font-scale)) var(--acta-font-display); }
 .trash-empty p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); max-width: 320px; line-height: 1.7; }
 
+/* --- Board（汇总板）：按归类分列的无限画布 ---
+   结构与 stats/trash 同型：编辑栏收起、中栏占满。画布本体是一个
+   transform 驱动的坐标平面（平移缩放不触发布局），底纹点阵通过
+   background-position/size 跟随相机，虚拟化只渲染视口附近的卡片。 */
+body.board-view .search-box, body.board-view .filter-row, body.board-view .list-resizer, body.board-view .list-footer { display: none; }
+body.board-view .item-pane { border-right: 0; background: var(--paper); }
+body.board-view .editor-pane { display: none; }
+@media (min-width: 801px) {
+  body.board-view main.workspace { grid-template-columns: var(--acta-sidebar-width) minmax(0,1fr) 0px !important; }
+}
+.board-list { padding: 0; overflow: hidden; scrollbar-gutter: auto; }
+.board-canvas { position: relative; height: 100%; min-height: 0; }
+.board-viewport {
+  position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: grab; contain: strict;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1.15px);
+  background-size: var(--board-grid, 26px) var(--board-grid, 26px);
+  background-position: var(--board-grid-x, 0px) var(--board-grid-y, 0px);
+}
+.board-viewport:active { cursor: grabbing; }
+.board-world { position: absolute; top: 0; left: 0; width: 0; height: 0; transform-origin: 0 0; will-change: transform; }
+.board-column { position: absolute; top: 0; width: 264px; }
+.board-col-head {
+  position: absolute; top: 0; left: 0; right: 0; height: 34px; padding: 0 10px 0 11px; border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+  border-radius: 10px; background: color-mix(in srgb, var(--paper) 78%, transparent); backdrop-filter: blur(12px) saturate(1.3); -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  display: flex; align-items: center; gap: 7px; color: var(--muted); box-shadow: 0 1px 2px rgba(47,50,43,.04);
+  animation: boardHeadIn .5s var(--ease-out) both; animation-delay: var(--board-d, 0ms);
+}
+.board-col-head b { min-width: 0; flex: 1; overflow: hidden; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; letter-spacing: .01em; text-overflow: ellipsis; white-space: nowrap; }
+.board-col-head em { font-style: normal; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+.board-col-body { position: relative; }
+.board-node {
+  position: absolute; left: 0; width: 264px; height: 114px; padding: 10px 12px 9px; border: 1px solid var(--line); border-radius: 12px;
+  background: color-mix(in srgb, var(--white) 88%, transparent); color: var(--ink); text-align: left; cursor: pointer;
+  display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(47,50,43,.04);
+  transition: border-color .16s ease, background .16s ease, box-shadow .2s var(--ease-out), transform .2s var(--ease-out);
+}
+.board-node:hover { background: var(--white); border-color: color-mix(in srgb, var(--faint) 38%, var(--line)); transform: translateY(-2px); box-shadow: 0 6px 16px -6px rgba(55,53,45,.14); }
+.board-node:active { transform: translateY(0) scale(.975); transition-duration: .08s; }
+.board-node:focus-visible { outline: none; border-color: color-mix(in srgb, var(--sage) 46%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 16%, transparent); }
+.board-node[data-new="1"] { animation: boardNodePop .18s var(--ease-out) both; }
+.board-node-top { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.board-node-top time { margin-left: auto; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.board-node-title {
+  margin: 7px 0 0; font-size: calc(12px * var(--acta-font-scale)); font-weight: 650; line-height: 1.32; letter-spacing: .005em;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere;
+}
+.board-node-preview { margin: 4px 0 0; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-node-foot { margin-top: auto; display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
+.board-node-foot .mini-folder { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.board-node-count { font-variant-numeric: tabular-nums; margin-left: auto; color: var(--muted); }
+.board-node.is-done { opacity: .6; }
+.board-node.is-done .board-node-title { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--faint) 70%, transparent); }
+.board-empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--muted); pointer-events: none; }
+.board-empty span { width: 46px; height: 46px; margin: 0 auto 12px; border-radius: 14px; display: grid; place-items: center; color: var(--sage); background: var(--sage-2); }
+.board-empty h3 { margin: 0 0 6px; color: var(--ink); font: 600 calc(16px * var(--acta-font-scale)) var(--acta-font-display); }
+.board-empty p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); max-width: 320px; line-height: 1.7; }
+
+/* 悬浮工具条：一块毛玻璃浮在画布之上，只承担筛选与缩放；
+   明亮顶边模拟受光，与画布内容形成前后层次。 */
+.board-chrome {
+  position: absolute; left: 50%; bottom: 18px; z-index: 4; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; max-width: calc(100% - 24px); padding: 6px;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 15px;
+  background: color-mix(in srgb, var(--paper) 74%, transparent);
+  backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  box-shadow: 0 2px 6px rgba(47,50,43,.06), 0 14px 34px -12px rgba(34,38,33,.24), inset 0 1px 0 color-mix(in srgb, var(--white) 55%, transparent);
+  animation: boardChromeIn .45s var(--ease-out) .12s both;
+}
+.board-chips { display: flex; align-items: center; gap: 2px; }
+.board-chip { height: 30px; padding: 0 11px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
+.board-chip:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 55%, transparent); transform: scale(1.03); }
+.board-chip:active { transform: scale(.96); transition-duration: .08s; }
+.board-chip.active { color: var(--paper); background: var(--ink); }
+.board-field { height: 30px; min-width: 118px; max-width: 148px; padding: 0 6px 0 8px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 42%, transparent); color: var(--muted); display: flex; align-items: center; gap: 5px; transition: border-color .18s ease, background .18s ease; }
+.board-field:hover, .board-field:focus-within { background: var(--white); border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); }
+.board-field svg { width: 12px; height: 12px; flex: 0 0 auto; color: var(--faint); }
+.board-field select { min-width: 0; flex: 1; height: 100%; padding: 0 2px; border: 0; outline: 0; background: transparent; color: inherit; font-size: calc(9px * var(--acta-font-scale)); text-overflow: ellipsis; cursor: pointer; }
+.board-chrome-sep { width: 1px; height: 20px; flex: 0 0 auto; background: var(--line); }
+.board-zoom { display: flex; align-items: center; gap: 1px; }
+.board-zoom-button { width: 30px; height: 30px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
+.board-zoom-button svg { width: 14px; height: 14px; }
+.board-zoom-button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 55%, transparent); transform: scale(1.05); }
+.board-zoom-button:active { transform: scale(.92); transition-duration: .08s; }
+.board-zoom-level { min-width: 38px; text-align: center; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+
+/* 详情浮层：轻磨砂遮罩把画布推远，中央的玻璃卡「成形」——
+   入场时模糊与缩放同步到位，读作一块真实材质浮起而不是淡入。 */
+.board-focus-scrim { position: absolute; inset: 0; z-index: 8; opacity: 0; transition: opacity .24s ease; background: color-mix(in srgb, var(--ink) 24%, transparent); backdrop-filter: blur(3px) saturate(.92); -webkit-backdrop-filter: blur(3px) saturate(.92); }
+.board-focus { position: absolute; inset: 0; z-index: 9; display: grid; place-items: center; padding: 22px; pointer-events: none; }
+.board-focus-card {
+  width: min(430px, 100%); max-height: min(560px, 100%); padding: 18px 20px 16px; overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 92%, transparent); border-radius: 18px;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2);
+  box-shadow: 0 2px 6px rgba(24,28,23,.08), 0 24px 56px -18px rgba(24,28,23,.3), inset 0 1px 0 color-mix(in srgb, var(--white) 55%, transparent);
+  display: flex; flex-direction: column; pointer-events: auto;
+  opacity: 0; transform: translateY(16px) scale(.965);
+  transition: opacity .24s ease, transform .3s var(--ease-out);
+}
+.board-canvas.board-focus-open .board-focus-scrim { opacity: 1; }
+.board-canvas.board-focus-open .board-focus-card {
+  opacity: 1; transform: translateY(0) scale(1);
+  backdrop-filter: blur(28px) saturate(1.7); -webkit-backdrop-filter: blur(28px) saturate(1.7);
+  transition: opacity .26s ease, transform .34s var(--ease-out), backdrop-filter .3s ease, -webkit-backdrop-filter .3s ease;
+}
+.board-focus-grip { display: none; }
+.board-focus-top { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.board-focus-top .mini-folder { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-focus-top time { margin-left: auto; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.board-focus-close { width: 28px; height: 28px; flex: 0 0 auto; margin-left: 8px; border: 0; border-radius: 9px; background: color-mix(in srgb, var(--white) 46%, transparent); color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
+.board-focus-close:hover { color: var(--ink); background: var(--white); transform: scale(1.06); }
+.board-focus-close:active { transform: scale(.94); transition-duration: .08s; }
+.board-focus-close svg { width: 13px; height: 13px; }
+.board-focus h3 { margin: 12px 0 0; font: 650 calc(19px * var(--acta-font-scale))/1.3 var(--acta-font-display); letter-spacing: -.01em; overflow-wrap: anywhere; }
+.board-focus h3.is-done { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--faint) 70%, transparent); }
+.board-focus-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.board-focus-chip { height: 22px; padding: 0 8px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; background: color-mix(in srgb, var(--white) 34%, transparent); }
+.board-focus-chip svg { width: 11px; height: 11px; color: var(--faint); }
+.board-focus-body { margin-top: 12px; min-height: 0; overflow: hidden auto; overscroll-behavior: contain; display: grid; gap: 8px; align-content: start; }
+.board-focus-body p { margin: 0; color: var(--muted); font-size: calc(11px * var(--acta-font-scale)); line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
+.board-focus-tasks { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.board-focus-tasks li { display: flex; align-items: flex-start; gap: 8px; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.55; }
+.board-focus-tasks li i { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 2px; border: 1.5px solid color-mix(in srgb, var(--faint) 55%, var(--line)); border-radius: 5px; display: grid; place-items: center; color: transparent; }
+.board-focus-tasks li i svg { width: 10px; height: 10px; stroke-width: 2.6; }
+.board-focus-tasks li.is-done { color: var(--faint); text-decoration: line-through; }
+.board-focus-tasks li.is-done i { border-color: var(--sage); background: var(--sage); color: #fff; }
+.board-focus-more { color: var(--faint) !important; font-size: calc(9px * var(--acta-font-scale)) !important; }
+.board-focus-actions { margin-top: 14px; display: flex; justify-content: flex-end; }
+.board-focus-open { height: 38px; padding: 0 16px; border: 0; border-radius: 11px; background: var(--ink); color: var(--paper); display: inline-flex; align-items: center; gap: 7px; font-size: calc(11px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: background .16s ease, transform .18s var(--ease-out); }
+.board-focus-open svg { width: 13px; height: 13px; }
+.board-focus-open:hover { background: #30362f; transform: scale(1.03); }
+.board-focus-open:active { transform: scale(.97); transition-duration: .08s; }
+
+@keyframes boardHeadIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes boardChromeIn { from { opacity: 0; transform: translateX(-50%) translateY(14px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes boardNodePop { from { opacity: 0; transform: translateY(6px) scale(.985); } to { opacity: 1; transform: none; } }
+/* 首次进入的列内级联：卡片带着自己的 --board-d 延迟依次落位。 */
+.board-node[data-enter="1"] { animation: boardNodeEnter .42s var(--ease-out) both; animation-delay: var(--board-d, 0ms); }
+@keyframes boardNodeEnter { from { opacity: 0; transform: translateY(16px) scale(.968); } to { opacity: 1; transform: none; } }
+
+/* 深色主题下玻璃与卡片的对比修正。 */
+html[data-acta-theme="mono-dark"] .board-chrome { background: color-mix(in srgb, #1d1f1c 74%, transparent); box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 14px 34px -12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
+html[data-acta-theme="mono-dark"] .board-focus-card { background: color-mix(in srgb, #20221f 78%, transparent); }
+html[data-acta-theme="mono-dark"] .board-chip.active { background: var(--white); color: #1d1f1c; }
+
+/* 减少动态效果：入场与级联退化为短淡入，浮层不再位移缩放。 */
+body.acta-reduce-motion .board-col-head, body.acta-reduce-motion .board-chrome, body.acta-reduce-motion .board-node { animation-duration: .01ms; animation-delay: 0ms; }
+body.acta-reduce-motion .board-focus-card { transform: none; transition: opacity .18s ease, backdrop-filter .18s ease, -webkit-backdrop-filter .18s ease; }
+body.acta-reduce-motion .board-node:hover { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .board-col-head, .board-chrome, .board-node, .board-node[data-enter="1"] { animation-duration: .01ms; animation-delay: 0ms; }
+  .board-node { transition: none; }
+  .board-node:hover { transform: none; }
+  .board-focus-card { transform: none; transition: opacity .18s ease; }
+}
+/* 减少透明度：玻璃层加实、撤掉模糊，保留同一层次结构。 */
+@media (prefers-reduced-transparency: reduce) {
+  .board-chrome { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .board-col-head { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .board-focus-card { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .board-focus-scrim { backdrop-filter: none; -webkit-backdrop-filter: none; background: color-mix(in srgb, var(--ink) 34%, transparent); }
+}
+
+/* 移动端：工具条移到画布顶部（底栏中央的圆形「新建」占住下方），
+   窄屏时筛选部分横向滚动；详情浮层变为底部 sheet，把手下拖关闭。 */
+@media (max-width: 800px) {
+  .board-chrome { top: 10px; bottom: auto; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
+  .board-chrome::-webkit-scrollbar { display: none; }
+  .board-zoom-level { min-width: 34px; }
+  .board-focus { padding: 0; align-items: end; }
+  .board-focus-card {
+    width: 100%; max-height: 78%; border-radius: 20px 20px 0 0; border-bottom: 0; padding: 10px 18px calc(14px + env(safe-area-inset-bottom));
+    opacity: 0; transform: translateY(8%);
+    transition: opacity .22s ease, transform .3s var(--ease-out), backdrop-filter .3s ease, -webkit-backdrop-filter .3s ease;
+  }
+  .board-canvas.board-focus-open .board-focus-card { opacity: 1; transform: translateY(0); }
+  .board-focus-grip { display: block; width: 38px; height: 4.5px; margin: 2px auto 10px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 42%, transparent); }
+  .board-focus h3 { font-size: calc(17px * var(--acta-font-scale)); }
+}
+
 /* --- Delete confirm dialog --- */
 :root { --danger-accent: #b96051; --danger-soft: #f7e3df; }
 .delete-confirm-dialog { width: min(430px, calc(100vw - 28px)); }

@@ -57,7 +57,10 @@ const dictionaries = {
     statsNeedSelection:'请先勾选要生成图片的条目', statsImageDone:'清单图片已生成', statsImageFailed:'图片生成失败', statsEmptyRange:'这个时间段还没有内容',
     statsGroupToday:'今天', statsGroupYesterday:'昨天', statsCheckItem:'加入图片',
     metaQuickActions:'快捷操作', metaCopyTitle:'复制标题', metaCopyBody:'复制全文', metaCopyNotes:'复制说明', metaCopyMarkdown:'复制 Markdown', metaMarkComplete:'标记完成', metaReopen:'重新打开', metaViewCalendar:'在日历查看', metaTrash:'移入回收站',
-    copied:'已复制到剪贴板', copyFailed:'复制失败'
+    copied:'已复制到剪贴板', copyFailed:'复制失败',
+    board:'汇总板', boardAllStatus:'全部状态', boardUnfinished:'未完成', boardFinished:'已完成', boardStatusFilterLabel:'按完成状态筛选',
+    boardOpenItem:'打开内容', boardFitView:'总览全板', boardZoomIn:'放大', boardZoomOut:'缩小',
+    boardEmptyTitle:'画布上还没有内容', boardEmptyHint:'创建笔记或待办后，它们会按归类铺在这块画布上，可自由拖动与缩放。'
   },
   en: {
     saved: 'Saved', saving: 'Saving…', new: 'New', quickCapture: 'Quick capture', quickCaptureHint: 'Create a task or note fast', newNote: 'New note', newNoteHint: 'Capture ideas and sparks',
@@ -103,7 +106,10 @@ const dictionaries = {
     statsNeedSelection:'Tick some items before making a picture', statsImageDone:'List picture saved', statsImageFailed:'Picture export failed', statsEmptyRange:'Nothing was created in this period',
     statsGroupToday:'Today', statsGroupYesterday:'Yesterday', statsCheckItem:'Include in picture',
     metaQuickActions:'Quick actions', metaCopyTitle:'Copy title', metaCopyBody:'Copy content', metaCopyNotes:'Copy notes', metaCopyMarkdown:'Copy Markdown', metaMarkComplete:'Mark complete', metaReopen:'Reopen', metaViewCalendar:'Show on calendar', metaTrash:'Move to trash',
-    copied:'Copied to clipboard', copyFailed:'Copy failed'
+    copied:'Copied to clipboard', copyFailed:'Copy failed',
+    board:'Board', boardAllStatus:'Any status', boardUnfinished:'Unfinished', boardFinished:'Completed', boardStatusFilterLabel:'Filter by status',
+    boardOpenItem:'Open', boardFitView:'Fit board', boardZoomIn:'Zoom in', boardZoomOut:'Zoom out',
+    boardEmptyTitle:'Nothing on the board yet', boardEmptyHint:'Notes and tasks you create spread across this canvas by classification. Drag and zoom freely.'
   }
 };
 
@@ -1084,6 +1090,12 @@ function syncCalendarShell() {
   document.body.classList.toggle('folder-view', currentView.startsWith('folder:'));
   document.body.classList.toggle('stats-view', currentView === 'stats');
   document.body.classList.toggle('trash-view', currentView === 'trash');
+  document.body.classList.toggle('board-view', currentView === 'board');
+  if (currentView !== 'board') {
+    // 离开汇总板时停掉相机动画循环；下次进入按「首次进入」重新编排入场。
+    boardWasActive = false;
+    boardStopMotion();
+  }
   document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
   const toolbar = $('#calendarToolbar');
   if (toolbar) {
@@ -1116,12 +1128,13 @@ function translateStaticUI() {
 
 function viewTitle() {
   if (currentView.startsWith('folder:')) return folderName(getFolder(currentView.split(':')[1]));
-  return ({ inbox: t('inbox'), today: t('viewToday'), todos: t('viewTodos'), notes: t('viewNotes'), calendar: t('calendar'), trash: t('trash'), stats: t('stats') })[currentView];
+  return ({ inbox: t('inbox'), today: t('viewToday'), todos: t('viewTodos'), notes: t('viewNotes'), calendar: t('calendar'), trash: t('trash'), stats: t('stats'), board: t('board') })[currentView];
 }
 
 function listViewContext() {
   if (currentView === 'calendar') return 'calendar';
   if (currentView === 'stats' || currentView === 'trash') return currentView;
+  if (currentView === 'board') return 'board';
   if (['today', 'todos'].includes(currentView)) return 'todo';
   if (currentView === 'notes') return 'note';
   return 'mixed';
@@ -1147,7 +1160,7 @@ function resetListFilters(context = 'all') {
 }
 
 function hasActiveListFilters(context = listFilterContext()) {
-  if (['calendar', 'stats', 'trash'].includes(context)) return false;
+  if (['calendar', 'stats', 'trash', 'board'].includes(context)) return false;
   if (context === 'mixed') return currentFilter !== 'all';
   if (context === 'todo') return [todoPriorityFilter, todoDueFilter, todoFolderFilter].some(value => value !== 'all');
   return [noteFolderFilter, noteRelationFilter, noteUpdatedFilter].some(value => value !== 'all');
@@ -1856,6 +1869,741 @@ function relinkFromTrash(item) {
   item.linkedIds = Array.from(new Set([...(item.linkedIds || []), ...restored]));
 }
 
+// —— 汇总板：按归类分列的无限画布 ——
+// 相机（x/y/scale）只在内存里跟随手势；筛选与停靠位置持久化到 localStorage。
+// 画布没有固定尺寸：布局由当前内容决定（每归类一列、列内按更新时间堆叠），
+// 虚拟化只把视口附近的卡片写进 DOM，平移缩放全部走 transform ——「无限大」
+// 只是一个坐标平面，需要多少就渲染多少。
+const BOARD_KEY = 'acta.board.v1';
+const BOARD_COL_W = 264;
+const BOARD_COL_STEP = 292;
+const BOARD_CARD_H = 114;
+const BOARD_CARD_GAP = 12;
+const BOARD_HEAD_H = 50;
+const BOARD_CARD_STEP = BOARD_CARD_H + BOARD_CARD_GAP;
+const BOARD_SCALE_MIN = 0.4;
+const BOARD_SCALE_MAX = 1.75;
+const BOARD_MARGIN = 460;
+const BOARD_GLIDE_DECAY = 0.998; // 每毫秒保留的速度比例（Apple 滚动衰减率）
+const boardState = (() => {
+  const stored = loadJSON(BOARD_KEY, null) || {};
+  return {
+    type: ['all', 'todo', 'note'].includes(stored.type) ? stored.type : 'all',
+    folder: typeof stored.folder === 'string' ? stored.folder : 'all',
+    status: ['all', 'open', 'done'].includes(stored.status) ? stored.status : 'all',
+    scale: Number.isFinite(stored.scale) ? Math.min(BOARD_SCALE_MAX, Math.max(BOARD_SCALE_MIN, stored.scale)) : null,
+    x: Number.isFinite(stored.x) ? stored.x : null,
+    y: Number.isFinite(stored.y) ? stored.y : null
+  };
+})();
+const boardCam = { x: 0, y: 0, scale: 1, vX: 0, vY: 0 };
+// motion.mode: 'idle' | 'drag' | 'pinch' | 'glide' | 'settle'；
+// zooming（滚轮/按钮的目标缩放逼近）与 settle（fit / 回边界的目标动画）独立于 mode。
+const boardMotion = { mode: 'idle', raf: 0, last: 0, anchor: null, targetScale: 0, settle: null };
+const boardPointers = new Map();
+let boardGesture = null;
+let boardEls = null;
+let boardResizeObserver = null;
+let boardLayoutCache = null;
+let boardSyncFrame = 0;
+let boardDataVersion = 0;
+let boardEnterAnimated = false;
+let boardWasActive = false;
+let boardPersistTimer = 0;
+let boardFocusId = null;
+let boardFocusExitTimer = 0;
+let boardSilentSync = false; // 数据驱动的重建：新出现的节点不播入场动画
+
+function persistBoardState() {
+  clearTimeout(boardPersistTimer);
+  boardPersistTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(BOARD_KEY, JSON.stringify({
+        type: boardState.type, folder: boardState.folder, status: boardState.status,
+        x: boardCam.x, y: boardCam.y, scale: boardCam.scale
+      }));
+    } catch { /* 状态存不进去不影响画布使用 */ }
+  }, 350);
+}
+
+function boardFilteredItems() {
+  let items = activeItems();
+  if (boardState.type !== 'all') items = items.filter(item => item.type === boardState.type);
+  if (boardState.folder !== 'all') items = items.filter(item => item.folderId === boardState.folder);
+  if (boardState.status !== 'all') {
+    items = items.filter(item => item.type === 'note' || (boardState.status === 'done') === isTodoComplete(item));
+  }
+  return items;
+}
+
+// 列 = 归类顺序 + 未归类收尾；未归类列只在有内容时出现，其余空列保留占位，
+// 筛选后画布结构保持稳定，不会整体跳动。
+function boardLayout() {
+  const groups = new Map();
+  library.folders.forEach(folder => groups.set(folder.id, []));
+  boardFilteredItems().forEach(item => {
+    const key = groups.has(item.folderId) ? item.folderId : null;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  });
+  const columns = [...library.folders.map(folder => folder.id), null]
+    .filter(id => id !== null || (groups.get(null) || []).length)
+    .map(id => {
+      const folder = id ? getFolder(id) : null;
+      const items = (groups.get(id) || []).sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
+      return { key: id || 'none', folder, name: folder ? folderName(folder) : t('unclassified'), color: folder?.color || '#a3a69e', items };
+    });
+  const tallest = columns.reduce((max, column) => Math.max(max, BOARD_HEAD_H + Math.max(column.items.length, 1) * BOARD_CARD_STEP), 0);
+  return { columns, width: Math.max(columns.length, 1) * BOARD_COL_STEP, height: Math.max(tallest, 260) };
+}
+
+function boardViewportSize() {
+  const viewport = boardEls?.viewport;
+  return viewport ? { w: viewport.clientWidth, h: viewport.clientHeight } : { w: 0, h: 0 };
+}
+
+// 相机边界：横向内容窄于视口时居中；纵向内容矮于视口时顶部对齐
+// （列头锚定在画布顶部，画布向下生长），内容不允许被完全拖出视野。
+function boardContentBounds() {
+  if (!boardLayoutCache) boardLayoutCache = boardLayout();
+  const { width, height } = boardLayoutCache;
+  const { w, h } = boardViewportSize();
+  const pad = Math.min(72, Math.max(32, w * 0.1));
+  const axis = (content, view, centered) => (content <= view - pad
+    ? (centered
+      ? { min: (view - content) / 2, max: (view - content) / 2 }
+      : { min: 12, max: 12 })
+    : { min: view - pad - content, max: pad });
+  return { x: axis(width * boardCam.scale, w, true), y: axis(height * boardCam.scale, h, false) };
+}
+
+const boardClampAxis = (value, { min, max }) => Math.min(max, Math.max(min, value));
+
+// 越界量按 rubber-band 曲线折减：拉得越远阻力越大，永远撞不到硬边界。
+function boardRubberOffset(overshoot, dimension) {
+  const constant = 0.55;
+  return (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
+}
+
+function boardSoftScale(value) {
+  if (value < BOARD_SCALE_MIN) return BOARD_SCALE_MIN - (BOARD_SCALE_MIN - value) * 0.3;
+  if (value > BOARD_SCALE_MAX) return BOARD_SCALE_MAX + (value - BOARD_SCALE_MAX) * 0.3;
+  return value;
+}
+
+// 拖拽 / 捏合进行中：越界的轴就地折减（写入的是显示值，松手后的惯性从这里继续）。
+function boardConstrainDrag() {
+  const bounds = boardContentBounds();
+  const { w, h } = boardViewportSize();
+  const soft = (value, min, max, dimension) => {
+    if (value < min) return min - boardRubberOffset(min - value, dimension);
+    if (value > max) return max + boardRubberOffset(value - max, dimension);
+    return value;
+  };
+  boardCam.x = soft(boardCam.x, bounds.x.min, bounds.x.max, w);
+  boardCam.y = soft(boardCam.y, bounds.y.min, bounds.y.max, h);
+}
+
+function boardApplyCamera() {
+  if (!boardEls?.world) return;
+  if (boardMotion.mode === 'drag' || boardMotion.mode === 'pinch') {
+    // 拖拽中的值已在 boardConstrainDrag 折减，这里原样上屏保证 1:1 跟手。
+  } else {
+    const bounds = boardContentBounds();
+    boardCam.x = boardClampAxis(boardCam.x, bounds.x);
+    boardCam.y = boardClampAxis(boardCam.y, bounds.y);
+  }
+  boardEls.world.style.transform = `translate3d(${boardCam.x.toFixed(2)}px, ${boardCam.y.toFixed(2)}px, 0) scale(${boardCam.scale.toFixed(4)})`;
+  // 点阵背景跟着相机走：平移改 background-position，缩放同步点距，
+  // 抓住画布时底纹与内容一起移动，画布读作一张连续的纸。
+  const grid = 26 * boardCam.scale;
+  boardEls.viewport.style.setProperty('--board-grid', `${grid.toFixed(2)}px`);
+  boardEls.viewport.style.setProperty('--board-grid-x', `${(boardCam.x % grid).toFixed(2)}px`);
+  boardEls.viewport.style.setProperty('--board-grid-y', `${(boardCam.y % grid).toFixed(2)}px`);
+  if (boardEls.scaleLabel) boardEls.scaleLabel.textContent = `${Math.round(boardCam.scale * 100)}%`;
+}
+
+function boardEnsureFrame() {
+  if (!boardMotion.raf) {
+    boardMotion.last = 0;
+    boardMotion.raf = requestAnimationFrame(boardFrame);
+  }
+}
+
+function boardStopMotion() {
+  boardMotion.mode = 'idle';
+  boardMotion.anchor = null;
+  boardMotion.targetScale = boardCam.scale;
+  boardMotion.settle = null;
+  boardCam.vX = 0;
+  boardCam.vY = 0;
+  if (boardMotion.raf) {
+    cancelAnimationFrame(boardMotion.raf);
+    boardMotion.raf = 0;
+  }
+}
+
+function boardFrame(now) {
+  boardMotion.raf = 0;
+  if (currentView !== 'board') { boardMotion.mode = 'idle'; return; }
+  const dt = boardMotion.last ? Math.min(32, now - boardMotion.last) : 16;
+  boardMotion.last = now;
+  let active = false;
+  // 缩放逼近：目标 scale 与锚点（屏幕坐标）保持不动，世界坐标每帧反推。
+  if (boardMotion.anchor && Math.abs(boardMotion.targetScale - boardCam.scale) > 0.0004) {
+    const ease = 1 - Math.exp(-dt / 90);
+    const previous = boardCam.scale;
+    boardCam.scale += (boardMotion.targetScale - boardCam.scale) * ease;
+    const worldX = (boardMotion.anchor.x - boardCam.x) / previous;
+    const worldY = (boardMotion.anchor.y - boardCam.y) / previous;
+    boardCam.x = boardMotion.anchor.x - worldX * boardCam.scale;
+    boardCam.y = boardMotion.anchor.y - worldY * boardCam.scale;
+    active = true;
+  } else if (boardMotion.anchor) {
+    boardCam.scale = boardMotion.targetScale;
+    boardMotion.anchor = null;
+  }
+  if (boardMotion.mode === 'glide') {
+    const bounds = boardContentBounds();
+    if ((boardCam.x <= bounds.x.min && boardCam.vX < 0) || (boardCam.x >= bounds.x.max && boardCam.vX > 0)) boardCam.vX = 0;
+    if ((boardCam.y <= bounds.y.min && boardCam.vY < 0) || (boardCam.y >= bounds.y.max && boardCam.vY > 0)) boardCam.vY = 0;
+    boardCam.x += (boardCam.vX * dt) / 1000 / boardCam.scale;
+    boardCam.y += (boardCam.vY * dt) / 1000 / boardCam.scale;
+    const decay = Math.pow(BOARD_GLIDE_DECAY, dt);
+    boardCam.vX *= decay;
+    boardCam.vY *= decay;
+    if (Math.hypot(boardCam.vX, boardCam.vY) < 26) boardMotion.mode = 'settle';
+    active = true;
+  }
+  if (boardMotion.mode === 'settle') {
+    const ease = 1 - Math.exp(-dt / 130);
+    let targetX;
+    let targetY;
+    let settleScale = 0;
+    if (boardMotion.settle) {
+      targetX = boardMotion.settle.x;
+      targetY = boardMotion.settle.y;
+      settleScale = boardMotion.settle.scale || 0;
+    } else {
+      const bounds = boardContentBounds();
+      targetX = boardClampAxis(boardCam.x, bounds.x);
+      targetY = boardClampAxis(boardCam.y, bounds.y);
+    }
+    // fit：x/y/scale 同步向目标指数趋近（目标位置本就按目标缩放算好，
+    // 三轴同频收敛，整场是一次平滑的取景移动而不是手势跟随）。
+    boardCam.x += (targetX - boardCam.x) * ease;
+    boardCam.y += (targetY - boardCam.y) * ease;
+    if (settleScale) boardCam.scale += (settleScale - boardCam.scale) * ease;
+    const settled = Math.abs(targetX - boardCam.x) < 0.5
+      && Math.abs(targetY - boardCam.y) < 0.5
+      && (!settleScale || Math.abs(settleScale - boardCam.scale) < 0.0006);
+    if (settled) {
+      boardCam.x = targetX;
+      boardCam.y = targetY;
+      if (settleScale) boardCam.scale = settleScale;
+      boardMotion.mode = 'idle';
+      boardMotion.settle = null;
+    } else active = true;
+  }
+  boardApplyCamera();
+  boardScheduleSync();
+  if (active || boardMotion.mode !== 'idle' || boardMotion.anchor) boardEnsureFrame();
+  else persistBoardState();
+}
+
+function boardScheduleSync() {
+  if (boardSyncFrame || !boardEls) return;
+  boardSyncFrame = requestAnimationFrame(() => {
+    boardSyncFrame = 0;
+    boardSyncNodes();
+  });
+}
+
+function boardVisibleWorldRect() {
+  const { w, h } = boardViewportSize();
+  return {
+    x: -boardCam.x / boardCam.scale - BOARD_MARGIN,
+    y: -boardCam.y / boardCam.scale - BOARD_MARGIN,
+    w: w / boardCam.scale + BOARD_MARGIN * 2,
+    h: h / boardCam.scale + BOARD_MARGIN * 2
+  };
+}
+
+// 虚拟化：每列只渲染与可见矩形（外扩 BOARD_MARGIN）相交的卡片；
+// key 命中（范围 + 数据版本一致）的列直接跳过，滚动时只重写边缘变化的列。
+function boardSyncNodes() {
+  if (!boardEls?.world || !boardLayoutCache) return;
+  const silent = boardSilentSync;
+  boardSilentSync = false;
+  const rect = boardVisibleWorldRect();
+  boardLayoutCache.columns.forEach((column, index) => {
+    const columnEl = boardEls.world.children[index];
+    if (!columnEl) return;
+    const left = index * BOARD_COL_STEP;
+    const visibleX = left + BOARD_COL_W >= rect.x && left <= rect.x + rect.w;
+    if (!visibleX) {
+      if (columnEl.dataset.shown !== '0') {
+        columnEl.dataset.shown = '0';
+        columnEl.style.visibility = 'hidden';
+        columnEl.lastElementChild.dataset.key = '';
+      }
+      return;
+    }
+    if (columnEl.dataset.shown !== '1') {
+      columnEl.dataset.shown = '1';
+      columnEl.style.visibility = '';
+    }
+    const bodyEl = columnEl.lastElementChild;
+    const first = Math.max(0, Math.floor((rect.y - BOARD_HEAD_H) / BOARD_CARD_STEP));
+    const last = Math.min(column.items.length - 1, Math.ceil((rect.y + rect.h - BOARD_HEAD_H) / BOARD_CARD_STEP));
+    const key = `${first}:${last}:${boardDataVersion}:${silent ? 's' : ''}`;
+    if (bodyEl.dataset.key === key) return;
+    bodyEl.dataset.key = key;
+    const existing = new Set([...bodyEl.children].map(node => node.dataset.id));
+    let html = '';
+    for (let i = first; i <= last; i += 1) html += boardNodeHTML(column.items[i], i, index, silent || existing.has(column.items[i].id));
+    bodyEl.innerHTML = html;
+  });
+}
+
+function boardNodeCheckinBadge(item) {
+  if (!item.checkin) return '';
+  const checkins = item.checkins || {};
+  const on = Boolean(checkins[todayISO()]);
+  return `<span class="checkin-badge${on ? ' on' : ''}"><svg><use href="#i-check"/></svg>${escapeHTML(on ? t('checkinDone') : t('checkinTodoYet'))}</span>`;
+}
+
+function boardNodeHTML(item, row, column, existing) {
+  const done = item.type === 'todo' && isTodoComplete(item);
+  const folder = getFolder(item.folderId);
+  const tasks = item.type === 'todo' ? (item.tasks || []) : [];
+  const completedCount = tasks.filter(task => task.done).length;
+  const progress = tasks.length ? Math.round((completedCount / tasks.length) * 100) : (done ? 100 : 0);
+  const stamp = item.type === 'todo'
+    ? (todoScheduleDate(item) ? `<time datetime="${escapeHTML(todoScheduleDate(item))}">${escapeHTML(formatDate(todoScheduleDate(item), true))}</time>` : '')
+    : `<time datetime="${escapeHTML(item.updatedAt)}">${escapeHTML(formatDate(item.updatedAt, true))}</time>`;
+  const delay = boardEnterAnimated && !existing ? Math.min(column * 55 + row * 16, 360) : 0;
+  // 首次进入播列内级联（--board-d 承载交错延迟）；滚动中新增的卡片只做短淡入。
+  const motion = boardEnterAnimated && !existing ? ' data-enter="1"' : (!existing ? ' data-new="1"' : '');
+  return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}" data-id="${escapeHTML(item.id)}" data-board-node="${escapeHTML(item.id)}"${motion} style="top:${BOARD_HEAD_H + row * BOARD_CARD_STEP}px;${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
+    <div class="board-node-top"><span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>${item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : ''}${stamp}</div>
+    <b class="board-node-title">${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</b>
+    <p class="board-node-preview">${escapeHTML(itemPreview(item))}</p>
+    <div class="board-node-foot"><span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span>${item.type === 'todo' ? (item.checkin ? boardNodeCheckinBadge(item) : (!done && tasks.length ? `<span class="board-node-count">${completedCount}/${tasks.length}</span><span class="mini-progress"><i style="width:${progress}%"></i></span>` : '')) : (getLinkedItems(item).length ? `<span class="link-count"><svg><use href="#i-link"/></svg>${getLinkedItems(item).length}</span>` : '')}</div>
+  </button>`;
+}
+
+function boardFolderOptions() {
+  return [
+    `<option value="all">${escapeHTML(t('allFolders'))}</option>`,
+    ...library.folders.map(folder => `<option value="${escapeHTML(folder.id)}">${escapeHTML(folderName(folder))}</option>`)
+  ].join('');
+}
+
+function renderBoardShell() {
+  return `<div class="board-canvas" id="boardCanvas">
+    <div class="board-viewport" id="boardViewport">
+      <div class="board-world" id="boardWorld"></div>
+      <div class="board-empty" id="boardEmpty" hidden><div><span><svg><use href="#i-board"/></svg></span><h3>${escapeHTML(t('boardEmptyTitle'))}</h3><p>${escapeHTML(t('boardEmptyHint'))}</p></div></div>
+    </div>
+    <div class="board-chrome" id="boardChrome">
+      <div class="board-chips" role="group" aria-label="${escapeHTML(t('all'))}">
+        <button type="button" class="board-chip${boardState.type === 'all' ? ' active' : ''}" data-board-type="all">${escapeHTML(t('all'))}</button>
+        <button type="button" class="board-chip${boardState.type === 'todo' ? ' active' : ''}" data-board-type="todo">${escapeHTML(t('todos'))}</button>
+        <button type="button" class="board-chip${boardState.type === 'note' ? ' active' : ''}" data-board-type="note">${escapeHTML(t('notes'))}</button>
+      </div>
+      <label class="board-field"><svg><use href="#i-folder"/></svg><select id="boardFolderFilter" aria-label="${escapeHTML(t('filterByFolder'))}">${boardFolderOptions()}</select></label>
+      <label class="board-field"><svg><use href="#i-check"/></svg><select id="boardStatusFilter" aria-label="${escapeHTML(t('boardStatusFilterLabel'))}">
+        <option value="all">${escapeHTML(t('boardAllStatus'))}</option>
+        <option value="open">${escapeHTML(t('boardUnfinished'))}</option>
+        <option value="done">${escapeHTML(t('boardFinished'))}</option>
+      </select></label>
+      <span class="board-chrome-sep" aria-hidden="true"></span>
+      <div class="board-zoom">
+        <button type="button" class="board-zoom-button" id="boardZoomOut" title="${escapeHTML(t('boardZoomOut'))}" aria-label="${escapeHTML(t('boardZoomOut'))}"><svg><use href="#i-window-minimize"/></svg></button>
+        <span class="board-zoom-level" id="boardZoomLevel" aria-live="off">100%</span>
+        <button type="button" class="board-zoom-button" id="boardZoomIn" title="${escapeHTML(t('boardZoomIn'))}" aria-label="${escapeHTML(t('boardZoomIn'))}"><svg><use href="#i-plus"/></svg></button>
+        <button type="button" class="board-zoom-button" id="boardFit" title="${escapeHTML(t('boardFitView'))}" aria-label="${escapeHTML(t('boardFitView'))}"><svg><use href="#i-focus"/></svg></button>
+      </div>
+    </div>
+    <div class="board-focus-scrim" id="boardFocusScrim" hidden></div>
+    <div class="board-focus" id="boardFocus" hidden></div>
+  </div>`;
+}
+
+function boardFitView(instant = false) {
+  const layout = boardLayoutCache || (boardLayoutCache = boardLayout());
+  const { w, h } = boardViewportSize();
+  const scale = Math.min(Math.max((w - 48) / layout.width, BOARD_SCALE_MIN), 1);
+  const pad = Math.min(72, Math.max(32, w * 0.1));
+  const target = {
+    scale,
+    x: (w - layout.width * scale) / 2,
+    // 与边界规则一致：内容矮于视口时顶对齐，高于视口时内容顶边贴 pad 线。
+    y: layout.height * scale >= h ? pad : 12
+  };
+  if (instant || reduceWindowMotion()) {
+    boardCam.x = target.x;
+    boardCam.y = target.y;
+    boardCam.scale = target.scale;
+    boardApplyCamera();
+    boardScheduleSync();
+    persistBoardState();
+    return;
+  }
+  boardMotion.anchor = null;
+  boardMotion.targetScale = target.scale;
+  boardCam.vX = 0;
+  boardCam.vY = 0;
+  boardMotion.mode = 'settle';
+  boardMotion.settle = { x: target.x, y: target.y, scale: target.scale };
+  boardEnsureFrame();
+}
+
+// 滚轮 / 缩放按钮：目标 scale 累积，动画帧里向目标平滑逼近（临界阻尼节奏）。
+function boardZoomAt(screenX, screenY, factor) {
+  const base = boardMotion.anchor ? boardMotion.targetScale : boardCam.scale;
+  boardMotion.targetScale = Math.min(BOARD_SCALE_MAX, Math.max(BOARD_SCALE_MIN, base * factor));
+  boardMotion.anchor = { x: screenX, y: screenY };
+  if (boardMotion.mode === 'idle' || boardMotion.mode === 'settle') boardMotion.mode = 'settle';
+  boardMotion.settle = null;
+  boardEnsureFrame();
+  persistBoardState();
+}
+
+function boardFocusHTML(item) {
+  const folder = getFolder(item.folderId);
+  const done = item.type === 'todo' && isTodoComplete(item);
+  const tasks = item.type === 'todo' ? (item.tasks || []) : [];
+  const completedCount = tasks.filter(task => task.done).length;
+  const linkedCount = getLinkedItems(item).length;
+  const metaChips = [
+    item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : '',
+    item.type === 'todo' && todoScheduleDate(item) ? `<span class="board-focus-chip"><svg><use href="#i-calendar"/></svg>${escapeHTML(t('dueDate'))} ${escapeHTML(formatDate(todoScheduleDate(item), true))}</span>` : '',
+    item.type === 'todo' && item.checkin ? boardNodeCheckinBadge(item) : '',
+    item.type === 'todo' && tasks.length ? `<span class="board-focus-chip"><svg><use href="#i-task-list"/></svg>${escapeHTML(t('progress'))} ${completedCount}/${tasks.length}</span>` : '',
+    linkedCount ? `<span class="board-focus-chip"><svg><use href="#i-link"/></svg>${escapeHTML(t('linkedItems'))} ${linkedCount}</span>` : ''
+  ].filter(Boolean).join('');
+  let body = '';
+  if (item.type === 'note') {
+    const text = stripHTML(item.body);
+    body = `<p>${escapeHTML(text || t('notePlaceholder'))}</p>`;
+  } else {
+    const rows = tasks.slice(0, 8).map(task => `<li class="${task.done ? 'is-done' : ''}"><i><svg><use href="#i-check"/></svg></i><span>${escapeHTML(task.text || '')}</span></li>`).join('');
+    body = `${rows ? `<ul class="board-focus-tasks">${rows}</ul>` : ''}${tasks.length > 8 ? `<p class="board-focus-more">${escapeHTML(t('moreTodos').replace('{0}', tasks.length - 8))}</p>` : ''}${item.notes ? `<p>${escapeHTML(item.notes)}</p>` : ''}`;
+  }
+  return `<div class="board-focus-card" data-board-focus-card>
+    <span class="board-focus-grip" aria-hidden="true"></span>
+    <header class="board-focus-top">
+      <span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>
+      <span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span>
+      <time datetime="${escapeHTML(item.updatedAt)}">${escapeHTML(t('modified'))} ${escapeHTML(formatDate(item.updatedAt, true))}</time>
+      <button type="button" class="board-focus-close" id="boardFocusClose" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button>
+    </header>
+    <h3 class="${done ? 'is-done' : ''}">${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</h3>
+    ${metaChips ? `<div class="board-focus-meta">${metaChips}</div>` : ''}
+    <div class="board-focus-body">${body}</div>
+    <footer class="board-focus-actions"><button type="button" class="board-focus-open" id="boardFocusOpen"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${escapeHTML(t('boardOpenItem'))}</button></footer>
+  </div>`;
+}
+
+function boardOpenFocus(id) {
+  const item = library.items.find(entry => entry.id === id && !isTrashed(entry));
+  if (!item || !boardEls?.focus) return;
+  clearTimeout(boardFocusExitTimer);
+  boardFocusId = id;
+  boardEls.focus.innerHTML = boardFocusHTML(item);
+  boardEls.focus.hidden = false;
+  boardEls.scrim.hidden = false;
+  boardEls.focus.scrollTop = 0;
+  requestAnimationFrame(() => boardEls.canvas.classList.add('board-focus-open'));
+  $('#boardFocusClose', boardEls.focus)?.addEventListener('click', boardCloseFocus);
+  $('#boardFocusOpen', boardEls.focus)?.addEventListener('click', () => {
+    const target = boardFocusId;
+    boardCloseFocus(true);
+    if (target) openItem(target);
+  });
+  boardBindFocusSheet();
+}
+
+function boardCloseFocus(skipAnimation = false) {
+  if (!boardFocusId || !boardEls?.focus) return;
+  boardFocusId = null;
+  const canvas = boardEls.canvas;
+  if (skipAnimation || reduceWindowMotion()) {
+    canvas.classList.remove('board-focus-open');
+    boardEls.focus.hidden = true;
+    boardEls.scrim.hidden = true;
+    boardEls.focus.innerHTML = '';
+    return;
+  }
+  canvas.classList.remove('board-focus-open');
+  boardFocusExitTimer = setTimeout(() => {
+    boardEls.focus.hidden = true;
+    boardEls.scrim.hidden = true;
+    boardEls.focus.innerHTML = '';
+  }, 240);
+}
+
+// 移动端：浮层是底部 sheet，抓着把手/头部下拖跟手，松手按位移与速度决定去留。
+function boardBindFocusSheet() {
+  const card = $('[data-board-focus-card]', boardEls.focus);
+  if (!card || !matchMedia('(max-width: 800px)').matches) return;
+  const grip = card;
+  let drag = null;
+  grip.addEventListener('pointerdown', event => {
+    if (event.target.closest('.board-focus-body, .board-focus-actions, .board-focus-close, .board-focus-open')) return;
+    drag = { id: event.pointerId, y: event.clientY, moved: false, t: performance.now(), dy: 0, v: 0 };
+    grip.setPointerCapture(event.pointerId);
+  });
+  grip.addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    const now = performance.now();
+    drag.v = (event.clientY - drag.y) / Math.max(1, now - drag.t) * 1000;
+    drag.t = now;
+    drag.dy += event.clientY - drag.y;
+    drag.y = event.clientY;
+    if (!drag.moved && Math.abs(drag.dy) > 6) drag.moved = true;
+    if (drag.moved) {
+      card.style.transition = 'none';
+      card.style.transform = `translateY(${Math.max(0, drag.dy)}px)`;
+    }
+  });
+  const finish = event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    const shouldClose = drag.moved && (drag.dy > 110 || drag.v > 650);
+    card.style.transition = '';
+    card.style.transform = '';
+    const pending = drag;
+    drag = null;
+    if (shouldClose) boardCloseFocus();
+    else if (pending.moved) card.animate(
+      [{ transform: `translateY(${Math.max(0, pending.dy)}px)` }, { transform: 'translateY(0)' }],
+      { duration: 260, easing: 'cubic-bezier(.16,1,.3,1)' }
+    );
+  };
+  grip.addEventListener('pointerup', finish);
+  grip.addEventListener('pointercancel', finish);
+}
+
+function bindBoardScene() {
+  const canvas = $('#boardCanvas');
+  if (!canvas) return;
+  boardDataVersion += 1;
+  const entering = !boardWasActive;
+  boardWasActive = true;
+  boardEls = {
+    canvas,
+    viewport: $('#boardViewport', canvas),
+    world: $('#boardWorld', canvas),
+    empty: $('#boardEmpty', canvas),
+    scaleLabel: $('#boardZoomLevel', canvas),
+    focus: $('#boardFocus', canvas),
+    scrim: $('#boardFocusScrim', canvas)
+  };
+  boardLayoutCache = boardLayout();
+  boardEls.empty.hidden = boardLayoutCache.columns.some(column => column.items.length);
+  boardEls.world.innerHTML = boardLayoutCache.columns.map((column, index) => `
+    <section class="board-column" style="left:${index * BOARD_COL_STEP}px">
+      <header class="board-col-head" style="--board-d:${Math.min(index * 55, 360)}ms"><i class="folder-dot" style="background:${escapeHTML(column.color)}"></i><b>${escapeHTML(column.name)}</b><em>${column.items.length}</em></header>
+      <div class="board-col-body" style="height:${Math.max(column.items.length, 1) * BOARD_CARD_STEP}px"></div>
+    </section>`).join('');
+  if (entering) {
+    boardStopMotion();
+    boardEnterAnimated = !reduceWindowMotion();
+    if (boardState.x === null || boardState.y === null || boardState.scale === null) {
+      boardCam.scale = 1;
+      boardFitView(true);
+    } else {
+      boardCam.x = boardState.x;
+      boardCam.y = boardState.y;
+      boardCam.scale = boardState.scale;
+      boardApplyCamera();
+    }
+  } else {
+    boardEnterAnimated = false;
+    boardSilentSync = true;
+    boardApplyCamera();
+  }
+  boardSyncNodes();
+  boardSilentSync = false;
+  boardEnterAnimated = false;
+  persistBoardState();
+
+  const viewport = boardEls.viewport;
+  viewport.addEventListener('wheel', event => {
+    event.preventDefault();
+    const rect = viewport.getBoundingClientRect();
+    if (event.ctrlKey || event.metaKey) {
+      boardZoomAt(event.clientX - rect.left, event.clientY - rect.top, Math.exp(-event.deltaY * 0.0022));
+      return;
+    }
+    // 触控板双指 / 鼠标滚轮 = 平移；到界即停（无 rubber-band，松手也没有回弹语境）。
+    boardStopMotion();
+    const multiplier = event.deltaMode === 1 ? 16 : 1;
+    const bounds = boardContentBounds();
+    boardCam.x = boardClampAxis(boardCam.x - event.deltaX * multiplier, bounds.x);
+    boardCam.y = boardClampAxis(boardCam.y - event.deltaY * multiplier, bounds.y);
+    boardApplyCamera();
+    boardScheduleSync();
+    persistBoardState();
+  }, { passive: false });
+
+  viewport.addEventListener('pointerdown', event => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    viewport.setPointerCapture(event.pointerId);
+    boardPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    boardStopMotion();
+    if (boardPointers.size >= 2) {
+      const [a, b] = [...boardPointers.values()];
+      const rect = viewport.getBoundingClientRect();
+      boardGesture = {
+        mode: 'pinch',
+        startDist: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)),
+        startScale: boardCam.scale,
+        startCam: { x: boardCam.x, y: boardCam.y },
+        startMid: { x: (a.x + b.x) / 2 - rect.left, y: (a.y + b.y) / 2 - rect.top }
+      };
+    } else {
+      boardMotion.mode = 'drag';
+      boardGesture = {
+        mode: 'pan',
+        lastX: event.clientX,
+        lastY: event.clientY,
+        pressX: event.clientX,
+        pressY: event.clientY,
+        moved: false,
+        pressNode: event.target.closest('[data-board-node]'),
+        history: [{ x: event.clientX, y: event.clientY, t: performance.now() }]
+      };
+    }
+  });
+  viewport.addEventListener('pointermove', event => {
+    const point = boardPointers.get(event.pointerId);
+    if (!point) return;
+    point.x = event.clientX;
+    point.y = event.clientY;
+    if (boardGesture?.mode === 'pinch' && boardPointers.size >= 2) {
+      const [a, b] = [...boardPointers.values()];
+      const rect = viewport.getBoundingClientRect();
+      const distance = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y));
+      const mid = { x: (a.x + b.x) / 2 - rect.left, y: (a.y + b.y) / 2 - rect.top };
+      boardCam.scale = boardSoftScale(boardGesture.startScale * (distance / boardGesture.startDist));
+      const worldX = (boardGesture.startMid.x - boardGesture.startCam.x) / boardGesture.startScale;
+      const worldY = (boardGesture.startMid.y - boardGesture.startCam.y) / boardGesture.startScale;
+      boardCam.x = mid.x - worldX * boardCam.scale;
+      boardCam.y = mid.y - worldY * boardCam.scale;
+      boardConstrainDrag();
+      boardApplyCamera();
+      boardScheduleSync();
+      return;
+    }
+    if (boardGesture?.mode !== 'pan') return;
+    if (!boardGesture.moved && Math.hypot(event.clientX - boardGesture.pressX, event.clientY - boardGesture.pressY) > 6) {
+      boardGesture.moved = true;
+      boardGesture.pressNode = null;
+    }
+    boardCam.x += (event.clientX - boardGesture.lastX) / boardCam.scale;
+    boardCam.y += (event.clientY - boardGesture.lastY) / boardCam.scale;
+    boardGesture.lastX = event.clientX;
+    boardGesture.lastY = event.clientY;
+    boardConstrainDrag();
+    boardApplyCamera();
+    boardScheduleSync();
+    const now = performance.now();
+    boardGesture.history.push({ x: event.clientX, y: event.clientY, t: now });
+    while (boardGesture.history.length > 2 && now - boardGesture.history[0].t > 90) boardGesture.history.shift();
+  });
+  const releasePointer = event => {
+    boardPointers.delete(event.pointerId);
+    if (!boardGesture) return;
+    if (boardGesture.mode === 'pinch') {
+      if (boardPointers.size === 1) {
+        // 从捏合落回单指：把剩余指针接成一次新的拖拽起点。
+        const rest = [...boardPointers.values()][0];
+        boardMotion.mode = 'drag';
+        boardGesture = { mode: 'pan', lastX: rest.x, lastY: rest.y, pressX: rest.x, pressY: rest.y, moved: true, pressNode: null, history: [{ x: rest.x, y: rest.y, t: performance.now() }] };
+      } else if (!boardPointers.size) {
+        boardGesture = null;
+        boardMotion.mode = 'idle';
+        boardMotion.targetScale = Math.min(BOARD_SCALE_MAX, Math.max(BOARD_SCALE_MIN, boardCam.scale));
+        const { w, h } = boardViewportSize();
+        boardMotion.anchor = { x: w / 2, y: h / 2 };
+        boardEnsureFrame();
+      }
+      return;
+    }
+    if (!boardPointers.size) {
+      const gesture = boardGesture;
+      boardGesture = null;
+      if (!gesture.moved && gesture.pressNode) {
+        boardMotion.mode = 'idle';
+        boardOpenFocus(gesture.pressNode.dataset.boardNode);
+        return;
+      }
+      const first = gesture.history[0];
+      const last = gesture.history[gesture.history.length - 1];
+      const elapsed = Math.max(1, last.t - first.t);
+      let vX = gesture.moved ? ((last.x - first.x) / elapsed) * 1000 : 0;
+      let vY = gesture.moved ? ((last.y - first.y) / elapsed) * 1000 : 0;
+      if (reduceWindowMotion()) { vX = 0; vY = 0; }
+      boardCam.vX = vX;
+      boardCam.vY = vY;
+      if (Math.hypot(vX, vY) > 120) {
+        boardMotion.mode = 'glide';
+        boardEnsureFrame();
+      } else {
+        boardMotion.mode = 'settle';
+        boardMotion.settle = null;
+        boardEnsureFrame();
+      }
+    }
+  };
+  viewport.addEventListener('pointerup', releasePointer);
+  viewport.addEventListener('pointercancel', event => {
+    // 系统打断（滚轮接管、来电等）不算点击也不算释放惯性。
+    if (boardGesture?.mode === 'pan') boardGesture.pressNode = null;
+    releasePointer(event);
+  });
+
+  $$('.board-chip', canvas).forEach(chip => chip.addEventListener('click', () => {
+    if (boardState.type === chip.dataset.boardType) return;
+    boardState.type = chip.dataset.boardType;
+    persistBoardState();
+    renderList();
+  }));
+  $('#boardFolderFilter', canvas)?.addEventListener('change', event => {
+    boardState.folder = event.target.value;
+    persistBoardState();
+    renderList();
+  });
+  $('#boardStatusFilter', canvas)?.addEventListener('change', event => {
+    boardState.status = event.target.value;
+    persistBoardState();
+    renderList();
+  });
+  $('#boardZoomIn', canvas)?.addEventListener('click', () => {
+    const { w, h } = boardViewportSize();
+    boardZoomAt(w / 2, h / 2, 1.22);
+  });
+  $('#boardZoomOut', canvas)?.addEventListener('click', () => {
+    const { w, h } = boardViewportSize();
+    boardZoomAt(w / 2, h / 2, 1 / 1.22);
+  });
+  $('#boardFit', canvas)?.addEventListener('click', () => boardFitView());
+  boardEls.scrim.addEventListener('click', () => boardCloseFocus());
+
+  if (boardResizeObserver) boardResizeObserver.disconnect();
+  if ('ResizeObserver' in window) {
+    boardResizeObserver = new ResizeObserver(() => {
+      if (currentView !== 'board') return;
+      boardApplyCamera();
+      boardScheduleSync();
+    });
+    boardResizeObserver.observe(viewport);
+  }
+}
+
 const deleteConfirmState = { dialog: null, resolve: null, mode: '', closeTimer: 0 };
 
 function deleteConfirmDialogEl() {
@@ -2080,6 +2828,14 @@ function renderList() {
       ? renderTrashList(items)
       : `<div class="empty-list trash-empty"><div><span><svg><use href="#i-trash"/></svg></span><h3>${escapeHTML(t('trashEmptyTitle'))}</h3><p>${escapeHTML(t('trashEmptyHint'))}</p></div></div>`;
     bindTrashList();
+    return;
+  }
+  if (currentView === 'board') {
+    $('#viewTitle').textContent = viewTitle();
+    $('#itemCountLabel').textContent = `${boardFilteredItems().length} ${t('item')}`;
+    list.className = 'item-list board-list';
+    list.innerHTML = renderBoardShell();
+    bindBoardScene();
     return;
   }
   const items = getVisibleItems();
@@ -3452,7 +4208,10 @@ function bindShell() {
     if (isImeComposing(event)) return;
     const mod = event.metaKey || event.ctrlKey;
     if (!mod) {
-      if (event.key === 'Escape') $('#createMenu').classList.remove('open');
+      if (event.key === 'Escape') {
+        $('#createMenu').classList.remove('open');
+        boardCloseFocus();
+      }
       return;
     }
     // Keep the global shortcuts from hijacking keys inside the editor, quick capture
