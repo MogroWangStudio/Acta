@@ -1234,6 +1234,7 @@ function syncCalendarShell() {
     boardCancelDraw();
     boardSetSelection([]);
     boardRemovePill();
+    boardRemoveStyleTrigger();
     boardRenderedCards.clear();
   }
   document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
@@ -2658,7 +2659,6 @@ function renderBoardShell() {
       <div class="board-marquee" id="boardMarquee" hidden></div>
       <div class="board-empty" id="boardEmpty" hidden><div><span><svg><use href="#i-board"/></svg></span><h3>${escapeHTML(t('boardEmptyTitle'))}</h3><p>${escapeHTML(t('boardEmptyHint'))}</p></div></div>
     </div>
-    <button type="button" class="board-style-trigger" id="boardStyleTrigger" title="${escapeHTML(t('boardPersonalize'))}" aria-label="${escapeHTML(t('boardPersonalize'))}" aria-haspopup="dialog"><svg><use href="#i-palette"/></svg></button>
     <div class="board-chrome" id="boardChrome">
       <button type="button" class="board-tool" id="boardAddText" title="${escapeHTML(t('boardAddText'))}"><svg><use href="#i-text"/></svg><span>${escapeHTML(t('boardAddText'))}</span></button>
       <div class="board-tool-wrap">
@@ -2992,7 +2992,7 @@ function boardRenderStylePop() {
   pop.innerHTML = `
     <div class="board-style-row"><span>${escapeHTML(t('boardBgPattern'))}</span><div class="board-import-seg">${patterns.map(([key, label]) => `<button type="button" data-pattern="${key}"${style.pattern === key ? ' class="active"' : ''}>${escapeHTML(label)}</button>`).join('')}</div></div>
     <div class="board-style-row"><span>${escapeHTML(t('boardBoardBgColor'))}</span><button type="button" class="board-tw${style.color ? '' : ' on'}" data-bg-color="theme">${escapeHTML(t('boardBgColorTheme'))}</button><label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(style.color) ? style.color : '#fbfaf6'}" data-bg-color-picker/></label></div>
-    <div class="board-style-toggle"><input type="checkbox" id="boardSnapToggle"${style.snap ? ' checked' : ''}/><i></i><span>${escapeHTML(t('boardSnapGrid'))}</span></div>
+    <label class="board-style-toggle"><input type="checkbox" id="boardSnapToggle"${style.snap ? ' checked' : ''}/><i></i><span>${escapeHTML(t('boardSnapGrid'))}</span></label>
     <div class="board-style-row"><span>${escapeHTML(t('boardGridSize'))}</span><input type="range" min="16" max="64" step="2" value="${style.gridSize}" data-grid-size aria-label="${escapeHTML(t('boardGridSize'))}"/><output>${style.gridSize}px</output></div>`;
   pop.hidden = false;
 }
@@ -3019,20 +3019,23 @@ function boardRenderContentPop(widget) {
     pop = document.createElement('div');
     pop.id = 'boardContentPop';
     pop.className = 'board-style-pop';
-    boardEls.toolbar.after(pop);
+    // 挂在画布上（不挂在会被重建的工具条旁边），开关切换时面板保持打开。
+    boardEls.canvas.appendChild(pop);
   }
   const show = widget.show || {};
   const items = [
     ['pill', t('boardShowPill')], ['priority', t('boardShowPriority')], ['date', t('boardShowDate')],
     ['preview', t('boardShowPreview')], ['foot', t('boardShowFoot')]
   ];
-  pop.innerHTML = `<div class="board-style-column">${items.map(([key, label]) => `
+  pop.innerHTML = `
+    <div class="board-style-pop-head"><b>${escapeHTML(t('boardContentSettings'))}</b><button type="button" data-content-close title="${escapeHTML(t('cancel'))}" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></div>
+    <div class="board-style-column">${items.map(([key, label]) => `
     <label class="board-style-toggle"><input type="checkbox" data-show="${key}"${show[key] !== false ? ' checked' : ''}/><i></i><span>${escapeHTML(label)}</span></label>`).join('')}
   </div>`;
   pop.hidden = false;
   const bar = boardEls?.toolbar;
   if (bar) {
-    const height = pop.offsetHeight || 150;
+    const height = pop.offsetHeight || 190;
     const width = pop.offsetWidth || 200;
     const left = Math.min(Math.max(bar.offsetLeft, width / 2 + 8), (boardEls.canvas.clientWidth || 400) - width / 2 - 8);
     pop.style.left = `${left}px`;
@@ -3364,16 +3367,20 @@ function boardCommitDraw(draft) {
   board.widgets.push(widget);
   touchBoard(board);
   persist();
+  // 提交只做局部更新（重建布局缓存 + 插入这一个静态组件）：
+  // 走 renderList 会整壳重建画布，连续画笔时每笔都重播全部组件的入场动画。
+  boardLayoutCache = boardLayout();
+  boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+  boardRefreshStatic(widget);
+  boardScheduleSync();
   if (kind === 'draw') {
     // 画笔模式连续绘制：清掉草稿继续下一笔，不退出模式、不抢选中。
     boardDraftMarker?.remove();
     boardDraftMarker = null;
-    renderList();
     boardRenderPenBar();
     return;
   }
   boardCancelDraw();
-  renderList();
   boardSetSelection([widget.id]);
 }
 
@@ -3609,12 +3616,37 @@ function boardRemovePill() {
   boardPillEl = null;
 }
 
+// 个性化按钮挂在标题行最右（与板选择器同一行，离开计划板时摘下）。
+let boardStyleTriggerEl = null;
+function boardEnsureStyleTrigger() {
+  const titleRow = $('.item-title-row');
+  if (!titleRow) return null;
+  if (boardStyleTriggerEl && document.contains(boardStyleTriggerEl)) return boardStyleTriggerEl;
+  boardStyleTriggerEl = document.createElement('button');
+  boardStyleTriggerEl.type = 'button';
+  boardStyleTriggerEl.className = 'board-style-trigger';
+  boardStyleTriggerEl.id = 'boardStyleTrigger';
+  boardStyleTriggerEl.title = t('boardPersonalize');
+  boardStyleTriggerEl.setAttribute('aria-label', t('boardPersonalize'));
+  boardStyleTriggerEl.setAttribute('aria-haspopup', 'dialog');
+  boardStyleTriggerEl.innerHTML = '<svg><use href="#i-palette"/></svg>';
+  titleRow.appendChild(boardStyleTriggerEl);
+  return boardStyleTriggerEl;
+}
+
+function boardRemoveStyleTrigger() {
+  $('#boardStylePop', boardEls?.canvas || document)?.remove();
+  boardStyleTriggerEl?.remove();
+  boardStyleTriggerEl = null;
+}
+
 function bindBoardScene() {
   const canvas = $('#boardCanvas');
   if (!canvas) return;
   const entering = !boardWasActive;
   boardWasActive = true;
   boardEnsurePill();
+  boardEnsureStyleTrigger();
   boardEls = {
     canvas,
     pill: boardPillEl,
@@ -4340,8 +4372,20 @@ function bindBoardScene() {
         widget.show = { ...(widget.show || {}), [showBox.dataset.show]: showBox.checked };
         touchBoard(boardLayoutCache.board);
         persist();
-        // 显示内容影响卡片结构：重建该卡片节点。
-        renderList();
+        // 显示内容影响卡片结构：只重建该卡片节点（局部更新），
+        // 不走 renderList 的整壳重建——那会把打开中的面板一起拆掉。
+        const card = boardLayoutCache.cards.find(entry => entry.widget.id === widget.id);
+        if (card) {
+          boardRenderedCards.get(widget.id)?.remove();
+          boardRenderedCards.delete(widget.id);
+          const template = document.createElement('template');
+          template.innerHTML = boardNodeHTML(card, true);
+          const element = template.content.firstElementChild;
+          if (element) {
+            boardEls.world.appendChild(element);
+            boardRenderedCards.set(widget.id, element);
+          }
+        }
         boardSetSelection([widget.id]);
       }
       return;
@@ -4386,11 +4430,18 @@ function bindBoardScene() {
   });
 
   // 板个性化：右上角按钮弹出设置浮层，改动即时生效并随板保存。
-  const styleTrigger = $('#boardStyleTrigger', canvas);
+  const styleTrigger = boardStyleTriggerEl || boardEnsureStyleTrigger();
   styleTrigger?.addEventListener('click', () => {
     const pop = $('#boardStylePop', canvas);
     if (pop && !pop.hidden) { pop.hidden = true; return; }
     boardRenderStylePop();
+  });
+  // 显示内容面板：点头部关闭按钮或面板外（画布内）时收起；
+  // 面板挂在画布上且开关切换只做局部重建，这里不会误伤打开中的面板。
+  canvas.addEventListener('click', event => {
+    if (event.target.closest('[data-content-close]')) { boardCloseContentPop(); return; }
+    const contentPop = $('#boardContentPop', canvas);
+    if (contentPop && !contentPop.hidden && !event.target.closest('#boardContentPop, [data-tw="content-pop"]')) boardCloseContentPop();
   });
   canvas.addEventListener('click', event => {
     const pop = $('#boardStylePop', canvas);
