@@ -1934,6 +1934,9 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
 .board-viewport:active { cursor: grabbing; }
 .board-canvas.is-drawing .board-viewport { cursor: crosshair; }
 .board-world { position: absolute; top: 0; left: 0; width: 0; height: 0; transform-origin: 0 0; will-change: transform; }
+/* 关联曲线层：互相关联的条目卡片之间的一根跟随曲线，垫在所有组件之下。 */
+.board-links { position: absolute; overflow: visible; pointer-events: none; }
+.board-links path { fill: none; stroke: color-mix(in srgb, var(--sage) 48%, transparent); stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 4 5; }
 
 /* 条目卡片（虚拟化）：与列表卡片同一设计语言，可点击进编辑器、
    悬停露出「从板上移除」。 */

@@ -2045,6 +2045,9 @@ let boardEditingText = null;      // 正在编辑的文本组件 id
 let boardPendingMarker = null;    // 待绘制的标注形状（点击画布拖出）
 let boardDraftMarker = null;      // 绘制中的临时元素
 let boardMenuTimer = 0;
+// 面板打开前的相机取景：收起时画布归位；期间用户手动平移过则尊重新位置。
+let boardCamRestore = null;
+let boardCamManual = false;
 // 画笔模式：选中「画笔」后进入连续绘制（多笔），完成 / Esc / 再点按钮退出。
 // 笔刷参数跨笔保持；荧光笔是宽、低透明度、multiply 混合的笔型。
 const boardPenState = { brush: 'pen', color: BOARD_MARKER_COLORS[0], stroke: 2.5, opacity: 100, flow: 100 };
@@ -2372,6 +2375,67 @@ function boardSyncNodes() {
       boardRenderedCards.set(card.widget.id, element);
     }
   });
+  boardSyncLinks();
+}
+
+// —— 关联曲线：板上互相关联（linkedIds）的条目之间画一根跟随的贝塞尔曲线 ——
+// 曲线层铺在画布最底（列标注之下、卡片之下），卡片拖动时按 rAF 频率重算，
+// 两端始终咬合两张卡片的中心，随时移动随时相连。
+function boardSyncLinks() {
+  if (!boardEls?.world || !boardLayoutCache) return;
+  const byRef = new Map(boardLayoutCache.cards.map(card => [card.item.id, card]));
+  const seen = new Set();
+  const pairs = [];
+  boardLayoutCache.cards.forEach(card => {
+    (card.item.linkedIds || []).forEach(ref => {
+      const other = byRef.get(ref);
+      if (!other || other === card) return;
+      const key = [card.item.id, ref].sort().join('~');
+      if (seen.has(key)) return;
+      seen.add(key);
+      pairs.push([card, other]);
+    });
+  });
+  let svg = $('.board-links', boardEls.world);
+  if (!pairs.length) {
+    svg?.remove();
+    return;
+  }
+  const { minX, minY, maxX, maxY } = boardLayoutCache.bounds;
+  const width = Math.max(maxX - minX, 1);
+  const height = Math.max(maxY - minY, 1);
+  const paths = pairs.map(([a, b]) => {
+    const aSize = boardWidgetSize(a.widget);
+    const bSize = boardWidgetSize(b.widget);
+    // 读组件实时坐标：拖动中坐标直接写在 widget 上，曲线才能跟手。
+    const ax = a.widget.x + aSize.w / 2;
+    const ay = a.widget.y + aSize.h / 2;
+    const bx = b.widget.x + bSize.w / 2;
+    const by = b.widget.y + bSize.h / 2;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const horizontal = Math.abs(dx) >= Math.abs(dy);
+    const bend = Math.max(Math.abs(horizontal ? dx : dy) * 0.35, 34);
+    const signX = Math.sign(dx) || 1;
+    const signY = Math.sign(dy) || 1;
+    const c1x = ax + (horizontal ? signX * bend : 0);
+    const c1y = ay + (horizontal ? 0 : signY * bend);
+    const c2x = bx - (horizontal ? signX * bend : 0);
+    const c2y = by - (horizontal ? 0 : signY * bend);
+    return `<path d="M${ax.toFixed(1)} ${ay.toFixed(1)} C${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${bx.toFixed(1)} ${by.toFixed(1)}"/>`;
+  }).join('');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('board-links');
+    svg.setAttribute('aria-hidden', 'true');
+    boardEls.world.prepend(svg);
+  }
+  svg.setAttribute('viewBox', `${minX} ${minY} ${width} ${height}`);
+  svg.style.left = `${minX}px`;
+  svg.style.top = `${minY}px`;
+  svg.style.width = `${width}px`;
+  svg.style.height = `${height}px`;
+  svg.innerHTML = paths;
 }
 
 function boardNodeCheckinBadge(item) {
@@ -2617,6 +2681,10 @@ function boardZoomAt(screenX, screenY, factor) {
 function boardSelect(id) {
   const item = library.items.find(entry => entry.id === id && !isTrashed(entry));
   if (!item) return;
+  if (!selectedId || !boardCamRestore) {
+    boardCamRestore = { x: boardCam.x, y: boardCam.y, scale: boardCam.scale };
+    boardCamManual = false;
+  }
   selectedId = id;
   mobileEditorOpen = true;
   renderEditor();
@@ -2629,6 +2697,19 @@ function boardDeselect() {
   mobileEditorOpen = false;
   renderEditor();
   boardMarkActive(null);
+  // 面板收起：画布平滑归位到打开面板前的取景；
+  // 打开期间用户手动平移 / 缩放过画布则保持新位置，不强行拉回。
+  const restore = boardCamRestore;
+  boardCamRestore = null;
+  if (!restore || boardCamManual || matchMedia('(max-width: 800px)').matches) return;
+  if (Math.abs(restore.scale - boardCam.scale) < 0.001
+    && Math.abs(restore.x - boardCam.x) < 1 && Math.abs(restore.y - boardCam.y) < 1) return;
+  boardCam.vX = 0;
+  boardCam.vY = 0;
+  boardMotion.anchor = null;
+  boardMotion.mode = 'settle';
+  boardMotion.settle = { x: restore.x, y: restore.y, scale: restore.scale };
+  boardEnsureFrame();
 }
 
 function boardMarkActive(id) {
@@ -2714,7 +2795,10 @@ function boardFocusSelection() {
   if (!boardLayoutCache || matchMedia('(max-width: 800px)').matches) return;
   let target = null;
   const card = boardLayoutCache.cards.find(entry => entry.item.id === selectedId);
-  if (card) target = { x: card.x + BOARD_CARD_W / 2, y: card.y + BOARD_CARD_H / 2 };
+  if (card) {
+    const size = boardWidgetSize(card.widget);
+    target = { x: card.widget.x + size.w / 2, y: card.widget.y + size.h / 2 };
+  }
   if (!target && boardSelection.size === 1) {
     const widget = boardWidgetById([...boardSelection][0]);
     if (widget) {
@@ -3418,6 +3502,7 @@ function bindBoardScene() {
   }
   if (boardLayoutCache) boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
   boardSyncNodes();
+  boardSyncLinks();
   boardEnterAnimated = false;
   boardMarkActive(selectedId);
   boardRenderToolbar();
@@ -3427,6 +3512,7 @@ function bindBoardScene() {
   viewport.addEventListener('wheel', event => {
     // 滚轮 / 触控板双指 = 以指针为锚缩放；平移交给拖拽（左键空白 / 中键任意位置）。
     event.preventDefault();
+    if (boardCamRestore) boardCamManual = true;
     const rect = viewport.getBoundingClientRect();
     const multiplier = event.deltaMode === 1 ? 16 : 1;
     boardZoomAt(event.clientX - rect.left, event.clientY - rect.top, Math.exp(-event.deltaY * multiplier * 0.0022));
@@ -3562,6 +3648,7 @@ function bindBoardScene() {
     point.x = event.clientX;
     point.y = event.clientY;
     if (boardGesture?.mode === 'pinch' && boardPointers.size >= 2) {
+      if (boardCamRestore) boardCamManual = true;
       const [a, b] = [...boardPointers.values()];
       const rect = viewport.getBoundingClientRect();
       const distance = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y));
@@ -3603,6 +3690,7 @@ function bindBoardScene() {
       } else {
         boardRefreshStatic(widget);
       }
+      boardScheduleSync();
       return;
     }
     if (boardGesture?.mode === 'draw') {
@@ -3655,9 +3743,11 @@ function bindBoardScene() {
       } else {
         applyMove(boardGesture.widget, boardGesture.widgetX, boardGesture.widgetY, boardGesture.node);
       }
+      boardScheduleSync();
       return;
     }
     if (boardGesture?.mode !== 'pan') return;
+    if (boardCamRestore) boardCamManual = true;
     if (!boardGesture.moved && Math.hypot(event.clientX - boardGesture.pressX, event.clientY - boardGesture.pressY) > BOARD_PRESS_SLOP) {
       boardGesture.moved = true;
     }
