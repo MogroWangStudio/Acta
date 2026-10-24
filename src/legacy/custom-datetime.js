@@ -28,11 +28,21 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
 .acdt-panel.acdt-open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
 .acdt-panel.acdt-closing { transition: opacity .13s ease, transform .13s cubic-bezier(.4,0,.7,.2); }
 .acdt-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 7px; }
-.acdt-title { min-width: 0; text-align: center; font-weight: 700; font-size: calc(11px * var(--acta-font-scale, 1)); letter-spacing: .01em; }
+.acdt-title { min-width: 0; flex: 1; text-align: center; font-weight: 700; font-size: calc(11px * var(--acta-font-scale, 1)); letter-spacing: .01em; }
+/* 标题做成按钮：点开快速年月选择（年份翻页 + 十二个月网格）。 */
+.acdt-title-button { min-width: 0; padding: 4px 8px; border: 0; border-radius: 8px; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: background .14s ease, color .14s ease; }
+.acdt-title-button:hover { background: var(--panel); }
+.acdt-title-button svg { width: 10px; height: 10px; color: var(--faint); transition: transform .2s cubic-bezier(.16,1,.3,1); }
+.acdt-title-button[aria-expanded="true"] svg { transform: rotate(180deg); }
 .acdt-nav { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background .14s ease, color .14s ease, transform .18s cubic-bezier(.16,1,.3,1); }
 .acdt-nav:hover { background: var(--panel); color: var(--ink); transform: scale(1.06); }
 .acdt-nav svg { width: 13px; height: 13px; }
-.acdt-nav.acdt-next svg { transform: rotate(180deg); }
+/* 旋转必须以图标自身为轴心：缺 fill-box 时翻转绕 viewBox 原点，箭头跑出按钮。 */
+.acdt-nav.acdt-next svg { transform: rotate(180deg); transform-box: fill-box; transform-origin: center; }
+.acdt-months { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 3px; margin-bottom: 2px; }
+.acdt-months button { height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font: inherit; font-size: calc(10px * var(--acta-font-scale, 1)); font-weight: 650; cursor: pointer; transition: background .13s ease, color .13s ease; }
+.acdt-months button:hover { background: var(--panel); color: var(--ink); }
+.acdt-months button.acdt-active { background: var(--sage); color: #fff; }
 .acdt-week, .acdt-grid { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 2px; }
 .acdt-week span { padding: 2px 0 4px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale, 1)); text-align: center; }
 .acdt-day { height: 30px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; font-size: calc(10px * var(--acta-font-scale, 1)); cursor: pointer; transition: background .13s ease, color .13s ease; }
@@ -252,22 +262,26 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
 
   const renderPanel = () => {
     if (!openState || !panel) return;
-    const { value, view } = openState;
+    const { value, view, jump } = openState;
     panel.innerHTML = '';
     const head = document.createElement('div');
     head.className = 'acdt-head';
     const prev = document.createElement('button');
     prev.type = 'button';
     prev.className = 'acdt-nav';
-    prev.setAttribute('aria-label', '上一月');
+    prev.setAttribute('aria-label', jump ? '上一年' : '上一月');
     prev.innerHTML = '<svg><use href="#i-chevron"/></svg>';
-    const title = document.createElement('b');
-    title.className = 'acdt-title';
-    title.textContent = `${view.year} 年 ${view.month + 1} 月`;
+    // 标题可点击：日历 ↔ 快速年月选择（年份翻页 + 十二个月网格）。
+    const title = document.createElement('button');
+    title.type = 'button';
+    title.className = 'acdt-title acdt-title-button';
+    title.setAttribute('aria-expanded', String(Boolean(jump)));
+    title.setAttribute('aria-label', jump ? '返回日历' : '快速选择年月');
+    title.innerHTML = `${jump ? `${view.year} 年` : `${view.year} 年 ${view.month + 1} 月`}<svg><use href="#i-chevron"/></svg>`;
     const next = document.createElement('button');
     next.type = 'button';
     next.className = 'acdt-nav acdt-next';
-    next.setAttribute('aria-label', '下一月');
+    next.setAttribute('aria-label', jump ? '下一年' : '下一月');
     next.innerHTML = '<svg><use href="#i-chevron"/></svg>';
     head.append(prev, title, next);
 
@@ -278,27 +292,6 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
       cell.textContent = label;
       week.appendChild(cell);
     });
-
-    const grid = document.createElement('div');
-    grid.className = 'acdt-grid';
-    const firstDay = new Date(view.year, view.month, 1);
-    const startOffset = firstDay.getDay();
-    const todayTwo = toTwo(new Date());
-    for (let index = 0; index < 42; index += 1) {
-      const date = new Date(view.year, view.month, 1 - startOffset + index);
-      const cell = document.createElement('button');
-      cell.type = 'button';
-      cell.className = 'acdt-day';
-      cell.textContent = String(date.getDate());
-      cell.dataset.date = toTwo(date);
-      const outOfMonth = date.getMonth() !== view.month;
-      if (outOfMonth) cell.classList.add('acdt-out');
-      if (cell.dataset.date === todayTwo) cell.classList.add('acdt-today');
-      if (value.year === date.getFullYear() && value.month === date.getMonth() && value.day === date.getDate()) {
-        cell.classList.add('acdt-selected');
-      }
-      grid.appendChild(cell);
-    }
 
     // 时间区：标题行带「转盘 / 输入」切换，两种方式随时互换并记住选择。
     const time = document.createElement('div');
@@ -326,6 +319,44 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
     now.className = 'acdt-now';
     now.textContent = '此刻';
     actions.append(clear, now);
+
+    // 快速年月选择视图：十二个月网格，选中即回到该月日历。
+    if (jump) {
+      const months = document.createElement('div');
+      months.className = 'acdt-months';
+      for (let month = 0; month < 12; month += 1) {
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = `acdt-month${month === view.month ? ' acdt-active' : ''}`;
+        cell.textContent = `${month + 1} 月`;
+        cell.dataset.month = String(month);
+        months.appendChild(cell);
+      }
+      panel.append(head, months, time, actions);
+      renderTimeBody();
+      return;
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'acdt-grid';
+    const firstDay = new Date(view.year, view.month, 1);
+    const startOffset = firstDay.getDay();
+    const todayTwo = toTwo(new Date());
+    for (let index = 0; index < 42; index += 1) {
+      const date = new Date(view.year, view.month, 1 - startOffset + index);
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'acdt-day';
+      cell.textContent = String(date.getDate());
+      cell.dataset.date = toTwo(date);
+      const outOfMonth = date.getMonth() !== view.month;
+      if (outOfMonth) cell.classList.add('acdt-out');
+      if (cell.dataset.date === todayTwo) cell.classList.add('acdt-today');
+      if (value.year === date.getFullYear() && value.month === date.getMonth() && value.day === date.getDate()) {
+        cell.classList.add('acdt-selected');
+      }
+      grid.appendChild(cell);
+    }
 
     panel.append(head, week, grid, time, actions);
     renderTimeBody();
@@ -398,9 +429,29 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
         const nav = event.target.closest('.acdt-nav');
         if (nav) {
           const step = nav.classList.contains('acdt-next') ? 1 : -1;
-          const shifted = openState.view.year * 12 + openState.view.month + step;
-          openState.view.year = Math.floor(shifted / 12);
-          openState.view.month = ((shifted % 12) + 12) % 12;
+          if (openState.jump) {
+            // 年月视图：翻页按年走。
+            openState.view.year += step;
+          } else {
+            const shifted = openState.view.year * 12 + openState.view.month + step;
+            openState.view.year = Math.floor(shifted / 12);
+            openState.view.month = ((shifted % 12) + 12) % 12;
+          }
+          renderPanel();
+          placePanel();
+          return;
+        }
+        // 标题：在日历与快速年月选择之间切换。
+        if (event.target.closest('.acdt-title-button')) {
+          openState.jump = !openState.jump;
+          renderPanel();
+          placePanel();
+          return;
+        }
+        const monthCell = event.target.closest('.acdt-month');
+        if (monthCell) {
+          openState.view.month = Number(monthCell.dataset.month);
+          openState.jump = false;
           renderPanel();
           placePanel();
           return;
@@ -572,6 +623,7 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
       mode: readDialMode(),
       stage: 'hour',
       dragging: false,
+      jump: false,
       value: parsed || { year: fallback.getFullYear(), month: fallback.getMonth(), day: fallback.getDate(), hour: 0, minute: 0, second: 0 },
       view: null
     };
