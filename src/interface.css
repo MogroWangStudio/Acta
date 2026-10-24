@@ -1617,6 +1617,10 @@ body.sidebar-collapsed { --acta-sidebar-width: 72px; }
 body.sidebar-collapsed #folderNav .folder-short-name { max-width: 28px; overflow: hidden; display: block; color: #fff; font: 750 calc(11px * var(--acta-font-scale))/1 "Segoe UI", "PingFang SC", sans-serif; letter-spacing: -.02em; text-align: center; text-overflow: clip; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,.28); }
 body.sidebar-collapsed #folderNav .folder-short-name.is-long { font-size: calc(9px * var(--acta-font-scale)); letter-spacing: -.06em; }
 body.sidebar-collapsed #folderNav .folder-short-name.is-emoji { max-width: 30px; overflow: visible; font: 400 calc(17px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; letter-spacing: 0; text-shadow: none; }
+/* 未折叠也亮出自定义 emoji：小号归类色块（折叠态为 30px 大块），纯文字简称仍隐藏。
+   条件与折叠态互斥，不会覆盖折叠态的 30px 徽标尺寸。 */
+body:not(.sidebar-collapsed) #folderNav .folder-dot:has(.folder-short-name.is-emoji) { width: 18px; height: 18px; border-radius: 6px; display: grid; place-items: center; font-style: normal; }
+body:not(.sidebar-collapsed) #folderNav .folder-short-name.is-emoji { display: block; max-width: 15px; overflow: visible; color: #fff !important; font: 400 calc(12px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; letter-spacing: 0; text-align: center; }
   body.sidebar-collapsed .create-menu { top: 18px; left: 64px; right: auto; width: 242px; transform-origin: 0 20px; }
   body.sidebar-collapsed .sidebar-bottom { max-width: 44px; align-self: center; }
   body.sidebar-collapsed .sidebar-bottom .sync-card { width: 36px; height: 36px; margin: 0 auto; padding: 0; grid-template-columns: 1fr; gap: 0; justify-items: center; }
