@@ -94,7 +94,9 @@
     boardImportAdded:'已在板上', boardImportEmpty:'沒有符合的待辦或筆記', boardImportApply:'套用', boardImportChange:'新增 {0} · 移除 {1}',
     boardTextPlaceholder:'雙擊編輯文字…', boardFontSize:'字號', boardFontLabel:'字型', boardFontApp:'跟隨介面', boardFontSerif:'襯線', boardFontRounded:'圓體', boardFontMono:'等寬',
     boardAlignLeft:'靠左對齊', boardAlignCenter:'置中對齊', boardAlignRight:'靠右對齊', boardRemoveWidget:'從板上移除',
-    boardMarkerArrow:'箭頭', boardMarkerRect:'方框', boardMarkerEllipse:'橢圓', boardMarkerColor:'標註顏色', boardMarkerDone:'完成標註',
+    boardMarkerArrow:'箭頭', boardMarkerRect:'方框', boardMarkerEllipse:'橢圓', boardMarkerLine:'直線', boardMarkerDraw:'畫筆', boardMarkerColor:'標註顏色', boardMarkerDone:'完成標註',
+    boardBg:'背景', boardBgNone:'無背景', boardBgOpacity:'不透明度', boardRadius:'圓角', boardPadding:'內邊距', boardCustomFont:'自訂字型', boardCustomFontHint:'輸入本機已安裝的字型名稱，如 Georgia',
+    boardDeleteArm:'再點一次刪除', boardUndo:'復原', boardRedo:'重做', boardMarqueeClear:'取消選擇', boardMarqueeDelete:'刪除所選', boardSelectedCount:'已選 {0} 項',
     boardEmptyTitle:'這塊板還是空的', boardEmptyHint:'用下方工具新增文字與標註，或匯入想展示在這塊板上的待辦與筆記，自由擺放成你的計劃板。'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });

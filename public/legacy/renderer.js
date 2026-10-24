@@ -66,7 +66,9 @@ const dictionaries = {
     boardImportAdded:'已在板上', boardImportEmpty:'没有匹配的待办或笔记', boardImportApply:'应用', boardImportChange:'添加 {0} · 移除 {1}',
     boardTextPlaceholder:'双击编辑文本…', boardFontSize:'字号', boardFontLabel:'字体', boardFontApp:'跟随界面', boardFontSerif:'衬线', boardFontRounded:'圆体', boardFontMono:'等宽',
     boardAlignLeft:'左对齐', boardAlignCenter:'居中', boardAlignRight:'右对齐', boardRemoveWidget:'从板上移除',
-    boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
+    boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'画笔', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
+    boardBg:'背景', boardBgNone:'无背景', boardBgOpacity:'不透明度', boardRadius:'圆角', boardPadding:'内边距', boardCustomFont:'自定义字体', boardCustomFontHint:'输入本机已安装的字体名，如 Georgia',
+    boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
   en: {
@@ -122,7 +124,9 @@ const dictionaries = {
     boardImportAdded:'On the board', boardImportEmpty:'No matching tasks or notes', boardImportApply:'Apply', boardImportChange:'Add {0} · remove {1}',
     boardTextPlaceholder:'Double-click to edit…', boardFontSize:'Font size', boardFontLabel:'Font', boardFontApp:'Follow interface', boardFontSerif:'Serif', boardFontRounded:'Rounded', boardFontMono:'Monospace',
     boardAlignLeft:'Align left', boardAlignCenter:'Align center', boardAlignRight:'Align right', boardRemoveWidget:'Remove from board',
-    boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
+    boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Pen', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
+    boardBg:'Background', boardBgNone:'None', boardBgOpacity:'Opacity', boardRadius:'Corner radius', boardPadding:'Padding', boardCustomFont:'Custom font', boardCustomFontHint:'Type an installed font family, e.g. Georgia',
+    boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   }
 };
@@ -237,7 +241,7 @@ const boardCoords = value => (value && Number.isFinite(Number(value.x)) && Numbe
 
 // 汇总板结构校验：板与组件逐层规范化，引用失效（条目被删）的组件在打开
 // 汇总板时由 ensureBoards 清理，这里只保证进来的数据形状可靠。
-const BOARD_MARKER_KINDS = ['arrow', 'rect', 'ellipse'];
+const BOARD_MARKER_KINDS = ['arrow', 'rect', 'ellipse', 'line', 'draw'];
 const BOARD_TEXT_FONTS = ['app', 'serif', 'rounded', 'mono'];
 const BOARD_MARKER_COLORS = ['#526b55', '#b96051', '#4f86a8', '#987329', '#7a7799', '#a87876'];
 function sanitizeBoards(boards) {
@@ -256,7 +260,11 @@ function sanitizeBoards(boards) {
       if (widget.type === 'note' || widget.type === 'todo') {
         if (typeof widget.ref !== 'string') return;
         widgetSeen.add(widget.id);
-        widgets.push({ id: widget.id, type: widget.type, ref: widget.ref, x: spot.x, y: spot.y });
+        widgets.push({
+          id: widget.id, type: widget.type, ref: widget.ref, x: spot.x, y: spot.y,
+          w: Math.min(560, Math.max(200, Math.round(Number(widget.w) || 264))),
+          h: Math.min(420, Math.max(88, Math.round(Number(widget.h) || 114)))
+        });
         return;
       }
       if (widget.type === 'text') {
@@ -266,20 +274,37 @@ function sanitizeBoards(boards) {
           w: Math.min(720, Math.max(120, Math.round(Number(widget.w) || 240))),
           text: typeof widget.text === 'string' ? widget.text.slice(0, 4000) : '',
           size: Math.min(48, Math.max(11, Math.round(Number(widget.size) || 16))),
-          font: BOARD_TEXT_FONTS.includes(widget.font) ? widget.font : 'app',
+          font: [...BOARD_TEXT_FONTS, 'custom'].includes(widget.font) ? widget.font : 'app',
+          customFont: typeof widget.customFont === 'string' ? widget.customFont.slice(0, 120) : '',
           align: ['left', 'center', 'right'].includes(widget.align) ? widget.align : 'left',
-          bold: Boolean(widget.bold), italic: Boolean(widget.italic)
+          bold: Boolean(widget.bold), italic: Boolean(widget.italic),
+          bg: widget.bg === 'none' || BOARD_MARKER_COLORS.includes(widget.bg) ? widget.bg : 'none',
+          bgOpacity: Math.min(100, Math.max(0, Math.round(Number(widget.bgOpacity) ?? 100))),
+          radius: Math.min(24, Math.max(0, Math.round(Number(widget.radius) || 0))),
+          pad: Math.min(24, Math.max(0, Math.round(Number(widget.pad) ?? 0)))
         });
         return;
       }
       if (widget.type === 'marker') {
         if (!BOARD_MARKER_KINDS.includes(widget.kind)) return;
         widgetSeen.add(widget.id);
-        widgets.push({
+        const marker = {
           id: widget.id, type: 'marker', kind: widget.kind, x: spot.x, y: spot.y,
-          w: Math.round(Number(widget.w) || 120), h: Math.round(Number(widget.h) || 80),
           color: BOARD_MARKER_COLORS.includes(widget.color) ? widget.color : BOARD_MARKER_COLORS[0]
-        });
+        };
+        if (widget.kind === 'draw') {
+          const points = Array.isArray(widget.points)
+            ? widget.points.filter(value => Number.isFinite(Number(value))).map(value => Math.round(Number(value))).slice(0, 4000)
+            : [];
+          if (points.length < 4 || points.length % 2) return;
+          marker.points = points;
+          marker.w = Math.max(1, Math.round(Number(widget.w) || 1));
+          marker.h = Math.max(1, Math.round(Number(widget.h) || 1));
+        } else {
+          marker.w = Math.round(Number(widget.w) || 120);
+          marker.h = Math.round(Number(widget.h) || 80);
+        }
+        widgets.push(marker);
       }
     });
     clean.push({
@@ -1182,7 +1207,7 @@ function syncCalendarShell() {
     boardWasActive = false;
     boardStopMotion();
     boardCancelDraw();
-    boardSelectWidget(null);
+    boardSetSelection([]);
     boardRenderedCards.clear();
   }
   document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
@@ -2007,7 +2032,7 @@ let boardSyncFrame = 0;
 let boardEnterAnimated = false;
 let boardWasActive = false;
 let boardPersistTimer = 0;
-let boardSelectedWidget = null;   // 选中的文本 / 标注组件（条目组件的选中即编辑器）
+const boardSelection = new Set();  // 选中的组件集合（框选可多选；条目组件的选中即编辑器）
 let boardSelectedHandle = null;   // 拖动中的端点句柄样式标记
 let boardEditingText = null;      // 正在编辑的文本组件 id
 let boardPendingMarker = null;    // 待绘制的标注形状（点击画布拖出）
@@ -2015,6 +2040,20 @@ let boardDraftMarker = null;      // 绘制中的临时元素
 let boardMenuTimer = 0;
 let lastBoardTap = { id: null, at: 0 };
 const boardRenderedCards = new Map(); // 条目卡片 id → 已渲染元素（虚拟化的增删基准）
+let boardSpaceDown = false;          // 按住空格：主键拖拽临时变成平移画布（框选让位）
+// 空格键监听一次性注册（模块加载即挂上，输入框内不劫持）。
+document.addEventListener('keydown', event => {
+  if (event.code !== 'Space' || event.repeat || currentView !== 'board') return;
+  if (event.target?.closest?.('input, textarea, select, [contenteditable="true"], [contenteditable="plaintext-only"]')) return;
+  boardSpaceDown = true;
+  boardEls?.canvas.classList.add('is-panning');
+  event.preventDefault();
+});
+document.addEventListener('keyup', event => {
+  if (event.code !== 'Space') return;
+  boardSpaceDown = false;
+  boardEls?.canvas.classList.remove('is-panning');
+});
 const boardTextHeights = new Map();   // 文本组件 id → 实测高度（bounds 估算用）
 
 function persistBoardState() {
@@ -2064,11 +2103,7 @@ function boardVacantSpot(width = BOARD_CARD_W, height = BOARD_CARD_H) {
   const centerX = Math.round((w / 2 - boardCam.x) / boardCam.scale);
   const centerY = Math.round((h / 2 - boardCam.y) / boardCam.scale);
   const step = height + 14;
-  const occupied = board.widgets.map(widget => ({
-    x: widget.x, y: widget.y,
-    w: widget.type === 'text' ? widget.w : (widget.type === 'marker' ? Math.max(Math.abs(widget.w), 40) : BOARD_CARD_W),
-    h: widget.type === 'text' ? (boardTextHeights.get(widget.id) || 64) : (widget.type === 'marker' ? Math.max(Math.abs(widget.h), 40) : BOARD_CARD_H)
-  }));
+  const occupied = board.widgets.map(widget => ({ x: widget.x, y: widget.y, ...boardWidgetSize(widget) }));
   const overlaps = (x, y) => occupied.some(rect => rect.x < x + width + 12 && rect.x + rect.w + 12 > x
     && rect.y < y + height + 12 && rect.y + rect.h + 12 > y);
   let top = centerY - Math.round(height / 2);
@@ -2079,22 +2114,29 @@ function boardVacantSpot(width = BOARD_CARD_W, height = BOARD_CARD_H) {
   return { x: centerX, y: top + 60 * step };
 }
 
+// 组件的占位尺寸：条目卡片可自由调整（widget.w/h），文本宽度固定高度实测，
+// 标注取外接矩形（画笔取包络）——bounds、框选与聚焦统一走这里。
+function boardWidgetSize(widget) {
+  if (widget.type === 'note' || widget.type === 'todo') return { w: widget.w || 264, h: widget.h || 114 };
+  if (widget.type === 'text') return { w: widget.w || 240, h: boardTextHeights.get(widget.id) || 64 };
+  if (widget.type === 'marker') {
+    const floor = widget.kind === 'draw' ? 1 : 40;
+    return { w: Math.max(Math.abs(widget.w) || floor, floor), h: Math.max(Math.abs(widget.h) || floor, floor) };
+  }
+  return { w: 264, h: 114 };
+}
+
 function boardBoundsOf(widgets) {
   let minX = 0;
   let minY = 0;
   let maxX = BOARD_CARD_W;
   let maxY = 196;
   widgets.forEach(widget => {
-    const w = widget.type === 'text' ? widget.w
-      : widget.type === 'marker' ? Math.max(Math.abs(widget.w), 40)
-      : BOARD_CARD_W;
-    const h = widget.type === 'text' ? (boardTextHeights.get(widget.id) || 64)
-      : widget.type === 'marker' ? Math.max(Math.abs(widget.h), 40)
-      : BOARD_CARD_H;
+    const size = boardWidgetSize(widget);
     minX = Math.min(minX, widget.x);
     minY = Math.min(minY, widget.y);
-    maxX = Math.max(maxX, widget.x + w);
-    maxY = Math.max(maxY, widget.y + h);
+    maxX = Math.max(maxX, widget.x + size.w);
+    maxY = Math.max(maxY, widget.y + size.h);
   });
   return { minX, minY, maxX: maxX + 24, maxY: maxY + 24 };
 }
@@ -2234,18 +2276,6 @@ function boardFrame(now) {
     boardCam.scale = boardMotion.targetScale;
     boardMotion.anchor = null;
   }
-  if (boardMotion.mode === 'glide') {
-    const bounds = boardContentBounds();
-    if ((boardCam.x <= bounds.x.min && boardCam.vX < 0) || (boardCam.x >= bounds.x.max && boardCam.vX > 0)) boardCam.vX = 0;
-    if ((boardCam.y <= bounds.y.min && boardCam.vY < 0) || (boardCam.y >= bounds.y.max && boardCam.vY > 0)) boardCam.vY = 0;
-    boardCam.x += (boardCam.vX * dt) / 1000 / boardCam.scale;
-    boardCam.y += (boardCam.vY * dt) / 1000 / boardCam.scale;
-    const decay = Math.pow(BOARD_GLIDE_DECAY, dt);
-    boardCam.vX *= decay;
-    boardCam.vY *= decay;
-    if (Math.hypot(boardCam.vX, boardCam.vY) < 26) boardMotion.mode = 'settle';
-    active = true;
-  }
   if (boardMotion.mode === 'settle') {
     const ease = 1 - Math.exp(-dt / 130);
     let targetX;
@@ -2307,8 +2337,9 @@ function boardSyncNodes() {
   const rect = boardVisibleWorldRect();
   const visibleIds = new Set();
   boardLayoutCache.cards.forEach(card => {
-    if (card.x + BOARD_CARD_W < rect.x || card.x > rect.x + rect.w) return;
-    if (card.y + BOARD_CARD_H < rect.y || card.y > rect.y + rect.h) return;
+    const size = boardWidgetSize(card.widget);
+    if (card.x + size.w < rect.x || card.x > rect.x + rect.w) return;
+    if (card.y + size.h < rect.y || card.y > rect.y + rect.h) return;
     visibleIds.add(card.widget.id);
   });
   for (const [id, element] of boardRenderedCards) {
@@ -2349,7 +2380,8 @@ function boardNodeHTML(card, silent) {
   const delay = boardEnterAnimated && !silent ? Math.min(card.rowIndex * 16, 360) : 0;
   // 首次进入按序级联落位；滚动中新增的卡片只做短淡入。
   const motion = delay ? ' data-enter="1"' : (!silent ? ' data-new="1"' : '');
-  return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}${item.id === selectedId ? ' active' : ''}" data-id="${escapeHTML(item.id)}" data-widget-id="${escapeHTML(card.widget.id)}" data-board-node="${escapeHTML(item.id)}"${motion} style="left:${card.x}px;top:${card.y}px;${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
+  return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}${item.id === selectedId ? ' active' : ''}" data-id="${escapeHTML(item.id)}" data-widget-id="${escapeHTML(card.widget.id)}" data-board-node="${escapeHTML(item.id)}"${motion} style="left:${card.x}px;top:${card.y}px;width:${card.widget.w || 264}px;height:${card.widget.h || 114}px;${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
+    <i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i>
     <span class="board-node-remove" data-widget-remove="${escapeHTML(card.widget.id)}" role="button" title="${escapeHTML(t('boardRemoveWidget'))}" aria-label="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-close"/></svg></span>
     <div class="board-node-top"><span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>${item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : ''}${stamp}</div>
     <b class="board-node-title">${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</b>
@@ -2358,18 +2390,30 @@ function boardNodeHTML(card, silent) {
   </button>`;
 }
 
-// —— 标注绘制：起点到终点的向量，渲染时归一为外接矩形 ——
-function boardMarkerSVG(widget, live) {
-  const x1 = 0;
-  const y1 = 0;
-  const x2 = widget.w;
-  const y2 = widget.h;
+// —— 标注绘制：形状由（可能为负的）端点向量描述，渲染时归一为外接矩形；
+// 线段一律以归一后的容器原点为参考，斜向时也精确贴合。 ——
+function boardMarkerSVG(widget, originLeft = 0, originTop = 0, live = false) {
   const stroke = live ? 'currentColor' : 'var(--board-marker-color, currentColor)';
+  if (widget.kind === 'draw') {
+    const points = widget.points || [];
+    let path = '';
+    for (let i = 0; i + 1 < points.length; i += 2) {
+      path += `${i === 0 ? 'M' : 'L'}${points[i].toFixed(1)} ${points[i + 1].toFixed(1)} `;
+    }
+    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><path d="${path.trim()}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+  const x1 = widget.x - originLeft;
+  const y1 = widget.y - originTop;
+  const x2 = widget.x + widget.w - originLeft;
+  const y2 = widget.y + widget.h - originTop;
   if (widget.kind === 'rect') {
     return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><rect x="${Math.min(x1, x2)}" y="${Math.min(y1, y2)}" width="${Math.abs(x2 - x1)}" height="${Math.abs(y2 - y1)}" rx="10" fill="none" stroke="${stroke}" stroke-width="2.5"/></svg>`;
   }
   if (widget.kind === 'ellipse') {
     return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><ellipse cx="${(x1 + x2) / 2}" cy="${(y1 + y2) / 2}" rx="${Math.abs(x2 - x1) / 2}" ry="${Math.abs(y2 - y1) / 2}" fill="none" stroke="${stroke}" stroke-width="2.5"/></svg>`;
+  }
+  if (widget.kind === 'line') {
+    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><path d="M${x1} ${y1} L${x2} ${y2}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
   }
   const angle = Math.atan2(y2 - y1, x2 - x1);
   const head = 13;
@@ -2386,13 +2430,36 @@ function boardMarkerSVG(widget, live) {
 }
 
 function boardStaticHTML(widget) {
-  const selected = widget.id === boardSelectedWidget ? ' selected' : '';
+  const selected = boardSelection.has(widget.id) ? ' selected' : '';
   if (widget.type === 'text') {
-    const family = BOARD_TEXT_FAMILIES[widget.font] || '';
+    const family = widget.font === 'custom'
+      ? (widget.customFont || '')
+      : (BOARD_TEXT_FAMILIES[widget.font] || '');
     const body = widget.text
       ? escapeHTML(widget.text).replace(/\n/g, '<br>')
       : `<span class="board-text-placeholder">${escapeHTML(t('boardTextPlaceholder'))}</span>`;
-    return `<div class="board-widget board-text${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static spellcheck="false" style="left:${widget.x}px;top:${widget.y}px;width:${widget.w}px;font-size:${widget.size}px;${family ? `font-family:${family};` : ''}${widget.bold ? 'font-weight:700;' : ''}${widget.italic ? 'font-style:italic;' : ''}text-align:${widget.align};">${body}<i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i></div>`;
+    const background = widget.bg !== 'none'
+      ? `background:color-mix(in srgb, ${widget.bg} ${widget.bgOpacity}%, transparent);`
+      : '';
+    return `<div class="board-widget board-text${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static spellcheck="false" style="left:${widget.x}px;top:${widget.y}px;width:${widget.w}px;font-size:${widget.size}px;${family ? `font-family:${family};` : ''}${widget.bold ? 'font-weight:700;' : ''}${widget.italic ? 'font-style:italic;' : ''}text-align:${widget.align};${background}border-radius:${widget.radius}px;padding:${widget.pad}px;">${body}<i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i></div>`;
+  }
+  // 画笔：容器取点集包络，笔迹按包络原点平移绘制。
+  if (widget.kind === 'draw') {
+    const points = widget.points || [];
+    let minX = 0;
+    let minY = 0;
+    let maxX = 1;
+    let maxY = 1;
+    for (let i = 0; i + 1 < points.length; i += 2) {
+      if (i === 0 || points[i] < minX) minX = points[i];
+      if (i === 0 || points[i + 1] < minY) minY = points[i + 1];
+      if (points[i] > maxX) maxX = points[i];
+      if (points[i + 1] > maxY) maxY = points[i + 1];
+    }
+    const shifted = { ...widget, points: points.map((value, index) => value - (index % 2 === 0 ? minX : minY)) };
+    return `<div class="board-widget board-marker kind-draw${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static style="left:${widget.x + minX}px;top:${widget.y + minY}px;width:${Math.max(maxX - minX, 1)}px;height:${Math.max(maxY - minY, 1)}px;--board-marker-color:${widget.color};">
+      ${boardMarkerSVG(shifted)}
+    </div>`;
   }
   const left = Math.min(widget.x, widget.x + widget.w);
   const top = Math.min(widget.y, widget.y + widget.h);
@@ -2403,7 +2470,7 @@ function boardStaticHTML(widget) {
   const endX = ((widget.x + widget.w - left) / width) * 100;
   const endY = ((widget.y + widget.h - top) / height) * 100;
   return `<div class="board-widget board-marker kind-${widget.kind}${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static style="left:${left}px;top:${top}px;width:${width}px;height:${height}px;--board-marker-color:${widget.color};">
-    ${boardMarkerSVG(widget)}
+    ${boardMarkerSVG(widget, left, top)}
     <i class="board-handle" data-widget-handle="start" style="left:${startX}%;top:${startY}%;" aria-hidden="true"></i>
     <i class="board-handle" data-widget-handle="end" style="left:${endX}%;top:${endY}%;" aria-hidden="true"></i>
   </div>`;
@@ -2448,6 +2515,7 @@ function renderBoardShell() {
   return `<div class="board-canvas" id="boardCanvas">
     <div class="board-viewport" id="boardViewport">
       <div class="board-world" id="boardWorld"></div>
+      <div class="board-marquee" id="boardMarquee" hidden></div>
       <div class="board-empty" id="boardEmpty" hidden><div><span><svg><use href="#i-board"/></svg></span><h3>${escapeHTML(t('boardEmptyTitle'))}</h3><p>${escapeHTML(t('boardEmptyHint'))}</p></div></div>
     </div>
     <div class="board-pill" id="boardPill">
@@ -2462,10 +2530,14 @@ function renderBoardShell() {
           <button type="button" data-board-marker="arrow"><svg><use href="#i-marker"/></svg>${escapeHTML(t('boardMarkerArrow'))}</button>
           <button type="button" data-board-marker="rect"><svg><use href="#i-window-maximize"/></svg>${escapeHTML(t('boardMarkerRect'))}</button>
           <button type="button" data-board-marker="ellipse"><svg><use href="#i-radar"/></svg>${escapeHTML(t('boardMarkerEllipse'))}</button>
+          <button type="button" data-board-marker="line"><svg><use href="#i-divider"/></svg>${escapeHTML(t('boardMarkerLine'))}</button>
+          <button type="button" data-board-marker="draw"><svg><use href="#i-edit"/></svg>${escapeHTML(t('boardMarkerDraw'))}</button>
         </div>
       </div>
       <button type="button" class="board-tool" id="boardAddImport" title="${escapeHTML(t('boardAddItems'))}"><svg><use href="#i-plus"/></svg><span>${escapeHTML(t('boardAddItems'))}</span></button>
       <span class="board-chrome-sep" aria-hidden="true"></span>
+      <button type="button" class="board-zoom-button" id="boardUndo" title="${escapeHTML(t('boardUndo'))}" aria-label="${escapeHTML(t('boardUndo'))}" disabled><svg><use href="#i-undo"/></svg></button>
+      <button type="button" class="board-zoom-button" id="boardRedo" title="${escapeHTML(t('boardRedo'))}" aria-label="${escapeHTML(t('boardRedo'))}" disabled><svg><use href="#i-redo"/></svg></button>
       <div class="board-zoom">
         <button type="button" class="board-zoom-button" id="boardZoomOut" title="${escapeHTML(t('boardZoomOut'))}" aria-label="${escapeHTML(t('boardZoomOut'))}"><svg><use href="#i-window-minimize"/></svg></button>
         <span class="board-zoom-level" id="boardZoomLevel" aria-live="off">100%</span>
@@ -2541,15 +2613,16 @@ function boardMarkActive(id) {
 }
 
 // —— 组件选中与浮动工具条（文本 / 标注；条目组件的「工具」即右侧编辑器） ——
-function boardSelectWidget(id) {
-  boardSelectedWidget = id;
+function boardSetSelection(ids) {
+  boardSelection.clear();
+  ids.forEach(id => boardSelection.add(id));
   if (boardEls?.world) {
     $$('[data-board-static]', boardEls.world).forEach(element => {
-      element.classList.toggle('selected', element.dataset.widgetId === id);
+      element.classList.toggle('selected', boardSelection.has(element.dataset.widgetId));
     });
+    boardRenderedCards.forEach((element, widgetId) => element.classList.toggle('selected', boardSelection.has(widgetId)));
   }
   boardRenderToolbar();
-  if (id) boardFocusSelection();
 }
 
 function boardWidgetById(id) {
@@ -2564,7 +2637,8 @@ function boardEditorWidth() {
 }
 
 let boardEditorResizer = null;
-function boardEnsureEditorResizer() {
+let boardEditorClose = null;
+function boardEnsureEditorChrome() {
   if (boardEditorResizer && document.contains(boardEditorResizer)) return;
   const workspace = $('main.workspace');
   if (!workspace) return;
@@ -2598,6 +2672,18 @@ function boardEnsureEditorResizer() {
   };
   boardEditorResizer.addEventListener('pointerup', finish);
   boardEditorResizer.addEventListener('pointercancel', finish);
+  // 面板关闭按钮：浮动在面板左上角内侧，点击收起面板（与点空白等效）。
+  if (!boardEditorClose || !document.contains(boardEditorClose)) {
+    boardEditorClose = document.createElement('button');
+    boardEditorClose.type = 'button';
+    boardEditorClose.className = 'board-editor-close';
+    boardEditorClose.id = 'boardEditorClose';
+    boardEditorClose.title = t('cancel');
+    boardEditorClose.setAttribute('aria-label', t('cancel'));
+    boardEditorClose.innerHTML = '<svg><use href="#i-close"/></svg>';
+    boardEditorClose.addEventListener('click', () => boardDeselect());
+    workspace.appendChild(boardEditorClose);
+  }
 }
 
 // 面板打开 / 拖宽时，把选中的卡片或组件平滑带到面板左侧的可见区中心。
@@ -2606,8 +2692,8 @@ function boardFocusSelection() {
   let target = null;
   const card = boardLayoutCache.cards.find(entry => entry.item.id === selectedId);
   if (card) target = { x: card.x + BOARD_CARD_W / 2, y: card.y + BOARD_CARD_H / 2 };
-  if (!target && boardSelectedWidget) {
-    const widget = boardWidgetById(boardSelectedWidget);
+  if (!target && boardSelection.size === 1) {
+    const widget = boardWidgetById([...boardSelection][0]);
     if (widget) {
       const width = widget.type === 'text' ? widget.w : Math.max(Math.abs(widget.w), 40);
       target = { x: widget.x + width / 2, y: widget.y + (widget.type === 'text' ? 26 : Math.abs(widget.h) / 2) };
@@ -2628,46 +2714,133 @@ function boardFocusSelection() {
   boardEnsureFrame();
 }
 
+const BOARD_ALIGN_ICONS = {
+  left: '<svg viewBox="0 0 24 24" class="board-align-icon"><path d="M4 6h16M4 12h10M4 18h13"/></svg>',
+  center: '<svg viewBox="0 0 24 24" class="board-align-icon"><path d="M4 6h16M7 12h10M5.5 18h13"/></svg>',
+  right: '<svg viewBox="0 0 24 24" class="board-align-icon"><path d="M4 6h16M10 12h10M7 18h13"/></svg>'
+};
+const BOARD_ALIGN_ORDER = ['left', 'center', 'right'];
+const BOARD_ALIGN_HINT = { left: 'boardAlignLeft', center: 'boardAlignCenter', right: 'boardAlignRight' };
+
 function boardRenderToolbar() {
   const bar = boardEls?.toolbar;
   if (!bar) return;
-  const widget = boardSelectedWidget ? boardWidgetById(boardSelectedWidget) : null;
-  if (!widget || (widget.type !== 'text' && widget.type !== 'marker')) {
-    bar.hidden = true;
-    bar.innerHTML = '';
+  if (boardSelection.size === 1) {
+    const widget = boardWidgetById([...boardSelection][0]);
+    if (widget?.type === 'text') {
+      const alignNext = BOARD_ALIGN_ORDER[(BOARD_ALIGN_ORDER.indexOf(widget.align) + 1) % 3];
+      bar.innerHTML = `
+        <button type="button" class="board-tw" data-tw="size-down" title="${escapeHTML(t('boardFontSize'))}">−</button>
+        <input class="board-tw-size-input" data-tw="size-set" type="number" min="11" max="48" step="1" value="${widget.size}" aria-label="${escapeHTML(t('boardFontSize'))}"/>
+        <button type="button" class="board-tw" data-tw="size-up" title="${escapeHTML(t('boardFontSize'))}">＋</button>
+        <label class="board-tw-font"><select data-tw="font" aria-label="${escapeHTML(t('boardFontLabel'))}">
+          <option value="app"${widget.font === 'app' ? ' selected' : ''}>${escapeHTML(t('boardFontApp'))}</option>
+          <option value="serif"${widget.font === 'serif' ? ' selected' : ''}>${escapeHTML(t('boardFontSerif'))}</option>
+          <option value="rounded"${widget.font === 'rounded' ? ' selected' : ''}>${escapeHTML(t('boardFontRounded'))}</option>
+          <option value="mono"${widget.font === 'mono' ? ' selected' : ''}>${escapeHTML(t('boardFontMono'))}</option>
+          <option value="custom"${widget.font === 'custom' ? ' selected' : ''}>${escapeHTML(t('boardCustomFont'))}</option>
+        </select></label>
+        <button type="button" class="board-tw${widget.bold ? ' on' : ''}" data-tw="bold" title="Bold"><b>B</b></button>
+        <button type="button" class="board-tw${widget.italic ? ' on' : ''}" data-tw="italic" title="Italic"><i>I</i></button>
+        <button type="button" class="board-tw" data-tw="align-cycle" title="${escapeHTML(t(BOARD_ALIGN_HINT[alignNext]))}">${BOARD_ALIGN_ICONS[widget.align]}</button>
+        <button type="button" class="board-tw" data-tw="bg-pop" title="${escapeHTML(t('boardBg'))}"><svg><use href="#i-palette"/></svg></button>
+        <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
+      bar.hidden = false;
+      boardSyncToolbar();
+      return;
+    }
+    if (widget?.type === 'marker') {
+      bar.innerHTML = `
+        <span class="board-tw-label">${escapeHTML(t('boardMarkerColor'))}</span>
+        ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch${widget.color === color ? ' on' : ''}" data-tw="color" data-color="${color}" style="background:${color}" title="${escapeHTML(t('boardMarkerColor'))}"></button>`).join('')}
+        <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
+      bar.hidden = false;
+      boardSyncToolbar();
+      return;
+    }
+  }
+  if (boardSelection.size > 1) {
+    bar.innerHTML = `
+      <span class="board-tw-label">${escapeHTML(t('boardSelectedCount').replace('{0}', boardSelection.size))}</span>
+      <button type="button" class="board-tw is-danger" data-tw="remove-selection" title="${escapeHTML(t('boardMarqueeDelete'))}"><svg><use href="#i-trash"/></svg></button>
+      <button type="button" class="board-tw" data-tw="clear-selection" title="${escapeHTML(t('boardMarqueeClear'))}"><svg><use href="#i-close"/></svg></button>`;
+    bar.hidden = false;
+    boardSyncToolbar();
     return;
   }
-  if (widget.type === 'text') {
-    bar.innerHTML = `
-      <button type="button" class="board-tw" data-tw="size-down" title="${escapeHTML(t('boardFontSize'))}">−</button>
-      <span class="board-tw-size">${widget.size}</span>
-      <button type="button" class="board-tw" data-tw="size-up" title="${escapeHTML(t('boardFontSize'))}">＋</button>
-      <label class="board-tw-font"><select data-tw="font" aria-label="${escapeHTML(t('boardFontLabel'))}">
-        <option value="app"${widget.font === 'app' ? ' selected' : ''}>${escapeHTML(t('boardFontApp'))}</option>
-        <option value="serif"${widget.font === 'serif' ? ' selected' : ''}>${escapeHTML(t('boardFontSerif'))}</option>
-        <option value="rounded"${widget.font === 'rounded' ? ' selected' : ''}>${escapeHTML(t('boardFontRounded'))}</option>
-        <option value="mono"${widget.font === 'mono' ? ' selected' : ''}>${escapeHTML(t('boardFontMono'))}</option>
-      </select></label>
-      <button type="button" class="board-tw${widget.bold ? ' on' : ''}" data-tw="bold" title="Bold"><b>B</b></button>
-      <button type="button" class="board-tw${widget.italic ? ' on' : ''}" data-tw="italic" title="Italic"><i>I</i></button>
-      <button type="button" class="board-tw${widget.align === 'left' ? ' on' : ''}" data-tw="align-left" title="${escapeHTML(t('boardAlignLeft'))}"><svg><use href="#i-ordered-list"/></svg></button>
-      <button type="button" class="board-tw${widget.align === 'center' ? ' on' : ''}" data-tw="align-center" title="${escapeHTML(t('boardAlignCenter'))}"><svg><use href="#i-list"/></svg></button>
-      <button type="button" class="board-tw${widget.align === 'right' ? ' on' : ''}" data-tw="align-right" title="${escapeHTML(t('boardAlignRight'))}"><svg><use href="#i-list"/></svg></button>
-      <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
-  } else {
-    bar.innerHTML = `
-      <span class="board-tw-label">${escapeHTML(t('boardMarkerColor'))}</span>
-      ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch${widget.color === color ? ' on' : ''}" data-tw="color" data-color="${color}" style="background:${color}" title="${escapeHTML(t('boardMarkerColor'))}"></button>`).join('')}
-      <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
+  bar.hidden = true;
+  bar.innerHTML = '';
+}
+
+// 背景样式小面板（填充色 / 不透明度 / 圆角 / 内边距）：挂在工具条上方。
+function boardRenderBgPop(widget) {
+  let pop = $('#boardBgPop', boardEls?.canvas || document);
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = 'boardBgPop';
+    pop.className = 'board-style-pop';
+    boardEls.toolbar.after(pop);
   }
-  bar.hidden = false;
-  boardSyncToolbar();
+  const colors = ['none', ...BOARD_MARKER_COLORS];
+  pop.innerHTML = `
+    <div class="board-style-row">${colors.map(color => color === 'none'
+      ? `<button type="button" class="board-swatch is-none${widget.bg === 'none' ? ' on' : ''}" data-bg="none" title="${escapeHTML(t('boardBgNone'))}"></button>`
+      : `<button type="button" class="board-swatch${widget.bg === color ? ' on' : ''}" data-bg="${color}" style="background:${color}"></button>`).join('')}</div>
+    <div class="board-style-row"><span>${escapeHTML(t('boardBgOpacity'))}</span><input type="range" min="0" max="100" step="5" value="${widget.bgOpacity}" data-bgop aria-label="${escapeHTML(t('boardBgOpacity'))}"/><output>${widget.bgOpacity}%</output></div>
+    <div class="board-style-row"><span>${escapeHTML(t('boardRadius'))}</span>${[0, 8, 14, 20].map(value => `<button type="button" class="board-tw${widget.radius === value ? ' on' : ''}" data-radius="${value}">${value}</button>`).join('')}</div>
+    <div class="board-style-row"><span>${escapeHTML(t('boardPadding'))}</span>${[0, 6, 12, 18].map(value => `<button type="button" class="board-tw${widget.pad === value ? ' on' : ''}" data-pad="${value}">${value}</button>`).join('')}</div>`;
+  pop.hidden = false;
+}
+
+function boardCloseBgPop() {
+  const pop = $('#boardBgPop', boardEls?.canvas || document);
+  if (pop) pop.hidden = true;
+}
+
+// 框选：拖动期间的虚线矩形（屏幕层）；松手转换为世界矩形做相交测试。
+function boardUpdateMarquee(gesture) {
+  const element = boardEls?.marquee;
+  if (!element) return;
+  element.style.left = `${Math.min(gesture.originX, gesture.currentX)}px`;
+  element.style.top = `${Math.min(gesture.originY, gesture.currentY)}px`;
+  element.style.width = `${Math.abs(gesture.currentX - gesture.originX)}px`;
+  element.style.height = `${Math.abs(gesture.currentY - gesture.originY)}px`;
+}
+
+function boardApplyMarquee(gesture) {
+  const left = Math.min(gesture.originX, gesture.currentX);
+  const right = Math.max(gesture.originX, gesture.currentX);
+  const top = Math.min(gesture.originY, gesture.currentY);
+  const bottom = Math.max(gesture.originY, gesture.currentY);
+  const world = {
+    x0: (left - boardCam.x) / boardCam.scale,
+    x1: (right - boardCam.x) / boardCam.scale,
+    y0: (top - boardCam.y) / boardCam.scale,
+    y1: (bottom - boardCam.y) / boardCam.scale
+  };
+  const hits = [];
+  (boardLayoutCache?.board.widgets || []).forEach(widget => {
+    const size = boardWidgetSize(widget);
+    if (widget.x + size.w < world.x0 || widget.x > world.x1) return;
+    if (widget.y + size.h < world.y0 || widget.y > world.y1) return;
+    hits.push(widget.id);
+  });
+  if (hits.length) boardSetSelection(hits);
+  else boardSetSelection([]);
+}
+
+// 卡片尺寸拖拽时同步已渲染节点的 inline 尺寸（内容自适应由 CSS 完成）。
+function boardRefreshCardNode(widget) {
+  const element = boardRenderedCards.get(widget.id);
+  if (!element) return;
+  element.style.width = `${widget.w}px`;
+  element.style.height = `${widget.h}px`;
 }
 
 // 工具条浮在组件上方（屏幕层，不随画布缩放）；组件移出视口时暂时隐藏。
 function boardSyncToolbar() {
   const bar = boardEls?.toolbar;
-  const widget = boardSelectedWidget ? boardWidgetById(boardSelectedWidget) : null;
+  const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
   if (!bar || !widget) return;
   const { w } = boardViewportSize();
   const width = widget.type === 'text' ? widget.w : Math.max(Math.abs(widget.w), 40);
@@ -2684,14 +2857,96 @@ function boardSyncToolbar() {
   bar.style.top = `${Math.max(screenY - 46, 10)}px`;
 }
 
-function boardRemoveWidget(id) {
-  const board = activeBoard();
-  board.widgets = board.widgets.filter(widget => widget.id !== id);
-  boardTextHeights.delete(id);
+// —— 撤销 / 重做：以板组件快照为粒度（样式类操作 800ms 内合并为一步）。 ——
+const boardUndoStack = [];
+const boardRedoStack = [];
+let boardUndoKind = '';
+let boardUndoAt = 0;
+
+function boardPushUndo(kind = 'structure') {
+  const board = boardLayoutCache?.board || activeBoard();
+  if (!board) return;
+  const now = Date.now();
+  if (kind === 'style' && boardUndoKind === 'style' && now - boardUndoAt < 800 && boardUndoStack.length) {
+    boardUndoAt = now;
+    boardRedoStack.length = 0;
+    boardSyncUndoButtons();
+    return;
+  }
+  boardUndoStack.push(JSON.stringify(board.widgets));
+  if (boardUndoStack.length > 60) boardUndoStack.shift();
+  boardRedoStack.length = 0;
+  boardUndoKind = kind;
+  boardUndoAt = now;
+  boardSyncUndoButtons();
+}
+// style 合并分支与普通分支统一在入口处刷新按钮状态。
+
+function boardUndo() {
+  const board = boardLayoutCache?.board || activeBoard();
+  if (!board || !boardUndoStack.length) return;
+  boardRedoStack.push(JSON.stringify(board.widgets));
+  board.widgets = JSON.parse(boardUndoStack.pop());
+  boardUndoKind = '';
   touchBoard(board);
   persist();
-  if (boardSelectedWidget === id) boardSelectWidget(null);
+  boardSetSelection([]);
   renderList();
+  boardSyncUndoButtons();
+}
+
+function boardRedo() {
+  const board = boardLayoutCache?.board || activeBoard();
+  if (!board || !boardRedoStack.length) return;
+  boardUndoStack.push(JSON.stringify(board.widgets));
+  board.widgets = JSON.parse(boardRedoStack.pop());
+  boardUndoKind = '';
+  touchBoard(board);
+  persist();
+  boardSetSelection([]);
+  renderList();
+  boardSyncUndoButtons();
+}
+
+function boardSyncUndoButtons() {
+  if (!boardEls?.canvas) return;
+  $('#boardUndo', boardEls.canvas)?.toggleAttribute('disabled', !boardUndoStack.length);
+  $('#boardRedo', boardEls.canvas)?.toggleAttribute('disabled', !boardRedoStack.length);
+}
+
+// 极简二级确认：第一次点变成「再点一次删除」，2.6 秒内再点才执行。
+function boardArmDelete(button, onConfirm) {
+  if (button.dataset.armed === '1') {
+    button.dataset.armed = '';
+    button.classList.remove('is-armed');
+    onConfirm();
+    return;
+  }
+  button.dataset.armed = '1';
+  button.classList.add('is-armed');
+  button.title = t('boardDeleteArm');
+  setTimeout(() => {
+    if (button.dataset.armed !== '1') return;
+    button.dataset.armed = '';
+    button.classList.remove('is-armed');
+    button.title = t('boardRemoveWidget');
+  }, 2600);
+}
+
+function boardRemoveWidgets(ids) {
+  const board = activeBoard();
+  const idSet = new Set(ids);
+  boardPushUndo();
+  board.widgets = board.widgets.filter(widget => !idSet.has(widget.id));
+  ids.forEach(id => boardTextHeights.delete(id));
+  touchBoard(board);
+  persist();
+  boardSetSelection([]);
+  renderList();
+}
+
+function boardRemoveWidget(id) {
+  boardRemoveWidgets([id]);
 }
 
 // —— 文本编辑：双击进入，失焦保存；空文本落糊即撤（不留隐形组件） ——
@@ -2722,6 +2977,7 @@ function boardEditText(id) {
       return;
     }
     if (text !== widget.text) {
+      boardPushUndo();
       widget.text = text.slice(0, 4000);
       touchBoard(boardLayoutCache.board);
       persist();
@@ -2735,7 +2991,7 @@ function boardEditText(id) {
 // —— 标注绘制：选形状后在画布上拖出 ——
 function boardStartDraw(kind) {
   boardPendingMarker = kind;
-  boardCancelWidgetSelection();
+  boardSetSelection([]);
   boardEls?.canvas.classList.add('is-drawing');
 }
 
@@ -2747,34 +3003,75 @@ function boardCancelDraw() {
   $$('#boardMarkerMenu [data-board-marker]', boardEls?.canvas || document).forEach(button => button.classList.remove('active'));
 }
 
-function boardDrawDraft(widget) {
+function boardDrawDraft(draft) {
   if (!boardDraftMarker) {
     boardDraftMarker = document.createElement('div');
-    boardDraftMarker.className = 'board-widget board-marker is-draft';
     boardEls.world.appendChild(boardDraftMarker);
   }
-  const left = Math.min(widget.x, widget.x + widget.w);
-  const top = Math.min(widget.y, widget.y + widget.h);
-  boardDraftMarker.className = `board-widget board-marker kind-${widget.kind} is-draft`;
+  const widget = draft.kind === 'draw'
+    ? { kind: 'draw', x: draft.x, y: draft.y, points: draft.points, w: 1, h: 1 }
+    : draft;
+  let left;
+  let top;
+  let width;
+  let height;
+  let renderWidget = widget;
+  if (draft.kind === 'draw') {
+    const points = draft.points;
+    let minX = 0; let minY = 0; let maxX = 1; let maxY = 1;
+    for (let i = 0; i + 1 < points.length; i += 2) {
+      if (i === 0 || points[i] < minX) minX = points[i];
+      if (i === 0 || points[i + 1] < minY) minY = points[i + 1];
+      if (points[i] > maxX) maxX = points[i];
+      if (points[i + 1] > maxY) maxY = points[i + 1];
+    }
+    left = draft.x + minX;
+    top = draft.y + minY;
+    width = Math.max(maxX - minX, 1);
+    height = Math.max(maxY - minY, 1);
+    renderWidget = { ...widget, points: points.map((value, index) => value - (index % 2 === 0 ? minX : minY)) };
+  } else {
+    left = Math.min(draft.x, draft.x + draft.w);
+    top = Math.min(draft.y, draft.y + draft.h);
+    width = Math.max(Math.abs(draft.w), 1);
+    height = Math.max(Math.abs(draft.h), 1);
+  }
+  boardDraftMarker.className = `board-widget board-marker kind-${draft.kind} is-draft`;
   boardDraftMarker.style.left = `${left}px`;
   boardDraftMarker.style.top = `${top}px`;
-  boardDraftMarker.style.width = `${Math.max(Math.abs(widget.w), 1)}px`;
-  boardDraftMarker.style.height = `${Math.max(Math.abs(widget.h), 1)}px`;
-  boardDraftMarker.innerHTML = boardMarkerSVG(widget, true);
+  boardDraftMarker.style.width = `${width}px`;
+  boardDraftMarker.style.height = `${height}px`;
+  boardDraftMarker.innerHTML = boardMarkerSVG(renderWidget, draft.kind === 'draw' ? 0 : left, top, true);
 }
 
-function boardCommitDraw(x, y, w, h) {
+function boardCommitDraw(draft) {
   const kind = boardPendingMarker;
   if (!kind) return;
-  if (Math.hypot(w, h) < 10) { boardCancelDraw(); return; }
   const board = activeBoard();
-  const widget = { id: uid(), type: 'marker', kind, x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h), color: BOARD_MARKER_COLORS[0] };
+  let widget;
+  if (kind === 'draw') {
+    const points = draft.points || [];
+    if (points.length < 6) { boardCancelDraw(); return; }
+    let minX = 0; let minY = 0; let maxX = 1; let maxY = 1;
+    for (let i = 0; i + 1 < points.length; i += 2) {
+      if (i === 0 || points[i] < minX) minX = points[i];
+      if (i === 0 || points[i + 1] < minY) minY = points[i + 1];
+      if (points[i] > maxX) maxX = points[i];
+      if (points[i + 1] > maxY) maxY = points[i + 1];
+    }
+    boardPushUndo();
+    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x + minX), y: Math.round(draft.y + minY), w: Math.round(maxX - minX), h: Math.round(maxY - minY), color: BOARD_MARKER_COLORS[0], points: points.map((value, index) => Math.round(value - (index % 2 === 0 ? minX : minY))) };
+  } else {
+    if (Math.hypot(draft.w || 0, draft.h || 0) < 10) { boardCancelDraw(); return; }
+    boardPushUndo();
+    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x), y: Math.round(draft.y), w: Math.round(draft.w), h: Math.round(draft.h), color: BOARD_MARKER_COLORS[0] };
+  }
   board.widgets.push(widget);
   touchBoard(board);
   persist();
   boardCancelDraw();
   renderList();
-  boardSelectWidget(widget.id);
+  boardSetSelection([widget.id]);
 }
 
 // —— 板管理：切换 / 新建 / 重命名 / 删除 ——
@@ -2969,6 +3266,7 @@ async function boardRunImport() {
   const board = activeBoard();
   const result = await askBoardImport(board);
   if (!result || (!result.add.length && !result.remove.length)) return;
+  boardPushUndo();
   const removeSet = new Set(result.remove);
   if (removeSet.size) board.widgets = board.widgets.filter(widget => !removeSet.has(widget.ref));
   result.add.forEach(id => {
@@ -2983,7 +3281,7 @@ async function boardRunImport() {
 }
 
 function boardCancelWidgetSelection() {
-  if (boardSelectedWidget) boardSelectWidget(null);
+  if (boardSelection.size) boardSetSelection([]);
 }
 
 function bindBoardScene() {
@@ -2999,10 +3297,11 @@ function bindBoardScene() {
     viewport: $('#boardViewport', canvas),
     world: $('#boardWorld', canvas),
     empty: $('#boardEmpty', canvas),
+    marquee: $('#boardMarquee', canvas),
     scaleLabel: $('#boardZoomLevel', canvas),
     toolbar: $('#boardWidgetToolbar', canvas)
   };
-  boardSelectedWidget = null;
+  
   boardEditingText = null;
   boardCancelDraw();
   boardLayoutCache = boardLayout();
@@ -3013,6 +3312,9 @@ function bindBoardScene() {
   boardRenderStatics();
   if (entering) {
     boardStopMotion();
+    boardUndoStack.length = 0;
+    boardRedoStack.length = 0;
+    boardSyncUndoButtons();
     boardEnterAnimated = !reduceWindowMotion();
     const cam = boardState.cams[boardLayoutCache.board.id];
     if (cam) {
@@ -3050,7 +3352,8 @@ function bindBoardScene() {
   };
 
   viewport.addEventListener('pointerdown', event => {
-    // 主键：空白拖画布 / 组件上拖组件；中键：任何位置都拖画布（禁用浏览器自动滚动）。
+    // 主键：空白处框选（按住空格则拖画布）、组件上拖组件；中键：任何位置都拖画布；
+    // 触摸：空白拖画布（触屏没有框选的习惯）。
     if (event.pointerType === 'mouse' && event.button !== 0 && event.button !== 1) return;
     if (event.button === 1) event.preventDefault();
     if (event.target.closest('.is-editing')) return;
@@ -3058,6 +3361,7 @@ function bindBoardScene() {
     try { viewport.setPointerCapture(event.pointerId); } catch { /* 无活跃指针可捕获 */ }
     boardPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     boardStopMotion();
+    boardCloseBgPop();
     if (boardPointers.size >= 2) {
       const [a, b] = [...boardPointers.values()];
       const rect = viewport.getBoundingClientRect();
@@ -3083,18 +3387,39 @@ function bindBoardScene() {
       pressNode: button === 0 ? event.target.closest('[data-widget-id]') : null,
       history: [{ x: event.clientX, y: event.clientY, t: performance.now() }]
     });
-    if (event.button === 1) {
+    if (event.button === 1 || boardSpaceDown) {
       boardGesture = panGesture(1);
+      return;
+    }
+    // 选中标注形状后按下即绘制：明确的意图优先于组件命中（标注常画在卡片上或跨卡片）。
+    if (boardPendingMarker) {
+      const rect = viewport.getBoundingClientRect();
+      const startX = (event.clientX - rect.left - boardCam.x) / boardCam.scale;
+      const startY = (event.clientY - rect.top - boardCam.y) / boardCam.scale;
+      boardGesture = {
+        mode: 'draw',
+        kind: boardPendingMarker,
+        startX,
+        startY,
+        currentW: 0,
+        currentH: 0,
+        points: boardPendingMarker === 'draw' ? [0, 0] : null,
+        lastPointAt: 0
+      };
       return;
     }
     const handle = event.target.closest('[data-widget-handle]');
     if (handle) {
       const widget = widgetFromEvent(event);
       if (widget) {
+        boardPushUndo();
         boardGesture = {
           mode: 'handle', widget, handle: handle.dataset.widgetHandle,
           originX: event.clientX, originY: event.clientY,
-          baseX: widget.x, baseY: widget.y, baseW: widget.w, baseH: widget.h
+          baseX: widget.x, baseY: widget.y,
+          // 迁移来的旧组件可能没有尺寸字段，以默认尺寸为基准。
+          baseW: widget.w ?? (widget.type === 'text' ? 240 : 264),
+          baseH: widget.h ?? 114
         };
         handle.classList.add('is-active');
         boardSelectedHandle = handle;
@@ -3103,31 +3428,43 @@ function bindBoardScene() {
     }
     const widget = widgetFromEvent(event);
     if (widget) {
-      // 拖组件：条目卡片、文本、标注一律 1:1 跟手。
+      // 多选状态下拖动选中的任一组件 = 整组移动；否则拖单个组件。
       const node = event.target.closest('[data-widget-id]');
+      const group = boardSelection.size > 1 && boardSelection.has(widget.id)
+        ? [...boardSelection].map(id => boardWidgetById(id)).filter(Boolean)
+        : null;
+      // 快照必须在坐标被改写之前：按下即入栈，松手未移动则弹出。
+      boardPushUndo();
       boardGesture = {
         mode: 'widget',
         node,
         widget,
+        group,
         pressItem: widget.type === 'note' || widget.type === 'todo' ? widget.ref : null,
         originX: event.clientX,
         originY: event.clientY,
         widgetX: widget.x,
         widgetY: widget.y,
+        groupBase: group ? group.map(entry => ({ widget: entry, x: entry.x, y: entry.y })) : null,
         moved: false
       };
       node?.classList.add('is-dragging');
       return;
     }
-    if (boardPendingMarker) {
+    // 鼠标主键在空白处按下 = 框选（marquee）；触摸与中键 = 平移画布。
+    if (event.pointerType === 'mouse') {
       const rect = viewport.getBoundingClientRect();
       boardGesture = {
-        mode: 'draw',
-        startX: (event.clientX - rect.left - boardCam.x) / boardCam.scale,
-        startY: (event.clientY - rect.top - boardCam.y) / boardCam.scale,
-        currentW: 0,
-        currentH: 0
+        mode: 'marquee',
+        originX: event.clientX - rect.left,
+        originY: event.clientY - rect.top,
+        currentX: event.clientX - rect.left,
+        currentY: event.clientY - rect.top
       };
+      if (boardEls.marquee) {
+        boardEls.marquee.hidden = false;
+        boardUpdateMarquee(boardGesture);
+      }
       return;
     }
     boardGesture = panGesture(0);
@@ -3156,34 +3493,81 @@ function bindBoardScene() {
       const dx = (event.clientX - boardGesture.originX) / boardCam.scale;
       const dy = (event.clientY - boardGesture.originY) / boardCam.scale;
       const { widget } = boardGesture;
-      if (boardGesture.handle === 'resize' || boardGesture.handle === 'end') {
+      if (boardGesture.handle === 'resize') {
+        if (widget.type === 'text') {
+          widget.w = Math.round(boardGesture.baseW + dx);
+        } else {
+          // 条目卡片与标注：右下角同时改宽高（卡片尺寸自由，内容自适应）。
+          widget.w = Math.round(boardGesture.baseW + dx);
+          widget.h = Math.round(boardGesture.baseH + dy);
+        }
+      } else if (boardGesture.handle === 'end') {
         widget.w = Math.round(boardGesture.baseW + dx);
         widget.h = Math.round(boardGesture.baseH + dy);
       } else if (boardGesture.handle === 'start') {
         widget.x = Math.round(boardGesture.baseX + dx);
         widget.y = Math.round(boardGesture.baseY + dy);
       }
-      boardRefreshStatic(widget);
+      if (widget.type === 'note' || widget.type === 'todo') {
+        widget.w = Math.min(560, Math.max(200, widget.w));
+        widget.h = Math.min(420, Math.max(88, widget.h));
+        boardGesture.node = boardGesture.node || $(`[data-widget-id="${CSS.escape(widget.id)}"]`, boardEls.world);
+        boardRefreshCardNode(widget);
+      } else {
+        boardRefreshStatic(widget);
+      }
       return;
     }
     if (boardGesture?.mode === 'draw') {
       const rect = viewport.getBoundingClientRect();
       const x = (event.clientX - rect.left - boardCam.x) / boardCam.scale;
       const y = (event.clientY - rect.top - boardCam.y) / boardCam.scale;
-      boardGesture.currentW = x - boardGesture.startX;
-      boardGesture.currentH = y - boardGesture.startY;
-      boardDrawDraft({ kind: boardPendingMarker, x: boardGesture.startX, y: boardGesture.startY, w: boardGesture.currentW, h: boardGesture.currentH });
+      if (boardGesture.kind === 'draw') {
+        // 画笔按 6px 间距采样，避免高频 move 把点集撑爆。
+        const points = boardGesture.points;
+        const lastX = points[points.length - 2];
+        const lastY = points[points.length - 1];
+        if (Math.hypot(x - boardGesture.startX - lastX, y - boardGesture.startY - lastY) >= 6 || points.length < 4) {
+          points.push(Math.round(x - boardGesture.startX), Math.round(y - boardGesture.startY));
+        }
+        boardDrawDraft({ kind: 'draw', x: boardGesture.startX, y: boardGesture.startY, points, w: 1, h: 1 });
+      } else {
+        boardGesture.currentW = x - boardGesture.startX;
+        boardGesture.currentH = y - boardGesture.startY;
+        boardDrawDraft({ kind: boardGesture.kind, x: boardGesture.startX, y: boardGesture.startY, w: boardGesture.currentW, h: boardGesture.currentH });
+      }
+      return;
+    }
+    if (boardGesture?.mode === 'marquee') {
+      const rect = viewport.getBoundingClientRect();
+      boardGesture.currentX = event.clientX - rect.left;
+      boardGesture.currentY = event.clientY - rect.top;
+      boardUpdateMarquee(boardGesture);
       return;
     }
     if (boardGesture?.mode === 'widget') {
       const dx = event.clientX - boardGesture.originX;
       const dy = event.clientY - boardGesture.originY;
       if (!boardGesture.moved && Math.hypot(dx, dy) > BOARD_PRESS_SLOP) boardGesture.moved = true;
-      if (!boardGesture.moved || !boardGesture.node) return;
-      boardGesture.widget.x = Math.round(boardGesture.widgetX + dx / boardCam.scale);
-      boardGesture.widget.y = Math.round(boardGesture.widgetY + dy / boardCam.scale);
-      boardGesture.node.style.left = `${boardGesture.widget.x}px`;
-      boardGesture.node.style.top = `${boardGesture.widget.y}px`;
+      if (!boardGesture.moved) return;
+      const worldDX = Math.round(dx / boardCam.scale);
+      const worldDY = Math.round(dy / boardCam.scale);
+      const applyMove = (entry, baseX, baseY, node) => {
+        entry.x = baseX + worldDX;
+        entry.y = baseY + worldDY;
+        if (node) {
+          node.style.left = `${entry.x}px`;
+          node.style.top = `${entry.y}px`;
+        }
+      };
+      if (boardGesture.groupBase) {
+        boardGesture.groupBase.forEach(base => {
+          const node = $(`[data-widget-id="${CSS.escape(base.widget.id)}"]`, boardEls.world);
+          applyMove(base.widget, base.x, base.y, node);
+        });
+      } else {
+        applyMove(boardGesture.widget, boardGesture.widgetX, boardGesture.widgetY, boardGesture.node);
+      }
       return;
     }
     if (boardGesture?.mode !== 'pan') return;
@@ -3209,7 +3593,7 @@ function bindBoardScene() {
         // 从捏合落回单指：把剩余指针接成一次新的拖拽起点。
         const rest = [...boardPointers.values()][0];
         boardMotion.mode = 'drag';
-        boardGesture = { mode: 'pan', lastX: rest.x, lastY: rest.y, pressX: rest.x, pressY: rest.y, moved: true, history: [{ x: rest.x, y: rest.y, t: performance.now() }] };
+        boardGesture = { mode: 'pan', button: 1, lastX: rest.x, lastY: rest.y, pressX: rest.x, pressY: rest.y, moved: true, history: [] };
       } else if (!boardPointers.size) {
         boardGesture = null;
         boardMotion.mode = 'idle';
@@ -3227,17 +3611,22 @@ function bindBoardScene() {
       boardSelectedHandle?.classList.remove('is-active');
       boardSelectedHandle = null;
       if (!boardPointers.size) {
-        if (gesture.widget.type === 'text' && gesture.handle === 'resize') {
-          gesture.widget.w = Math.min(720, Math.max(120, gesture.widget.w || 240));
-          gesture.widget.h = undefined;
+        const { widget } = gesture;
+        if (widget.type === 'text' && gesture.handle === 'resize') {
+          widget.w = Math.min(720, Math.max(120, widget.w || 240));
         }
-        if (gesture.widget.type === 'marker') {
-          if (Math.abs(gesture.widget.w) < 6 && Math.abs(gesture.widget.h) < 6) gesture.widget.w = gesture.widget.w < 0 ? -24 : 24;
+        if (widget.type === 'marker' && widget.kind !== 'draw') {
+          if (Math.abs(widget.w) < 6 && Math.abs(widget.h) < 6) widget.w = widget.w < 0 ? -24 : 24;
         }
+        const unchanged = widget.x === gesture.baseX && widget.y === gesture.baseY
+          && widget.w === gesture.baseW && (widget.type === 'text' || widget.h === gesture.baseH);
+        if (unchanged) boardUndoStack.pop();
         touchBoard(boardLayoutCache.board);
         persist();
-        boardRefreshStatic(gesture.widget);
+        if (widget.type === 'note' || widget.type === 'todo') boardRefreshCardNode(widget);
+        else boardRefreshStatic(widget);
         boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+        boardSyncUndoButtons();
       }
       return;
     }
@@ -3245,7 +3634,17 @@ function bindBoardScene() {
       const gesture = boardGesture;
       boardGesture = null;
       boardMotion.mode = 'idle';
-      if (!boardPointers.size) boardCommitDraw(gesture.startX, gesture.startY, gesture.currentW, gesture.currentH);
+      if (!boardPointers.size) boardCommitDraw({ x: gesture.startX, y: gesture.startY, w: gesture.currentW, h: gesture.currentH, points: gesture.points });
+      return;
+    }
+    if (boardGesture.mode === 'marquee') {
+      const gesture = boardGesture;
+      boardGesture = null;
+      boardMotion.mode = 'idle';
+      if (boardEls.marquee) boardEls.marquee.hidden = true;
+      if (!boardPointers.size && (Math.abs(gesture.currentX - gesture.originX) > 6 || Math.abs(gesture.currentY - gesture.originY) > 6)) {
+        boardApplyMarquee(gesture);
+      }
       return;
     }
     if (boardGesture.mode === 'widget') {
@@ -3255,17 +3654,20 @@ function bindBoardScene() {
       gesture.node?.classList.remove('is-dragging');
       if (boardPointers.size) return;
       if (!gesture.moved) {
+        boardUndoStack.pop();
+        boardSyncUndoButtons();
         // 单击：条目 → 右侧编辑器；文本 / 标注 → 选中组件；双击文本 → 进入编辑。
         const now = performance.now();
         const isDoubleTap = lastBoardTap.id === gesture.widget.id && now - lastBoardTap.at < 340;
         lastBoardTap = { id: gesture.widget.id, at: now };
         if (gesture.widget.type === 'note' || gesture.widget.type === 'todo') {
+          boardSetSelection([gesture.widget.id]);
           boardSelect(gesture.pressItem);
         } else if (gesture.widget.type === 'text' && isDoubleTap) {
-          boardSelectWidget(gesture.widget.id);
+          boardSetSelection([gesture.widget.id]);
           boardEditText(gesture.widget.id);
         } else {
-          boardSelectWidget(gesture.widget.id);
+          boardSetSelection([gesture.widget.id]);
         }
         return;
       }
@@ -3282,28 +3684,18 @@ function bindBoardScene() {
       if (!gesture.moved) {
         boardMotion.mode = 'idle';
         if (gesture.button === 0) {
-          // 主键点击空白：先收组件工具条，再收右侧编辑器。
-          if (boardSelectedWidget) boardSelectWidget(null);
+          // 主键点击空白：先收组件工具条与多选，再收右侧编辑器。
+          if (boardSelection.size) boardSetSelection([]);
           else if (selectedId) boardDeselect();
         }
         return;
       }
-      const first = gesture.history[0];
-      const last = gesture.history[gesture.history.length - 1];
-      const elapsed = Math.max(1, last.t - first.t);
-      let vX = ((last.x - first.x) / elapsed) * 1000;
-      let vY = ((last.y - first.y) / elapsed) * 1000;
-      if (reduceWindowMotion()) { vX = 0; vY = 0; }
-      boardCam.vX = vX;
-      boardCam.vY = vY;
-      if (Math.hypot(vX, vY) > 120) {
-        boardMotion.mode = 'glide';
-        boardEnsureFrame();
-      } else {
-        boardMotion.mode = 'settle';
-        boardMotion.settle = null;
-        boardEnsureFrame();
-      }
+      // 拖拽松手不带惯性：直接从当前位置指数回弹到边界内（rubber-band 收尾）。
+      boardCam.vX = 0;
+      boardCam.vY = 0;
+      boardMotion.mode = 'settle';
+      boardMotion.settle = null;
+      boardEnsureFrame();
     }
   };
   viewport.addEventListener('pointerup', releasePointer);
@@ -3311,6 +3703,7 @@ function bindBoardScene() {
     // 系统打断（滚轮接管、来电等）不算点击也不算释放惯性。
     if (boardGesture?.mode === 'pan') boardGesture.moved = true;
     if (boardGesture?.mode === 'widget') boardGesture.moved = true;
+    if (boardGesture?.mode === 'marquee' && boardEls.marquee) boardEls.marquee.hidden = true;
     releasePointer(event);
   });
 
@@ -3323,7 +3716,7 @@ function bindBoardScene() {
     const remove = event.target.closest('[data-widget-remove]');
     if (remove) {
       event.stopPropagation();
-      boardRemoveWidget(remove.dataset.widgetRemove);
+      boardArmDelete(remove, () => boardRemoveWidget(remove.dataset.widgetRemove));
     }
   });
 
@@ -3335,7 +3728,9 @@ function bindBoardScene() {
       const id = goto.dataset.boardGoto;
       if (boardState.activeBoardId !== id) {
         boardState.activeBoardId = id;
-        boardSelectWidget(null);
+        boardUndoStack.length = 0;
+        boardRedoStack.length = 0;
+        boardSetSelection([]);
         persistBoardState();
         renderList();
       } else boardToggleMenu(false);
@@ -3349,12 +3744,13 @@ function bindBoardScene() {
   $('#boardAddText', canvas)?.addEventListener('click', () => {
     const board = activeBoard();
     const spot = boardVacantSpot(240, 48);
-    const widget = { id: uid(), type: 'text', x: spot.x, y: spot.y, w: 240, text: '', size: 16, font: 'app', align: 'left', bold: false, italic: false };
+    boardPushUndo();
+    const widget = { id: uid(), type: 'text', x: spot.x, y: spot.y, w: 240, text: '', size: 16, font: 'app', customFont: '', align: 'left', bold: false, italic: false, bg: 'none', bgOpacity: 100, radius: 0, pad: 0 };
     board.widgets.push(widget);
     touchBoard(board);
     persist();
     renderList();
-    boardSelectWidget(widget.id);
+    boardSetSelection([widget.id]);
     boardEditText(widget.id);
   });
   $('#boardAddMarker', canvas)?.addEventListener('click', () => {
@@ -3378,39 +3774,136 @@ function bindBoardScene() {
   $('#boardAddImport', canvas)?.addEventListener('click', boardRunImport);
 
   // 组件工具条（容器级委托：内容随选中对象重建）。
-  boardEls.toolbar.addEventListener('click', event => {
+  boardEls.toolbar.addEventListener('click', async event => {
     const button = event.target.closest('[data-tw]');
     if (!button) return;
-    const widget = boardSelectedWidget ? boardWidgetById(boardSelectedWidget) : null;
-    if (!widget) return;
     const action = button.dataset.tw;
-    if (action === 'remove') { boardRemoveWidget(widget.id); return; }
-    if (action === 'size-up') widget.size = Math.min(48, widget.size + 2);
-    if (action === 'size-down') widget.size = Math.max(11, widget.size - 2);
-    if (action === 'bold') widget.bold = !widget.bold;
-    if (action === 'italic') widget.italic = !widget.italic;
-    if (action === 'align-left') widget.align = 'left';
-    if (action === 'align-center') widget.align = 'center';
-    if (action === 'align-right') widget.align = 'right';
-    if (action === 'color') widget.color = button.dataset.color;
-    touchBoard(boardLayoutCache.board);
-    persist();
-    boardRefreshStatic(widget);
-    boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
-    boardRenderToolbar();
+    // 多选操作不依赖单选对象，先于单选分支处理。
+    if (action === 'remove-selection') {
+      boardArmDelete(button, () => boardRemoveWidgets([...boardSelection]));
+      return;
+    }
+    if (action === 'clear-selection') { boardSetSelection([]); return; }
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+    if (!widget) return;
+    if (action === 'remove') {
+      boardArmDelete(button, () => boardRemoveWidget(widget.id));
+      return;
+    }
+    if (action === 'size-up' || action === 'size-down' || action === 'size-set') {
+      boardPushUndo('style');
+      if (action === 'size-up') widget.size = Math.min(48, widget.size + 2);
+      if (action === 'size-down') widget.size = Math.max(11, widget.size - 2);
+      boardRefreshStatic(widget);
+      boardRenderToolbar();
+      touchBoard(boardLayoutCache.board);
+      persist();
+      return;
+    }
+    if (action === 'bold' || action === 'italic' || action.startsWith('align-')) {
+      boardPushUndo('style');
+      if (action === 'bold') widget.bold = !widget.bold;
+      if (action === 'italic') widget.italic = !widget.italic;
+      if (action === 'align-cycle') widget.align = BOARD_ALIGN_ORDER[(BOARD_ALIGN_ORDER.indexOf(widget.align) + 1) % 3];
+      boardRefreshStatic(widget);
+      boardRenderToolbar();
+      touchBoard(boardLayoutCache.board);
+      persist();
+      return;
+    }
+    if (action === 'color') {
+      boardPushUndo('style');
+      widget.color = button.dataset.color;
+      boardRefreshStatic(widget);
+      boardRenderToolbar();
+      touchBoard(boardLayoutCache.board);
+      persist();
+      return;
+    }
+    if (action === 'bg-pop') {
+      const pop = $('#boardBgPop', canvas);
+      if (pop && !pop.hidden) { boardCloseBgPop(); return; }
+      boardPushUndo('style');
+      boardRenderBgPop(widget);
+      return;
+    }
   });
-  boardEls.toolbar.addEventListener('change', event => {
+  boardEls.toolbar.addEventListener('change', async event => {
+    const sizeInput = event.target.closest('[data-tw="size-set"]');
+    if (sizeInput) {
+      const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+      if (!widget) return;
+      boardPushUndo('style');
+      widget.size = Math.min(48, Math.max(11, Math.round(Number(sizeInput.value) || widget.size)));
+      boardRefreshStatic(widget);
+      boardRenderToolbar();
+      touchBoard(boardLayoutCache.board);
+      persist();
+      return;
+    }
     const select = event.target.closest('[data-tw="font"]');
     if (!select) return;
-    const widget = boardSelectedWidget ? boardWidgetById(boardSelectedWidget) : null;
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
     if (!widget) return;
-    widget.font = BOARD_TEXT_FONTS[select.value] !== undefined ? select.value : 'app';
+    boardPushUndo('style');
+    if (select.value === 'custom') {
+      boardCloseBgPop();
+      const custom = await askNameDialog({ title: t('boardCustomFont'), defaultValue: widget.customFont || '', icon: '#i-text', confirmIcon: '#i-check', maxlength: 120 });
+      if (!custom) { boardRenderToolbar(); return; }
+      widget.font = 'custom';
+      widget.customFont = custom;
+    } else {
+      widget.font = select.value;
+    }
+    boardRefreshStatic(widget);
+    boardRenderToolbar();
+    touchBoard(boardLayoutCache.board);
+    persist();
+  });
+  // 背景样式面板（委托：色板 / 透明度 / 圆角 / 内边距）。
+  boardEls.toolbar.parentElement?.addEventListener('click', event => {
+    const pop = $('#boardBgPop', canvas);
+    if (!pop || pop.hidden) return;
+    if (event.target.closest('#boardBgPop')) return;
+    if (!event.target.closest('[data-tw="bg-pop"]')) boardCloseBgPop();
+  });
+  boardEls.canvas.addEventListener('click', event => {
+    const pop = $('#boardBgPop', canvas);
+    if (!pop || pop.hidden) return;
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+    if (!widget || widget.type !== 'text') { boardCloseBgPop(); return; }
+    const swatch = event.target.closest('[data-bg]');
+    const radius = event.target.closest('[data-radius]');
+    const pad = event.target.closest('[data-pad]');
+    const opacity = event.target.closest('[data-bgop]');
+    if (!swatch && !radius && !pad && !opacity) return;
+    if (swatch) widget.bg = swatch.dataset.bg;
+    if (radius) widget.radius = Number(radius.dataset.radius);
+    if (pad) widget.pad = Number(pad.dataset.pad);
     touchBoard(boardLayoutCache.board);
     persist();
     boardRefreshStatic(widget);
-    boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+    boardRenderBgPop(widget);
+  });
+  boardEls.canvas.addEventListener('input', event => {
+    const slider = event.target.closest('[data-bgop]');
+    if (!slider) return;
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+    if (!widget || widget.type !== 'text') return;
+    widget.bgOpacity = Number(slider.value);
+    const output = slider.parentElement?.querySelector('output');
+    if (output) output.textContent = `${widget.bgOpacity}%`;
+    boardRefreshStatic(widget);
+    touchBoard(boardLayoutCache.board);
+  });
+  boardEls.canvas.addEventListener('change', event => {
+    if (!event.target.closest('[data-bgop]')) return;
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+    if (widget) { touchBoard(boardLayoutCache.board); persist(); }
   });
 
+  $('#boardUndo', canvas)?.addEventListener('click', boardUndo);
+  $('#boardRedo', canvas)?.addEventListener('click', boardRedo);
   $('#boardZoomIn', canvas)?.addEventListener('click', () => {
     const { w, h } = boardViewportSize();
     boardZoomAt(w / 2, h / 2, 1.22);
@@ -3774,7 +4267,7 @@ function renderEditor() {
   if (currentView === 'board') {
     document.body.classList.toggle('board-editor-open', Boolean(item));
     document.documentElement.style.setProperty('--board-editor-w', `${boardState.editorWidth}px`);
-    boardEnsureEditorResizer();
+    boardEnsureEditorChrome();
   }
   const previousEditorId = $('.editor-wrap', pane)?.dataset.editorId;
   document.body.classList.remove('note-focus-mode', 'note-focus-leaving');
@@ -5057,7 +5550,7 @@ function bindShell() {
         // 汇总板的 Esc 按层级退场：取消标注绘制 → 收起组件工具条 → 收起编辑器。
         if (currentView === 'board' && !event.target.closest('.editor-pane, dialog')) {
           if (boardPendingMarker) boardCancelDraw();
-          else if (boardSelectedWidget) boardSelectWidget(null);
+          else if (boardSelection.size) boardSetSelection([]);
           else if (selectedId) boardDeselect();
         }
       }
@@ -5070,6 +5563,12 @@ function bindShell() {
     if (document.querySelector('dialog[open]')) return;
     if (event.key.toLowerCase() === 'n') { event.preventDefault(); createItem('note'); }
     if (event.key.toLowerCase() === 'k') { event.preventDefault(); $('#searchInput').focus(); }
+    // 计划板：Ctrl/⌘+Z 撤销、Shift+Z 或 Y 重做（画布手势专用，不抢编辑器内撤销）。
+    if (currentView === 'board' && !event.target?.closest?.('.editor-pane, input, textarea, [contenteditable="true"], [contenteditable="plaintext-only"]')) {
+      const key = event.key.toLowerCase();
+      if (key === 'z' && !event.shiftKey) { event.preventDefault(); boardUndo(); }
+      else if ((key === 'z' && event.shiftKey) || key === 'y') { event.preventDefault(); boardRedo(); }
+    }
   });
 }
 

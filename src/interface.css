@@ -1906,7 +1906,7 @@ body.board-view .item-pane { border-right: 0; background: var(--paper); }
     position: absolute; top: 0; bottom: 0; right: 0; z-index: 24;
     width: var(--board-editor-w, 460px); max-width: min(760px, 74vw);
     border-left: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-    box-shadow: -34px 0 64px -30px rgba(24,28,23,.36), -8px 0 20px -10px rgba(24,28,23,.16);
+    box-shadow: -16px 0 36px -20px rgba(24,28,23,.18), -5px 0 14px -8px rgba(24,28,23,.08);
     transform: translateX(calc(100% + 56px));
     transition: transform .42s var(--ease-out), width .05s linear;
   }
@@ -1938,11 +1938,12 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
 /* 条目卡片（虚拟化）：与列表卡片同一设计语言，可点击进编辑器、
    悬停露出「从板上移除」。 */
 .board-node {
-  position: absolute; width: 264px; height: 114px; padding: 10px 12px 9px; border: 1px solid var(--line); border-radius: 12px;
+  position: absolute; min-width: 200px; min-height: 88px; padding: 10px 12px 9px; border: 1px solid var(--line); border-radius: 12px;
   background: color-mix(in srgb, var(--white) 88%, transparent); color: var(--ink); text-align: left; cursor: pointer;
   display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(47,50,43,.04);
   transition: border-color .16s ease, background .16s ease, box-shadow .2s var(--ease-out), transform .2s var(--ease-out);
 }
+.board-node.selected { border-color: color-mix(in srgb, var(--sage) 46%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 10%, transparent); }
 .board-node { cursor: grab; }
 .board-node:active { cursor: grabbing; }
 .board-node:hover { background: var(--white); border-color: color-mix(in srgb, var(--faint) 38%, var(--line)); transform: translateY(-2px); box-shadow: 0 6px 16px -6px rgba(55,53,45,.14); }
@@ -1958,10 +1959,7 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
 .board-node[data-new="1"] { animation: boardNodePop .18s var(--ease-out) both; }
 .board-node-top { display: flex; align-items: center; gap: 5px; min-width: 0; }
 .board-node-top time { margin-left: auto; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.board-node-title {
-  margin: 7px 0 0; font-size: calc(12px * var(--acta-font-scale)); font-weight: 650; line-height: 1.32; letter-spacing: .005em;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere;
-}
+.board-node-title { flex: 1; min-height: 1.4em; margin: 7px 0 0; font-size: calc(12px * var(--acta-font-scale)); font-weight: 650; line-height: 1.32; letter-spacing: .005em; overflow: hidden; overflow-wrap: anywhere; }
 .board-node-preview { margin: 4px 0 0; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .board-node-foot { margin-top: auto; display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
 .board-node-foot .mini-folder { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
@@ -2005,7 +2003,7 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
   border: 2px solid var(--paper); background: var(--sage); box-shadow: 0 1px 4px rgba(34,38,33,.3);
   opacity: 0; pointer-events: none; transition: opacity .15s ease, transform .15s var(--ease-out); cursor: grab;
 }
-.board-widget.selected .board-handle, .board-handle.is-active { opacity: 1; pointer-events: auto; }
+.board-widget.selected .board-handle, .board-handle.is-active, .board-node:hover .board-handle, .board-text:hover .board-handle { opacity: 1; pointer-events: auto; }
 .board-handle:hover { transform: scale(1.25); }
 .board-handle.is-resize { left: 100% !important; top: 100% !important; margin: -3px 0 0 -3px; width: 13px; height: 13px; border-radius: 4px; cursor: nwse-resize; }
 
@@ -2138,6 +2136,48 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
 .board-import-added { flex: 0 0 auto; font-style: normal; padding: 2px 7px; border-radius: 999px; background: var(--sage-2); color: var(--sage); font-size: calc(8px * var(--acta-font-scale)); font-weight: 650; }
 .board-import-empty { margin: 22px 0; text-align: center; color: var(--faint); font-size: calc(10px * var(--acta-font-scale)); }
 .board-import-actions { margin: 0 18px 16px; justify-content: flex-end; }
+
+/* 框选矩形（屏幕层）与空格平移提示。 */
+.board-marquee { position: absolute; z-index: 7; pointer-events: none; border: 1.5px dashed color-mix(in srgb, var(--sage) 62%, transparent); border-radius: 6px; background: color-mix(in srgb, var(--sage) 8%, transparent); }
+.board-canvas.is-panning .board-viewport { cursor: grab; }
+.board-canvas.is-panning .board-viewport:active { cursor: grabbing; }
+.board-canvas.is-panning .board-node, .board-canvas.is-panning .board-widget { cursor: grab; }
+
+/* 工具条新增控件：字号数字输入、对齐三态图标、武装态删除。 */
+.board-tw-size-input { width: 40px; height: 28px; padding: 0 3px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); text-align: center; font-variant-numeric: tabular-nums; }
+.board-tw-size-input:focus { outline: none; border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); background: var(--white); }
+.board-align-icon { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; }
+.board-tw.is-armed { color: #fff; background: var(--danger-accent, #b96051); }
+.board-node-remove.is-armed { color: #fff; background: var(--danger-accent, #b96051); display: grid; }
+
+/* 背景样式小面板：挂在工具条上方。 */
+.board-style-pop {
+  position: absolute; z-index: 9; transform: translateX(-50%); display: grid; gap: 8px; padding: 10px 11px;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 13px;
+  background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: 0 4px 12px rgba(34,38,33,.1), 0 16px 36px -14px rgba(34,38,33,.24);
+}
+.board-style-pop[hidden] { display: none; }
+.board-style-row { display: flex; align-items: center; gap: 7px; }
+.board-style-row > span { min-width: 44px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; }
+.board-style-row input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--sage); }
+.board-style-row output { min-width: 34px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; text-align: right; }
+.board-swatch.is-none { background: var(--paper); border: 1.5px dashed color-mix(in srgb, var(--faint) 60%, transparent); position: relative; }
+.board-swatch.is-none::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: linear-gradient(to top right, transparent 44%, var(--danger-accent, #b96051) 44%, var(--danger-accent, #b96051) 56%, transparent 56%); }
+
+/* 面板关闭按钮：浮动在面板左上角内侧。 */
+.board-editor-close {
+  position: absolute; z-index: 27; top: 10px; right: calc(var(--board-editor-w, 460px) - 42px); width: 30px; height: 30px;
+  border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--paper) 88%, transparent); color: var(--muted);
+  display: none; place-items: center; cursor: pointer; box-shadow: 0 1px 4px rgba(34,38,33,.1);
+  transition: color .15s ease, background .15s ease, transform .16s var(--ease-out);
+}
+.board-editor-close:hover { color: var(--ink); background: var(--white); transform: scale(1.06); }
+.board-editor-close:active { transform: scale(.94); transition-duration: .08s; }
+.board-editor-close svg { width: 13px; height: 13px; }
+@media (min-width: 801px) {
+  body.board-view.board-editor-open .board-editor-close { display: grid; }
+}
 
 @keyframes boardChromeIn { from { opacity: 0; transform: translateX(-50%) translateY(14px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 @keyframes boardNodePop { from { opacity: 0; transform: translateY(6px) scale(.985); } to { opacity: 1; transform: none; } }
