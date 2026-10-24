@@ -69,6 +69,8 @@ const dictionaries = {
     boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'画笔', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
     boardBg:'背景', boardBgNone:'无背景', boardBgOpacity:'不透明度', boardRadius:'圆角', boardPadding:'内边距', boardCustomFont:'自定义字体', boardCustomFontHint:'输入本机已安装的字体名，如 Georgia',
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
+    boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardWidgetOpacity:'不透明度',
+    boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
     boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'画笔模式：可连续多笔，完成或按 Esc 退出',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
@@ -128,6 +130,8 @@ const dictionaries = {
     boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Pen', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
     boardBg:'Background', boardBgNone:'None', boardBgOpacity:'Opacity', boardRadius:'Corner radius', boardPadding:'Padding', boardCustomFont:'Custom font', boardCustomFontHint:'Type an installed font family, e.g. Georgia',
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
+    boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardWidgetOpacity:'Opacity',
+    boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
     boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenMode:'Pen mode: draw as many strokes as you like; press Done or Esc to exit',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   }
@@ -262,10 +266,16 @@ function sanitizeBoards(boards) {
       if (widget.type === 'note' || widget.type === 'todo') {
         if (typeof widget.ref !== 'string') return;
         widgetSeen.add(widget.id);
+        const show = widget.show && typeof widget.show === 'object' ? widget.show : {};
         widgets.push({
           id: widget.id, type: widget.type, ref: widget.ref, x: spot.x, y: spot.y,
           w: Math.min(560, Math.max(200, Math.round(Number(widget.w) || 264))),
-          h: Math.min(420, Math.max(88, Math.round(Number(widget.h) || 114)))
+          h: Math.min(420, Math.max(88, Math.round(Number(widget.h) || 114))),
+          opacity: Math.min(100, Math.max(30, Math.round(Number(widget.opacity) ?? 100))),
+          show: {
+            pill: show.pill !== false, priority: show.priority !== false, date: show.date !== false,
+            preview: show.preview !== false, foot: show.foot !== false
+          }
         });
         return;
       }
@@ -280,6 +290,7 @@ function sanitizeBoards(boards) {
           customFont: typeof widget.customFont === 'string' ? widget.customFont.slice(0, 120) : '',
           align: ['left', 'center', 'right'].includes(widget.align) ? widget.align : 'left',
           bold: Boolean(widget.bold), italic: Boolean(widget.italic),
+          color: /^#[0-9a-f]{3,8}$/i.test(widget.color) ? widget.color : '',
           bg: widget.bg === 'none' || /^#[0-9a-f]{3,8}$/i.test(widget.bg) ? widget.bg : 'none',
           bgOpacity: Math.min(100, Math.max(0, Math.round(Number(widget.bgOpacity) ?? 100))),
           radius: Math.min(24, Math.max(0, Math.round(Number(widget.radius) || 0))),
@@ -314,11 +325,18 @@ function sanitizeBoards(boards) {
         widgets.push(marker);
       }
     });
+    const style = board.style && typeof board.style === 'object' ? board.style : {};
     clean.push({
       id: board.id,
-      // 名称兜底留空，ensureBoards 打开汇总板时（t 已可用）再补默认名。
+      // 名称兜底留空，ensureBoards 打开计划板时（t 已可用）再补默认名。
       name: typeof board.name === 'string' && board.name.trim() ? board.name.trim().slice(0, 60) : '',
       widgets,
+      style: {
+        pattern: ['dots', 'grid', 'none'].includes(style.pattern) ? style.pattern : 'dots',
+        color: /^#[0-9a-f]{3,8}$/i.test(style.color) ? style.color : '',
+        snap: Boolean(style.snap),
+        gridSize: Math.min(64, Math.max(16, Math.round(Number(style.gridSize) || 26)))
+      },
       createdAt: validDate(board.createdAt) || new Date().toISOString(),
       updatedAt: validDate(board.updatedAt) || validDate(board.createdAt) || new Date().toISOString()
     });
@@ -1209,18 +1227,27 @@ function syncCalendarShell() {
   document.body.classList.toggle('trash-view', currentView === 'trash');
   document.body.classList.toggle('board-view', currentView === 'board');
   if (currentView !== 'board') {
-    // 离开汇总板时停掉相机动画循环、取消标注绘制并丢弃渲染缓存；
+    // 离开计划板时停掉相机动画循环、取消标注绘制并丢弃渲染缓存；
     // 下次进入按「首次进入」重新编排入场。
     boardWasActive = false;
     boardStopMotion();
     boardCancelDraw();
     boardSetSelection([]);
+    boardRemovePill();
     boardRenderedCards.clear();
   }
   document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
   const toolbar = $('#calendarToolbar');
   if (toolbar) {
     toolbar.hidden = !active;
+    const jumpLabel = $('#calendarJumpLabel');
+    if (jumpLabel && active) {
+      const activeDate = calendarDate(calendarCursor) || calendarDate(todayISO());
+      jumpLabel.textContent = calendarViewMode === 'year'
+        ? String(activeDate.getFullYear())
+        : new Intl.DateTimeFormat(calendarLocale(), { year: 'numeric', month: 'long' }).format(activeDate);
+    }
+    toggleCalendarJump(false);
     $$('[data-calendar-mode]', toolbar).forEach(button => {
       const selected = button.dataset.calendarMode === calendarViewMode;
       button.classList.toggle('active', selected);
@@ -2019,12 +2046,19 @@ const boardState = (() => {
       }
     });
   }
+  const storedPrefs = stored.prefs && typeof stored.prefs === 'object' ? stored.prefs : {};
   return {
     activeBoardId: typeof stored.activeBoardId === 'string' ? stored.activeBoardId : null,
     cams,
-    editorWidth: Number.isFinite(stored.editorWidth) ? Math.min(760, Math.max(340, Math.round(stored.editorWidth))) : 460
+    editorWidth: Number.isFinite(stored.editorWidth) ? Math.min(760, Math.max(340, Math.round(stored.editorWidth))) : 460,
+    prefs: {
+      renderMargin: ['small', 'medium', 'large'].includes(storedPrefs.renderMargin) ? storedPrefs.renderMargin : 'medium',
+      linkCurves: storedPrefs.linkCurves !== false
+    }
   };
 })();
+const BOARD_RENDER_MARGINS = { small: 260, medium: 460, large: 800 };
+const boardRenderMargin = () => BOARD_RENDER_MARGINS[boardState.prefs.renderMargin] || 460;
 const boardCam = { x: 0, y: 0, scale: 1, vX: 0, vY: 0 };
 // motion.mode: 'idle' | 'drag' | 'pinch' | 'glide' | 'settle'；组件拖拽 / 端点编辑 /
 // 标注绘制用 gesture.mode（'widget' | 'handle' | 'draw'）。zooming（滚轮/按钮的
@@ -2079,7 +2113,7 @@ function persistBoardState() {
     try {
       const board = boardLayoutCache?.board;
       if (board) boardState.cams[board.id] = { x: boardCam.x, y: boardCam.y, scale: boardCam.scale };
-      localStorage.setItem(BOARD_KEY, JSON.stringify({ activeBoardId: boardState.activeBoardId, cams: boardState.cams, editorWidth: boardState.editorWidth }));
+      localStorage.setItem(BOARD_KEY, JSON.stringify({ activeBoardId: boardState.activeBoardId, cams: boardState.cams, editorWidth: boardState.editorWidth, prefs: boardState.prefs }));
     } catch { /* 状态存不进去不影响画布使用 */ }
   }, 350);
 }
@@ -2243,12 +2277,16 @@ function boardApplyCamera() {
     boardCam.y = boardClampAxis(boardCam.y, bounds.y);
   }
   boardEls.world.style.transform = `translate3d(${boardCam.x.toFixed(2)}px, ${boardCam.y.toFixed(2)}px, 0) scale(${boardCam.scale.toFixed(4)})`;
-  // 点阵背景跟着相机走：平移改 background-position，缩放同步点距，
-  // 抓住画布时底纹与内容一起移动，画布读作一张连续的纸。
-  const grid = 26 * boardCam.scale;
+  // 底纹跟着相机走：平移改 background-position，缩放同步间距；
+  // 图案与底色由板个性化设置决定（点阵 / 网格线 / 无 + 自选底色）。
+  const style = boardLayoutCache?.board?.style || {};
+  const base = style.gridSize || 26;
+  const grid = base * boardCam.scale;
   boardEls.viewport.style.setProperty('--board-grid', `${grid.toFixed(2)}px`);
   boardEls.viewport.style.setProperty('--board-grid-x', `${(boardCam.x % grid).toFixed(2)}px`);
   boardEls.viewport.style.setProperty('--board-grid-y', `${(boardCam.y % grid).toFixed(2)}px`);
+  boardEls.viewport.dataset.pattern = style.pattern || 'dots';
+  boardEls.viewport.style.backgroundColor = style.color || '';
   if (boardEls.scaleLabel) boardEls.scaleLabel.textContent = `${Math.round(boardCam.scale * 100)}%`;
   boardSyncToolbar();
 }
@@ -2339,11 +2377,12 @@ function boardScheduleSync() {
 
 function boardVisibleWorldRect() {
   const { w, h } = boardViewportSize();
+  const margin = boardRenderMargin();
   return {
-    x: -boardCam.x / boardCam.scale - BOARD_MARGIN,
-    y: -boardCam.y / boardCam.scale - BOARD_MARGIN,
-    w: w / boardCam.scale + BOARD_MARGIN * 2,
-    h: h / boardCam.scale + BOARD_MARGIN * 2
+    x: -boardCam.x / boardCam.scale - margin,
+    y: -boardCam.y / boardCam.scale - margin,
+    w: w / boardCam.scale + margin * 2,
+    h: h / boardCam.scale + margin * 2
   };
 }
 
@@ -2383,6 +2422,10 @@ function boardSyncNodes() {
 // 两端始终咬合两张卡片的中心，随时移动随时相连。
 function boardSyncLinks() {
   if (!boardEls?.world || !boardLayoutCache) return;
+  if (!boardState.prefs.linkCurves) {
+    $('.board-links', boardEls.world)?.remove();
+    return;
+  }
   const byRef = new Map(boardLayoutCache.cards.map(card => [card.item.id, card]));
   const seen = new Set();
   const pairs = [];
@@ -2458,13 +2501,24 @@ function boardNodeHTML(card, silent) {
   const delay = boardEnterAnimated && !silent ? Math.min(card.rowIndex * 16, 360) : 0;
   // 首次进入按序级联落位；滚动中新增的卡片只做短淡入。
   const motion = delay ? ' data-enter="1"' : (!silent ? ' data-new="1"' : '');
-  return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}${item.id === selectedId ? ' active' : ''}" data-id="${escapeHTML(item.id)}" data-widget-id="${escapeHTML(card.widget.id)}" data-board-node="${escapeHTML(item.id)}"${motion} style="left:${card.x}px;top:${card.y}px;width:${card.widget.w || 264}px;height:${card.widget.h || 114}px;${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
+  const widget = card.widget;
+  const show = widget.show || {};
+  const showPill = show.pill !== false;
+  const showPriority = show.priority !== false;
+  const showDate = show.date !== false;
+  const showPreview = show.preview !== false;
+  const showFoot = show.foot !== false;
+  const opacity = Number.isFinite(widget.opacity) ? Math.min(100, Math.max(30, widget.opacity)) : 100;
+  const topRow = (showPill || showPriority || showDate)
+    ? `<div class="board-node-top">${showPill ? `<span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>` : ''}${showPriority && item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : ''}${showDate ? stamp : ''}</div>`
+    : '';
+  return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}${item.id === selectedId ? ' active' : ''}" data-id="${escapeHTML(item.id)}" data-widget-id="${escapeHTML(card.widget.id)}" data-board-node="${escapeHTML(item.id)}"${motion} style="left:${card.x}px;top:${card.y}px;width:${card.widget.w || 264}px;height:${card.widget.h || 114}px;opacity:${(opacity / 100).toFixed(2)};${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
     <i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i>
     <span class="board-node-remove" data-widget-remove="${escapeHTML(card.widget.id)}" role="button" title="${escapeHTML(t('boardRemoveWidget'))}" aria-label="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-close"/></svg></span>
-    <div class="board-node-top"><span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>${item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : ''}${stamp}</div>
+    ${topRow}
     <b class="board-node-title">${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</b>
-    <p class="board-node-preview">${escapeHTML(itemPreview(item))}</p>
-    <div class="board-node-foot"><span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span>${item.type === 'todo' ? (item.checkin ? boardNodeCheckinBadge(item) : (!done && tasks.length ? `<span class="board-node-count">${completedCount}/${tasks.length}</span><span class="mini-progress"><i style="width:${progress}%"></i></span>` : '')) : (getLinkedItems(item).length ? `<span class="link-count"><svg><use href="#i-link"/></svg>${getLinkedItems(item).length}</span>` : '')}</div>
+    ${showPreview ? `<p class="board-node-preview">${escapeHTML(itemPreview(item))}</p>` : ''}
+    ${showFoot ? `<div class="board-node-foot"><span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span>${item.type === 'todo' ? (item.checkin ? boardNodeCheckinBadge(item) : (!done && tasks.length ? `<span class="board-node-count">${completedCount}/${tasks.length}</span><span class="mini-progress"><i style="width:${progress}%"></i></span>` : '')) : (getLinkedItems(item).length ? `<span class="link-count"><svg><use href="#i-link"/></svg>${getLinkedItems(item).length}</span>` : '')}</div>` : ''}
   </button>`;
 }
 
@@ -2527,7 +2581,7 @@ function boardStaticHTML(widget) {
     const background = widget.bg !== 'none'
       ? `background:color-mix(in srgb, ${widget.bg} ${widget.bgOpacity}%, transparent);`
       : '';
-    return `<div class="board-widget board-text${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static spellcheck="false" style="left:${widget.x}px;top:${widget.y}px;width:${widget.w}px;font-size:${widget.size}px;${family ? `font-family:${family};` : ''}${widget.bold ? 'font-weight:700;' : ''}${widget.italic ? 'font-style:italic;' : ''}text-align:${widget.align};${background}border-radius:${widget.radius}px;padding:${widget.pad}px;">${body}<i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i></div>`;
+    return `<div class="board-widget board-text${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static spellcheck="false" style="left:${widget.x}px;top:${widget.y}px;width:${widget.w}px;font-size:${widget.size}px;${family ? `font-family:${family};` : ''}${widget.bold ? 'font-weight:700;' : ''}${widget.italic ? 'font-style:italic;' : ''}text-align:${widget.align};${widget.color ? `color:${widget.color};` : ''}${background}border-radius:${widget.radius}px;padding:${widget.pad}px;">${body}<i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i></div>`;
   }
   // 画笔：容器取点集包络，笔迹按包络原点平移绘制。
   if (widget.kind === 'draw') {
@@ -2604,10 +2658,7 @@ function renderBoardShell() {
       <div class="board-marquee" id="boardMarquee" hidden></div>
       <div class="board-empty" id="boardEmpty" hidden><div><span><svg><use href="#i-board"/></svg></span><h3>${escapeHTML(t('boardEmptyTitle'))}</h3><p>${escapeHTML(t('boardEmptyHint'))}</p></div></div>
     </div>
-    <div class="board-pill" id="boardPill">
-      <button type="button" class="board-pill-button" id="boardPillButton" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-board"/></svg><b id="boardPillName"></b><svg class="board-pill-chevron"><use href="#i-chevron"/></svg></button>
-      <div class="board-pill-menu" id="boardPillMenu" role="menu" hidden></div>
-    </div>
+    <button type="button" class="board-style-trigger" id="boardStyleTrigger" title="${escapeHTML(t('boardPersonalize'))}" aria-label="${escapeHTML(t('boardPersonalize'))}" aria-haspopup="dialog"><svg><use href="#i-palette"/></svg></button>
     <div class="board-chrome" id="boardChrome">
       <button type="button" class="board-tool" id="boardAddText" title="${escapeHTML(t('boardAddText'))}"><svg><use href="#i-text"/></svg><span>${escapeHTML(t('boardAddText'))}</span></button>
       <div class="board-tool-wrap">
@@ -2850,7 +2901,23 @@ function boardRenderToolbar() {
         <button type="button" class="board-tw${widget.bold ? ' on' : ''}" data-tw="bold" title="Bold"><b>B</b></button>
         <button type="button" class="board-tw${widget.italic ? ' on' : ''}" data-tw="italic" title="Italic"><i>I</i></button>
         <button type="button" class="board-tw" data-tw="align-cycle" title="${escapeHTML(t(BOARD_ALIGN_HINT[alignNext]))}">${BOARD_ALIGN_ICONS[widget.align]}</button>
+        <span class="board-chrome-sep" aria-hidden="true"></span>
+        ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch board-swatch-sm${widget.color === color ? ' on' : ''}" data-tw="text-color" data-color="${color}" style="background:${color}" title="${escapeHTML(t('boardTextColor'))}"></button>`).join('')}
+        <label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(widget.color) ? widget.color : '#242823'}" data-text-color/></label>
         <button type="button" class="board-tw" data-tw="bg-pop" title="${escapeHTML(t('boardBg'))}"><svg><use href="#i-palette"/></svg></button>
+        <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
+      bar.hidden = false;
+      boardSyncToolbar();
+      return;
+    }
+    if (widget?.type === 'note' || widget?.type === 'todo') {
+      // 条目组件：不透明度滑杆 + 显示内容设置 + 移除（编辑面板承担内容编辑）。
+      bar.innerHTML = `
+        <span class="board-tw-label">${escapeHTML(t('boardWidgetOpacity'))}</span>
+        <input class="board-tw-range" type="range" min="30" max="100" step="5" value="${Number.isFinite(widget.opacity) ? widget.opacity : 100}" data-tw="card-opacity" aria-label="${escapeHTML(t('boardWidgetOpacity'))}"/>
+        <output class="board-tw-size">${Number.isFinite(widget.opacity) ? widget.opacity : 100}%</output>
+        <span class="board-chrome-sep" aria-hidden="true"></span>
+        <button type="button" class="board-tw" data-tw="content-pop" title="${escapeHTML(t('boardContentSettings'))}"><svg><use href="#i-sliders"/></svg></button>
         <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
       bar.hidden = false;
       boardSyncToolbar();
@@ -2895,8 +2962,8 @@ function boardRenderBgPop(widget) {
       ? `<button type="button" class="board-swatch is-none${widget.bg === 'none' ? ' on' : ''}" data-bg="none" title="${escapeHTML(t('boardBgNone'))}"></button>`
       : `<button type="button" class="board-swatch${widget.bg === color ? ' on' : ''}" data-bg="${color}" style="background:${color}"></button>`).join('')}<label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(widget.bg) ? widget.bg : '#f4e2c8'}" data-bg-custom/></label></div>
     <div class="board-style-row"><span>${escapeHTML(t('boardBgOpacity'))}</span><input type="range" min="0" max="100" step="5" value="${widget.bgOpacity}" data-bgop aria-label="${escapeHTML(t('boardBgOpacity'))}"/><output>${widget.bgOpacity}%</output></div>
-    <div class="board-style-row"><span>${escapeHTML(t('boardRadius'))}</span>${[0, 8, 14, 20].map(value => `<button type="button" class="board-tw${widget.radius === value ? ' on' : ''}" data-radius="${value}">${value}</button>`).join('')}</div>
-    <div class="board-style-row"><span>${escapeHTML(t('boardPadding'))}</span>${[0, 6, 12, 18].map(value => `<button type="button" class="board-tw${widget.pad === value ? ' on' : ''}" data-pad="${value}">${value}</button>`).join('')}</div>`;
+    <div class="board-style-row"><span>${escapeHTML(t('boardRadius'))}</span><input type="range" min="0" max="24" step="1" value="${widget.radius}" data-radius-range aria-label="${escapeHTML(t('boardRadius'))}"/><output>${widget.radius}px</output></div>
+    <div class="board-style-row"><span>${escapeHTML(t('boardPadding'))}</span><input type="range" min="0" max="24" step="1" value="${widget.pad}" data-pad-range aria-label="${escapeHTML(t('boardPadding'))}"/><output>${widget.pad}px</output></div>`;
   pop.hidden = false;
   // 落位到工具条正上方居中：先渲染量高，再按工具条的 canvas 内坐标定位。
   const bar = boardEls?.toolbar;
@@ -2907,6 +2974,75 @@ function boardRenderBgPop(widget) {
     pop.style.left = `${left}px`;
     pop.style.top = `${Math.max(bar.offsetTop - height - 10, 8)}px`;
   }
+}
+
+// —— 板个性化：背景图案 / 背景颜色 / 吸附网格 / 图案网格大小 ——
+function boardRenderStylePop() {
+  const board = boardLayoutCache?.board || activeBoard();
+  const style = board.style || { pattern: 'dots', color: '', snap: false, gridSize: 26 };
+  let pop = $('#boardStylePop', boardEls?.canvas || document);
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = 'boardStylePop';
+    pop.className = 'board-style-pop board-style-pop-lg';
+    pop.setAttribute('role', 'dialog');
+    boardEls.canvas.appendChild(pop);
+  }
+  const patterns = [['dots', t('boardPatternDots')], ['grid', t('boardPatternGrid')], ['none', t('boardPatternNone')]];
+  pop.innerHTML = `
+    <div class="board-style-row"><span>${escapeHTML(t('boardBgPattern'))}</span><div class="board-import-seg">${patterns.map(([key, label]) => `<button type="button" data-pattern="${key}"${style.pattern === key ? ' class="active"' : ''}>${escapeHTML(label)}</button>`).join('')}</div></div>
+    <div class="board-style-row"><span>${escapeHTML(t('boardBoardBgColor'))}</span><button type="button" class="board-tw${style.color ? '' : ' on'}" data-bg-color="theme">${escapeHTML(t('boardBgColorTheme'))}</button><label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(style.color) ? style.color : '#fbfaf6'}" data-bg-color-picker/></label></div>
+    <div class="board-style-toggle"><input type="checkbox" id="boardSnapToggle"${style.snap ? ' checked' : ''}/><i></i><span>${escapeHTML(t('boardSnapGrid'))}</span></div>
+    <div class="board-style-row"><span>${escapeHTML(t('boardGridSize'))}</span><input type="range" min="16" max="64" step="2" value="${style.gridSize}" data-grid-size aria-label="${escapeHTML(t('boardGridSize'))}"/><output>${style.gridSize}px</output></div>`;
+  pop.hidden = false;
+}
+
+function boardApplyStyle(board) {
+  touchBoard(board);
+  persist();
+  boardLayoutCache.board = board;
+  boardApplyCamera();
+}
+
+// 吸附：开启后组件拖动 / 端点编辑 / 形状绘制按板网格大小取整（画笔不吸附，保笔迹平滑）。
+function boardSnap(value) {
+  const style = boardLayoutCache?.board?.style;
+  if (!style?.snap) return value;
+  const step = style.gridSize || 26;
+  return Math.round(value / step) * step;
+}
+
+// 条目组件的「显示内容」小面板：五项内容开关。
+function boardRenderContentPop(widget) {
+  let pop = $('#boardContentPop', boardEls?.canvas || document);
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = 'boardContentPop';
+    pop.className = 'board-style-pop';
+    boardEls.toolbar.after(pop);
+  }
+  const show = widget.show || {};
+  const items = [
+    ['pill', t('boardShowPill')], ['priority', t('boardShowPriority')], ['date', t('boardShowDate')],
+    ['preview', t('boardShowPreview')], ['foot', t('boardShowFoot')]
+  ];
+  pop.innerHTML = `<div class="board-style-column">${items.map(([key, label]) => `
+    <label class="board-style-toggle"><input type="checkbox" data-show="${key}"${show[key] !== false ? ' checked' : ''}/><i></i><span>${escapeHTML(label)}</span></label>`).join('')}
+  </div>`;
+  pop.hidden = false;
+  const bar = boardEls?.toolbar;
+  if (bar) {
+    const height = pop.offsetHeight || 150;
+    const width = pop.offsetWidth || 200;
+    const left = Math.min(Math.max(bar.offsetLeft, width / 2 + 8), (boardEls.canvas.clientWidth || 400) - width / 2 - 8);
+    pop.style.left = `${left}px`;
+    pop.style.top = `${Math.max(bar.offsetTop - height - 10, 8)}px`;
+  }
+}
+
+function boardCloseContentPop() {
+  const pop = $('#boardContentPop', boardEls?.canvas || document);
+  if (pop) pop.hidden = true;
 }
 
 function boardCloseBgPop() {
@@ -2952,6 +3088,7 @@ function boardRefreshCardNode(widget) {
   if (!element) return;
   element.style.width = `${widget.w}px`;
   element.style.height = `${widget.h}px`;
+  if (Number.isFinite(widget.opacity)) element.style.opacity = `${(Math.min(100, Math.max(30, widget.opacity)) / 100).toFixed(2)}`;
 }
 
 // 工具条浮在组件上方（屏幕层，不随画布缩放）；组件移出视口时暂时隐藏。
@@ -2970,19 +3107,25 @@ function boardSyncToolbar() {
   bar.classList.remove('is-multi');
   const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
   if (!widget) return;
-  const { w } = boardViewportSize();
+  const viewportSize = boardViewportSize();
+  const w = viewportSize.w;
   const width = widget.type === 'text' ? widget.w : Math.max(Math.abs(widget.w), 40);
+  const height = widget.type === 'text'
+    ? (boardTextHeights.get(widget.id) || 64)
+    : Math.max(Math.abs(widget.h) || 114, 40);
   const screenX = widget.x * boardCam.scale + boardCam.x + (width * boardCam.scale) / 2;
   const screenY = widget.y * boardCam.scale + boardCam.y;
-  if (screenY < 40 || screenX < -80 || screenX > w + 80) {
+  if (screenX < -80 || screenX > w + 80 || screenY > viewportSize.h + 80 || screenY + height * boardCam.scale < -40) {
+    // 组件整体在视口外：工具条暂时隐藏。
     bar.style.opacity = '0';
     bar.style.pointerEvents = 'none';
     return;
   }
   bar.style.opacity = '';
   bar.style.pointerEvents = '';
-  bar.style.left = `${Math.min(Math.max(screenX, 150), w - 150)}px`;
-  bar.style.top = `${Math.max(screenY - 46, 10)}px`;
+  bar.style.left = `${Math.min(Math.max(screenX, 150), Math.max(w - 150, 160))}px`;
+  // 组件上方放不下（贴近视口顶部）时，工具条移到组件下方，不再整体隐藏。
+  bar.style.top = screenY - 46 >= 10 ? `${screenY - 46}px` : `${Math.min(screenY + height * boardCam.scale + 14, viewportSize.h - 52)}px`;
 }
 
 // —— 撤销 / 重做：以板组件快照为粒度（样式类操作 800ms 内合并为一步）。 ——
@@ -3444,16 +3587,39 @@ function boardCancelWidgetSelection() {
   if (boardSelection.size) boardSetSelection([]);
 }
 
+// 板选择器胶囊挂在视图标题右侧（离开计划板时摘下）。
+let boardPillEl = null;
+function boardEnsurePill() {
+  const titleRow = $('.item-title-row');
+  if (!titleRow) return null;
+  if (boardPillEl && document.contains(boardPillEl)) return boardPillEl;
+  boardPillEl = document.createElement('div');
+  boardPillEl.className = 'board-pill';
+  boardPillEl.id = 'boardPill';
+  boardPillEl.innerHTML = `
+    <button type="button" class="board-pill-button" id="boardPillButton" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-board"/></svg><b id="boardPillName"></b><svg class="board-pill-chevron"><use href="#i-chevron"/></svg></button>
+    <div class="board-pill-menu" id="boardPillMenu" role="menu" hidden></div>`;
+  titleRow.appendChild(boardPillEl);
+  return boardPillEl;
+}
+
+function boardRemovePill() {
+  boardToggleMenu(false);
+  boardPillEl?.remove();
+  boardPillEl = null;
+}
+
 function bindBoardScene() {
   const canvas = $('#boardCanvas');
   if (!canvas) return;
   const entering = !boardWasActive;
   boardWasActive = true;
+  boardEnsurePill();
   boardEls = {
     canvas,
-    pill: $('#boardPill', canvas),
-    pillButton: $('#boardPillButton', canvas),
-    pillMenu: $('#boardPillMenu', canvas),
+    pill: boardPillEl,
+    pillButton: $('#boardPillButton', boardPillEl || document),
+    pillMenu: $('#boardPillMenu', boardPillEl || document),
     viewport: $('#boardViewport', canvas),
     world: $('#boardWorld', canvas),
     empty: $('#boardEmpty', canvas),
@@ -3476,7 +3642,7 @@ function bindBoardScene() {
   }
   boardLayoutCache = boardLayout();
   boardEls.empty.hidden = boardLayoutCache.board.widgets.length > 0;
-  $('#boardPillName', canvas).textContent = boardLayoutCache.board.name;
+  $('#boardPillName', boardEls.pill || document).textContent = boardLayoutCache.board.name;
   boardEls.world.innerHTML = '';
   boardRenderedCards.clear();
   boardRenderStatics();
@@ -3535,6 +3701,7 @@ function bindBoardScene() {
     boardPointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     boardStopMotion();
     boardCloseBgPop();
+    boardCloseContentPop();
     if (boardPointers.size >= 2) {
       const [a, b] = [...boardPointers.values()];
       const rect = viewport.getBoundingClientRect();
@@ -3676,11 +3843,11 @@ function bindBoardScene() {
           widget.h = Math.round(boardGesture.baseH + dy);
         }
       } else if (boardGesture.handle === 'end') {
-        widget.w = Math.round(boardGesture.baseW + dx);
-        widget.h = Math.round(boardGesture.baseH + dy);
+        widget.w = boardSnap(boardGesture.baseW + dx);
+        widget.h = boardSnap(boardGesture.baseH + dy);
       } else if (boardGesture.handle === 'start') {
-        widget.x = Math.round(boardGesture.baseX + dx);
-        widget.y = Math.round(boardGesture.baseY + dy);
+        widget.x = boardSnap(boardGesture.baseX + dx);
+        widget.y = boardSnap(boardGesture.baseY + dy);
       }
       if (widget.type === 'note' || widget.type === 'todo') {
         widget.w = Math.min(560, Math.max(200, widget.w));
@@ -3707,8 +3874,8 @@ function bindBoardScene() {
         }
         boardDrawDraft({ kind: 'draw', x: boardGesture.startX, y: boardGesture.startY, points, w: 1, h: 1 });
       } else {
-        boardGesture.currentW = x - boardGesture.startX;
-        boardGesture.currentH = y - boardGesture.startY;
+        boardGesture.currentW = boardSnap(x - boardGesture.startX);
+        boardGesture.currentH = boardSnap(y - boardGesture.startY);
         boardDrawDraft({ kind: boardGesture.kind, x: boardGesture.startX, y: boardGesture.startY, w: boardGesture.currentW, h: boardGesture.currentH });
       }
       return;
@@ -3728,8 +3895,8 @@ function bindBoardScene() {
       const worldDX = Math.round(dx / boardCam.scale);
       const worldDY = Math.round(dy / boardCam.scale);
       const applyMove = (entry, baseX, baseY, node) => {
-        entry.x = baseX + worldDX;
-        entry.y = baseY + worldDY;
+        entry.x = boardSnap(baseX + worldDX);
+        entry.y = boardSnap(baseY + worldDY);
         if (node) {
           node.style.left = `${entry.x}px`;
           node.style.top = `${entry.y}px`;
@@ -4013,10 +4180,52 @@ function bindBoardScene() {
     if (action === 'bg-pop') {
       const pop = $('#boardBgPop', canvas);
       if (pop && !pop.hidden) { boardCloseBgPop(); return; }
+      boardCloseContentPop();
       boardPushUndo('style');
       boardRenderBgPop(widget);
       return;
     }
+    if (action === 'content-pop') {
+      const pop = $('#boardContentPop', canvas);
+      if (pop && !pop.hidden) { boardCloseContentPop(); return; }
+      boardCloseBgPop();
+      boardRenderContentPop(widget);
+      return;
+    }
+    if (action === 'text-color') {
+      boardPushUndo('style');
+      widget.color = button.dataset.color;
+      boardRefreshStatic(widget);
+      boardRenderToolbar();
+      touchBoard(boardLayoutCache.board);
+      persist();
+      return;
+    }
+  });
+  boardEls.toolbar.addEventListener('input', event => {
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+    if (!widget) return;
+    const cardOpacity = event.target.closest('[data-tw="card-opacity"]');
+    if (cardOpacity && (widget.type === 'note' || widget.type === 'todo')) {
+      widget.opacity = Number(cardOpacity.value);
+      const output = cardOpacity.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.opacity}%`;
+      boardRefreshCardNode(widget);
+      touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const textColor = event.target.closest('[data-text-color]');
+    if (textColor && widget.type === 'text') {
+      widget.color = textColor.value;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+    }
+  });
+  boardEls.toolbar.addEventListener('change', event => {
+    const cardOpacity = event.target.closest('[data-tw="card-opacity"]');
+    if (cardOpacity) persist();
+    const textColor = event.target.closest('[data-text-color]');
+    if (textColor) persist();
   });
   boardEls.toolbar.addEventListener('change', async event => {
     const sizeInput = event.target.closest('[data-tw="size-set"]');
@@ -4065,10 +4274,8 @@ function bindBoardScene() {
   });
   // 背景样式面板（委托：色板 / 透明度 / 圆角 / 内边距）。
   boardEls.toolbar.parentElement?.addEventListener('click', event => {
-    const pop = $('#boardBgPop', canvas);
-    if (!pop || pop.hidden) return;
-    if (event.target.closest('#boardBgPop')) return;
-    if (!event.target.closest('[data-tw="bg-pop"]')) boardCloseBgPop();
+    if (!event.target.closest('#boardBgPop, [data-tw="bg-pop"]')) boardCloseBgPop();
+    if (!event.target.closest('#boardContentPop, [data-tw="content-pop"]')) boardCloseContentPop();
   });
   boardEls.canvas.addEventListener('click', event => {
     const pop = $('#boardBgPop', canvas);
@@ -4105,9 +4312,40 @@ function bindBoardScene() {
       widget.bg = custom.value;
       boardRefreshStatic(widget);
       touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const radius = event.target.closest('[data-radius-range]');
+    if (radius) {
+      widget.radius = Number(radius.value);
+      const output = radius.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.radius}px`;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const pad = event.target.closest('[data-pad-range]');
+    if (pad) {
+      widget.pad = Number(pad.value);
+      const output = pad.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.pad}px`;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
     }
   });
   boardEls.canvas.addEventListener('change', event => {
+    const showBox = event.target.closest('[data-show]');
+    if (showBox) {
+      const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+      if (widget && (widget.type === 'note' || widget.type === 'todo')) {
+        widget.show = { ...(widget.show || {}), [showBox.dataset.show]: showBox.checked };
+        touchBoard(boardLayoutCache.board);
+        persist();
+        // 显示内容影响卡片结构：重建该卡片节点。
+        renderList();
+        boardSetSelection([widget.id]);
+      }
+      return;
+    }
     if (!event.target.closest('[data-bgop]')) return;
     const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
     if (widget) { touchBoard(boardLayoutCache.board); persist(); }
@@ -4145,6 +4383,62 @@ function bindBoardScene() {
     }
     const custom = event.target.closest('[data-pen-color-custom]');
     if (custom) boardPenState.color = custom.value;
+  });
+
+  // 板个性化：右上角按钮弹出设置浮层，改动即时生效并随板保存。
+  const styleTrigger = $('#boardStyleTrigger', canvas);
+  styleTrigger?.addEventListener('click', () => {
+    const pop = $('#boardStylePop', canvas);
+    if (pop && !pop.hidden) { pop.hidden = true; return; }
+    boardRenderStylePop();
+  });
+  canvas.addEventListener('click', event => {
+    const pop = $('#boardStylePop', canvas);
+    if (!pop || pop.hidden) return;
+    const board = boardLayoutCache.board;
+    board.style = board.style || { pattern: 'dots', color: '', snap: false, gridSize: 26 };
+    const pattern = event.target.closest('[data-pattern]');
+    if (pattern) {
+      board.style.pattern = pattern.dataset.pattern;
+      boardApplyStyle(board);
+      boardRenderStylePop();
+      return;
+    }
+    const themeColor = event.target.closest('[data-bg-color="theme"]');
+    if (themeColor) {
+      board.style.color = '';
+      boardApplyStyle(board);
+      boardRenderStylePop();
+      return;
+    }
+    if (!event.target.closest('#boardStylePop, #boardStyleTrigger')) pop.hidden = true;
+  });
+  canvas.addEventListener('input', event => {
+    const pop = $('#boardStylePop', canvas);
+    if (!pop || pop.hidden) return;
+    const board = boardLayoutCache.board;
+    board.style = board.style || { pattern: 'dots', color: '', snap: false, gridSize: 26 };
+    const picker = event.target.closest('[data-bg-color-picker]');
+    if (picker) {
+      board.style.color = picker.value;
+      boardApplyStyle(board);
+      return;
+    }
+    const gridSize = event.target.closest('[data-grid-size]');
+    if (gridSize) {
+      board.style.gridSize = Number(gridSize.value);
+      const output = gridSize.parentElement?.querySelector('output');
+      if (output) output.textContent = `${board.style.gridSize}px`;
+      boardApplyStyle(board);
+    }
+  });
+  canvas.addEventListener('change', event => {
+    const snapToggle = event.target.closest('#boardSnapToggle');
+    if (!snapToggle) return;
+    const board = boardLayoutCache.board;
+    board.style = board.style || { pattern: 'dots', color: '', snap: false, gridSize: 26 };
+    board.style.snap = snapToggle.checked;
+    boardApplyStyle(board);
   });
   $('#boardZoomIn', canvas)?.addEventListener('click', () => {
     const { w, h } = boardViewportSize();
@@ -5409,6 +5703,37 @@ function openItem(id) {
   renderAll();
 }
 
+// 快速跳转：点当前周期标签弹出年份导航 + 12 月网格，选中即切换。
+function renderCalendarJump() {
+  const pop = $('#calendarJumpPop');
+  if (!pop) return;
+  const active = calendarDate(calendarCursor) || calendarDate(todayISO());
+  const year = active.getFullYear();
+  const months = Array.from({ length: 12 }, (_, index) => index);
+  pop.innerHTML = `
+    <div class="calendar-jump-year">
+      <button type="button" data-jump-year="-1" aria-label="${escapeHTML(t('previousYear'))}"><svg><use href="#i-chevron"/></svg></button>
+      <b>${year}</b>
+      <button type="button" data-jump-year="1" aria-label="${escapeHTML(t('nextYear'))}"><svg><use href="#i-chevron"/></svg></button>
+    </div>
+    <div class="calendar-jump-months">${months.map(month => `<button type="button" data-jump-month="${month}"${month === active.getMonth() ? ' class="active"' : ''}>${escapeHTML(calendarMonthShort(month))}</button>`).join('')}</div>`;
+  pop.hidden = false;
+}
+
+function calendarMonthShort(month) {
+  const formatter = new Intl.DateTimeFormat(calendarLocale(), { month: 'short' });
+  return formatter.format(new Date(2021, month, 15));
+}
+
+function toggleCalendarJump(open) {
+  const pop = $('#calendarJumpPop');
+  const trigger = $('#calendarJumpTrigger');
+  if (!pop || !trigger) return;
+  const next = open ?? pop.hidden;
+  pop.hidden = !next;
+  trigger.setAttribute('aria-expanded', String(next));
+}
+
 function shiftCalendarCursor(direction) {
   const active = calendarDate(calendarCursor) || calendarDate(todayISO());
   if (calendarViewMode === 'year') {
@@ -5767,6 +6092,33 @@ function bindShell() {
     searchQuery = event.target.value.trim(); renderList();
     const visible = getVisibleItems();
     if (!visible.some(item => item.id === selectedId)) { selectedId = visible[0]?.id || null; renderEditor(); }
+  });
+  // 日历快速跳转：标签开关浮层，年导航与月份格选中即跳转。
+  $('#calendarJumpTrigger')?.addEventListener('click', () => {
+    const pop = $('#calendarJumpPop');
+    if (pop && !pop.hidden) { toggleCalendarJump(false); return; }
+    renderCalendarJump();
+    toggleCalendarJump(true);
+  });
+  $('#calendarJumpPop')?.addEventListener('click', event => {
+    const yearButton = event.target.closest('[data-jump-year]');
+    if (yearButton) {
+      calendarCursor = new Date((calendarDate(calendarCursor) || calendarDate(todayISO())).getFullYear() + Number(yearButton.dataset.jumpYear), 0, 1, 12);
+      renderCalendarJump();
+      return;
+    }
+    const monthButton = event.target.closest('[data-jump-month]');
+    if (monthButton) {
+      const active = calendarDate(calendarCursor) || calendarDate(todayISO());
+      calendarCursor = new Date(active.getFullYear(), Number(monthButton.dataset.jumpMonth), 1, 12);
+      calendarMotion = 'zoom';
+      toggleCalendarJump(false);
+      renderList();
+    }
+  });
+  document.addEventListener('pointerdown', event => {
+    const pop = $('#calendarJumpPop');
+    if (pop && !pop.hidden && !event.target.closest('#calendarJump')) toggleCalendarJump(false);
   });
   $('#addFolder').addEventListener('click', async () => {
     const name = await askClassificationName(t('folderDefault'));

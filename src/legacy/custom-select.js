@@ -59,6 +59,8 @@ select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30
 
   const closeMenu = (immediate = false) => {
     if (!openState || !menu) return;
+    // 收起时释放触发器焦点：否则 :focus 的外圈高光会一直挂在收起的下拉上。
+    if (openState.select && document.activeElement === openState.select) openState.select.blur();
     openState = null;
     clearTimeout(closeTimer);
     const closing = menu;

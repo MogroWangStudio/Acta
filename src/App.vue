@@ -124,6 +124,10 @@
               <span data-i18n="showCompletedTodos">显示已完成</span>
             </label>
             <div class="calendar-toolbar" id="calendarToolbar" hidden>
+              <div class="calendar-jump" id="calendarJump">
+                <button type="button" class="calendar-jump-trigger" id="calendarJumpTrigger" aria-haspopup="dialog" aria-expanded="false"><span id="calendarJumpLabel"></span><svg><use href="#i-chevron"/></svg></button>
+                <div class="calendar-jump-pop" id="calendarJumpPop" role="dialog" hidden></div>
+              </div>
               <div class="calendar-navigation" role="group" aria-label="日历导航">
                 <button type="button" data-calendar-shift="-1" title="上一月"><svg><use href="#i-chevron"/></svg><span data-calendar-shift-label>上一月</span></button>
                 <button type="button" data-calendar-today data-i18n="backToToday">今天</button>
@@ -242,6 +246,7 @@
             <button class="active" type="button" data-settings-page="language"><svg><use href="#i-globe"/></svg><span>语言</span></button>
             <button type="button" data-settings-page="general"><svg><use href="#i-sliders"/></svg><span>常规设置</span></button>
             <button type="button" data-settings-page="nav"><svg><use href="#i-more"/></svg><span>页面跳转栏</span></button>
+            <button type="button" data-settings-page="plan-board"><svg><use href="#i-board"/></svg><span>计划板</span></button>
             <button type="button" data-settings-page="workspace"><svg><use href="#i-folder"/></svg><span>行记数据</span></button>
             <button type="button" data-settings-page="cloud"><svg><use href="#i-cloud"/></svg><span>数据同步</span></button>
             <button type="button" data-settings-page="note-editor"><svg><use href="#i-note"/></svg><span>笔记编辑器</span></button>
@@ -257,6 +262,15 @@
                 <label class="language-option"><input type="radio" name="actaLanguage" value="zh-Hant"/><span><span class="language-flag" role="img" aria-label="中华人民共和国国旗"><img src="/icons/flag-cn.svg" alt="" aria-hidden="true"/></span><span><strong>繁體中文</strong><small>Chinese, Traditional</small></span></span></label>
                 <label class="language-option"><input type="radio" name="actaLanguage" value="en"/><span><span class="language-flag" role="img" aria-label="美国国旗"><img src="/icons/flag-us.svg" alt="" aria-hidden="true"/></span><span><strong>English</strong><small>英语</small></span></span></label>
               </div>
+            </section>
+
+            <section class="settings-panel" data-settings-panel="plan-board">
+              <header><h3>计划板</h3><p>渲染性能与关联显示偏好，只影响本机的计划板视图。</p></header>
+              <div class="settings-group">
+                <label class="settings-row"><span><b>渲染余量</b><small>画布提前渲染视口外内容的距离，越大越顺滑、越耗性能</small></span><select id="planBoardRenderMargin"><option value="small">小 · 流畅优先</option><option value="medium" selected>中 · 均衡</option><option value="large">大 · 预览优先</option></select></label>
+                <label class="settings-row"><span><b>关联曲线</b><small>在同板互相关联的待办与笔记之间显示连接曲线</small></span><input id="planBoardLinkCurves" type="checkbox" checked/></label>
+              </div>
+              <p class="settings-status" id="planBoardStatus">设置即时生效，保存在本机。</p>
             </section>
 
             <section class="settings-panel" data-settings-panel="workspace">

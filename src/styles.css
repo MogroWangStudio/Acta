@@ -208,7 +208,8 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 @media (min-width: 801px) { .nav-section button.nav-page-hidden { display: none; } }
 .nav-section button > span { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .nav-icon { position: relative; display: inline-flex; flex: 0 0 auto; width: 16px; height: 16px; }
-.nav-icon > svg { width: 100%; height: 100%; }
+/* 主图标不参与收缩：一旦被压扁，与绝对定位的描线层尺寸失配就会错位重影。 */
+.nav-icon > svg { flex: none; width: 100%; height: 100%; }
 .nav-section button svg { width: 16px; height: 16px; color: #747970; transition: color .3s var(--ease-out); }
 /* 描线层是主图标的强调色副本：主图标始终可见，只有这层会随选中重绘。
    画完再淡出，切换时旧层淡出、新层重画，选中与未选中之间没有硬切。 */

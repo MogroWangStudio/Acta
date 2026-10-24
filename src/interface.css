@@ -96,7 +96,13 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
 
 /* 桌面端设置页占满整个窗口：不再有模糊遮罩与四周留白，设置窗口就是当前
    页面本身；macOS 红绿灯浮在左上角，由 darwin 分支让出空间，Windows 的
-   最小化 / 最大化按钮放进设置头部（settingsWindowControls）。 */
+   最小化 / 最大化按钮放进设置头部（settingsWindowControls）。
+   字号统一：设置页与小字弹窗在各自作用域把字号系数覆盖为 base × 放大
+   系数（只放大文字，布局尺寸不动，按视口封顶的弹窗不会被撑出屏幕），
+   所有 calc(Npx * var(--acta-font-scale)) 仍跟随「界面字体大小」缩放；
+   速记弹窗（quick-capture-dialog）排除：其字号本就与主界面同档。 */
+.settings-window { --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.12); }
+dialog.relation-dialog:not(.quick-capture-dialog), dialog.note-export-dialog, dialog.history-dialog, dialog.classification-manager-dialog { --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.1); }
 .settings-backdrop { position: fixed; inset: 0; z-index: 110; background: var(--paper); opacity: 0; pointer-events: none; transition: opacity .24s ease; }
 .settings-backdrop.open { opacity: 1; pointer-events: auto; }
 .settings-window { position: relative; width: 100vw; height: 100vh; border: 0; border-radius: 0; background: var(--paper); color: var(--ink); overflow: hidden; display: grid; grid-template-rows: 52px minmax(0,1fr); transform: translateY(12px); transition: transform .32s var(--ease-out); }
@@ -178,7 +184,7 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 .theme-swatch { height: 42px; border-radius: 8px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr 1fr; }
 .theme-swatch i { display: block; }
 .theme-option b { font-size: calc(9px * var(--acta-font-scale)); }
-.theme-option small { margin-top: -6px; color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); }
+.theme-option small { margin-top: -6px; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .theme-option:has(input[value="neon-ocean"]) .theme-swatch { box-shadow: 0 0 16px rgba(167,139,250,.32), 0 0 22px rgba(55,224,242,.2); }
 .theme-option:has(input[value="aurora-night"]) .theme-swatch { box-shadow: 0 0 16px rgba(63,214,187,.24), 0 0 22px rgba(143,197,232,.16); }
 .custom-colors { margin-top: 12px; padding: 14px; border: 1px dashed var(--line); border-radius: 13px; display: none; grid-template-columns: repeat(3,1fr); gap: 10px; }
@@ -343,7 +349,7 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 .data-profile-storage label:hover > span { transform: scale(1.02); }
 .data-profile-storage label > span > svg { width: 17px; height: 17px; grid-row: 1 / 3; color: var(--sage); }
 .data-profile-storage b { font-size: calc(9px * var(--acta-font-scale)); }
-.data-profile-storage small { color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); line-height: 1.35; }
+.data-profile-storage small { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); line-height: 1.35; }
 .data-profile-storage input:checked + span { border-color: color-mix(in srgb, var(--sage) 52%, var(--line)); background: var(--white); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 9%, transparent); }
 .data-profile-create-actions { margin-top: 13px; display: flex; justify-content: flex-end; gap: 8px; }
 .data-profile-list-heading { min-height: 29px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -361,9 +367,9 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 .data-profile-card-copy { min-width: 0; display: grid; gap: 4px; }
 .data-profile-card-title { display: flex; align-items: center; gap: 7px; min-width: 0; }
 .data-profile-card-title b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(10px * var(--acta-font-scale)); }
-.data-profile-active-badge { padding: 2px 6px; border-radius: 999px; background: var(--sage); color: var(--paper); font-size: calc(7px * var(--acta-font-scale)); font-weight: 750; }
+.data-profile-active-badge { padding: 2px 6px; border-radius: 999px; background: var(--sage); color: var(--paper); font-size: calc(8px * var(--acta-font-scale)); font-weight: 750; }
 .data-profile-card-path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font: calc(8px * var(--acta-font-scale))/1.4 ui-monospace, "SFMono-Regular", Consolas, monospace; }
-.data-profile-card-meta { color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); }
+.data-profile-card-meta { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .data-profile-card-actions { display: flex; align-items: center; gap: 5px; }
 .data-profile-action { min-width: 31px; height: 31px; padding: 0 9px; border: 1px solid var(--line); border-radius: 9px; background: var(--white); color: var(--muted); display: inline-flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; font-size: calc(8px * var(--acta-font-scale)); font-weight: 650; transition: color .15s ease, background .15s ease, border-color .15s ease, transform .2s var(--ease-out); }
 .data-profile-action:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); transform: scale(1.05); }
@@ -381,7 +387,7 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 .data-profile-location-row > svg { width: 15px; height: 15px; flex: 0 0 auto; color: var(--sage); }
 .data-profile-location-row > span { min-width: 0; flex: 1; display: grid; gap: 2px; }
 .data-profile-location-row b { font-size: calc(8px * var(--acta-font-scale)); }
-.data-profile-location-row small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); }
+.data-profile-location-row small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .data-profile-editor-actions { margin-top: 9px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
 .data-profile-editor-actions > .danger { margin-right: auto; }
 .data-profile-action.danger { color: #b96051; border-color: color-mix(in srgb, #b96051 28%, var(--line)); background: color-mix(in srgb, #b96051 7%, var(--white)); }
@@ -454,7 +460,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .folder-action-menu > button > span:last-child { min-width: 0; display: grid; gap: 3px; }
 .folder-action-menu svg { width: 15px; height: 15px; }
 .folder-action-menu b { font-size: calc(9px * var(--acta-font-scale)); }
-.folder-action-menu small { color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); }
+.folder-action-menu small { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .folder-short-name { display: none; }
 .relation-dialog.classification-manager-dialog { width: min(1120px, calc(100vw - 40px)); height: min(780px, calc(100dvh - 40px)); max-width: calc(100vw - 40px); max-height: calc(100dvh - 40px); overflow: hidden; }
 .classification-manager-layout { height: calc(100% - 58px); min-height: 0; display: grid; grid-template-columns: 240px minmax(0,1fr); }
@@ -482,7 +488,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .classification-manager-short-field { position: relative; }
 .classification-short-control { min-width: 0; display: grid; grid-template-columns: minmax(0,1fr) 40px; gap: 5px; }
 .classification-manager-short-field input { min-width: 0; text-align: center; font-weight: 700; letter-spacing: .08em; }
-.classification-manager-short-field small { color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); line-height: 1.35; }
+.classification-manager-short-field small { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); line-height: 1.35; }
 .classification-emoji-trigger { width: 40px; height: 40px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: var(--ink); display: grid; place-items: center; font: 400 calc(19px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
 .classification-emoji-trigger:hover, .classification-emoji-trigger[aria-expanded="true"] { border-color: color-mix(in srgb, var(--sage) 38%, var(--line)); background: var(--sage-2); transform: scale(1.04); box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--sage) 12%, transparent); }
 .classification-emoji-trigger:focus-visible { outline: 2px solid color-mix(in srgb, var(--sage) 35%, transparent); outline-offset: 2px; }
@@ -610,7 +616,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .note-export-format input:checked + span { border-color: color-mix(in srgb, var(--note-accent) 46%, var(--line)); background: color-mix(in srgb, var(--note-soft) 50%, var(--white)); }
 .note-export-format svg { grid-row: 1 / 3; width: 20px; height: 20px; align-self: center; color: var(--note-accent); }
 .note-export-format b { min-width: 0; font-size: calc(9px * var(--acta-font-scale)); }
-.note-export-format small { min-width: 0; overflow: hidden; color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); text-overflow: ellipsis; white-space: nowrap; }
+.note-export-format small { min-width: 0; overflow: hidden; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); text-overflow: ellipsis; white-space: nowrap; }
 .note-export-options { padding: 14px; border: 1px solid var(--line); border-radius: 15px; background: color-mix(in srgb, var(--panel) 48%, transparent); }
 .note-export-options[hidden] { display: none; }
 .note-export-options.is-entering { animation: noteExportOptionsIn .38s cubic-bezier(.16,1,.3,1) both; }
@@ -644,7 +650,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .note-export-kind label > span { min-height: 56px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 58%, transparent); display: grid; gap: 3px; cursor: pointer; transition: border-color .2s, background .2s, box-shadow .28s; }
 .note-export-kind input:checked + span { border-color: color-mix(in srgb, var(--note-accent) 46%, var(--line)); background: color-mix(in srgb, var(--note-soft) 50%, var(--white)); }
 .note-export-kind b { font-size: calc(9px * var(--acta-font-scale)); }
-.note-export-kind small { color: var(--faint); font-size: calc(7px * var(--acta-font-scale)); }
+.note-export-kind small { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .note-export-group { margin-top: 12px; }
 .note-export-group-title { margin: 0 0 9px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-weight: 750; }
 .note-export-font-mgr { margin-top: 12px; padding: 11px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); display: flex; align-items: flex-start; gap: 9px; }
@@ -1504,7 +1510,7 @@ html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: 
 @keyframes logoRay { 0%{opacity:0;transform:rotate(var(--ray-angle)) translate3d(8px,0,0) scaleX(.25)} 24%{opacity:.78} 100%{opacity:0;transform:rotate(var(--ray-angle)) translate3d(25px,0,0) scaleX(.72)} }
 
 .brand-logo { position: relative; z-index: 1; }
-.brand-version { position: absolute; left: 143px; top: 50%; transform: translateY(-50%); z-index: 1; max-width: 76px; overflow: hidden; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--white) 48%, transparent); font: 700 calc(7px * var(--acta-font-scale))/1 "Segoe UI Variable", "PingFang SC", sans-serif; letter-spacing: .035em; white-space: nowrap; opacity: 1; transition: max-width .42s cubic-bezier(.2,.82,.2,1), padding .42s cubic-bezier(.2,.82,.2,1), border-width .28s ease, opacity .18s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
+.brand-version { position: absolute; left: 143px; top: 50%; transform: translateY(-50%); z-index: 1; max-width: 76px; overflow: hidden; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--white) 48%, transparent); font: 700 calc(8px * var(--acta-font-scale))/1 "Segoe UI Variable", "PingFang SC", sans-serif; letter-spacing: .035em; white-space: nowrap; opacity: 1; transition: max-width .42s cubic-bezier(.2,.82,.2,1), padding .42s cubic-bezier(.2,.82,.2,1), border-width .28s ease, opacity .18s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
 @media (min-width: 801px) {
   /* macOS：logo 居中，版本号脱排到标题栏右缘，保存状态紧随其左；
      红绿灯由原生定位（traffic_light_position）垂直居中、贴左侧留间距。 */
@@ -1575,9 +1581,12 @@ body.sidebar-collapsed { --acta-sidebar-width: 72px; }
   body.sidebar-collapsed .nav-section button { position: relative; min-width: 44px; max-width: 44px; padding: 0; justify-content: center; }
   body.sidebar-collapsed .nav-section button > span { gap: 0; justify-content: center; }
   body.sidebar-collapsed .smart-nav button > span { width: 18px; flex: 0 0 18px; }
-  body.sidebar-collapsed .smart-nav button > span > svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); }
+  /* 图标已被描线层包装进 .nav-icon，定位要落在包装层上，否则主图标与描线错位重影。 */
+  body.sidebar-collapsed .smart-nav button > span > .nav-icon, body.sidebar-collapsed .smart-nav button > span > svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); }
   body.sidebar-collapsed .nav-section button > em { width: 0; min-width: 0; max-width: 0; margin: 0; flex: 0 0 0; }
-  body.sidebar-collapsed .nav-section button svg { width: 18px; height: 18px; }
+  /* 折叠态图标放大到 18px：容器要跟着放大，否则流内的主图标被 flex 压回
+     16px、绝对定位的描线层保持 18px，两层错位出重影。 */
+  body.sidebar-collapsed .nav-section button svg, body.sidebar-collapsed .nav-section button .nav-icon { width: 18px; height: 18px; }
   body.sidebar-collapsed .folder-section { max-width: 44px; width: auto; margin-top: 17px; align-self: center; overflow-x: hidden; padding-bottom: 14px; }
   body.sidebar-collapsed .folder-section::-webkit-scrollbar { display: none; }
   body.sidebar-collapsed .section-label { max-width: 44px; width: auto; padding: 0; justify-content: center; }
@@ -1616,10 +1625,35 @@ body.calendar-view {
 .calendar-toolbar { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .calendar-toolbar[hidden] { display: none; }
 .calendar-navigation, .calendar-view-switch { height: 34px; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 62%, transparent); display: flex; align-items: center; gap: 2px; }
+/* 快速跳转：当前周期标签 + 弹出的年份导航与月份网格。 */
+.calendar-jump { position: relative; }
+.calendar-jump-trigger { height: 28px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 62%, transparent); color: var(--ink); display: inline-flex; align-items: center; gap: 6px; font-size: calc(10px * var(--acta-font-scale)); font-weight: 700; cursor: pointer; transition: background .16s ease, border-color .16s ease, transform .18s var(--ease-out); }
+.calendar-jump-trigger svg { width: 11px; height: 11px; color: var(--faint); transition: transform .2s var(--ease-out); }
+.calendar-jump-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+.calendar-jump-trigger:hover { background: var(--white); border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); transform: scale(1.02); }
+.calendar-jump-pop {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: 232px; padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 13px;
+  background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: 0 4px 12px rgba(34,38,33,.1), 0 18px 40px -14px rgba(34,38,33,.26);
+  opacity: 0; transform: translateY(-6px) scale(.98); transform-origin: 24px 0; pointer-events: none;
+  transition: opacity .16s ease, transform .22s var(--ease-out);
+}
+.calendar-jump-pop:not([hidden]) { opacity: 1; transform: none; pointer-events: auto; }
+.calendar-jump-year { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 9px; }
+.calendar-jump-year b { color: var(--ink); font-size: calc(12px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+.calendar-jump-year button { width: 26px; height: 26px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background .15s ease, color .15s ease; }
+.calendar-jump-year button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 62%, transparent); }
+.calendar-jump-year button svg { width: 12px; height: 12px; }
+.calendar-jump-year button[data-jump-year="-1"] svg { transform: rotate(180deg); }
+.calendar-jump-months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.calendar-jump-months button { height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: background .14s ease, color .14s ease; }
+.calendar-jump-months button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 62%, transparent); }
+.calendar-jump-months button.active { color: #fff; background: var(--calendar-accent); }
 .calendar-toolbar button { min-width: 29px; height: 27px; padding: 0 8px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; cursor: pointer; transition: color .18s ease, background .18s ease; }
 .calendar-toolbar button:hover { color: var(--ink); background: var(--panel); transform: scale(1.04); }
 .calendar-toolbar button.active { color: #fff; background: var(--calendar-accent); }
-.calendar-navigation button:first-child svg { transform: rotate(180deg); }
+.calendar-navigation button:first-child svg { transform: rotate(180deg); transform-box: fill-box; transform-origin: center; }
 .calendar-toolbar svg { width: 13px; height: 13px; }
 body.calendar-view .search-box, body.calendar-view .filter-row, body.calendar-view .list-resizer { display: none; }
 @media (min-width: 801px) {
@@ -1648,7 +1682,7 @@ body.calendar-view .list-footer { background: color-mix(in srgb, var(--calendar-
 .calendar-month-grid { border: 1px solid var(--line); border-radius: 14px; background: var(--line); display: grid; grid-template-columns: 44px repeat(7,minmax(0,1fr)); grid-template-rows: repeat(6,minmax(108px,1fr)); gap: 1px; overflow: hidden; }
 .calendar-month-week { display: contents; }
 .calendar-week-number { min-width: 0; padding: 7px 3px; background: color-mix(in srgb, var(--calendar-soft) 40%, var(--panel)); color: var(--faint); display: grid; place-items: center; align-content: center; gap: 3px; }
-.calendar-week-number span { font-size: calc(7px * var(--acta-font-scale)); font-weight: 700; letter-spacing: .06em; }
+.calendar-week-number span { font-size: calc(8px * var(--acta-font-scale)); font-weight: 700; letter-spacing: .06em; }
 .calendar-week-number b { color: var(--calendar-accent); font: 650 calc(12px * var(--acta-font-scale))/1 var(--acta-font-display); }
 .calendar-day-cell { min-width: 0; min-height: 108px; padding: 7px; background: color-mix(in srgb, var(--white) 70%, var(--panel)); overflow: hidden; }
 .calendar-day-cell.is-adjacent { background: color-mix(in srgb, var(--panel) 72%, transparent); }
@@ -1675,7 +1709,7 @@ body.calendar-view .list-footer { background: color-mix(in srgb, var(--calendar-
 .calendar-month-link { position: relative; width: 17px; height: 17px; flex: 0 0 17px; padding: 0; border: 0; border-radius: 5px; background: color-mix(in srgb, var(--note-soft) 72%, transparent); color: var(--note-accent); display: grid; place-items: center; cursor: pointer; transition: background .18s ease; }
 .calendar-month-link:hover { background: var(--note-soft); transform: scale(1.08); }
 .calendar-month-link svg { width: 10px; height: 10px; }
-.calendar-month-link span { position: absolute; right: -3px; top: -4px; min-width: 10px; height: 10px; padding: 0 2px; border-radius: 999px; background: var(--note-accent); color: #fff; display: grid; place-items: center; font-size: calc(7px * var(--acta-font-scale)); font-weight: 800; }
+.calendar-month-link span { position: absolute; right: -3px; top: -4px; min-width: 10px; height: 10px; padding: 0 2px; border-radius: 999px; background: var(--note-accent); color: #fff; display: grid; place-items: center; font-size: calc(8px * var(--acta-font-scale)); font-weight: 800; }
 .calendar-overflow { width: 25px; height: 19px; margin-left: 1px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: color .18s ease, background .18s ease; }
 .calendar-overflow:hover { color: var(--calendar-accent); background: var(--calendar-soft); transform: translateX(2px); }
 .calendar-overflow svg { width: 16px; height: 16px; }
@@ -1767,7 +1801,7 @@ body.calendar-view .list-footer { background: color-mix(in srgb, var(--calendar-
 .calendar-mini-day.is-today { color: #fff; background: var(--calendar-accent); }
 .calendar-mini-day.has-todos:not(.is-today) { color: var(--calendar-accent); background: color-mix(in srgb, var(--calendar-soft) 68%, transparent); font-weight: 750; }
 .calendar-mini-day.has-notes:not(.is-today):not(.has-todos) { color: var(--note-accent); background: color-mix(in srgb, var(--note-soft) 68%, transparent); font-weight: 750; }
-.calendar-mini-day i { position: absolute; right: -1px; top: -1px; min-width: 10px; height: 10px; padding: 0 2px; border-radius: 999px; background: var(--calendar-accent); color: #fff; display: grid; place-items: center; font-size: calc(7px * var(--acta-font-scale)); font-style: normal; }
+.calendar-mini-day i { position: absolute; right: -1px; top: -1px; min-width: 10px; height: 10px; padding: 0 2px; border-radius: 999px; background: var(--calendar-accent); color: #fff; display: grid; place-items: center; font-size: calc(8px * var(--acta-font-scale)); font-style: normal; }
 .calendar-mini-day.has-links::after { content:""; position:absolute; left:2px; bottom:2px; width:4px; height:4px; border-radius:50%; background:var(--note-accent); box-shadow:0 0 0 1px var(--white); }
 .calendar-legend { padding: 10px 2px 0; display: flex; justify-content: flex-end; gap: 14px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
 .calendar-legend span { display: inline-flex; align-items: center; gap: 5px; }
@@ -1913,16 +1947,21 @@ body.board-view .item-pane { border-right: 0; background: var(--paper); }
   body.board-view.board-editor-open .editor-pane { transform: translateX(0); }
 }
 body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease; transform: none; }
+body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resizer) { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   body.board-view .editor-pane { transition: opacity .18s ease; transform: none; }
+  body.board-view :is(.board-editor-close, .board-editor-resizer) { transform: none; }
 }
-/* 面板左缘拖宽条：面板打开时出现，拖动实时改变宽度并把选中内容保持在可见区。 */
-.board-editor-resizer { position: absolute; z-index: 26; top: 0; bottom: 0; right: var(--board-editor-w, 460px); width: 14px; margin-right: -7px; cursor: col-resize; touch-action: none; display: none; }
+/* 面板左缘拖宽条：面板打开时出现，拖动实时改变宽度并把选中内容保持在可见区。
+   与关闭按钮一样常驻渲染、用 transform/opacity 出场——display 切换会让过渡失效，
+   按钮就追不上面板的滑入。 */
+.board-editor-resizer { position: absolute; z-index: 26; top: 0; bottom: 0; right: var(--board-editor-w, 460px); width: 14px; margin-right: -7px; cursor: col-resize; touch-action: none; opacity: 0; pointer-events: none; transform: translateX(56px); transition: transform .42s var(--ease-out), opacity .24s ease; }
 .board-editor-resizer::after { content: ""; position: absolute; top: 0; bottom: 0; left: 6px; width: 2px; border-radius: 2px; background: transparent; transition: background .16s ease; }
 .board-editor-resizer:hover::after, .board-editor-resizer.is-dragging::after { background: color-mix(in srgb, var(--sage) 48%, transparent); }
 @media (min-width: 801px) {
-  body.board-view.board-editor-open .board-editor-resizer { display: block; }
+  body.board-view.board-editor-open .board-editor-resizer { opacity: 1; pointer-events: auto; transform: translateX(0); }
 }
+@media (max-width: 800px) { .board-editor-resizer { display: none; } }
 .board-list { padding: 0; overflow: hidden; scrollbar-gutter: auto; }
 .board-canvas { position: relative; height: 100%; min-height: 0; }
 .board-viewport {
@@ -1931,6 +1970,12 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
   background-size: var(--board-grid, 26px) var(--board-grid, 26px);
   background-position: var(--board-grid-x, 0px) var(--board-grid-y, 0px);
 }
+.board-viewport[data-pattern="grid"] {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--ink) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--ink) 8%, transparent) 1px, transparent 1px);
+}
+.board-viewport[data-pattern="none"] { background-image: none; }
 .board-viewport:active { cursor: grabbing; }
 .board-canvas.is-drawing .board-viewport { cursor: crosshair; }
 .board-world { position: absolute; top: 0; left: 0; width: 0; height: 0; transform-origin: 0 0; will-change: transform; }
@@ -2015,8 +2060,8 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
 .board-empty h3 { margin: 0 0 6px; color: var(--ink); font: 600 calc(16px * var(--acta-font-scale)) var(--acta-font-display); }
 .board-empty p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); max-width: 320px; line-height: 1.7; }
 
-/* 板胶囊（左上）：当前板名 + 切换 / 管理菜单，与工具条同一块毛玻璃材质。 */
-.board-pill { position: absolute; top: 12px; left: 14px; z-index: 5; }
+/* 板胶囊：挂在视图标题右侧（「计划板」标题后留出间距）。 */
+.board-pill { position: relative; margin-left: 14px; flex: 0 0 auto; }
 .board-pill-button {
   height: 34px; max-width: 240px; padding: 0 8px 0 11px; border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 11px;
   background: color-mix(in srgb, var(--paper) 74%, transparent); backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6);
@@ -2168,6 +2213,39 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
 .board-swatch.is-none { background: var(--paper); border: 1.5px dashed color-mix(in srgb, var(--faint) 60%, transparent); position: relative; }
 .board-swatch.is-none::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: linear-gradient(to top right, transparent 44%, var(--danger-accent, #b96051) 44%, var(--danger-accent, #b96051) 56%, transparent 56%); }
 
+/* 个性化触发钮：画布右上角，与工具条同一材质。 */
+.board-style-trigger {
+  position: absolute; top: 12px; right: 14px; z-index: 5; width: 34px; height: 34px;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 11px;
+  background: color-mix(in srgb, var(--paper) 74%, transparent); backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  box-shadow: 0 2px 6px rgba(47,50,43,.06), 0 10px 26px -12px rgba(34,38,33,.22), inset 0 1px 0 color-mix(in srgb, var(--white) 55%, transparent);
+  color: var(--muted); display: grid; place-items: center; cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, transform .18s var(--ease-out), right .42s var(--ease-out);
+  /* backwards 而非 both：入场后不锁定 transform，悬停缩放与让位位移才能生效。 */
+  animation: boardPillIn .45s var(--ease-out) .1s backwards;
+}
+/* 编辑面板从右缘滑入时，按钮与它的弹层一起向左让位，读作被面板推过去。 */
+@media (min-width: 801px) {
+  body.board-view.board-editor-open .board-style-trigger { right: calc(var(--board-editor-w, 460px) + 14px); }
+  body.board-view.board-editor-open .board-style-pop-lg { right: calc(var(--board-editor-w, 460px) + 14px); }
+}
+.board-style-trigger svg { width: 15px; height: 15px; }
+.board-style-trigger:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); transform: scale(1.05); }
+.board-style-trigger:active { transform: scale(.95); transition-duration: .08s; }
+
+/* 工具条小色板 / 滑杆 / 内容开关。 */
+.board-swatch-sm { width: 16px; height: 16px; }
+.board-tw-range { width: 86px; accent-color: var(--sage); }
+.board-style-column { display: grid; gap: 7px; }
+.board-style-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.board-style-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.board-style-toggle i { width: 30px; height: 17px; border-radius: 999px; background: color-mix(in srgb, var(--faint) 38%, transparent); position: relative; transition: background .18s ease; flex: 0 0 auto; }
+.board-style-toggle i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--white); box-shadow: 0 1px 3px rgba(34,38,33,.24); transition: transform .18s var(--ease-out); }
+.board-style-toggle input:checked + i { background: var(--sage); }
+.board-style-toggle input:checked + i::after { transform: translateX(13px); }
+.board-style-toggle span { color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 600; }
+.board-style-pop-lg { left: auto; right: 14px; top: 54px; transform: none; min-width: 264px; }
+
 /* 多选工具条固定在画布底部居中（添加工具条上一行），不跟随组件。 */
 .board-widget-toolbar.is-multi { left: 50% !important; top: auto !important; bottom: 74px; }
 /* 自选颜色：原生取色器藏在小色块下。 */
@@ -2199,26 +2277,31 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
   .board-widget-toolbar.is-multi { bottom: calc(138px + env(safe-area-inset-bottom)); }
 }
 
-/* 面板关闭按钮：浮动在面板左上角内侧。 */
+/* 面板关闭按钮：浮动在面板左上角内侧。常驻渲染，与面板同曲线同时长滑入滑出；
+   visibility 延迟到滑出完成后再隐藏，出场期间不参与命中与焦点。 */
 .board-editor-close {
   position: absolute; z-index: 27; top: 10px; right: calc(var(--board-editor-w, 460px) - 42px); width: 30px; height: 30px;
   border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--paper) 88%, transparent); color: var(--muted);
-  display: none; place-items: center; cursor: pointer; box-shadow: 0 1px 4px rgba(34,38,33,.1);
-  transition: color .15s ease, background .15s ease, transform .16s var(--ease-out);
+  display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 4px rgba(34,38,33,.1);
+  opacity: 0; pointer-events: none; visibility: hidden; transform: translateX(56px);
+  transition: color .15s ease, background .15s ease, transform .42s var(--ease-out), opacity .24s ease, visibility 0s linear .42s;
 }
+@media (min-width: 801px) {
+  body.board-view.board-editor-open .board-editor-close {
+    opacity: 1; pointer-events: auto; visibility: visible; transform: translateX(0);
+    transition: color .15s ease, background .15s ease, transform .42s var(--ease-out), opacity .24s ease, visibility 0s;
+  }
+}
+@media (max-width: 800px) { .board-editor-close { display: none; } }
 .board-editor-close:hover { color: var(--ink); background: var(--white); transform: scale(1.06); }
 .board-editor-close:active { transform: scale(.94); transition-duration: .08s; }
 .board-editor-close svg { width: 13px; height: 13px; }
-@media (min-width: 801px) {
-  body.board-view.board-editor-open .board-editor-close { display: grid; }
-}
-
 @keyframes boardChromeIn { from { opacity: 0; transform: translateX(-50%) translateY(14px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 @keyframes boardNodePop { from { opacity: 0; transform: translateY(6px) scale(.985); } to { opacity: 1; transform: none; } }
 /* 首次进入的组件级联：带着自己的 --board-d 延迟依次落位。 */
 .board-node[data-enter="1"] { animation: boardNodeEnter .42s var(--ease-out) both; animation-delay: var(--board-d, 0ms); }
 @keyframes boardNodeEnter { from { opacity: 0; transform: translateY(16px) scale(.968); } to { opacity: 1; transform: none; } }
-.board-pill-button { transform-origin: 0 50%; animation-name: boardPillIn; }
+
 @keyframes boardPillIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* 深色主题下玻璃与卡片的对比修正。 */
@@ -2247,8 +2330,10 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .board-chrome::-webkit-scrollbar { display: none; }
   .board-tool span { display: none; }
   .board-zoom-level { min-width: 34px; }
-  .board-pill { top: 10px; left: 10px; }
-  .board-pill-button { max-width: 176px; }
+  .board-pill { margin-left: 8px; }
+  .board-pill-button { max-width: 148px; }
+  .board-style-trigger { top: auto; bottom: calc(138px + env(safe-area-inset-bottom)); right: 10px; }
+  .board-style-pop-lg { right: 10px; top: auto; bottom: calc(184px + env(safe-area-inset-bottom)); }
   .board-widget-toolbar { max-width: calc(100% - 16px); flex-wrap: wrap; justify-content: center; }
   .board-import-dialog { width: calc(100vw - 20px); }
   .board-import-list { max-height: 44vh; }
@@ -2328,9 +2413,9 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .calendar-list { padding: 8px 10px calc(82px + env(safe-area-inset-bottom)); }
   .calendar-month-view { min-width: 0; min-height: 590px; grid-template-rows: 27px minmax(560px,1fr); }
   .calendar-weekdays, .calendar-month-grid { grid-template-columns: 31px repeat(7,minmax(0,1fr)); }
-  .calendar-week-number-heading { font-size: calc(7px * var(--acta-font-scale)); }
+  .calendar-week-number-heading { font-size: calc(8px * var(--acta-font-scale)); }
   .calendar-week-number { padding: 4px 1px; gap: 2px; }
-  .calendar-week-number span { font-size: calc(7px * var(--acta-font-scale)); }
+  .calendar-week-number span { font-size: calc(8px * var(--acta-font-scale)); }
   .calendar-week-number b { font-size: calc(10px * var(--acta-font-scale)); }
   .calendar-month-grid { grid-template-rows: repeat(6,minmax(88px,1fr)); border-radius: 12px; }
   .calendar-year-month,

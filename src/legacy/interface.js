@@ -18,6 +18,9 @@
     dataProfiles: [], activeDataProfileId: '', lanTrustLan: false, webDavServer: '', webDavUsername: '', autoSync: false, autoSyncInterval: 5, lanDiscoverable: false, listPaneWidth: 330, sidebarCollapsed: false, language: ['zh', 'zh-Hant', 'en'].includes(settings.language) ? settings.language : 'zh'
   };
   let uiSettings = { ...defaultUISettings };
+  // 进程内第一眼看到的存储原貌：启动序列自己会写设置键（applyInterfaceLanguage
+  // 等），之后再看「存储里有没有设置」就无法区分首启与老用户了。
+  const hadStoredSettings = Boolean(localStorage.getItem(uiStorageKey));
   try { uiSettings = { ...uiSettings, ...(JSON.parse(localStorage.getItem(uiStorageKey)) || {}) }; } catch { /* Use safe defaults. */ }
   // 软件数据位置（桌面端）：设置镜像写入所选文件夹中的 settings.json，
   // localStorage 继续作为运行时缓存；清缓存后可从文件恢复。
@@ -97,6 +100,8 @@
     boardMarkerArrow:'箭頭', boardMarkerRect:'方框', boardMarkerEllipse:'橢圓', boardMarkerLine:'直線', boardMarkerDraw:'畫筆', boardMarkerColor:'標註顏色', boardMarkerDone:'完成標註',
     boardBg:'背景', boardBgNone:'無背景', boardBgOpacity:'不透明度', boardRadius:'圓角', boardPadding:'內邊距', boardCustomFont:'自訂字型', boardCustomFontHint:'輸入本機已安裝的字型名稱，如 Georgia',
     boardDeleteArm:'再點一次刪除', boardUndo:'復原', boardRedo:'重做', boardMarqueeClear:'取消選擇', boardMarqueeDelete:'刪除所選', boardSelectedCount:'已選 {0} 項',
+    boardTextColor:'文字顏色', boardContentSettings:'顯示內容', boardShowPill:'類型標籤', boardShowPriority:'優先順序', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部資訊', boardWidgetOpacity:'不透明度',
+    boardPersonalize:'個性化計劃板', boardBgPattern:'背景圖案', boardPatternDots:'點陣', boardPatternGrid:'網格', boardPatternNone:'無', boardBoardBgColor:'背景顏色', boardBgColorTheme:'跟隨主題', boardSnapGrid:'吸附到網格', boardGridSize:'圖案網格大小',
     boardCustomColor:'自訂顏色', boardBrushPen:'鋼筆', boardBrushHighlighter:'螢光筆', boardPenStroke:'粗細', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'畫筆模式：可連續多筆，完成或按 Esc 退出',
     boardEmptyTitle:'這塊板還是空的', boardEmptyHint:'用下方工具新增文字與標註，或匯入想展示在這塊板上的待辦與筆記，自由擺放成你的計劃板。'
   };
@@ -236,7 +241,7 @@
       '启动、密度与动效偏好。':'Startup, density, and motion.', '默认启动页面':'Default startup view', '启动时进入的视图':'The view shown at launch', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '汇总板':'Plan board', '已完成':'Completed',
       '紧凑列表':'Compact lists', '中栏密度更高':'Denser middle pane', '减少动态效果':'Reduce motion', '降低转场与弹性动画':'Fewer transitions and springs', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
       '点击空白处':'Click outside dialogs', '点空白处如何关闭弹窗，默认双击防误触':'How clicks on blank areas close dialogs; double click by default', '不关闭（防误触）':"Don't close (accident protection)", '单击关闭':'Single click closes', '双击关闭':'Double click closes',
-      '页面跳转栏':'Navigation bar', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'Show the entries for this device — the desktop sidebar, or the mobile bottom bar and titlebar.', '桌面端侧边栏':'Desktop sidebar', '勾选要显示的页面；待办与笔记默认隐藏':'Tick the pages to show; tasks and notes are hidden by default', '移动端底栏':'Mobile bottom bar', '两个槽位可替换；两端固定为收集箱与日历':'Two replaceable slots; Inbox and Calendar stay fixed', '槽位一':'Slot one', '槽位二':'Slot two', '移动端顶栏':'Mobile titlebar', '右上角三个按钮可自定义；设置按钮固定显示':'Customize the three top-right buttons; Settings stays fixed', '顶栏槽位一':'Titlebar slot one', '顶栏槽位二':'Titlebar slot two', '顶栏槽位三':'Titlebar slot three', '刷新数据':'Refresh data', '历史记录':'History', '回收站':'Trash',
+      '计划板':'Plan board', '渲染余量':'Render margin', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'How far beyond the viewport the canvas pre-renders; larger is smoother but heavier', '小 · 流畅优先':'Small · performance first', '中 · 均衡':'Medium · balanced', '大 · 预览优先':'Large · preview first', '关联曲线':'Link curves', '在同板互相关联的待办与笔记之间显示连接曲线':'Show connection curves between linked tasks and notes on the same board', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Render-performance and link-display preferences for the plan board on this device.', '设置即时生效，保存在本机。':'Applies immediately; saved on this device.', '页面跳转栏':'Navigation bar', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'Show the entries for this device — the desktop sidebar, or the mobile bottom bar and titlebar.', '桌面端侧边栏':'Desktop sidebar', '勾选要显示的页面；待办与笔记默认隐藏':'Tick the pages to show; tasks and notes are hidden by default', '移动端底栏':'Mobile bottom bar', '两个槽位可替换；两端固定为收集箱与日历':'Two replaceable slots; Inbox and Calendar stay fixed', '槽位一':'Slot one', '槽位二':'Slot two', '移动端顶栏':'Mobile titlebar', '右上角三个按钮可自定义；设置按钮固定显示':'Customize the three top-right buttons; Settings stays fixed', '顶栏槽位一':'Titlebar slot one', '顶栏槽位二':'Titlebar slot two', '顶栏槽位三':'Titlebar slot three', '刷新数据':'Refresh data', '历史记录':'History', '回收站':'Trash',
       '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes only change the appearance; your notes and tasks are unaffected.', '黑白浅色':'Monochrome light', '黑白深色':'Monochrome dark', '蓝黄':'Blue and yellow', '纸色护眼':'Eye-comfort paper', '默认':'Default', '自定义':'Custom',
       '纸张颜色':'Paper color', '侧栏颜色':'Sidebar color', '强调颜色':'Accent color', '界面字体':'Interface font', '应用于列表、编辑器与设置页':'Applies to lists, editor, and settings', '系统默认':'System default', '衬线字体':'Serif', '圆体':'Rounded', '等宽字体':'Monospace', '自定义字体':'Custom font',
       '字体家族':'Font family', '本机已安装的字体，如 Inter':'A font installed on this device, e.g. Inter', '字体大小':'Font size', '界面整体缩放':'Scale the whole interface', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capture, then act. Acta connects notes and tasks naturally.',
@@ -255,7 +260,7 @@
       '整个资料库保存在所选文件夹内唯一的':'整個資料庫儲存在所選資料夾內唯一的', '文件中。':'檔案中。', '演示工作区':'示範工作區', '尚未选择文件夹；本次修改不会保存。':'尚未選擇資料夾；本次修改不會儲存。', '选择本地文件夹':'選擇本機資料夾', '立即保存':'立即儲存', '从文件重载':'從檔案重新載入', '返回演示工作区':'返回示範工作區',
       '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '启动、密度与动效偏好。':'啟動、密度與動效偏好。', '默认启动页面':'預設啟動頁面', '启动时进入的视图':'啟動時進入的視圖', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '汇总板':'計劃板', '紧凑列表':'緊湊清單', '中栏密度更高':'中欄密度更高', '减少动态效果':'減少動態效果', '降低转场与弹性动画':'降低轉場與彈性動畫', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
       '点击空白处':'點擊空白處', '点空白处如何关闭弹窗，默认双击防误触':'點空白處如何關閉彈窗，預設雙擊防誤觸', '不关闭（防误触）':'不關閉（防誤觸）', '单击关闭':'單擊關閉', '双击关闭':'雙擊關閉',
-      '页面跳转栏':'頁面跳轉欄', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'按目前裝置顯示桌面側邊欄或行動端底欄與頂欄的入口。', '桌面端侧边栏':'桌面端側邊欄', '勾选要显示的页面；待办与笔记默认隐藏':'勾選要顯示的頁面；待辦與筆記預設隱藏', '移动端底栏':'行動端底欄', '两个槽位可替换；两端固定为收集箱与日历':'兩個槽位可替換；兩端固定為收集箱與日曆', '槽位一':'槽位一', '槽位二':'槽位二', '移动端顶栏':'行動端頂欄', '右上角三个按钮可自定义；设置按钮固定显示':'右上角三個按鈕可自訂；設定按鈕固定顯示', '顶栏槽位一':'頂欄槽位一', '顶栏槽位二':'頂欄槽位二', '顶栏槽位三':'頂欄槽位三', '刷新数据':'重新整理資料', '历史记录':'歷史記錄',
+      '计划板':'計劃板', '渲染余量':'渲染餘量', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'畫布提前渲染視窗外內容的距離，越大越順暢、越耗效能', '小 · 流畅优先':'小 · 流暢優先', '中 · 均衡':'中 · 均衡', '大 · 预览优先':'大 · 預覽優先', '关联曲线':'關聯曲線', '在同板互相关联的待办与笔记之间显示连接曲线':'在同板互相關聯的待辦與筆記之間顯示連接曲線', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'渲染效能與關聯顯示偏好，只影響本機的計劃板視圖。', '设置即时生效，保存在本机。':'設定即時生效，儲存在本機。', '页面跳转欄':'頁面跳轉欄', '页面跳转栏':'頁面跳轉欄', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'按目前裝置顯示桌面側邊欄或行動端底欄與頂欄的入口。', '桌面端侧边栏':'桌面端側邊欄', '勾选要显示的页面；待办与笔记默认隐藏':'勾選要顯示的頁面；待辦與筆記預設隱藏', '移动端底栏':'行動端底欄', '两个槽位可替换；两端固定为收集箱与日历':'兩個槽位可替換；兩端固定為收集箱與日曆', '槽位一':'槽位一', '槽位二':'槽位二', '移动端顶栏':'行動端頂欄', '右上角三个按钮可自定义；设置按钮固定显示':'右上角三個按鈕可自訂；設定按鈕固定顯示', '顶栏槽位一':'頂欄槽位一', '顶栏槽位二':'頂欄槽位二', '顶栏槽位三':'頂欄槽位三', '刷新数据':'重新整理資料', '历史记录':'歷史記錄',
       '勾选框旁显示完成日期，悬停看时刻':'勾選框旁顯示完成日期，懸停看時刻',
       '列表与归类视图默认显示已完成待办':'清單與歸類視圖預設顯示已完成待辦',
       '完成后先停留再移到列表末尾，可撤回':'完成後先停留再移到清單結尾，可撤回',
@@ -4511,6 +4516,28 @@
   mobileTitleSelects().forEach(select => select.addEventListener('change', saveMobileTitleActions));
   applyNavSettings();
 
+  // —— 计划板设置：渲染余量与关联曲线（存于 acta.board.v2 的 prefs，renderer 直读）。 ——
+  const planMargin = byId('planBoardRenderMargin');
+  const planLinks = byId('planBoardLinkCurves');
+  if (planMargin && planLinks) {
+    let boardPrefs = { renderMargin: 'medium', linkCurves: true };
+    try {
+      const storedBoard = JSON.parse(localStorage.getItem('acta.board.v2')) || {};
+      boardPrefs = { renderMargin: 'medium', linkCurves: true, ...(storedBoard.prefs || {}) };
+    } catch { /* 无效存储用默认值。 */ }
+    planMargin.value = boardPrefs.renderMargin;
+    planLinks.checked = boardPrefs.linkCurves !== false;
+    const savePlanPrefs = () => {
+      let storedBoard = {};
+      try { storedBoard = JSON.parse(localStorage.getItem('acta.board.v2')) || {}; } catch { storedBoard = {}; }
+      storedBoard.prefs = { renderMargin: planMargin.value, linkCurves: planLinks.checked };
+      localStorage.setItem('acta.board.v2', JSON.stringify(storedBoard));
+      setStatus(byId('planBoardStatus'), uiText('defaultSaved'), 'success');
+    };
+    planMargin.addEventListener('change', savePlanPrefs);
+    planLinks.addEventListener('change', savePlanPrefs);
+  }
+
   // 侧边栏「局域网雷达」入口：雷达已内嵌在数据同步设置页，这里直接打开
   // 设置并定位到该页，不再经过独立的三级窗口。
   byId('smartNav')?.addEventListener('click', event => {
@@ -5131,6 +5158,10 @@
       custom:`${safeCustomFont}, "Segoe UI", "Microsoft YaHei", sans-serif`
     }[uiSettings.appFont] || '"Segoe UI Variable", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif';
     document.documentElement.style.setProperty('--acta-app-font', editorFont);
+    // base 是「界面字体大小」的原始系数；设置页与小字弹窗在自己作用域里把
+    // --acta-font-scale 覆盖为 base × 放大系数（只放大文字、不动布局尺寸，
+    // 不会像 zoom 那样把按视口封顶的弹窗撑出屏幕）。
+    document.documentElement.style.setProperty('--acta-font-scale-base', String(uiSettings.appFontSize / fontSizeRange.default));
     document.documentElement.style.setProperty('--acta-font-scale', String(uiSettings.appFontSize / fontSizeRange.default));
     appFontSizeSetting.value = String(uiSettings.appFontSize);
     appFontSizeValue.textContent = `${uiSettings.appFontSize} px`;
@@ -7912,10 +7943,13 @@
 
   function openOobe(state = {}) {
     if (!oobeOverlay || !oobeStepCount) return;
-    // 首次启动：等待用户确认数据位置；从设置重新体验时，当前位置已就绪，
-    // 直接放行，用户仍可在第一步改选其他文件夹。
-    oobePrepared = Boolean(appDataState.ready && appDataState.path);
-    byId('oobePathValue').textContent = oobePrepared ? appDataState.path : appearanceText('尚未选择');
+    const hasBridge = Boolean(appDataBridge());
+    // 无桌面数据桥（浏览器 / 移动端）：软件设置只存本机，第一步直接就绪，
+    // 不再等待「选择数据文件夹」（那一步在无文件系统能力的环境没有意义）。
+    oobePrepared = !hasBridge || Boolean(appDataState.ready && appDataState.path);
+    byId('oobePathValue').textContent = hasBridge
+      ? (appDataState.ready && appDataState.path ? appDataState.path : appearanceText('尚未选择'))
+      : appearanceText('本机存储');
     byId('oobePathHint').textContent = state.defaultPath
       ? `${appearanceText('默认位置：')}${state.defaultPath}`
       : appearanceText('便携版默认使用软件目录下的 data 文件夹；也可以自选位置。');
@@ -7929,6 +7963,8 @@
     if (!oobeOverlay) return;
     oobeOverlay.classList.remove('open');
     oobeOverlay.setAttribute('aria-hidden', 'true');
+    uiSettings.oobeDone = true;
+    saveUISettings();
   }
 
   async function prepareOobePath(path) {
@@ -7962,7 +7998,17 @@
 
   async function initSoftwareData() {
     const bridge = appDataBridge();
-    if (!bridge) return;
+    if (!bridge || typeof bridge.resolveAppData !== 'function') {
+      // 浏览器 / 移动端没有桌面数据桥：软件设置保存在本机，按本机标记判定首次启动。
+      // 「老用户」看进程启动时存储里是否已有设置（hadStoredSettings）——不能看
+      // 当下，因为启动序列自己已经写入过一次设置键。
+      if (!uiSettings.oobeDone && hadStoredSettings) {
+        uiSettings.oobeDone = true;
+        saveUISettings();
+      }
+      if (!uiSettings.oobeDone) openOobe({});
+      return;
+    }
     updateAppDataSettingsRow();
     let state = null;
     try { state = await bridge.resolveAppData(); } catch { return; }
