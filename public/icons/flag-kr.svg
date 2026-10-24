@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 30 20" role="img" aria-label="大韩民国国旗">
+  <rect width="30" height="20" fill="#fff"/>
+  <g transform="translate(15 10) rotate(-33.7)">
+    <path d="M-6 0 A6 6 0 0 1 6 0 Z" fill="#cd2e3a"/>
+    <path d="M6 0 A6 6 0 0 1 -6 0 Z" fill="#0047a0"/>
+    <circle cx="-3" cy="0" r="3" fill="#cd2e3a"/>
+    <circle cx="3" cy="0" r="3" fill="#0047a0"/>
+  </g>
+  <g fill="#000">
+    <g transform="translate(5.2 4.2) rotate(-33.7)">
+      <rect x="-2.6" y="-1.5" width="5.2" height="1" />
+      <rect x="-2.6" y="0" width="5.2" height="1" />
+      <rect x="-2.6" y="1.5" width="5.2" height="1" />
+    </g>
+    <g transform="translate(24.8 15.8) rotate(-33.7)">
+      <rect x="-2.6" y="-1.5" width="5.2" height="1" />
+      <rect x="-2.6" y="0" width="5.2" height="1" />
+      <rect x="-2.6" y="1.5" width="5.2" height="1" />
+    </g>
+    <g transform="translate(24.8 4.2) rotate(33.7)">
+      <rect x="-2.6" y="-1.5" width="2.4" height="1" />
+      <rect x="-1.2" y="0" width="2.4" height="1" />
+      <rect x="-2.6" y="1.5" width="5.2" height="1" transform="rotate(180)"/>
+    </g>
+    <g transform="translate(5.2 15.8) rotate(33.7)">
+      <rect x="-2.6" y="-1.5" width="2.4" height="1" />
+      <rect x="-1.2" y="0" width="2.4" height="1" />
+      <rect x="-2.6" y="1.5" width="5.2" height="1" transform="rotate(180)"/>
+    </g>
+  </g>
+</svg>

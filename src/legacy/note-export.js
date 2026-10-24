@@ -41,7 +41,7 @@
   let closeTimer = 0;
   let previewTimer = 0;
 
-  const exportCopy = () => settings.language === 'en' ? {
+  const exportCopy = () => settings.language !== 'zh' && settings.language !== 'zh-Hant' ? {
     title:'Export note', subtitle:'Choose a file format and tune the output', close:'Close',
     ready:'Ready to export', working:'Generating export…', done:'Note exported', failed:'Export failed',
     start:'Start export', cancel:'Cancel', noBackground:'No image selected',

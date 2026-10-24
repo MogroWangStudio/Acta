@@ -15,7 +15,7 @@
     noteHeadingH1Size: 32, noteHeadingH2Size: 24, noteHeadingH3Size: 19, noteBaseSize: 17, noteHeadingFont: 'serif', noteHeadingCustomFont: '', noteLineHeight: 1.6, noteParagraphGap: 1,
     noteToolbarPosition: 'bottom', noteToolbarShowLabels: false,
     oneDriveFolder: '', oneDriveLabel: '', workspaceLabel: '',
-    dataProfiles: [], activeDataProfileId: '', lanTrustLan: false, webDavServer: '', webDavUsername: '', autoSync: false, autoSyncInterval: 5, lanDiscoverable: false, listPaneWidth: 330, sidebarCollapsed: false, language: ['zh', 'zh-Hant', 'en'].includes(settings.language) ? settings.language : 'zh'
+    dataProfiles: [], activeDataProfileId: '', lanTrustLan: false, webDavServer: '', webDavUsername: '', autoSync: false, autoSyncInterval: 5, lanDiscoverable: false, listPaneWidth: 330, sidebarCollapsed: false, language: ['zh', 'zh-Hant', 'en', 'ja', 'ko', 'fr', 'de', 'es', 'ru'].includes(settings.language) ? settings.language : 'zh'
   };
   let uiSettings = { ...defaultUISettings };
   // 进程内第一眼看到的存储原貌：启动序列自己会写设置键（applyInterfaceLanguage
@@ -281,6 +281,84 @@
       '通过 WebDAV 服务器同步完整数据文件夹。':'透過 WebDAV 伺服器同步完整資料資料夾。', '密码仅保存在本机；网页版需服务器允许跨域。':'密碼僅保存在本機；網頁版需伺服器允許跨域。', '同步模式':'同步模式', '切换后使用对应位置进行上传、下载与自动同步':'切換後使用對應位置進行上傳、下載與自動同步。', '仅建议 Windows 用户使用；云端传输由 OneDrive 客户端完成':'僅建議 Windows 使用者使用；雲端傳輸由 OneDrive 用戶端完成。', '服务器地址':'伺服器地址', 'WebDAV 目录地址':'WebDAV 目錄位址', '账号':'帳號', 'WebDAV 用户名':'WebDAV 使用者名稱', '密码':'密碼', '建议使用应用专用密码':'建議使用應用專用密碼', 'WebDAV 连接':'WebDAV 連接', '尚未连接 WebDAV':'尚未連接 WebDAV', '保存并测试连接':'儲存並測試連接', '变化后自动上传，定时检查更新':'變更後自動上傳，定時檢查更新', '断开同步位置':'中斷同步位置', '请先选择同步模式并完成连接。':'請先選擇同步模式並完成連接。', 'OneDrive 模式不连接 Microsoft Graph；WebDAV 密码仅保存在当前设备，网页版需要服务器允许跨域访问。':'OneDrive 模式不連接 Microsoft Graph；WebDAV 密碼僅儲存在目前裝置，網頁版需要伺服器允許跨來源存取。'
     }
   };
+  // —— 新增语言（ja / ko / fr / de / es / ru）：覆盖高频界面，未翻译的长尾按
+  // appearanceText 的回退链落到英文。键为中文原文，与既有各语言段一致。 ——
+  interfaceTranslations.ja = {};
+  interfaceTranslations.ko = {};
+  interfaceTranslations.fr = {};
+  interfaceTranslations.de = {};
+  interfaceTranslations.es = {};
+  interfaceTranslations.ru = {};
+  Object.assign(interfaceTranslations.en, {
+    '查看归类':'View classifications', '关闭':'Close', '本机存储':'On-device storage',
+    '日语':'Japanese', '韩语':'Korean', '法语':'French', '德语':'German', '西班牙语':'Spanish', '俄语':'Russian'
+  });
+  Object.assign(interfaceTranslations.ja, {
+    '设置':'設定', '按你的方式使用 Acta':'Acta をあなた流に', '关闭设置':'設定を閉じる', '语言':'言語', '工作区':'ワークスペース', '行记数据':'Acta データ', '数据同步':'データ同期', '常规设置':'一般', '外观设置':'外観', '关于':'情報', '页面跳转栏':'ページバー', '计划板':'プランボード', '笔记编辑器':'ノートエディター', '返回':'戻る', '待办设置':'タスク', '数据统计':'統計', '局域网雷达':'LANレーダー', '总结':'まとめ', '缓存与页面':'キャッシュとページ',
+    '切换界面语言，不影响笔记内容。':'表示言語を切り替えます。ノート内容には影響しません。', '简体中文':'簡体字中国語', '繁體中文':'繁体字中国語', '英语':'英語', '日语':'日本語', '韩语':'韓国語', '法语':'フランス語', '德语':'ドイツ語', '西班牙语':'スペイン語', '俄语':'ロシア語',
+    '默认启动页面':'起動時のページ', '启动时进入的视图':'起動時に表示するビュー', '收集箱':'インボックス', '今天':'今日', '所有待办':'すべてのタスク', '所有笔记':'すべてのノート', '日历':'カレンダー', '汇总板':'プランボード', '已完成':'完了', '紧凑列表':'コンパクトリスト', '减少动态效果':'動きを減らす', '设置会自动保存在当前设备。':'設定はこの端末に自動保存されます。', '点击空白处':'ダイアログ外をクリック', '不关闭（防误触）':'閉じない（誤タップ防止）', '单击关闭':'シングルクリックで閉じる', '双击关闭':'ダブルクリックで閉じる',
+    '渲染余量':'描画マージン', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'ビューポート外を先読みで描画する範囲。大きいほど滑らかで負荷も増します。', '小 · 流畅优先':'小 · 軽快優先', '中 · 均衡':'中 · バランス', '大 · 预览优先':'大 · 先読み優先', '关联曲线':'関連曲線', '在同板互相关联的待办与笔记之间显示连接曲线':'同じボード上で関連付けられたタスクとノートの間に曲線を表示します', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'描画性能と関連表示の設定。この端末のプランボードにのみ適用されます。', '设置即时生效，保存在本机。':'設定は即時反映され、この端末に保存されます。',
+    '主题只改变显示效果，不会影响任何笔记或待办数据。':'テーマは表示だけを変えます。ノートやタスクのデータには影響しません。', '黑白浅色':'白黒ライト', '黑白深色':'白黒ダーク', '纸色护眼':'ペーパー', '默认':'デフォルト', '自定义':'カスタム', '纸张颜色':'紙の色', '侧栏颜色':'サイドバーの色', '强调颜色':'アクセントカラー', '界面字体':'画面のフォント', '应用于列表、编辑器与设置页':'リスト・エディター・設定に適用', '系统默认':'システムデフォルト', '衬线字体':'明朝体', '圆体':'丸ゴシック', '等宽字体':'等幅', '自定义字体':'カスタムフォント', '字体家族':'フォントファミリー', '字体大小':'文字サイズ', '界面整体缩放':'画面全体の拡大率', '记录，然后行动。Acta 让笔记与待办自然连接。':'記録して、行動する。Acta はノートとタスクを自然につなげます。',
+    '开始使用':'はじめる', '下一步':'次へ', '上一步':'戻る', '尚未选择':'未選択', '默认位置：':'既定の場所: ', '使用默认位置':'既定の場所を使う', '选择文件夹…':'フォルダーを選択…', '选择主题、字体与大小':'テーマ・フォント・サイズを選択', '选择启动动画':'起動アニメーションを選択', '软件数据位置':'ソフトウェアデータの場所', '打开文件夹':'フォルダーを開く', '更改位置':'場所を変更', '本机存储':'この端末に保存',
+    '关于 Acta':'Acta について', '检查更新':'アップデートを確認', '产品':'製品', '版本':'バージョン', '桌面框架':'デスクトップ基盤', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri（Windows/macOS）、Capacitor（Android）',
+    '桌面端侧边栏':'デスクトップサイドバー', '移动端底栏':'モバイルボトムバー', '移动端顶栏':'モバイルトップバー',
+    '刷新数据':'データを再読込', '历史记录':'履歴', '回收站':'ゴミ箱', '自动同步':'自動同期', '检查频率':'確認頻度', '每 1 分钟':'1分ごと', '每 5 分钟':'5分ごと', '每 15 分钟':'15分ごと', '同步模式':'同期モード', '账号':'アカウント', '密码':'パスワード', '服务器地址':'サーバーアドレス', '选择文件夹':'フォルダーを選択', '查看归类':'分類を表示', '关闭':'閉じる'
+  });
+  Object.assign(interfaceTranslations.ko, {
+    '设置':'설정', '按你的方式使用 Acta':'Acta를 나만의 방식으로', '关闭设置':'설정 닫기', '语言':'언어', '工作区':'작업 공간', '行记数据':'Acta 데이터', '数据同步':'데이터 동기화', '常规设置':'일반', '外观设置':'모양', '关于':'정보', '页面跳转栏':'페이지 바', '计划板':'플랜 보드', '笔记编辑器':'노트 편집기', '返回':'뒤로', '待办设置':'할 일', '数据统计':'통계', '局域网雷达':'LAN 레이더', '总结':'요약', '缓存与页面':'캐시와 페이지',
+    '切换界面语言，不影响笔记内容。':'인터페이스 언어를 전환합니다. 노트 내용은 영향받지 않아요.', '简体中文':'중국어(간체)', '繁體中文':'중국어(번체)', '英语':'영어', '日语':'일본어', '韩语':'한국어', '法语':'프랑스어', '德语':'독일어', '西班牙语':'스페인어', '俄语':'러시아어',
+    '默认启动页面':'시작 페이지', '启动时进入的视图':'실행 시 표시할 뷰', '收集箱':'수집함', '今天':'오늘', '所有待办':'모든 할 일', '所有笔记':'모든 노트', '日历':'달력', '汇总板':'플랜 보드', '已完成':'완료됨', '紧凑列表':'컴팩트 목록', '减少动态效果':'움직임 줄이기', '设置会自动保存在当前设备。':'설정은 이 기기에 자동 저장돼요.', '点击空白处':'빈 곳 클릭', '不关闭（防误触）':'닫지 않음(오작동 방지)', '单击关闭':'한 번 클릭해서 닫기', '双击关闭':'두 번 클릭해서 닫기',
+    '渲染余量':'렌더링 여백', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'뷰포트 밖을 미리 렌더링하는 범위. 클수록 부드럽지만 무거워요.', '小 · 流畅优先':'작게 · 가볍게', '中 · 均衡':'중간 · 균형', '大 · 预览优先':'크게 · 미리보기', '关联曲线':'연결 곡선', '在同板互相关联的待办与笔记之间显示连接曲线':'같은 보드에서 서로 연결된 할 일과 노트 사이에 곡선을 표시해요', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'렌더링 성능과 연결 표시 설정. 이 기기의 플랜 보드에만 적용돼요.', '设置即时生效，保存在本机。':'설정은 즉시 적용되어 이 기기에 저장돼요.',
+    '主题只改变显示效果，不会影响任何笔记或待办数据。':'테마는 표시만 바꿔요. 노트나 할 일 데이터는 영향받지 않아요.', '黑白浅色':'흑백 라이트', '黑白深色':'흑백 다크', '纸色护眼':'페이퍼', '默认':'기본값', '自定义':'사용자 지정', '纸张颜色':'종이 색', '侧栏颜色':'사이드바 색', '强调颜色':'강조 색', '界面字体':'인터페이스 글꼴', '应用于列表、编辑器与设置页':'목록·편집기·설정에 적용돼요', '系统默认':'시스템 기본값', '衬线字体':'명조', '圆体':'둥근 글꼴', '等宽字体':'고정폭', '自定义字体':'사용자 지정 글꼴', '字体家族':'글꼴 종류', '字体大小':'글자 크기', '界面整体缩放':'인터페이스 전체 배율', '记录，然后行动。Acta 让笔记与待办自然连接。':'기록하고, 행동하세요. Acta는 노트와 할 일을 자연스럽게 연결해요.',
+    '开始使用':'시작하기', '下一步':'다음', '上一步':'이전', '尚未选择':'선택 안 함', '默认位置：':'기본 위치: ', '使用默认位置':'기본 위치 사용', '选择文件夹…':'폴더 선택…', '选择主题、字体与大小':'테마·글꼴·크기 선택', '选择启动动画':'시작 애니메이션 선택', '软件数据位置':'앱 데이터 위치', '打开文件夹':'폴더 열기', '更改位置':'위치 변경', '本机存储':'이 기기에 저장',
+    '关于 Acta':'Acta 정보', '检查更新':'업데이트 확인', '产品':'제품', '版本':'버전', '桌面框架':'데스크톱 프레임워크', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri(Windows/macOS), Capacitor(Android)',
+    '桌面端侧边栏':'데스크톱 사이드바', '移动端底栏':'모바일 하단 바', '移动端顶栏':'모바일 상단 바',
+    '刷新数据':'데이터 새로 고침', '历史记录':'기록', '回收站':'휴지통', '自动同步':'자동 동기화', '检查频率':'확인 주기', '每 1 分钟':'1분마다', '每 5 分钟':'5분마다', '每 15 分钟':'15분마다', '同步模式':'동기화 모드', '账号':'계정', '密码':'비밀번호', '服务器地址':'서버 주소', '选择文件夹':'폴더 선택', '查看归类':'분류 보기', '关闭':'닫기'
+  });
+  Object.assign(interfaceTranslations.fr, {
+    '设置':'Réglages', '按你的方式使用 Acta':'Acta, à votre façon', '关闭设置':'Fermer les réglages', '语言':'Langue', '工作区':'Espace de travail', '行记数据':'Données Acta', '数据同步':'Synchro des données', '常规设置':'Général', '外观设置':'Apparence', '关于':'À propos', '页面跳转栏':'Barre de navigation', '计划板':'Tableau', '笔记编辑器':'Éditeur de notes', '返回':'Retour', '待办设置':'Tâches', '数据统计':'Statistiques', '局域网雷达':'Radar LAN', '总结':'Bilan', '缓存与页面':'Cache et page',
+    '切换界面语言，不影响笔记内容。':'Change la langue de l’interface ; les notes ne sont pas touchées.', '简体中文':'Chinois simplifié', '繁體中文':'Chinois traditionnel', '英语':'Anglais', '日语':'Japonais', '韩语':'Coréen', '法语':'Français', '德语':'Allemand', '西班牙语':'Espagnol', '俄语':'Russe',
+    '默认启动页面':'Vue au démarrage', '启动时进入的视图':'La vue affichée au lancement', '收集箱':'Boîte de réception', '今天':'Aujourd’hui', '所有待办':'Toutes les tâches', '所有笔记':'Toutes les notes', '日历':'Calendrier', '汇总板':'Tableau', '已完成':'Terminé', '紧凑列表':'Listes compactes', '减少动态效果':'Réduire les animations', '设置会自动保存在当前设备。':'Les réglages sont enregistrés automatiquement sur cet appareil.', '点击空白处':'Clic à l’extérieur', '不关闭（防误触）':'Ne pas fermer (anti-erreur)', '单击关闭':'Clic simple pour fermer', '双击关闭':'Double clic pour fermer',
+    '渲染余量':'Marge de rendu', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Distance de pré-rendu hors du viewport ; plus grand est plus fluide mais plus lourd.', '小 · 流畅优先':'Petit · fluidité', '中 · 均衡':'Moyen · équilibré', '大 · 预览优先':'Grand · aperçu', '关联曲线':'Courbes de liaison', '在同板互相关联的待办与笔记之间显示连接曲线':'Affiche des courbes entre tâches et notes liées sur un même tableau', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Préférences de rendu et de liaison pour le tableau de cet appareil.', '设置即时生效，保存在本机。':'Appliqué immédiatement ; enregistré sur cet appareil.',
+    '主题只改变显示效果，不会影响任何笔记或待办数据。':'Les thèmes ne changent que l’apparence ; notes et tâches ne sont pas touchées.', '黑白浅色':'Noir et blanc clair', '黑白深色':'Noir et blanc sombre', '纸色护眼':'Papier', '默认':'Par défaut', '自定义':'Personnalisé', '纸张颜色':'Couleur du papier', '侧栏颜色':'Couleur de la barre latérale', '强调颜色':'Couleur d’accent', '界面字体':'Police de l’interface', '应用于列表、编辑器与设置页':'S’applique aux listes, à l’éditeur et aux réglages', '系统默认':'Police système', '衬线字体':'Avec empattement', '圆体':'Arrondie', '等宽字体':'Chasse fixe', '自定义字体':'Police personnalisée', '字体家族':'Famille de police', '字体大小':'Taille de police', '界面整体缩放':'Échelle de toute l’interface', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capter, puis agir. Acta relie notes et tâches naturellement.',
+    '开始使用':'Commencer', '下一步':'Suivant', '上一步':'Retour', '尚未选择':'Pas encore choisi', '默认位置：':'Emplacement par défaut : ', '使用默认位置':'Utiliser l’emplacement par défaut', '选择文件夹…':'Choisir un dossier…', '选择主题、字体与大小':'Choisir thème, police et taille', '选择启动动画':'Choisir l’animation de lancement', '软件数据位置':'Emplacement des données', '打开文件夹':'Ouvrir le dossier', '更改位置':'Changer d’emplacement', '本机存储':'Stockage local',
+    '关于 Acta':'À propos d’Acta', '检查更新':'Rechercher des mises à jour', '产品':'Produit', '版本':'Version', '桌面框架':'Framework bureau', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
+    '桌面端侧边栏':'Barre latérale bureau', '移动端底栏':'Barre inférieure mobile', '移动端顶栏':'Barre supérieure mobile',
+    '刷新数据':'Actualiser les données', '历史记录':'Historique', '回收站':'Corbeille', '自动同步':'Synchro automatique', '检查频率':'Fréquence de vérification', '每 1 分钟':'Chaque minute', '每 5 分钟':'Toutes les 5 minutes', '每 15 分钟':'Toutes les 15 minutes', '同步模式':'Mode de synchro', '账号':'Compte', '密码':'Mot de passe', '服务器地址':'Adresse du serveur', '选择文件夹':'Choisir un dossier', '查看归类':'Voir les classements', '关闭':'Fermer'
+  });
+  Object.assign(interfaceTranslations.de, {
+    '设置':'Einstellungen', '按你的方式使用 Acta':'Acta auf deine Art', '关闭设置':'Einstellungen schließen', '语言':'Sprache', '工作区':'Arbeitsbereich', '行记数据':'Acta-Daten', '数据同步':'Datensync', '常规设置':'Allgemein', '外观设置':'Erscheinungsbild', '关于':'Über', '页面跳转栏':'Navigationsleiste', '计划板':'Planboard', '笔记编辑器':'Notiz-Editor', '返回':'Zurück', '待办设置':'Aufgaben', '数据统计':'Statistik', '局域网雷达':'LAN-Radar', '总结':'Bilanz', '缓存与页面':'Cache & Seite',
+    '切换界面语言，不影响笔记内容。':'Ändert die Sprache der Oberfläche; Notizen bleiben unverändert.', '简体中文':'Vereinfachtes Chinesisch', '繁體中文':'Traditionelles Chinesisch', '英语':'Englisch', '日语':'Japanisch', '韩语':'Koreanisch', '法语':'Französisch', '德语':'Deutsch', '西班牙语':'Spanisch', '俄语':'Russisch',
+    '默认启动页面':'Startansicht', '启动时进入的视图':'Die beim Start gezeigte Ansicht', '收集箱':'Eingang', '今天':'Heute', '所有待办':'Alle Aufgaben', '所有笔记':'Alle Notizen', '日历':'Kalender', '汇总板':'Planboard', '已完成':'Erledigt', '紧凑列表':'Kompakte Listen', '减少动态效果':'Bewegung reduzieren', '设置会自动保存在当前设备。':'Einstellungen werden automatisch auf diesem Gerät gespeichert.', '点击空白处':'Klick außerhalb', '不关闭（防误触）':'Nicht schließen (Schutz)', '单击关闭':'Einfachklick schließt', '双击关闭':'Doppelklick schließt',
+    '渲染余量':'Render-Abstand', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Wie weit außerhalb des Viewports vorgemerkt wird; größer ist flüssiger, aber schwerer.', '小 · 流畅优先':'Klein · performant', '中 · 均衡':'Mittel · ausgewogen', '大 · 预览优先':'Groß · Vorschau', '关联曲线':'Verbindungskurven', '在同板互相关联的待办与笔记之间显示连接曲线':'Zeigt Kurven zwischen verknüpften Aufgaben und Notizen auf einem Board', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Render- und Anzeigepräferenzen für das Planboard auf diesem Gerät.', '设置即时生效，保存在本机。':'Wirkt sofort; wird auf diesem Gerät gespeichert.',
+    '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes ändern nur die Optik; Notizen und Aufgaben bleiben unberührt.', '黑白浅色':'Monochrom hell', '黑白深色':'Monochrom dunkel', '纸色护眼':'Papier', '默认':'Standard', '自定义':'Benutzerdefiniert', '纸张颜色':'Papierfarbe', '侧栏颜色':'Farbe der Seitenleiste', '强调颜色':'Akzentfarbe', '界面字体':'Oberflächenschrift', '应用于列表、编辑器与设置页':'Gilt für Listen, Editor und Einstellungen', '系统默认':'Systemstandard', '衬线字体':'Serif', '圆体':'Gerundet', '等宽字体':'Monospace', '自定义字体':'Eigene Schrift', '字体家族':'Schriftfamilie', '字体大小':'Schriftgröße', '界面整体缩放':'Gesamte Oberfläche skalieren', '记录，然后行动。Acta 让笔记与待办自然连接。':'Erfassen, dann handeln. Acta verbindet Notizen und Aufgaben natürlich.',
+    '开始使用':'Los geht’s', '下一步':'Weiter', '上一步':'Zurück', '尚未选择':'Noch nicht gewählt', '默认位置：':'Standardort: ', '使用默认位置':'Standardort verwenden', '选择文件夹…':'Ordner wählen…', '选择主题、字体与大小':'Theme, Schrift und Größe wählen', '选择启动动画':'Startanimation wählen', '软件数据位置':'Speicherort der App-Daten', '打开文件夹':'Ordner öffnen', '更改位置':'Ort ändern', '本机存储':'Lokaler Speicher',
+    '关于 Acta':'Über Acta', '检查更新':'Nach Updates suchen', '产品':'Produkt', '版本':'Version', '桌面框架':'Desktop-Framework', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
+    '桌面端侧边栏':'Desktop-Seitenleiste', '移动端底栏':'Mobile Fußleiste', '移动端顶栏':'Mobile Kopfleiste',
+    '刷新数据':'Daten aktualisieren', '历史记录':'Verlauf', '回收站':'Papierkorb', '自动同步':'Automatischer Sync', '检查频率':'Prüfintervall', '每 1 分钟':'Jede Minute', '每 5 分钟':'Alle 5 Minuten', '每 15 分钟':'Alle 15 Minuten', '同步模式':'Sync-Modus', '账号':'Konto', '密码':'Passwort', '服务器地址':'Serveradresse', '选择文件夹':'Ordner wählen', '查看归类':'Kategorien anzeigen', '关闭':'Schließen'
+  });
+  Object.assign(interfaceTranslations.es, {
+    '设置':'Ajustes', '按你的方式使用 Acta':'Acta a tu manera', '关闭设置':'Cerrar ajustes', '语言':'Idioma', '工作区':'Espacio de trabajo', '行记数据':'Datos de Acta', '数据同步':'Sincronización', '常规设置':'General', '外观设置':'Apariencia', '关于':'Acerca de', '页面跳转栏':'Barra de navegación', '计划板':'Tablero', '笔记编辑器':'Editor de notas', '返回':'Atrás', '待办设置':'Tareas', '数据统计':'Estadísticas', '局域网雷达':'Radar LAN', '总结':'Resumen', '缓存与页面':'Caché y página',
+    '切换界面语言，不影响笔记内容。':'Cambia el idioma de la interfaz; las notas no se tocan.', '简体中文':'Chino simplificado', '繁體中文':'Chino tradicional', '英语':'Inglés', '日语':'Japonés', '韩语':'Coreano', '法语':'Francés', '德语':'Alemán', '西班牙语':'Español', '俄语':'Ruso',
+    '默认启动页面':'Vista inicial', '启动时进入的视图':'La vista mostrada al iniciar', '收集箱':'Bandeja', '今天':'Hoy', '所有待办':'Todas las tareas', '所有笔记':'Todas las notas', '日历':'Calendario', '汇总板':'Tablero', '已完成':'Completadas', '紧凑列表':'Listas compactas', '减少动态效果':'Reducir movimiento', '设置会自动保存在当前设备。':'Los ajustes se guardan automáticamente en este dispositivo.', '点击空白处':'Clic fuera de los diálogos', '不关闭（防误触）':'No cerrar (protección)', '单击关闭':'Un clic cierra', '双击关闭':'Doble clic cierra',
+    '渲染余量':'Margen de renderizado', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Cuánto se pre-renderiza fuera del visor; más es más fluido pero pesa más.', '小 · 流畅优先':'Pequeño · rendimiento', '中 · 均衡':'Medio · equilibrado', '大 · 预览优先':'Grande · vista previa', '关联曲线':'Curvas de vínculo', '在同板互相关联的待办与笔记之间显示连接曲线':'Muestra curvas entre tareas y notas vinculadas en el mismo tablero', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Preferencias de renderizado y vínculos del tablero en este dispositivo.', '设置即时生效，保存在本机。':'Se aplica al instante; se guarda en este dispositivo.',
+    '主题只改变显示效果，不会影响任何笔记或待办数据。':'Los temas solo cambian la apariencia; notas y tareas no se afectan.', '黑白浅色':'Blanco y negro claro', '黑白深色':'Blanco y negro oscuro', '纸色护眼':'Papel', '默认':'Predeterminado', '自定义':'Personalizado', '纸张颜色':'Color del papel', '侧栏颜色':'Color de la barra lateral', '强调颜色':'Color de acento', '界面字体':'Fuente de la interfaz', '应用于列表、编辑器与设置页':'Se aplica a listas, editor y ajustes', '系统默认':'Predeterminado del sistema', '衬线字体':'Con serifa', '圆体':'Redondeada', '等宽字体':'Monoespaciada', '自定义字体':'Fuente personalizada', '字体家族':'Familia tipográfica', '字体大小':'Tamaño de fuente', '界面整体缩放':'Escala de toda la interfaz', '记录，然后行动。Acta 让笔记与待办自然连接。':'Registra y actúa. Acta conecta notas y tareas con naturalidad.',
+    '开始使用':'Empezar', '下一步':'Siguiente', '上一步':'Atrás', '尚未选择':'Sin elegir', '默认位置：':'Ubicación predeterminada: ', '使用默认位置':'Usar ubicación predeterminada', '选择文件夹…':'Elegir carpeta…', '选择主题、字体与大小':'Elige tema, fuente y tamaño', '选择启动动画':'Elige la animación de inicio', '软件数据位置':'Ubicación de los datos', '打开文件夹':'Abrir carpeta', '更改位置':'Cambiar ubicación', '本机存储':'Almacenamiento local',
+    '关于 Acta':'Acerca de Acta', '检查更新':'Buscar actualizaciones', '产品':'Producto', '版本':'Versión', '桌面框架':'Framework de escritorio', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
+    '桌面端侧边栏':'Barra lateral de escritorio', '移动端底栏':'Barra inferior móvil', '移动端顶栏':'Barra superior móvil',
+    '刷新数据':'Actualizar datos', '历史记录':'Historial', '回收站':'Papelera', '自动同步':'Sincronización automática', '检查频率':'Frecuencia de comprobación', '每 1 分钟':'Cada minuto', '每 5 分钟':'Cada 5 minutos', '每 15 分钟':'Cada 15 minutos', '同步模式':'Modo de sincronización', '账号':'Cuenta', '密码':'Contraseña', '服务器地址':'Dirección del servidor', '选择文件夹':'Elegir carpeta', '查看归类':'Ver clasificaciones', '关闭':'Cerrar'
+  });
+  Object.assign(interfaceTranslations.ru, {
+    '设置':'Настройки', '按你的方式使用 Acta':'Acta по-вашему', '关闭设置':'Закрыть настройки', '语言':'Язык', '工作区':'Рабочее пространство', '行记数据':'Данные Acta', '数据同步':'Синхронизация', '常规设置':'Основные', '外观设置':'Оформление', '关于':'О программе', '页面跳转栏':'Панель навигации', '计划板':'Планшет', '笔记编辑器':'Редактор заметок', '返回':'Назад', '待办设置':'Задачи', '数据统计':'Статистика', '局域网雷达':'LAN-радар', '总结':'Итоги', '缓存与页面':'Кэш и страница',
+    '切换界面语言，不影响笔记内容。':'Меняет язык интерфейса; заметки не затрагиваются.', '简体中文':'Китайский упрощённый', '繁體中文':'Китайский традиционный', '英语':'Английский', '日语':'Японский', '韩语':'Корейский', '法语':'Французский', '德语':'Немецкий', '西班牙语':'Испанский', '俄语':'Русский',
+    '默认启动页面':'Стартовый вид', '启动时进入的视图':'Вид при запуске', '收集箱':'Входящие', '今天':'Сегодня', '所有待办':'Все задачи', '所有笔记':'Все заметки', '日历':'Календарь', '汇总板':'Планшет', '已完成':'Выполнено', '紧凑列表':'Компактные списки', '减少动态效果':'Меньше анимации', '设置会自动保存在当前设备。':'Настройки автоматически сохраняются на этом устройстве.', '点击空白处':'Клик вне диалогов', '不关闭（防误触）':'Не закрывать (защита)', '单击关闭':'Один клик закрывает', '双击关闭':'Двойной клик закрывает',
+    '渲染余量':'Запас рендера', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Насколько далеко за пределы видимой области рендерить заранее; больше — плавнее, но тяжелее.', '小 · 流畅优先':'Малый · скорость', '中 · 均衡':'Средний · баланс', '大 · 预览优先':'Большой · обзор', '关联曲线':'Линии связей', '在同板互相关联的待办与笔记之间显示连接曲线':'Показывает линии между связанными задачами и заметками на планшете', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Настройки рендера и связей планшета на этом устройстве.', '设置即时生效，保存在本机。':'Применяется сразу; сохраняется на устройстве.',
+    '主题只改变显示效果，不会影响任何笔记或待办数据。':'Темы меняют только оформление; заметки и задачи не затрагиваются.', '黑白浅色':'Светлый ч/б', '黑白深色':'Тёмный ч/б', '纸色护眼':'Бумага', '默认':'По умолчанию', '自定义':'Своё', '纸张颜色':'Цвет бумаги', '侧栏颜色':'Цвет боковой панели', '强调颜色':'Акцентный цвет', '界面字体':'Шрифт интерфейса', '应用于列表、编辑器与设置页':'Применяется к спискам, редактору и настройкам', '系统默认':'Системный', '衬线字体':'С засечками', '圆体':'Округлый', '等宽字体':'Моноширинный', '自定义字体':'Свой шрифт', '字体家族':'Семейство шрифтов', '字体大小':'Размер шрифта', '界面整体缩放':'Масштаб интерфейса', '记录，然后行动。Acta 让笔记与待办自然连接。':'Записывай и действуй. Acta естественно связывает заметки и задачи.',
+    '开始使用':'Начать', '下一步':'Далее', '上一步':'Назад', '尚未选择':'Ещё не выбрано', '默认位置：':'Расположение по умолчанию: ', '使用默认位置':'Использовать место по умолчанию', '选择文件夹…':'Выбрать папку…', '选择主题、字体与大小':'Выберите тему, шрифт и размер', '选择启动动画':'Выберите анимацию запуска', '软件数据位置':'Расположение данных', '打开文件夹':'Открыть папку', '更改位置':'Изменить расположение', '本机存储':'Локальное хранилище',
+    '关于 Acta':'Об Acta', '检查更新':'Проверить обновления', '产品':'Продукт', '版本':'Версия', '桌面框架':'Десктоп-фреймворк', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
+    '桌面端侧边栏':'Боковая панель', '移动端底栏':'Нижняя панель', '移动端顶栏':'Верхняя панель',
+    '刷新数据':'Обновить данные', '历史记录':'История', '回收站':'Корзина', '自动同步':'Автосинхронизация', '检查频率':'Частота проверки', '每 1 分钟':'Каждую минуту', '每 5 分钟':'Каждые 5 минут', '每 15 分钟':'Каждые 15 минут', '同步模式':'Режим синхронизации', '账号':'Учётная запись', '密码':'Пароль', '服务器地址':'Адрес сервера', '选择文件夹':'Выбрать папку', '查看归类':'Показать категории', '关闭':'Закрыть'
+  });
   Object.assign(interfaceTranslations.en, {
     '缓存与页面':'Cache and page',
     '清空缓存并重新加载，不删数据。':'Clear caches and reload; data is kept.',
@@ -522,7 +600,8 @@
     clearCacheFailed:'清除快取失敗：{0}',
     cacheSyncBusy:'網路硬碟同步正在進行，請稍候再清除快取。'
   });
-  const uiText = (key, ...values) => values.reduce((message, value, index) => message.replace(`{${index}}`, value), (runtimeMessages[uiSettings.language] || runtimeMessages.zh)[key]);
+  // 运行时消息按 新语言 → 英文 → 中文 兜底；未翻译的长尾文案不会露出键名。
+  const uiText = (key, ...values) => values.reduce((message, value, index) => message.replace(`{${index}}`, value), (runtimeMessages[uiSettings.language] || runtimeMessages.en || runtimeMessages.zh)[key]);
   const profileMessages = {
     zh: {
       panelDescription:'每个数据档案都包含完整的归类、笔记和待办；可以保存在软件本地，也可以连接到你选择的文件夹。', newProfile:'新建空白档案', newSubtitle:'从一份没有笔记和待办的数据开始', name:'档案名称', newName:'新的行记数据', location:'保存位置', localDesktop:'软件本地', localNative:'软件本地', localBrowser:'浏览器本地缓存', localHint:'默认位置，无需选择文件夹', folder:'自选文件夹', folderHint:'创建时选择保存位置', cancel:'取消', createOpen:'创建并打开', profiles:'数据档案', count:'{0} 个档案', activeSummary:'当前：{0}', browserTitle:'浏览器本地空间有限', browserHint:'浏览器可能在空间不足或清理缓存时移除本地数据，请定期导出完整档案备份。', active:'当前', open:'打开', edit:'编辑', current:'正在使用', stats:'{0} 则笔记 · {1} 个待办', saveName:'保存名称', changeLocation:'更改位置', copy:'复制', export:'导出完整档案', locationLabel:'档案位置', folderFiles:'完整档案文件夹', emptyName:'请输入档案名称。', duplicateName:'已经存在同名数据档案。', localQuota:'本地空间不足，无法保存。请先导出完整档案，再更换保存位置。', unavailable:'当前位置不可用，请编辑档案并重新选择保存位置。', created:'已创建并打开空白数据档案“{0}”。', switched:'已切换到“{0}”。', renamed:'数据档案已重命名为“{0}”。', moved:'“{0}”已复制到新的保存位置。', copied:'已创建“{0}”的本地副本。', exported:'已将“{0}”的完整档案导出到 {1}。', saved:'“{0}”已保存。', loaded:'已打开“{0}”。', initializing:'正在读取行记数据档案…', ready:'所有更改会自动保存到当前数据档案。', editHint:'修改名称或把完整档案复制到新的文件夹。', copySuffix:'副本', defaultName:'我的行记', chooseLocation:'选择文件夹后，Acta 会写入完整档案；原位置不会被删除。'
@@ -1048,12 +1127,12 @@
   }
   function updateFolderActionCopy() {
     const copy = classificationText();
-    const mobileViewLabel = uiSettings.language === 'en' ? 'View classifications' : uiSettings.language === 'zh-Hant' ? '查看歸類' : '查看归类';
+    const mobileViewLabel = appearanceText('查看归类');
     folderActionsMenu.title = copy.menu;
     folderActionsMenu.setAttribute('aria-label', copy.menu);
     mobileClassificationTrigger.title = mobileViewLabel;
     mobileClassificationTrigger.setAttribute('aria-label', mobileViewLabel);
-    const mobileDataLabel = uiSettings.language === 'en' ? 'Acta Data' : uiSettings.language === 'zh-Hant' ? '行記資料' : '行记数据';
+    const mobileDataLabel = appearanceText('行记数据');
     byId('folderMenuAddTitle').textContent = copy.add;
     byId('folderMenuAddHint').textContent = copy.addHint;
     byId('folderMenuManageTitle').textContent = copy.manage;
@@ -1170,7 +1249,7 @@
     byId('classificationManagerColorLabel').textContent = copy.color;
     byId('classificationManagerColorHint').textContent = copy.colorHint;
     byId('classificationColorPresets').setAttribute('aria-label', copy.presets);
-    byId('closeClassificationManager').setAttribute('aria-label', uiSettings.language === 'en' ? 'Close' : uiSettings.language === 'zh-Hant' ? '關閉' : '关闭');
+    byId('closeClassificationManager').setAttribute('aria-label', appearanceText('关闭'));
     byId('deleteClassification').querySelector('span').textContent = copy.remove;
     byId('cancelClassificationManager').textContent = copy.close;
     byId('saveClassificationManager').querySelector('span').textContent = copy.save;
@@ -4298,7 +4377,7 @@
   const rendererTranslateStaticUI = translateStaticUI;
   translateStaticUI = function translateActaInterface() {
     rendererTranslateStaticUI();
-    document.documentElement.lang = settings.language === 'en' ? 'en' : settings.language === 'zh-Hant' ? 'zh-Hant' : 'zh-CN';
+    document.documentElement.lang = settings.language === 'zh' ? 'zh-CN' : settings.language;
     applySettingsTranslation();
     updateSidebarToggleLabel();
     updateDataRefreshLabel();
@@ -5026,7 +5105,7 @@
     document.documentElement.dataset.completedTodoSinkDelay = String(Math.round(seconds * 1000));
     if (completedSinkSetting) completedSinkSetting.checked = uiSettings.completedTodoSink !== false;
     if (completedSinkDelay) completedSinkDelay.value = String(seconds);
-    if (completedSinkDelayValue) completedSinkDelayValue.textContent = `${seconds.toFixed(1)}${uiSettings.language === 'en' ? 's' : ' 秒'}`;
+    if (completedSinkDelayValue) completedSinkDelayValue.textContent = `${seconds.toFixed(1)}${uiSettings.language === 'zh' || uiSettings.language === 'zh-Hant' ? ' 秒' : 's'}`;
   };
   if (completedSinkSetting) {
     completedSinkSetting.addEventListener('change', () => {
@@ -5062,7 +5141,9 @@
   });
   const appIconChoices = new Set([...Object.keys(appIconPresets), 'custom']);
   if (!appIconChoices.has(uiSettings.appIconPreset)) uiSettings.appIconPreset = 'default';
-  const appearanceText = source => interfaceTranslations[uiSettings.language]?.[source] || source;
+  // 界面文案按 新语言 → 英文 → 中文原文 兜底：新语言先覆盖高频界面，
+  // 未及翻译的深层文案回落到英文，而不是漏出中文。
+  const appearanceText = source => interfaceTranslations[uiSettings.language]?.[source] || interfaceTranslations.en?.[source] || source;
   // 3.5.0 起应用图标更换仅保留在移动端（Android activity-alias）。桌面端与
   // 网页端不再提供入口：设置区块按 data-mobile-app-icon-only 显隐，桌面遗留
   // 的持久化运行时图标由 Tauri 启动逻辑清除并回归打包默认图标。
@@ -5211,7 +5292,7 @@
     const connected = Boolean(activateSelectedCloudAdapter());
     byId('webDavConnectionPath').textContent = webDavAdapter
       ? webDavAdapter.label
-      : (uiSettings.language === 'en' ? 'WebDAV is not connected' : uiSettings.language === 'zh-Hant' ? '尚未連接 WebDAV' : '尚未连接 WebDAV');
+      : appearanceText('尚未连接 WebDAV');
     byId('downloadOneDrive').disabled = !connected;
     byId('uploadOneDrive').disabled = !connected;
     byId('disconnectOneDrive').disabled = !connected;

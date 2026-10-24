@@ -9,7 +9,7 @@
   if (!bridge?.checkAppUpdate || window.__ACTA_UPDATER__) return;
 
   // 与 renderer.js / interface.js 一致的语言全局（interface.js 会同步 settings.language）。
-  const language = () => (window.settings?.language === 'en' ? 'en' : window.settings?.language === 'zh-Hant' ? 'zh-Hant' : 'zh');
+  const language = () => (window.settings?.language === 'zh' ? 'zh' : window.settings?.language === 'zh-Hant' ? 'zh-Hant' : 'en'); // ja/ko/fr/de/es/ru 暂用英文文案
   const copy = {
     zh: {
       title: '发现新版本',

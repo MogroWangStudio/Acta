@@ -2055,7 +2055,7 @@ async function main() {
     assert.equal(result.roundtripTitle, '欢迎来到 Acta');
     assert.match(result.roundtripText, /记录，然后行动/);
     assert.doesNotMatch(result.unsafeBody, /javascript:|<img/i);
-    assert.equal(result.colorFlags, 3);
+    assert.equal(result.colorFlags, 9); // 简中/繁中/英/日/韩/法/德/西/俄
     assert.equal(result.classificationActionsTogether, true);
     assert.equal(result.addFolderDialogOpens, true);
     assert.equal(result.addFolderDialogCreates, true);
