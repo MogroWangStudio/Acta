@@ -2003,7 +2003,7 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
   border: 2px solid var(--paper); background: var(--sage); box-shadow: 0 1px 4px rgba(34,38,33,.3);
   opacity: 0; pointer-events: none; transition: opacity .15s ease, transform .15s var(--ease-out); cursor: grab;
 }
-.board-widget.selected .board-handle, .board-handle.is-active, .board-node:hover .board-handle, .board-text:hover .board-handle { opacity: 1; pointer-events: auto; }
+.board-widget.selected .board-handle, .board-node.selected .board-handle, .board-handle.is-active, .board-node:hover .board-handle, .board-text:hover .board-handle { opacity: 1; pointer-events: auto; }
 .board-handle:hover { transform: scale(1.25); }
 .board-handle.is-resize { left: 100% !important; top: 100% !important; margin: -3px 0 0 -3px; width: 13px; height: 13px; border-radius: 4px; cursor: nwse-resize; }
 
@@ -2164,6 +2164,37 @@ body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease;
 .board-style-row output { min-width: 34px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; text-align: right; }
 .board-swatch.is-none { background: var(--paper); border: 1.5px dashed color-mix(in srgb, var(--faint) 60%, transparent); position: relative; }
 .board-swatch.is-none::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: linear-gradient(to top right, transparent 44%, var(--danger-accent, #b96051) 44%, var(--danger-accent, #b96051) 56%, transparent 56%); }
+
+/* 多选工具条固定在画布底部居中（添加工具条上一行），不跟随组件。 */
+.board-widget-toolbar.is-multi { left: 50% !important; top: auto !important; bottom: 74px; }
+/* 自选颜色：原生取色器藏在小色块下。 */
+.board-swatch.is-custom { position: relative; overflow: hidden; background: var(--white); display: inline-grid; place-items: center; border: 1px solid var(--line); }
+.board-swatch.is-custom::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom right, #e8756a 0 50%, #5b8dd6 50% 100%); }
+.board-swatch.is-custom input[type="color"] { position: absolute; inset: -6px; width: calc(100% + 12px); height: calc(100% + 12px); opacity: 0; cursor: pointer; border: 0; padding: 0; }
+.board-swatch.is-custom.on { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--ink); }
+.board-tw.is-primary { color: var(--paper); background: var(--ink); padding: 0 12px; }
+.board-tw.is-primary:hover { color: var(--paper); background: #30362f; }
+/* 画笔选项条：画布顶部居中，板胶囊与工具条同材质。 */
+.board-pen-bar {
+  position: absolute; top: 12px; left: 50%; z-index: 6; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; max-width: calc(100% - 120px); padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 14px;
+  background: color-mix(in srgb, var(--paper) 84%, transparent);
+  backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  box-shadow: 0 2px 6px rgba(47,50,43,.06), 0 14px 34px -12px rgba(34,38,33,.24), inset 0 1px 0 color-mix(in srgb, var(--white) 55%, transparent);
+  animation: boardChromeIn .3s var(--ease-out) both;
+}
+.board-pen-bar[hidden] { display: none; }
+.board-pen-bar .board-chrome-sep { height: 24px; }
+.board-pen-field { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.board-pen-field > span { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; white-space: nowrap; }
+.board-pen-field input[type="range"] { width: 74px; accent-color: var(--sage); }
+.board-pen-field output { min-width: 30px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; text-align: right; }
+@media (max-width: 800px) {
+  .board-pen-bar { top: auto; bottom: calc(138px + env(safe-area-inset-bottom)); max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .board-pen-bar::-webkit-scrollbar { display: none; }
+  .board-widget-toolbar.is-multi { bottom: calc(138px + env(safe-area-inset-bottom)); }
+}
 
 /* 面板关闭按钮：浮动在面板左上角内侧。 */
 .board-editor-close {

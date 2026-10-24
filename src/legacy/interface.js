@@ -97,6 +97,7 @@
     boardMarkerArrow:'箭頭', boardMarkerRect:'方框', boardMarkerEllipse:'橢圓', boardMarkerLine:'直線', boardMarkerDraw:'畫筆', boardMarkerColor:'標註顏色', boardMarkerDone:'完成標註',
     boardBg:'背景', boardBgNone:'無背景', boardBgOpacity:'不透明度', boardRadius:'圓角', boardPadding:'內邊距', boardCustomFont:'自訂字型', boardCustomFontHint:'輸入本機已安裝的字型名稱，如 Georgia',
     boardDeleteArm:'再點一次刪除', boardUndo:'復原', boardRedo:'重做', boardMarqueeClear:'取消選擇', boardMarqueeDelete:'刪除所選', boardSelectedCount:'已選 {0} 項',
+    boardCustomColor:'自訂顏色', boardBrushPen:'鋼筆', boardBrushHighlighter:'螢光筆', boardPenStroke:'粗細', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'畫筆模式：可連續多筆，完成或按 Esc 退出',
     boardEmptyTitle:'這塊板還是空的', boardEmptyHint:'用下方工具新增文字與標註，或匯入想展示在這塊板上的待辦與筆記，自由擺放成你的計劃板。'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });

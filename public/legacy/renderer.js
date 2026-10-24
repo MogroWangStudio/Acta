@@ -69,6 +69,7 @@ const dictionaries = {
     boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'画笔', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
     boardBg:'背景', boardBgNone:'无背景', boardBgOpacity:'不透明度', boardRadius:'圆角', boardPadding:'内边距', boardCustomFont:'自定义字体', boardCustomFontHint:'输入本机已安装的字体名，如 Georgia',
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
+    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'画笔模式：可连续多笔，完成或按 Esc 退出',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
   en: {
@@ -127,6 +128,7 @@ const dictionaries = {
     boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Pen', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
     boardBg:'Background', boardBgNone:'None', boardBgOpacity:'Opacity', boardRadius:'Corner radius', boardPadding:'Padding', boardCustomFont:'Custom font', boardCustomFontHint:'Type an installed font family, e.g. Georgia',
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
+    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenMode:'Pen mode: draw as many strokes as you like; press Done or Esc to exit',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   }
 };
@@ -278,7 +280,7 @@ function sanitizeBoards(boards) {
           customFont: typeof widget.customFont === 'string' ? widget.customFont.slice(0, 120) : '',
           align: ['left', 'center', 'right'].includes(widget.align) ? widget.align : 'left',
           bold: Boolean(widget.bold), italic: Boolean(widget.italic),
-          bg: widget.bg === 'none' || BOARD_MARKER_COLORS.includes(widget.bg) ? widget.bg : 'none',
+          bg: widget.bg === 'none' || /^#[0-9a-f]{3,8}$/i.test(widget.bg) ? widget.bg : 'none',
           bgOpacity: Math.min(100, Math.max(0, Math.round(Number(widget.bgOpacity) ?? 100))),
           radius: Math.min(24, Math.max(0, Math.round(Number(widget.radius) || 0))),
           pad: Math.min(24, Math.max(0, Math.round(Number(widget.pad) ?? 0)))
@@ -290,7 +292,8 @@ function sanitizeBoards(boards) {
         widgetSeen.add(widget.id);
         const marker = {
           id: widget.id, type: 'marker', kind: widget.kind, x: spot.x, y: spot.y,
-          color: BOARD_MARKER_COLORS.includes(widget.color) ? widget.color : BOARD_MARKER_COLORS[0]
+          // 颜色支持任意 hex（取色器自选），仅挡掉非法值。
+          color: /^#[0-9a-f]{3,8}$/i.test(widget.color) ? widget.color : BOARD_MARKER_COLORS[0]
         };
         if (widget.kind === 'draw') {
           const points = Array.isArray(widget.points)
@@ -300,6 +303,10 @@ function sanitizeBoards(boards) {
           marker.points = points;
           marker.w = Math.max(1, Math.round(Number(widget.w) || 1));
           marker.h = Math.max(1, Math.round(Number(widget.h) || 1));
+          marker.brush = widget.brush === 'highlighter' ? 'highlighter' : 'pen';
+          marker.stroke = Math.min(24, Math.max(1, Number(widget.stroke) || 2.5));
+          marker.opacity = Math.min(100, Math.max(5, Math.round(Number(widget.opacity) ?? 100)));
+          marker.flow = Math.min(100, Math.max(10, Math.round(Number(widget.flow) ?? 100)));
         } else {
           marker.w = Math.round(Number(widget.w) || 120);
           marker.h = Math.round(Number(widget.h) || 80);
@@ -2038,6 +2045,13 @@ let boardEditingText = null;      // 正在编辑的文本组件 id
 let boardPendingMarker = null;    // 待绘制的标注形状（点击画布拖出）
 let boardDraftMarker = null;      // 绘制中的临时元素
 let boardMenuTimer = 0;
+// 画笔模式：选中「画笔」后进入连续绘制（多笔），完成 / Esc / 再点按钮退出。
+// 笔刷参数跨笔保持；荧光笔是宽、低透明度、multiply 混合的笔型。
+const boardPenState = { brush: 'pen', color: BOARD_MARKER_COLORS[0], stroke: 2.5, opacity: 100, flow: 100 };
+const boardPenPresets = {
+  pen: { stroke: 2.5, opacity: 100, flow: 100 },
+  highlighter: { stroke: 14, opacity: 35, flow: 100 }
+};
 let lastBoardTap = { id: null, at: 0 };
 const boardRenderedCards = new Map(); // 条目卡片 id → 已渲染元素（虚拟化的增删基准）
 let boardSpaceDown = false;          // 按住空格：主键拖拽临时变成平移画布（框选让位）
@@ -2400,7 +2414,15 @@ function boardMarkerSVG(widget, originLeft = 0, originTop = 0, live = false) {
     for (let i = 0; i + 1 < points.length; i += 2) {
       path += `${i === 0 ? 'M' : 'L'}${points[i].toFixed(1)} ${points[i + 1].toFixed(1)} `;
     }
-    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><path d="${path.trim()}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const highlighter = widget.brush === 'highlighter';
+    const strokeWidth = widget.stroke || 2.5;
+    const opacity = highlighter ? Math.min(0.5, (widget.opacity ?? 35) / 100) : (widget.opacity ?? 100) / 100;
+    const flow = widget.flow ?? 100;
+    // 流量 < 100 用点状虚线近似出墨密度（低流量笔迹断续变浅）。
+    const dash = flow < 100 ? ` stroke-dasharray="${Math.max(0.4, flow / 14).toFixed(2)} ${Math.max(0.5, (100 - flow) / 12).toFixed(2)}"` : '';
+    const blend = highlighter ? ' style="mix-blend-mode:multiply"' : '';
+    const cap = highlighter ? 'butt' : 'round';
+    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"${blend}><path d="${path.trim()}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-opacity="${opacity.toFixed(3)}"${dash} stroke-linecap="${cap}" stroke-linejoin="round"/></svg>`;
   }
   const x1 = widget.x - originLeft;
   const y1 = widget.y - originTop;
@@ -2546,6 +2568,7 @@ function renderBoardShell() {
       </div>
     </div>
     <div class="board-widget-toolbar" id="boardWidgetToolbar" hidden></div>
+    <div class="board-pen-bar" id="boardPenBar" hidden></div>
   </div>`;
 }
 
@@ -2753,6 +2776,7 @@ function boardRenderToolbar() {
       bar.innerHTML = `
         <span class="board-tw-label">${escapeHTML(t('boardMarkerColor'))}</span>
         ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch${widget.color === color ? ' on' : ''}" data-tw="color" data-color="${color}" style="background:${color}" title="${escapeHTML(t('boardMarkerColor'))}"></button>`).join('')}
+        <label class="board-swatch is-custom${/^#[0-9a-f]{6}$/i.test(widget.color) && !BOARD_MARKER_COLORS.includes(widget.color) ? ' on' : ''}" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(widget.color) ? widget.color : '#526b55'}" data-marker-color/></label>
         <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
       bar.hidden = false;
       boardSyncToolbar();
@@ -2785,11 +2809,20 @@ function boardRenderBgPop(widget) {
   pop.innerHTML = `
     <div class="board-style-row">${colors.map(color => color === 'none'
       ? `<button type="button" class="board-swatch is-none${widget.bg === 'none' ? ' on' : ''}" data-bg="none" title="${escapeHTML(t('boardBgNone'))}"></button>`
-      : `<button type="button" class="board-swatch${widget.bg === color ? ' on' : ''}" data-bg="${color}" style="background:${color}"></button>`).join('')}</div>
+      : `<button type="button" class="board-swatch${widget.bg === color ? ' on' : ''}" data-bg="${color}" style="background:${color}"></button>`).join('')}<label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(widget.bg) ? widget.bg : '#f4e2c8'}" data-bg-custom/></label></div>
     <div class="board-style-row"><span>${escapeHTML(t('boardBgOpacity'))}</span><input type="range" min="0" max="100" step="5" value="${widget.bgOpacity}" data-bgop aria-label="${escapeHTML(t('boardBgOpacity'))}"/><output>${widget.bgOpacity}%</output></div>
     <div class="board-style-row"><span>${escapeHTML(t('boardRadius'))}</span>${[0, 8, 14, 20].map(value => `<button type="button" class="board-tw${widget.radius === value ? ' on' : ''}" data-radius="${value}">${value}</button>`).join('')}</div>
     <div class="board-style-row"><span>${escapeHTML(t('boardPadding'))}</span>${[0, 6, 12, 18].map(value => `<button type="button" class="board-tw${widget.pad === value ? ' on' : ''}" data-pad="${value}">${value}</button>`).join('')}</div>`;
   pop.hidden = false;
+  // 落位到工具条正上方居中：先渲染量高，再按工具条的 canvas 内坐标定位。
+  const bar = boardEls?.toolbar;
+  if (bar) {
+    const height = pop.offsetHeight || 168;
+    const width = pop.offsetWidth || 250;
+    const left = Math.min(Math.max(bar.offsetLeft, width / 2 + 8), (boardEls.canvas.clientWidth || 400) - width / 2 - 8);
+    pop.style.left = `${left}px`;
+    pop.style.top = `${Math.max(bar.offsetTop - height - 10, 8)}px`;
+  }
 }
 
 function boardCloseBgPop() {
@@ -2840,8 +2873,19 @@ function boardRefreshCardNode(widget) {
 // 工具条浮在组件上方（屏幕层，不随画布缩放）；组件移出视口时暂时隐藏。
 function boardSyncToolbar() {
   const bar = boardEls?.toolbar;
+  if (!bar) return;
+  // 多选工具条固定在画布底部居中（添加工具条上一行），不跟随组件。
+  if (boardSelection.size > 1) {
+    bar.classList.add('is-multi');
+    bar.style.left = '';
+    bar.style.top = '';
+    bar.style.opacity = '';
+    bar.style.pointerEvents = '';
+    return;
+  }
+  bar.classList.remove('is-multi');
   const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
-  if (!bar || !widget) return;
+  if (!widget) return;
   const { w } = boardViewportSize();
   const width = widget.type === 'text' ? widget.w : Math.max(Math.abs(widget.w), 40);
   const screenX = widget.x * boardCam.scale + boardCam.x + (width * boardCam.scale) / 2;
@@ -2993,6 +3037,7 @@ function boardStartDraw(kind) {
   boardPendingMarker = kind;
   boardSetSelection([]);
   boardEls?.canvas.classList.add('is-drawing');
+  if (kind === 'draw') boardRenderPenBar();
 }
 
 function boardCancelDraw() {
@@ -3000,7 +3045,29 @@ function boardCancelDraw() {
   boardDraftMarker?.remove();
   boardDraftMarker = null;
   boardEls?.canvas.classList.remove('is-drawing');
+  const bar = $('#boardPenBar', boardEls?.canvas || document);
+  if (bar) bar.hidden = true;
   $$('#boardMarkerMenu [data-board-marker]', boardEls?.canvas || document).forEach(button => button.classList.remove('active'));
+}
+
+// 画笔选项条：笔型 / 粗细 / 不透明度 / 流量 / 颜色 / 完成。
+function boardRenderPenBar() {
+  const bar = $('#boardPenBar', boardEls?.canvas || document);
+  if (!bar) return;
+  const preset = boardPenPresets[boardPenState.brush];
+  bar.innerHTML = `
+    <button type="button" class="board-tw${boardPenState.brush === 'pen' ? ' on' : ''}" data-brush="pen" title="${escapeHTML(t('boardBrushPen'))}"><svg><use href="#i-edit"/></svg></button>
+    <button type="button" class="board-tw${boardPenState.brush === 'highlighter' ? ' on' : ''}" data-brush="highlighter" title="${escapeHTML(t('boardBrushHighlighter'))}"><svg><use href="#i-highlight"/></svg></button>
+    <span class="board-chrome-sep" aria-hidden="true"></span>
+    <label class="board-pen-field"><span>${escapeHTML(t('boardPenStroke'))}</span><input type="range" min="1" max="24" step="0.5" value="${boardPenState.stroke}" data-pen="stroke"/><output>${boardPenState.stroke}</output></label>
+    <label class="board-pen-field"><span>${escapeHTML(t('boardPenOpacity'))}</span><input type="range" min="5" max="100" step="5" value="${boardPenState.opacity}" data-pen="opacity"/><output>${boardPenState.opacity}%</output></label>
+    <label class="board-pen-field"><span>${escapeHTML(t('boardPenFlow'))}</span><input type="range" min="10" max="100" step="5" value="${boardPenState.flow}" data-pen="flow"/><output>${boardPenState.flow}%</output></label>
+    <span class="board-chrome-sep" aria-hidden="true"></span>
+    ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch${boardPenState.color === color ? ' on' : ''}" data-pen-color="${color}" style="background:${color}" title="${escapeHTML(t('boardMarkerColor'))}"></button>`).join('')}
+    <label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(boardPenState.color) ? boardPenState.color : '#526b55'}" data-pen-color-custom/></label>
+    <button type="button" class="board-tw is-primary" id="boardPenDone" title="${escapeHTML(t('boardPenDone'))}"><svg><use href="#i-check"/></svg>${escapeHTML(t('boardPenDone'))}</button>`;
+  bar.hidden = false;
+  bar.dataset.presetStroke = String(preset.stroke);
 }
 
 function boardDrawDraft(draft) {
@@ -3009,7 +3076,7 @@ function boardDrawDraft(draft) {
     boardEls.world.appendChild(boardDraftMarker);
   }
   const widget = draft.kind === 'draw'
-    ? { kind: 'draw', x: draft.x, y: draft.y, points: draft.points, w: 1, h: 1 }
+    ? { kind: 'draw', x: draft.x, y: draft.y, points: draft.points, w: 1, h: 1, brush: boardPenState.brush, stroke: boardPenState.stroke, opacity: boardPenState.opacity, flow: boardPenState.flow }
     : draft;
   let left;
   let top;
@@ -3041,6 +3108,7 @@ function boardDrawDraft(draft) {
   boardDraftMarker.style.top = `${top}px`;
   boardDraftMarker.style.width = `${width}px`;
   boardDraftMarker.style.height = `${height}px`;
+  boardDraftMarker.style.setProperty('--board-marker-color', boardPenState.color);
   boardDraftMarker.innerHTML = boardMarkerSVG(renderWidget, draft.kind === 'draw' ? 0 : left, top, true);
 }
 
@@ -3060,15 +3128,23 @@ function boardCommitDraw(draft) {
       if (points[i + 1] > maxY) maxY = points[i + 1];
     }
     boardPushUndo();
-    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x + minX), y: Math.round(draft.y + minY), w: Math.round(maxX - minX), h: Math.round(maxY - minY), color: BOARD_MARKER_COLORS[0], points: points.map((value, index) => Math.round(value - (index % 2 === 0 ? minX : minY))) };
+    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x + minX), y: Math.round(draft.y + minY), w: Math.round(maxX - minX), h: Math.round(maxY - minY), color: boardPenState.color, brush: boardPenState.brush, stroke: boardPenState.stroke, opacity: boardPenState.opacity, flow: boardPenState.flow, points: points.map((value, index) => Math.round(value - (index % 2 === 0 ? minX : minY))) };
   } else {
     if (Math.hypot(draft.w || 0, draft.h || 0) < 10) { boardCancelDraw(); return; }
     boardPushUndo();
-    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x), y: Math.round(draft.y), w: Math.round(draft.w), h: Math.round(draft.h), color: BOARD_MARKER_COLORS[0] };
+    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x), y: Math.round(draft.y), w: Math.round(draft.w), h: Math.round(draft.h), color: boardPenState.color };
   }
   board.widgets.push(widget);
   touchBoard(board);
   persist();
+  if (kind === 'draw') {
+    // 画笔模式连续绘制：清掉草稿继续下一笔，不退出模式、不抢选中。
+    boardDraftMarker?.remove();
+    boardDraftMarker = null;
+    renderList();
+    boardRenderPenBar();
+    return;
+  }
   boardCancelDraw();
   renderList();
   boardSetSelection([widget.id]);
@@ -3303,7 +3379,17 @@ function bindBoardScene() {
   };
   
   boardEditingText = null;
-  boardCancelDraw();
+  if (entering) {
+    boardCancelDraw();
+  } else {
+    // 数据驱动的重渲染（连续画笔的每一笔、undo 等）不退出画笔模式：
+    // 草稿元素已随画布重建失效，模式与选项条原地恢复。
+    boardDraftMarker = null;
+    if (boardPendingMarker === 'draw') {
+      canvas.classList.add('is-drawing');
+      boardRenderPenBar();
+    }
+  }
   boardLayoutCache = boardLayout();
   boardEls.empty.hidden = boardLayoutCache.board.widgets.length > 0;
   $('#boardPillName', canvas).textContent = boardLayoutCache.board.name;
@@ -3334,6 +3420,7 @@ function bindBoardScene() {
   boardSyncNodes();
   boardEnterAnimated = false;
   boardMarkActive(selectedId);
+  boardRenderToolbar();
   persistBoardState();
 
   const viewport = boardEls.viewport;
@@ -3642,8 +3729,14 @@ function bindBoardScene() {
       boardGesture = null;
       boardMotion.mode = 'idle';
       if (boardEls.marquee) boardEls.marquee.hidden = true;
-      if (!boardPointers.size && (Math.abs(gesture.currentX - gesture.originX) > 6 || Math.abs(gesture.currentY - gesture.originY) > 6)) {
+      if (boardPointers.size) return;
+      const dragged = Math.abs(gesture.currentX - gesture.originX) > 6 || Math.abs(gesture.currentY - gesture.originY) > 6;
+      if (dragged) {
         boardApplyMarquee(gesture);
+      } else {
+        // 左键单击空白：组件选择与编辑面板一次性全收。
+        if (boardSelection.size) boardSetSelection([]);
+        if (selectedId) boardDeselect();
       }
       return;
     }
@@ -3684,9 +3777,9 @@ function bindBoardScene() {
       if (!gesture.moved) {
         boardMotion.mode = 'idle';
         if (gesture.button === 0) {
-          // 主键点击空白：先收组件工具条与多选，再收右侧编辑器。
+          // 主键点击空白：组件选择与编辑面板一次性全收。
           if (boardSelection.size) boardSetSelection([]);
-          else if (selectedId) boardDeselect();
+          if (selectedId) boardDeselect();
         }
         return;
       }
@@ -3767,9 +3860,16 @@ function bindBoardScene() {
     }
   });
   $$('#boardMarkerMenu [data-board-marker]', canvas).forEach(button => button.addEventListener('click', () => {
+    const kind = button.dataset.boardMarker;
+    // 画笔是模式化工具：再点一次退出；形状工具保持单次绘制。
+    if (kind === 'draw' && boardPendingMarker === 'draw') {
+      $('#boardMarkerMenu', canvas).hidden = true;
+      boardCancelDraw();
+      return;
+    }
     $$('#boardMarkerMenu [data-board-marker]', canvas).forEach(entry => entry.classList.toggle('active', entry === button));
     $('#boardMarkerMenu', canvas).hidden = true;
-    boardStartDraw(button.dataset.boardMarker);
+    boardStartDraw(kind);
   }));
   $('#boardAddImport', canvas)?.addEventListener('click', boardRunImport);
 
@@ -3841,6 +3941,19 @@ function bindBoardScene() {
       persist();
       return;
     }
+    const markerColor = event.target.closest('[data-marker-color]');
+    if (markerColor) {
+      const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+      if (widget?.type === 'marker') {
+        boardPushUndo('style');
+        widget.color = markerColor.value;
+        boardRefreshStatic(widget);
+        boardRenderToolbar();
+        touchBoard(boardLayoutCache.board);
+        persist();
+      }
+      return;
+    }
     const select = event.target.closest('[data-tw="font"]');
     if (!select) return;
     const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
@@ -3886,15 +3999,23 @@ function bindBoardScene() {
     boardRenderBgPop(widget);
   });
   boardEls.canvas.addEventListener('input', event => {
-    const slider = event.target.closest('[data-bgop]');
-    if (!slider) return;
     const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
     if (!widget || widget.type !== 'text') return;
-    widget.bgOpacity = Number(slider.value);
-    const output = slider.parentElement?.querySelector('output');
-    if (output) output.textContent = `${widget.bgOpacity}%`;
-    boardRefreshStatic(widget);
-    touchBoard(boardLayoutCache.board);
+    const slider = event.target.closest('[data-bgop]');
+    if (slider) {
+      widget.bgOpacity = Number(slider.value);
+      const output = slider.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.bgOpacity}%`;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const custom = event.target.closest('[data-bg-custom]');
+    if (custom) {
+      widget.bg = custom.value;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+    }
   });
   boardEls.canvas.addEventListener('change', event => {
     if (!event.target.closest('[data-bgop]')) return;
@@ -3904,6 +4025,37 @@ function bindBoardScene() {
 
   $('#boardUndo', canvas)?.addEventListener('click', boardUndo);
   $('#boardRedo', canvas)?.addEventListener('click', boardRedo);
+
+  // 画笔选项条：笔型切换（带预设）、粗细 / 不透明度 / 流量滑杆、颜色与完成。
+  const penBar = $('#boardPenBar', canvas);
+  penBar?.addEventListener('click', event => {
+    const done = event.target.closest('#boardPenDone');
+    if (done) { boardCancelDraw(); return; }
+    const brush = event.target.closest('[data-brush]');
+    if (brush) {
+      boardPenState.brush = brush.dataset.brush;
+      Object.assign(boardPenState, boardPenPresets[boardPenState.brush]);
+      boardRenderPenBar();
+      return;
+    }
+    const swatch = event.target.closest('[data-pen-color]');
+    if (swatch) {
+      boardPenState.color = swatch.dataset.penColor;
+      boardRenderPenBar();
+    }
+  });
+  penBar?.addEventListener('input', event => {
+    const slider = event.target.closest('[data-pen]');
+    if (slider) {
+      const key = slider.dataset.pen;
+      boardPenState[key] = key === 'stroke' ? Number(slider.value) : Math.round(Number(slider.value));
+      const output = slider.parentElement?.querySelector('output');
+      if (output) output.textContent = key === 'stroke' ? boardPenState.stroke : `${boardPenState[key]}%`;
+      return;
+    }
+    const custom = event.target.closest('[data-pen-color-custom]');
+    if (custom) boardPenState.color = custom.value;
+  });
   $('#boardZoomIn', canvas)?.addEventListener('click', () => {
     const { w, h } = boardViewportSize();
     boardZoomAt(w / 2, h / 2, 1.22);
