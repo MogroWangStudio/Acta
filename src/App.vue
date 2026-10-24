@@ -40,7 +40,7 @@
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
           <button class="icon-button mobile-titlebar-action" id="mobileTitleTodos" type="button" data-view="todos" aria-label="所有待办"><svg><use href="#i-check"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileTitleNotes" type="button" data-view="notes" aria-label="所有笔记"><svg><use href="#i-note"/></svg></button>
-          <button class="icon-button mobile-titlebar-action" id="mobileBoard" type="button" data-view="board" aria-label="汇总板"><svg><use href="#i-board"/></svg></button>
+          <button class="icon-button mobile-titlebar-action" id="mobileBoard" type="button" data-view="board" aria-label="计划板"><svg><use href="#i-board"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileTrash" type="button" data-view="trash" aria-label="回收站"><svg><use href="#i-trash"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileStats" type="button" data-view="stats" aria-label="总结"><svg><use href="#i-chart"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileDataRefresh" type="button" aria-label="刷新数据"><svg><use href="#i-refresh"/></svg></button>
@@ -72,7 +72,7 @@
           <nav class="nav-section smart-nav" id="smartNav">
             <button data-view="inbox" class="active"><span><svg><use href="#i-inbox"/></svg><span data-i18n="inbox">收集箱</span></span><em id="inboxCount">0</em></button>
             <button data-view="calendar"><span><svg><use href="#i-calendar"/></svg><span data-i18n="calendar">日历</span></span><em id="calendarCount">0</em></button>
-            <button data-view="board"><span><svg><use href="#i-board"/></svg><span data-i18n="board">汇总板</span></span></button>
+            <button data-view="board"><span><svg><use href="#i-board"/></svg><span data-i18n="board">计划板</span></span></button>
             <button data-view="todos"><span><svg><use href="#i-check"/></svg><span data-i18n="todos">待办</span></span><em id="todoCount">0</em></button>
             <button data-view="notes"><span><svg><use href="#i-note"/></svg><span data-i18n="notes">笔记</span></span><em id="noteCount">0</em></button>
             <button data-view="trash"><span><svg><use href="#i-trash"/></svg><span data-i18n="trash">回收站</span></span><em id="trashCount">0</em></button>
@@ -291,7 +291,7 @@
             <section class="settings-panel" data-settings-panel="general">
               <header><h3>常规设置</h3><p>启动、密度与动效偏好。</p></header>
               <div class="settings-group">
-                <label class="settings-row"><span><b>默认启动页面</b><small>启动时进入的视图</small></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="board" data-i18n="board">汇总板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
+                <label class="settings-row"><span><b>默认启动页面</b><small>启动时进入的视图</small></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
                 <label class="settings-row"><span><b>紧凑列表</b><small>中栏密度更高</small></span><input id="compactModeSetting" type="checkbox"/></label>
                 <label class="settings-row"><span><b>减少动态效果</b><small>降低转场与弹性动画</small></span><input id="reduceMotionSetting" type="checkbox"/></label>
                 <label class="settings-row" id="backgroundRunRow" hidden><span><b>关闭窗口时转入后台</b><small>关闭窗口后保留在系统托盘，局域网同步继续；可从托盘恢复或退出</small></span><input id="backgroundRunSetting" type="checkbox"/></label>
@@ -314,7 +314,7 @@
                 <div class="nav-page-grid" id="navPageGrid">
                   <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
                   <label><input type="checkbox" data-nav-page="calendar"/><span>日历</span></label>
-                  <label><input type="checkbox" data-nav-page="board"/><span data-i18n="board">汇总板</span></label>
+                  <label><input type="checkbox" data-nav-page="board"/><span data-i18n="board">计划板</span></label>
                   <label><input type="checkbox" data-nav-page="todos"/><span>所有待办</span></label>
                   <label><input type="checkbox" data-nav-page="notes"/><span>所有笔记</span></label>
                   <label><input type="checkbox" data-nav-page="trash"/><span>回收站</span></label>
@@ -324,14 +324,14 @@
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端底栏</b><small>两个槽位可替换；两端固定为收集箱与日历</small></span></div>
-                <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">汇总板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
-                <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">汇总板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
+                <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
+                <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端顶栏</b><small>右上角三个按钮可自定义；设置按钮固定显示</small></span></div>
-                <label class="settings-row"><span><b>顶栏槽位一</b></span><select id="mobileTitleOne"><option value="board" data-i18n="board">汇总板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
-                <label class="settings-row"><span><b>顶栏槽位二</b></span><select id="mobileTitleTwo"><option value="board" data-i18n="board">汇总板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
-                <label class="settings-row"><span><b>顶栏槽位三</b></span><select id="mobileTitleThree"><option value="board" data-i18n="board">汇总板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
+                <label class="settings-row"><span><b>顶栏槽位一</b></span><select id="mobileTitleOne"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
+                <label class="settings-row"><span><b>顶栏槽位二</b></span><select id="mobileTitleTwo"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
+                <label class="settings-row"><span><b>顶栏槽位三</b></span><select id="mobileTitleThree"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
               </div>
               <p class="settings-status" id="navSettingsStatus">设置会自动保存在当前设备。</p>
             </section>

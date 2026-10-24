@@ -1897,12 +1897,31 @@ body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 1
    三类组件（条目卡片 / 富文本 / 标注）随意摆放；条目卡片虚拟化渲染，文本与
    标注常驻。画布是 transform 驱动的坐标平面，底纹点阵跟随相机；未选中条目
    时画布占满中栏，点击卡片后编辑器展开为第三栏（移动端为全屏编辑器覆盖）。 */
-body.board-view .search-box, body.board-view .filter-row, body.board-view .list-footer { display: none; }
+body.board-view .search-box, body.board-view .filter-row, body.board-view .list-footer, body.board-view .list-resizer { display: none; }
 body.board-view .item-pane { border-right: 0; background: var(--paper); }
-body.board-view:not(.board-editor-open) .editor-pane { display: none; }
-body.board-view:not(.board-editor-open) .list-resizer { display: none; }
+/* 画布永远占满中栏；编辑面板浮在右侧（桌面端），向左投影 + 非线性滑入滑出。 */
 @media (min-width: 801px) {
-  body.board-view:not(.board-editor-open) main.workspace { grid-template-columns: var(--acta-sidebar-width) minmax(0,1fr) 0px !important; }
+  body.board-view main.workspace { position: relative; grid-template-columns: var(--acta-sidebar-width) minmax(0,1fr) 0px !important; }
+  body.board-view .editor-pane {
+    position: absolute; top: 0; bottom: 0; right: 0; z-index: 24;
+    width: var(--board-editor-w, 460px); max-width: min(760px, 74vw);
+    border-left: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    box-shadow: -34px 0 64px -30px rgba(24,28,23,.36), -8px 0 20px -10px rgba(24,28,23,.16);
+    transform: translateX(calc(100% + 56px));
+    transition: transform .42s var(--ease-out), width .05s linear;
+  }
+  body.board-view.board-editor-open .editor-pane { transform: translateX(0); }
+}
+body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  body.board-view .editor-pane { transition: opacity .18s ease; transform: none; }
+}
+/* 面板左缘拖宽条：面板打开时出现，拖动实时改变宽度并把选中内容保持在可见区。 */
+.board-editor-resizer { position: absolute; z-index: 26; top: 0; bottom: 0; right: var(--board-editor-w, 460px); width: 14px; margin-right: -7px; cursor: col-resize; touch-action: none; display: none; }
+.board-editor-resizer::after { content: ""; position: absolute; top: 0; bottom: 0; left: 6px; width: 2px; border-radius: 2px; background: transparent; transition: background .16s ease; }
+.board-editor-resizer:hover::after, .board-editor-resizer.is-dragging::after { background: color-mix(in srgb, var(--sage) 48%, transparent); }
+@media (min-width: 801px) {
+  body.board-view.board-editor-open .board-editor-resizer { display: block; }
 }
 .board-list { padding: 0; overflow: hidden; scrollbar-gutter: auto; }
 .board-canvas { position: relative; height: 100%; min-height: 0; }

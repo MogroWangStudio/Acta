@@ -58,16 +58,16 @@ const dictionaries = {
     statsGroupToday:'今天', statsGroupYesterday:'昨天', statsCheckItem:'加入图片',
     metaQuickActions:'快捷操作', metaCopyTitle:'复制标题', metaCopyBody:'复制全文', metaCopyNotes:'复制说明', metaCopyMarkdown:'复制 Markdown', metaMarkComplete:'标记完成', metaReopen:'重新打开', metaViewCalendar:'在日历查看', metaTrash:'移入回收站',
     copied:'已复制到剪贴板', copyFailed:'复制失败',
-    board:'汇总板', boardDefaultName:'汇总板', boardOpenItem:'打开内容', boardFitView:'总览全板', boardZoomIn:'放大', boardZoomOut:'缩小',
-    boardNewBoard:'新建汇总板', boardRenameBoard:'重命名汇总板', boardDeleteBoard:'删除汇总板', boardNamePrompt:'汇总板名称',
-    boardDeleteConfirm:'删除「{0}」后，这块板上的摆放、文本与标注会一并移除，待办与笔记本身不受影响。', boardSwitchLabel:'切换汇总板',
-    boardAddText:'文本', boardAddMarker:'标注', boardAddItems:'导入', boardImportTitle:'导入到汇总板',
+    board:'计划板', boardDefaultName:'计划板', boardOpenItem:'打开内容', boardFitView:'总览全板', boardZoomIn:'放大', boardZoomOut:'缩小',
+    boardNewBoard:'新建计划板', boardRenameBoard:'重命名计划板', boardDeleteBoard:'删除计划板', boardNamePrompt:'计划板名称',
+    boardDeleteConfirm:'删除「{0}」后，这块板上的摆放、文本与标注会一并移除，待办与笔记本身不受影响。', boardSwitchLabel:'切换计划板',
+    boardAddText:'文本', boardAddMarker:'标注', boardAddItems:'导入', boardImportTitle:'导入到计划板',
     boardImportHint:'勾选要展示在这块板上的待办与笔记；取消勾选已添加的条目会把它从板上移除。',
     boardImportAdded:'已在板上', boardImportEmpty:'没有匹配的待办或笔记', boardImportApply:'应用', boardImportChange:'添加 {0} · 移除 {1}',
     boardTextPlaceholder:'双击编辑文本…', boardFontSize:'字号', boardFontLabel:'字体', boardFontApp:'跟随界面', boardFontSerif:'衬线', boardFontRounded:'圆体', boardFontMono:'等宽',
     boardAlignLeft:'左对齐', boardAlignCenter:'居中', boardAlignRight:'右对齐', boardRemoveWidget:'从板上移除',
     boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
-    boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的汇总板。'
+    boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
   en: {
     saved: 'Saved', saving: 'Saving…', new: 'New', quickCapture: 'Quick capture', quickCaptureHint: 'Create a task or note fast', newNote: 'New note', newNoteHint: 'Capture ideas and sparks',
@@ -114,16 +114,16 @@ const dictionaries = {
     statsGroupToday:'Today', statsGroupYesterday:'Yesterday', statsCheckItem:'Include in picture',
     metaQuickActions:'Quick actions', metaCopyTitle:'Copy title', metaCopyBody:'Copy content', metaCopyNotes:'Copy notes', metaCopyMarkdown:'Copy Markdown', metaMarkComplete:'Mark complete', metaReopen:'Reopen', metaViewCalendar:'Show on calendar', metaTrash:'Move to trash',
     copied:'Copied to clipboard', copyFailed:'Copy failed',
-    board:'Board', boardDefaultName:'Board', boardOpenItem:'Open', boardFitView:'Fit board', boardZoomIn:'Zoom in', boardZoomOut:'Zoom out',
-    boardNewBoard:'New board', boardRenameBoard:'Rename board', boardDeleteBoard:'Delete board', boardNamePrompt:'Board name',
+    board:'Plan board', boardDefaultName:'Plan board', boardOpenItem:'Open', boardFitView:'Fit board', boardZoomIn:'Zoom in', boardZoomOut:'Zoom out',
+    boardNewBoard:'New plan board', boardRenameBoard:'Rename plan board', boardDeleteBoard:'Delete plan board', boardNamePrompt:'Plan board name',
     boardDeleteConfirm:'Deleting “{0}” removes its layout, texts, and markers. The tasks and notes themselves are untouched.', boardSwitchLabel:'Switch board',
-    boardAddText:'Text', boardAddMarker:'Marker', boardAddItems:'Import', boardImportTitle:'Import to board',
+    boardAddText:'Text', boardAddMarker:'Marker', boardAddItems:'Import', boardImportTitle:'Import to plan board',
     boardImportHint:'Tick the tasks and notes to show on this board; unticking an added item removes it from the board.',
     boardImportAdded:'On the board', boardImportEmpty:'No matching tasks or notes', boardImportApply:'Apply', boardImportChange:'Add {0} · remove {1}',
     boardTextPlaceholder:'Double-click to edit…', boardFontSize:'Font size', boardFontLabel:'Font', boardFontApp:'Follow interface', boardFontSerif:'Serif', boardFontRounded:'Rounded', boardFontMono:'Monospace',
     boardAlignLeft:'Align left', boardAlignCenter:'Align center', boardAlignRight:'Align right', boardRemoveWidget:'Remove from board',
     boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
-    boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your board.'
+    boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   }
 };
 
@@ -1987,7 +1987,11 @@ const boardState = (() => {
       }
     });
   }
-  return { activeBoardId: typeof stored.activeBoardId === 'string' ? stored.activeBoardId : null, cams };
+  return {
+    activeBoardId: typeof stored.activeBoardId === 'string' ? stored.activeBoardId : null,
+    cams,
+    editorWidth: Number.isFinite(stored.editorWidth) ? Math.min(760, Math.max(340, Math.round(stored.editorWidth))) : 460
+  };
 })();
 const boardCam = { x: 0, y: 0, scale: 1, vX: 0, vY: 0 };
 // motion.mode: 'idle' | 'drag' | 'pinch' | 'glide' | 'settle'；组件拖拽 / 端点编辑 /
@@ -2019,7 +2023,7 @@ function persistBoardState() {
     try {
       const board = boardLayoutCache?.board;
       if (board) boardState.cams[board.id] = { x: boardCam.x, y: boardCam.y, scale: boardCam.scale };
-      localStorage.setItem(BOARD_KEY, JSON.stringify({ activeBoardId: boardState.activeBoardId, cams: boardState.cams }));
+      localStorage.setItem(BOARD_KEY, JSON.stringify({ activeBoardId: boardState.activeBoardId, cams: boardState.cams, editorWidth: boardState.editorWidth }));
     } catch { /* 状态存不进去不影响画布使用 */ }
   }, 350);
 }
@@ -2126,21 +2130,21 @@ function boardViewportSize() {
   return viewport ? { w: viewport.clientWidth, h: viewport.clientHeight } : { w: 0, h: 0 };
 }
 
-// 相机边界：内容外接矩形不允许被完全拖出视野；横向内容窄于视口时居中，
-// 纵向内容矮于视口时顶对齐。
+// 相机边界（假无限）：以内容外接矩形为锚，四周各预留约一屏的空白——
+// 画布拖起来永远有地方可去，但 rubber-band 在一屏外把它拉回来，不会拖丢。
+// 内容小于视口时以居中为锚，同样可以拖出 ± 一屏。
 function boardContentBounds() {
   if (!boardLayoutCache) boardLayoutCache = boardLayout();
   const { minX, minY, maxX, maxY } = boardLayoutCache.bounds;
   const { w, h } = boardViewportSize();
   const pad = Math.min(72, Math.max(32, w * 0.1));
   const scale = boardCam.scale;
-  const x = (maxX - minX) * scale <= w - pad
-    ? { min: (w - (minX + maxX) * scale) / 2, max: (w - (minX + maxX) * scale) / 2 }
-    : { min: pad - maxX * scale, max: w - pad - minX * scale };
-  const y = (maxY - minY) * scale <= h - pad
-    ? { min: 12 - minY * scale, max: 12 - minY * scale }
-    : { min: pad - maxY * scale, max: h - pad - minY * scale };
-  return { x, y };
+  const axis = (min, max, view) => {
+    const anchor = (view - (min + max) * scale) / 2;
+    if ((max - min) * scale <= view - pad) return { min: anchor - view * 0.9, max: anchor + view * 0.9 };
+    return { min: pad - max * scale - view * 0.9, max: view - pad - min * scale + view * 0.9 };
+  };
+  return { x: axis(minX, maxX, w), y: axis(minY, maxY, h) };
 }
 
 const boardClampAxis = (value, { min, max }) => Math.min(max, Math.max(min, value));
@@ -2479,10 +2483,11 @@ function boardFitView(instant = false) {
   const { w, h } = boardViewportSize();
   const pad = Math.min(72, Math.max(32, w * 0.1));
   const scale = Math.min(Math.max((w - 48) / (maxX - minX), BOARD_SCALE_MIN), 1);
+  // 取景目标与边界规则同构：内容整体居中；内容高于视口时顶缘贴 pad 线。
   const target = {
     scale,
     x: (w - (minX + maxX) * scale) / 2,
-    y: (maxY - minY) * scale >= h - pad ? pad - minY * scale : 12 - minY * scale
+    y: (maxY - minY) * scale >= h - pad ? pad - minY * scale : (h - (minY + maxY) * scale) / 2
   };
   if (instant || reduceWindowMotion()) {
     boardCam.x = target.x;
@@ -2521,6 +2526,7 @@ function boardSelect(id) {
   mobileEditorOpen = true;
   renderEditor();
   boardMarkActive(id);
+  boardFocusSelection();
 }
 
 function boardDeselect() {
@@ -2543,10 +2549,83 @@ function boardSelectWidget(id) {
     });
   }
   boardRenderToolbar();
+  if (id) boardFocusSelection();
 }
 
 function boardWidgetById(id) {
   return boardLayoutCache?.board.widgets.find(widget => widget.id === id) || null;
+}
+
+// 浮动编辑面板（桌面端）：宽度可拖、向左投影；面板出现 / 收起为非线性滑入滑出。
+function boardEditorWidth() {
+  const live = Number.parseInt(document.documentElement.style.getPropertyValue('--board-editor-w'), 10);
+  if (Number.isFinite(live) && live >= 340) return Math.min(760, live);
+  return boardState.editorWidth;
+}
+
+let boardEditorResizer = null;
+function boardEnsureEditorResizer() {
+  if (boardEditorResizer && document.contains(boardEditorResizer)) return;
+  const workspace = $('main.workspace');
+  if (!workspace) return;
+  boardEditorResizer = document.createElement('div');
+  boardEditorResizer.className = 'board-editor-resizer';
+  boardEditorResizer.id = 'boardEditorResizer';
+  boardEditorResizer.setAttribute('role', 'separator');
+  boardEditorResizer.setAttribute('aria-orientation', 'vertical');
+  workspace.appendChild(boardEditorResizer);
+  let drag = null;
+  boardEditorResizer.addEventListener('pointerdown', event => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    try { boardEditorResizer.setPointerCapture(event.pointerId); } catch { /* 合成指针无捕获 */ }
+    drag = true;
+    boardEditorResizer.classList.add('is-dragging');
+  });
+  boardEditorResizer.addEventListener('pointermove', event => {
+    if (!drag) return;
+    const rect = workspace.getBoundingClientRect();
+    const width = Math.min(760, Math.max(340, Math.round(rect.right - event.clientX)));
+    document.documentElement.style.setProperty('--board-editor-w', `${width}px`);
+    boardFocusSelection();
+  });
+  const finish = () => {
+    if (!drag) return;
+    drag = null;
+    boardEditorResizer.classList.remove('is-dragging');
+    boardState.editorWidth = boardEditorWidth();
+    persistBoardState();
+  };
+  boardEditorResizer.addEventListener('pointerup', finish);
+  boardEditorResizer.addEventListener('pointercancel', finish);
+}
+
+// 面板打开 / 拖宽时，把选中的卡片或组件平滑带到面板左侧的可见区中心。
+function boardFocusSelection() {
+  if (!boardLayoutCache || matchMedia('(max-width: 800px)').matches) return;
+  let target = null;
+  const card = boardLayoutCache.cards.find(entry => entry.item.id === selectedId);
+  if (card) target = { x: card.x + BOARD_CARD_W / 2, y: card.y + BOARD_CARD_H / 2 };
+  if (!target && boardSelectedWidget) {
+    const widget = boardWidgetById(boardSelectedWidget);
+    if (widget) {
+      const width = widget.type === 'text' ? widget.w : Math.max(Math.abs(widget.w), 40);
+      target = { x: widget.x + width / 2, y: widget.y + (widget.type === 'text' ? 26 : Math.abs(widget.h) / 2) };
+    }
+  }
+  if (!target) return;
+  const { w, h } = boardViewportSize();
+  const visible = Math.max(200, w - boardEditorWidth() - 24);
+  const bounds = boardContentBounds();
+  boardCam.vX = 0;
+  boardCam.vY = 0;
+  boardMotion.anchor = null;
+  boardMotion.mode = 'settle';
+  boardMotion.settle = {
+    x: boardClampAxis(visible / 2 - target.x * boardCam.scale, bounds.x),
+    y: boardClampAxis(h / 2 - target.y * boardCam.scale, bounds.y)
+  };
+  boardEnsureFrame();
 }
 
 function boardRenderToolbar() {
@@ -2957,21 +3036,11 @@ function bindBoardScene() {
 
   const viewport = boardEls.viewport;
   viewport.addEventListener('wheel', event => {
+    // 滚轮 / 触控板双指 = 以指针为锚缩放；平移交给拖拽（左键空白 / 中键任意位置）。
     event.preventDefault();
     const rect = viewport.getBoundingClientRect();
-    if (event.ctrlKey || event.metaKey) {
-      boardZoomAt(event.clientX - rect.left, event.clientY - rect.top, Math.exp(-event.deltaY * 0.0022));
-      return;
-    }
-    // 触控板双指 / 鼠标滚轮 = 平移；到界即停（无 rubber-band，松手也没有回弹语境）。
-    boardStopMotion();
     const multiplier = event.deltaMode === 1 ? 16 : 1;
-    const bounds = boardContentBounds();
-    boardCam.x = boardClampAxis(boardCam.x - event.deltaX * multiplier, bounds.x);
-    boardCam.y = boardClampAxis(boardCam.y - event.deltaY * multiplier, bounds.y);
-    boardApplyCamera();
-    boardScheduleSync();
-    persistBoardState();
+    boardZoomAt(event.clientX - rect.left, event.clientY - rect.top, Math.exp(-event.deltaY * multiplier * 0.0022));
   }, { passive: false });
 
   const widgetFromEvent = event => {
@@ -2981,7 +3050,9 @@ function bindBoardScene() {
   };
 
   viewport.addEventListener('pointerdown', event => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    // 主键：空白拖画布 / 组件上拖组件；中键：任何位置都拖画布（禁用浏览器自动滚动）。
+    if (event.pointerType === 'mouse' && event.button !== 0 && event.button !== 1) return;
+    if (event.button === 1) event.preventDefault();
     if (event.target.closest('.is-editing')) return;
     // 捕获让指针移出画布也能继续跟踪；合成 / 已失效的指针捕获会抛错，安全跳过。
     try { viewport.setPointerCapture(event.pointerId); } catch { /* 无活跃指针可捕获 */ }
@@ -3000,6 +3071,22 @@ function bindBoardScene() {
       return;
     }
     boardMotion.mode = 'drag';
+    // 中键固定拖画布（即使落在组件上），也不参与点击选中。
+    const panGesture = button => ({
+      mode: 'pan',
+      button,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      pressX: event.clientX,
+      pressY: event.clientY,
+      moved: false,
+      pressNode: button === 0 ? event.target.closest('[data-widget-id]') : null,
+      history: [{ x: event.clientX, y: event.clientY, t: performance.now() }]
+    });
+    if (event.button === 1) {
+      boardGesture = panGesture(1);
+      return;
+    }
     const handle = event.target.closest('[data-widget-handle]');
     if (handle) {
       const widget = widgetFromEvent(event);
@@ -3043,15 +3130,7 @@ function bindBoardScene() {
       };
       return;
     }
-    boardGesture = {
-      mode: 'pan',
-      lastX: event.clientX,
-      lastY: event.clientY,
-      pressX: event.clientX,
-      pressY: event.clientY,
-      moved: false,
-      history: [{ x: event.clientX, y: event.clientY, t: performance.now() }]
-    };
+    boardGesture = panGesture(0);
   });
   viewport.addEventListener('pointermove', event => {
     const point = boardPointers.get(event.pointerId);
@@ -3202,9 +3281,11 @@ function bindBoardScene() {
       boardGesture = null;
       if (!gesture.moved) {
         boardMotion.mode = 'idle';
-        // 点击空白：先收组件工具条，再收右侧编辑器。
-        if (boardSelectedWidget) boardSelectWidget(null);
-        else if (selectedId) boardDeselect();
+        if (gesture.button === 0) {
+          // 主键点击空白：先收组件工具条，再收右侧编辑器。
+          if (boardSelectedWidget) boardSelectWidget(null);
+          else if (selectedId) boardDeselect();
+        }
         return;
       }
       const first = gesture.history[0];
@@ -3689,8 +3770,12 @@ function renderEditor() {
   let item = getItem();
   if (item && isTrashed(item)) item = null;
   const pane = $('#editorPane');
-  // 汇总板的编辑器按选中状态展开 / 收起（选中三栏，未选中画布全宽）。
-  if (currentView === 'board') document.body.classList.toggle('board-editor-open', Boolean(item));
+  // 计划板的编辑器是浮在画布右侧的面板：按选中状态滑入 / 滑出。
+  if (currentView === 'board') {
+    document.body.classList.toggle('board-editor-open', Boolean(item));
+    document.documentElement.style.setProperty('--board-editor-w', `${boardState.editorWidth}px`);
+    boardEnsureEditorResizer();
+  }
   const previousEditorId = $('.editor-wrap', pane)?.dataset.editorId;
   document.body.classList.remove('note-focus-mode', 'note-focus-leaving');
   if (!item) {
