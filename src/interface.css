@@ -145,7 +145,9 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 .settings-close svg { width: 14px; }
 .settings-layout { min-height: 0; display: grid; grid-template-columns: 210px minmax(0,1fr); }
 .settings-nav { padding: 16px 11px; border-right: 1px solid var(--line); background: var(--panel); overflow: hidden auto; }
+/* 功能组之间留出间隙：active / hover 的背景层不再上下相贴。 */
 .settings-nav button { width: 100%; height: 42px; padding: 0 11px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer; font-size: calc(10px * var(--acta-font-scale)); transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
+.settings-nav button + button { margin-top: 4px; }
 .settings-nav button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 55%, transparent); transform: translateX(2px); }
 .settings-nav button.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 3px rgba(47,50,43,.05); }
 .settings-nav svg { width: 15px; }
