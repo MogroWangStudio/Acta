@@ -224,7 +224,9 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
   0% { stroke-dasharray: 220; stroke-dashoffset: 220; }
   100% { stroke-dasharray: 220; stroke-dashoffset: 0; }
 }
-/* 选中态的强调完全由描线层承担：主图标的颜色与透明度保持常态，不亮起。 */
+/* 选中态的强调完全由描线层承担：主图标的颜色与透明度保持常态，不亮起；
+   描线以 100% 不透明的强调色勾勒。 */
+.nav-section button.active .nav-icon-trace { color: var(--sage); }
 /* 只动画 dash，不碰 opacity：透明度交给 transition，选中与取消选中
    都能平滑淡入淡出；旧描线改用 CSS 过渡退场，新描线同时重绘。 */
 .nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1.6s cubic-bezier(.4, 0, .2, 1) both; }
