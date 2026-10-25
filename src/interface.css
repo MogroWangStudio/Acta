@@ -2088,14 +2088,20 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 .board-empty p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); max-width: 320px; line-height: 1.7; }
 
 /* 板胶囊：挂在视图标题右侧（与 24px 大标题留出明显间距，避免视觉相贴）。 */
-.board-pill { position: relative; margin-left: 24px; flex: 0 0 auto; }
+.board-pill { position: relative; margin-left: 32px; flex: 0 0 auto; }
+/* 计划板：标题行横贯画布顶栏——item-header 默认按内容收缩标题行，
+   个性化按钮的 margin-left:auto 会失效并与板选择器相贴，也到不了画布右上。 */
+body.board-view .item-title-row { flex: 1 1 auto; gap: 8px; }
+body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .board-pill-button {
   height: 34px; max-width: 240px; padding: 0 8px 0 11px; border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 11px;
   background: color-mix(in srgb, var(--paper) 74%, transparent); backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6);
   box-shadow: 0 2px 6px rgba(47,50,43,.06), 0 10px 26px -12px rgba(34,38,33,.22), inset 0 1px 0 color-mix(in srgb, var(--white) 55%, transparent);
   color: var(--ink); display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: calc(10px * var(--acta-font-scale)); font-weight: 650;
   transition: border-color .16s ease, transform .18s var(--ease-out);
-  animation: boardChromeIn .45s var(--ease-out) .06s both;
+  /* boardChromeIn 的首尾帧都带 translateX(-50%)（为 left:50% 居中元素设计）；
+     流内的板胶囊用它会被永久左移半宽、压住标题，入场用纯垂直的 boardPillIn。 */
+  animation: boardPillIn .45s var(--ease-out) .06s both;
 }
 .board-pill-button:hover { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); transform: scale(1.02); }
 .board-pill-button:active { transform: scale(.97); transition-duration: .08s; }
