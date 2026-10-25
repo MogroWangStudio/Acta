@@ -238,7 +238,6 @@
             <button type="button" data-window-action="maximize" aria-label="最大化"><svg><use href="#i-window-maximize"/></svg></button>
             <button type="button" class="settings-control-close" data-window-action="close" aria-label="关闭设置"><svg><use href="#i-close"/></svg></button>
           </div>
-          <button class="settings-close" id="settingsClose" type="button" aria-label="关闭设置"><svg><use href="#i-close"/></svg></button>
         </header>
         <div class="settings-layout">
           <nav class="settings-nav" aria-label="设置页面">

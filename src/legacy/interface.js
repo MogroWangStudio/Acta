@@ -3701,8 +3701,7 @@
     event.preventDefault();
     openSettings('general');
   }, true);
-  byId('settingsClose').addEventListener('click', closeSettings);
-  // 头部左上角的返回钮（原齿轮图标位）：与右上关闭一致，退出设置页。
+  // 头部左上角的返回钮：退出设置页（右上不再另设关闭按钮）。
   byId('settingsBack')?.addEventListener('click', closeSettings);
   // 弹出窗口不因点击空白处而关闭（设计约定）：设置面板内容较多，误点空白
   // 丢失浏览位置代价高；关闭只通过关闭按钮或 Esc。

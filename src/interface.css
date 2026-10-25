@@ -117,7 +117,6 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-window-controls button:active { background: color-mix(in srgb, var(--ink) 15%, transparent); }
 .settings-window-controls button[data-window-action="close"]:hover { background: #c42b1c; color: #fff; }
 .settings-window-controls svg { width: 14px; height: 14px; stroke-width: 1.6; }
-html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 /* 设置内容居中收窄：全屏后左右留给导航与留白，阅读宽度保持舒适。 */
 
 @media (min-width: 801px) {
@@ -136,10 +135,6 @@ html[data-desktop-platform="win32"] .settings-close { margin-left: 0; }
 /* 主 / 副标题收在返回钮的 38px 高度之内：h2 16px + 副行 9px ≈ 33px。 */
 .settings-header h2 { margin: 0; font: 650 calc(16px * var(--acta-font-scale))/1.2 var(--acta-font-display); letter-spacing: -.01em; }
 .settings-header p { margin: 2px 0 0; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); letter-spacing: .02em; }
-.settings-close { margin-left: auto; width: 34px; height: 34px; border: 0; border-radius: 10px; background: var(--panel); color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background .16s ease, color .16s ease, transform .18s var(--ease-out); }
-.settings-close:hover { color: var(--ink); background: var(--white); transform: scale(1.06); }
-.settings-close:active { transform: scale(.94); transition-duration: .08s; }
-.settings-close svg { width: 14px; }
 .settings-layout { min-height: 0; display: grid; grid-template-columns: 210px minmax(0,1fr); }
 .settings-nav { padding: 16px 11px; border-right: 1px solid var(--line); background: var(--panel); overflow: hidden auto; }
 /* 功能组之间留出间隙：active / hover 的背景层不再上下相贴。 */
