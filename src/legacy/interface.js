@@ -4038,6 +4038,52 @@
     };
     pullList.addEventListener('touchend', pullFinish, { passive: true });
     pullList.addEventListener('touchcancel', pullFinish, { passive: true });
+
+    /* ===================== 移动端列表底部弹性 =====================
+       列表划到底部后继续上滑：内容按同一阻尼映射跟手位移，松手以带回弹的
+       弹簧曲线归位。与下拉刷新对称互斥（一个在顶一个在底）；iOS 滚动容器
+       自带橡皮筋，检测后跳过以免双重弹性。 */
+    const isIosDevice = /iP(hone|ad|od)/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const BOTTOM_ENGAGE = 5;  // 确认上滑意图的死区
+    let bottomEngaged = false, bottomStartY = 0, bottomEngageY = 0, bottomShift = 0, bottomFrame = 0;
+    const bottomPaint = () => {
+      bottomFrame = 0;
+      pullList.style.transform = `translateY(${(-bottomShift).toFixed(1)}px)`;
+    };
+    const bottomRelease = () => {
+      if (!bottomEngaged) return;
+      bottomEngaged = false;
+      bottomShift = 0;
+      pullList.style.transition = 'transform .55s cubic-bezier(.22, 1.2, .36, 1)';
+      bottomPaint();
+      setTimeout(() => { pullList.style.transition = ''; }, 560);
+    };
+    pullList.addEventListener('touchstart', event => {
+      if (!pullMobileQuery.matches || isIosDevice || pullBusy) return;
+      if (document.body.classList.contains('board-view')) return;
+      bottomEngaged = false;
+      bottomStartY = event.touches[0].clientY;
+    }, { passive: true });
+    pullList.addEventListener('touchmove', event => {
+      if (!pullMobileQuery.matches || isIosDevice || pullBusy) return;
+      if (document.body.classList.contains('board-view')) return;
+      const touch = event.touches[0];
+      const atBottom = pullList.scrollTop + pullList.clientHeight >= pullList.scrollHeight - 1;
+      if (!bottomEngaged) {
+        if (!atBottom) return;
+        if (bottomStartY - touch.clientY <= BOTTOM_ENGAGE) return;
+        bottomEngaged = true;
+        bottomEngageY = touch.clientY;
+        event.preventDefault();
+        return;
+      }
+      event.preventDefault();
+      bottomShift = pullDamped(bottomEngageY - touch.clientY);
+      if (!bottomFrame) bottomFrame = requestAnimationFrame(bottomPaint);
+    }, { passive: false });
+    pullList.addEventListener('touchend', bottomRelease, { passive: true });
+    pullList.addEventListener('touchcancel', bottomRelease, { passive: true });
   }
   sidebarToggle.addEventListener('click', () => {
     byId('createMenu').classList.remove('open');

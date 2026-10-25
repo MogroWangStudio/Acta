@@ -2654,6 +2654,8 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .cloud-mode-fields .settings-button { width: 100%; justify-content: center; }
   /* 下拉刷新指示器仅在移动端启用 */
   .pull-refresh-indicator { display: grid; }
+  /* 列表到底后的弹性由底部弹性手势接管，阻止浏览器级的滚动链与导航手势。 */
+  .item-list { overscroll-behavior-y: contain; }
   /* 含宽控件的设置行堆叠：文案独占整行，不再被滑块/按钮/文本输入挤成窄条竖排 */
   .settings-row:has(> .font-size-control),
   .settings-row:has(> .settings-button),
