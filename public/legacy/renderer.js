@@ -66,7 +66,7 @@ const dictionaries = {
     boardImportAdded:'已在板上', boardImportEmpty:'没有匹配的待办或笔记', boardImportApply:'应用', boardImportChange:'添加 {0} · 移除 {1}',
     boardTextPlaceholder:'双击编辑文本…', boardFontSize:'字号', boardFontLabel:'字体', boardFontApp:'跟随界面', boardFontSerif:'衬线', boardFontRounded:'圆体', boardFontMono:'等宽',
     boardAlignLeft:'左对齐', boardAlignCenter:'居中', boardAlignRight:'右对齐', boardRemoveWidget:'从板上移除',
-    boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'画笔', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
+    boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'画笔', boardMarkerEraser:'橡皮擦', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
     boardBg:'背景', boardBgNone:'无背景', boardBgOpacity:'不透明度', boardRadius:'圆角', boardPadding:'内边距', boardCustomFont:'自定义字体', boardCustomFontHint:'输入本机已安装的字体名，如 Georgia',
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardWidgetOpacity:'不透明度',
@@ -128,7 +128,7 @@ const dictionaries = {
     boardImportAdded:'On the board', boardImportEmpty:'No matching tasks or notes', boardImportApply:'Apply', boardImportChange:'Add {0} · remove {1}',
     boardTextPlaceholder:'Double-click to edit…', boardFontSize:'Font size', boardFontLabel:'Font', boardFontApp:'Follow interface', boardFontSerif:'Serif', boardFontRounded:'Rounded', boardFontMono:'Monospace',
     boardAlignLeft:'Align left', boardAlignCenter:'Align center', boardAlignRight:'Align right', boardRemoveWidget:'Remove from board',
-    boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Pen', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
+    boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Pen', boardMarkerEraser:'Eraser', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
     boardBg:'Background', boardBgNone:'None', boardBgOpacity:'Opacity', boardRadius:'Corner radius', boardPadding:'Padding', boardCustomFont:'Custom font', boardCustomFontHint:'Type an installed font family, e.g. Georgia',
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardWidgetOpacity:'Opacity',
@@ -190,7 +190,7 @@ const dictionaries = {
     boardImportAdded:'ボード上', boardImportEmpty:'一致するタスクやノートがありません', boardImportApply:'適用', boardImportChange:'追加 {0} · 削除 {1}',
     boardTextPlaceholder:'ダブルクリックで編集…', boardFontSize:'文字サイズ', boardFontLabel:'フォント', boardFontApp:'画面に合わせる', boardFontSerif:'明朝体', boardFontRounded:'丸ゴシック', boardFontMono:'等幅',
     boardAlignLeft:'左揃え', boardAlignCenter:'中央揃え', boardAlignRight:'右揃え', boardRemoveWidget:'ボードから削除',
-    boardMarkerArrow:'矢印', boardMarkerRect:'矩形', boardMarkerEllipse:'楕円', boardMarkerLine:'直線', boardMarkerDraw:'ペン', boardMarkerColor:'マーカーの色', boardMarkerDone:'完了',
+    boardMarkerArrow:'矢印', boardMarkerRect:'矩形', boardMarkerEllipse:'楕円', boardMarkerLine:'直線', boardMarkerDraw:'ペン', boardMarkerEraser:'消しゴム', boardMarkerColor:'マーカーの色', boardMarkerDone:'完了',
     boardBg:'背景', boardBgNone:'背景なし', boardBgOpacity:'不透明度', boardRadius:'角丸', boardPadding:'内側余白', boardCustomFont:'カスタムフォント', boardCustomFontHint:'端末にインストール済みのフォント名を入力（例: Georgia）',
     boardDeleteArm:'もう一度タップで削除', boardUndo:'元に戻す', boardRedo:'やり直す', boardMarqueeClear:'選択を解除', boardMarqueeDelete:'選択中を削除', boardSelectedCount:'{0} 件を選択中',
     boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardWidgetOpacity:'不透明度',
@@ -252,7 +252,7 @@ const dictionaries = {
     boardImportAdded:'보드에 있음', boardImportEmpty:'일치하는 할 일이나 노트가 없어요', boardImportApply:'적용', boardImportChange:'추가 {0} · 삭제 {1}',
     boardTextPlaceholder:'두 번 눌러 편집…', boardFontSize:'글자 크기', boardFontLabel:'글꼴', boardFontApp:'인터페이스 따르기', boardFontSerif:'명조', boardFontRounded:'둥근 글꼴', boardFontMono:'고정폭',
     boardAlignLeft:'왼쪽 정렬', boardAlignCenter:'가운데 정렬', boardAlignRight:'오른쪽 정렬', boardRemoveWidget:'보드에서 제거',
-    boardMarkerArrow:'화살표', boardMarkerRect:'사각형', boardMarkerEllipse:'타원', boardMarkerLine:'직선', boardMarkerDraw:'펜', boardMarkerColor:'마커 색', boardMarkerDone:'완료',
+    boardMarkerArrow:'화살표', boardMarkerRect:'사각형', boardMarkerEllipse:'타원', boardMarkerLine:'직선', boardMarkerDraw:'펜', boardMarkerEraser:'지우개', boardMarkerColor:'마커 색', boardMarkerDone:'완료',
     boardBg:'배경', boardBgNone:'배경 없음', boardBgOpacity:'불투명도', boardRadius:'모서리 둥글기', boardPadding:'안쪽 여백', boardCustomFont:'사용자 지정 글꼴', boardCustomFontHint:'기기에 설치된 글꼴 이름을 입력하세요(예: Georgia)',
     boardDeleteArm:'한 번 더 누르면 삭제', boardUndo:'실행 취소', boardRedo:'다시 실행', boardMarqueeClear:'선택 해제', boardMarqueeDelete:'선택 항목 삭제', boardSelectedCount:'{0}개 선택됨',
     boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardWidgetOpacity:'불투명도',
@@ -314,7 +314,7 @@ const dictionaries = {
     boardImportAdded:'Sur le tableau', boardImportEmpty:'Aucune tâche ou note correspondante', boardImportApply:'Appliquer', boardImportChange:'Ajouter {0} · retirer {1}',
     boardTextPlaceholder:'Double-cliquez pour modifier…', boardFontSize:'Taille de police', boardFontLabel:'Police', boardFontApp:'Suivre l’interface', boardFontSerif:'Avec empattement', boardFontRounded:'Arrondie', boardFontMono:'Chasse fixe',
     boardAlignLeft:'Aligner à gauche', boardAlignCenter:'Centrer', boardAlignRight:'Aligner à droite', boardRemoveWidget:'Retirer du tableau',
-    boardMarkerArrow:'Flèche', boardMarkerRect:'Rectangle', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Ligne', boardMarkerDraw:'Crayon', boardMarkerColor:'Couleur d’annotation', boardMarkerDone:'Terminé',
+    boardMarkerArrow:'Flèche', boardMarkerRect:'Rectangle', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Ligne', boardMarkerDraw:'Crayon', boardMarkerEraser:'Gomme', boardMarkerColor:'Couleur d’annotation', boardMarkerDone:'Terminé',
     boardBg:'Arrière-plan', boardBgNone:'Aucun fond', boardBgOpacity:'Opacité', boardRadius:'Arrondi', boardPadding:'Marge interne', boardCustomFont:'Police personnalisée', boardCustomFontHint:'Saisissez une police installée, ex. Georgia',
     boardDeleteArm:'Touchez encore pour supprimer', boardUndo:'Annuler', boardRedo:'Rétablir', boardMarqueeClear:'Effacer la sélection', boardMarqueeDelete:'Supprimer la sélection', boardSelectedCount:'{0} sélectionnés',
     boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardWidgetOpacity:'Opacité',
@@ -376,7 +376,7 @@ const dictionaries = {
     boardImportAdded:'Auf dem Board', boardImportEmpty:'Keine passenden Aufgaben oder Notizen', boardImportApply:'Anwenden', boardImportChange:'Hinzufügen {0} · Entfernen {1}',
     boardTextPlaceholder:'Doppelklicken zum Bearbeiten…', boardFontSize:'Schriftgröße', boardFontLabel:'Schrift', boardFontApp:'Wie Oberfläche', boardFontSerif:'Serif', boardFontRounded:'Gerundet', boardFontMono:'Monospace',
     boardAlignLeft:'Linksbündig', boardAlignCenter:'Zentriert', boardAlignRight:'Rechtsbündig', boardRemoveWidget:'Vom Board entfernen',
-    boardMarkerArrow:'Pfeil', boardMarkerRect:'Kasten', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Linie', boardMarkerDraw:'Stift', boardMarkerColor:'Markerfarbe', boardMarkerDone:'Fertig',
+    boardMarkerArrow:'Pfeil', boardMarkerRect:'Kasten', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Linie', boardMarkerDraw:'Stift', boardMarkerEraser:'Radierer', boardMarkerColor:'Markerfarbe', boardMarkerDone:'Fertig',
     boardBg:'Hintergrund', boardBgNone:'Kein Hintergrund', boardBgOpacity:'Deckkraft', boardRadius:'Eckenradius', boardPadding:'Innenabstand', boardCustomFont:'Eigene Schrift', boardCustomFontHint:'Name einer installierten Schrift, z. B. Georgia',
     boardDeleteArm:'Nochmal tippen zum Löschen', boardUndo:'Widerrufen', boardRedo:'Wiederholen', boardMarqueeClear:'Auswahl aufheben', boardMarqueeDelete:'Auswahl löschen', boardSelectedCount:'{0} ausgewählt',
     boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardWidgetOpacity:'Deckkraft',
@@ -438,7 +438,7 @@ const dictionaries = {
     boardImportAdded:'En el tablero', boardImportEmpty:'Sin tareas o notas coincidentes', boardImportApply:'Aplicar', boardImportChange:'Añadir {0} · quitar {1}',
     boardTextPlaceholder:'Doble clic para editar…', boardFontSize:'Tamaño de letra', boardFontLabel:'Fuente', boardFontApp:'Como la interfaz', boardFontSerif:'Con serifa', boardFontRounded:'Redondeada', boardFontMono:'Monoespaciada',
     boardAlignLeft:'Alinear a la izquierda', boardAlignCenter:'Centrar', boardAlignRight:'Alinear a la derecha', boardRemoveWidget:'Quitar del tablero',
-    boardMarkerArrow:'Flecha', boardMarkerRect:'Caja', boardMarkerEllipse:'Elipse', boardMarkerLine:'Línea', boardMarkerDraw:'Lápiz', boardMarkerColor:'Color de anotación', boardMarkerDone:'Listo',
+    boardMarkerArrow:'Flecha', boardMarkerRect:'Caja', boardMarkerEllipse:'Elipse', boardMarkerLine:'Línea', boardMarkerDraw:'Lápiz', boardMarkerEraser:'Borrador', boardMarkerColor:'Color de anotación', boardMarkerDone:'Listo',
     boardBg:'Fondo', boardBgNone:'Sin fondo', boardBgOpacity:'Opacidad', boardRadius:'Redondeo', boardPadding:'Margen interior', boardCustomFont:'Fuente personalizada', boardCustomFontHint:'Escribe una fuente instalada, p. ej. Georgia',
     boardDeleteArm:'Toca otra vez para eliminar', boardUndo:'Deshacer', boardRedo:'Rehacer', boardMarqueeClear:'Quitar selección', boardMarqueeDelete:'Eliminar selección', boardSelectedCount:'{0} seleccionados',
     boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardWidgetOpacity:'Opacidad',
@@ -500,7 +500,7 @@ const dictionaries = {
     boardImportAdded:'На планшете', boardImportEmpty:'Нет подходящих задач или заметок', boardImportApply:'Применить', boardImportChange:'Добавить {0} · убрать {1}',
     boardTextPlaceholder:'Двойное нажатие — редактировать…', boardFontSize:'Размер шрифта', boardFontLabel:'Шрифт', boardFontApp:'Как в интерфейсе', boardFontSerif:'С засечками', boardFontRounded:'Округлый', boardFontMono:'Моноширинный',
     boardAlignLeft:'По левому краю', boardAlignCenter:'По центру', boardAlignRight:'По правому краю', boardRemoveWidget:'Убрать с планшета',
-    boardMarkerArrow:'Стрелка', boardMarkerRect:'Рамка', boardMarkerEllipse:'Овал', boardMarkerLine:'Линия', boardMarkerDraw:'Перо', boardMarkerColor:'Цвет пометки', boardMarkerDone:'Готово',
+    boardMarkerArrow:'Стрелка', boardMarkerRect:'Рамка', boardMarkerEllipse:'Овал', boardMarkerLine:'Линия', boardMarkerDraw:'Перо', boardMarkerEraser:'Ластик', boardMarkerColor:'Цвет пометки', boardMarkerDone:'Готово',
     boardBg:'Фон', boardBgNone:'Без фона', boardBgOpacity:'Непрозрачность', boardRadius:'Скругление', boardPadding:'Внутренние поля', boardCustomFont:'Свой шрифт', boardCustomFontHint:'Введите установленный шрифт, напр. Georgia',
     boardDeleteArm:'Нажмите ещё раз для удаления', boardUndo:'Отменить', boardRedo:'Повторить', boardMarqueeClear:'Снять выделение', boardMarqueeDelete:'Удалить выбранное', boardSelectedCount:'Выбрано: {0}',
     boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardWidgetOpacity:'Непрозрачность',
@@ -3079,6 +3079,7 @@ function renderBoardShell() {
           <button type="button" data-board-marker="ellipse"><svg><use href="#i-radar"/></svg>${escapeHTML(t('boardMarkerEllipse'))}</button>
           <button type="button" data-board-marker="line"><svg><use href="#i-divider"/></svg>${escapeHTML(t('boardMarkerLine'))}</button>
           <button type="button" data-board-marker="draw"><svg><use href="#i-edit"/></svg>${escapeHTML(t('boardMarkerDraw'))}</button>
+          <button type="button" data-board-marker="eraser"><svg><use href="#i-eraser"/></svg>${escapeHTML(t('boardMarkerEraser'))}</button>
         </div>
       </div>
       <button type="button" class="board-tool" id="boardAddImport" title="${escapeHTML(t('boardAddItems'))}"><svg><use href="#i-plus"/></svg><span>${escapeHTML(t('boardAddItems'))}</span></button>
@@ -3670,6 +3671,48 @@ function boardEditText(id) {
     if (boardLayoutCache) boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
   };
   element.addEventListener('blur', save);
+}
+
+// —— 橡皮擦：指针路径触及的整条笔迹擦除（与主流白板的 stroke eraser 一致） ——
+const BOARD_ERASER_RADIUS = 12;
+
+function boardPointToSegment(px, py, ax, ay, bx, by) {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const lengthSq = dx * dx + dy * dy;
+  const t = lengthSq ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lengthSq)) : 0;
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+function boardEraseAt(worldX, worldY) {
+  const board = boardLayoutCache?.board;
+  if (!board) return false;
+  let erased = false;
+  for (let i = board.widgets.length - 1; i >= 0; i -= 1) {
+    const widget = board.widgets[i];
+    if (widget.type !== 'marker' || widget.kind !== 'draw') continue;
+    const points = widget.points || [];
+    const tolerance = BOARD_ERASER_RADIUS + (widget.stroke || 2.5) / 2;
+    for (let p = 0; p + 3 < points.length; p += 2) {
+      const hit = boardPointToSegment(
+        worldX, worldY,
+        widget.x + points[p], widget.y + points[p + 1],
+        widget.x + points[p + 2], widget.y + points[p + 3]
+      ) <= tolerance;
+      if (!hit) continue;
+      $(`[data-widget-id="${CSS.escape(widget.id)}"]`, boardEls?.world || document)?.remove();
+      board.widgets.splice(i, 1);
+      erased = true;
+      break;
+    }
+  }
+  if (erased) {
+    if (boardEls?.empty) boardEls.empty.hidden = board.widgets.length > 0;
+    boardLayoutCache.bounds = boardBoundsOf(board.widgets);
+    touchBoard(board);
+    persist();
+  }
+  return erased;
 }
 
 // —— 标注绘制：选形状后在画布上拖出 ——
@@ -4673,6 +4716,19 @@ function bindBoardScene() {
       return;
     }
     // 选中标注形状后按下即绘制：明确的意图优先于组件命中（标注常画在卡片上或跨卡片）。
+    if (boardPendingMarker === 'eraser') {
+      const rect = viewport.getBoundingClientRect();
+      boardPushUndo();
+      boardGesture = {
+        mode: 'eraser',
+        erased: false,
+        startX: (event.clientX - rect.left - boardCam.x) / boardCam.scale,
+        startY: (event.clientY - rect.top - boardCam.y) / boardCam.scale
+      };
+      // 起点即命中也算擦除：否则 release 会把这次手势的撤销快照弹掉。
+      boardGesture.erased = boardEraseAt(boardGesture.startX, boardGesture.startY);
+      return;
+    }
     if (boardPendingMarker) {
       const rect = viewport.getBoundingClientRect();
       const startX = (event.clientX - rect.left - boardCam.x) / boardCam.scale;
@@ -4821,6 +4877,13 @@ function bindBoardScene() {
       }
       return;
     }
+    if (boardGesture?.mode === 'eraser') {
+      const rect = viewport.getBoundingClientRect();
+      if (boardEraseAt((event.clientX - rect.left - boardCam.x) / boardCam.scale, (event.clientY - rect.top - boardCam.y) / boardCam.scale)) {
+        boardGesture.erased = true;
+      }
+      return;
+    }
     if (boardGesture?.mode === 'marquee') {
       const rect = viewport.getBoundingClientRect();
       boardGesture.currentX = event.clientX - rect.left;
@@ -4911,6 +4974,17 @@ function bindBoardScene() {
         if (widget.type === 'note' || widget.type === 'todo') boardRefreshCardNode(widget);
         else boardRefreshStatic(widget);
         boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+        boardSyncUndoButtons();
+      }
+      return;
+    }
+    if (boardGesture.mode === 'eraser') {
+      const gesture = boardGesture;
+      boardGesture = null;
+      boardMotion.mode = 'idle';
+      if (!gesture.erased) {
+        // 没擦到任何笔迹：撤销栈里这次空手势不留步。
+        boardUndoStack.pop();
         boardSyncUndoButtons();
       }
       return;
@@ -5059,8 +5133,8 @@ function bindBoardScene() {
   });
   $$('#boardMarkerMenu [data-board-marker]', canvas).forEach(button => button.addEventListener('click', () => {
     const kind = button.dataset.boardMarker;
-    // 画笔是模式化工具：再点一次退出；形状工具保持单次绘制。
-    if (kind === 'draw' && boardPendingMarker === 'draw') {
+    // 画笔与橡皮是模式化工具：再点一次退出；形状工具保持单次绘制。
+    if ((kind === 'draw' || kind === 'eraser') && boardPendingMarker === kind) {
       $('#boardMarkerMenu', canvas).hidden = true;
       boardCancelDraw();
       return;
