@@ -4634,6 +4634,26 @@ function boardEnsurePill() {
     <button type="button" class="board-pill-button" id="boardPillButton" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-board"/></svg><b id="boardPillName"></b><svg class="board-pill-chevron"><use href="#i-chevron"/></svg></button>
     <div class="board-pill-menu" id="boardPillMenu" role="menu" hidden></div>`;
   titleRow.appendChild(boardPillEl);
+  // 绑定跟随元素创建（title-row 不随 renderList 重建，绑定放这里只发生一次；
+  // 放在 bindBoardScene 会随每次重建叠加监听器，一次点击触发多次导出）。
+  $('#boardPillButton', boardPillEl).addEventListener('click', () => boardToggleMenu());
+  $('#boardPillMenu', boardPillEl).addEventListener('click', async event => {
+    const goto = event.target.closest('[data-board-goto]');
+    if (goto) {
+      const id = goto.dataset.boardGoto;
+      if (boardState.activeBoardId !== id) {
+        boardState.activeBoardId = id;
+        boardUndoStack.length = 0;
+        boardRedoStack.length = 0;
+        boardSetSelection([]);
+        persistBoardState();
+        renderList();
+      } else boardToggleMenu(false);
+      return;
+    }
+    const action = event.target.closest('[data-board-action]');
+    if (action) boardMenuAction(action.dataset.boardAction);
+  });
   return boardPillEl;
 }
 
@@ -4658,6 +4678,12 @@ function boardEnsureStyleTrigger() {
   boardStyleTriggerEl.setAttribute('aria-haspopup', 'dialog');
   boardStyleTriggerEl.innerHTML = '<svg><use href="#i-palette"/></svg>';
   titleRow.appendChild(boardStyleTriggerEl);
+  // 绑定跟随元素创建（同板选择器：避免随 renderList 叠加导致浮层开即关）。
+  boardStyleTriggerEl.addEventListener('click', () => {
+    const pop = $('#boardStylePop', boardEls?.canvas || document);
+    if (pop && !pop.hidden) { pop.hidden = true; return; }
+    boardRenderStylePop();
+  });
   return boardStyleTriggerEl;
 }
 
@@ -5161,24 +5187,9 @@ function bindBoardScene() {
   });
 
   // 板胶囊：切换 / 管理。
-  boardEls.pillButton.addEventListener('click', () => boardToggleMenu());
-  boardEls.pillMenu.addEventListener('click', async event => {
-    const goto = event.target.closest('[data-board-goto]');
-    if (goto) {
-      const id = goto.dataset.boardGoto;
-      if (boardState.activeBoardId !== id) {
-        boardState.activeBoardId = id;
-        boardUndoStack.length = 0;
-        boardRedoStack.length = 0;
-        boardSetSelection([]);
-        persistBoardState();
-        renderList();
-      } else boardToggleMenu(false);
-      return;
-    }
-    const action = event.target.closest('[data-board-action]');
-    if (action) boardMenuAction(action.dataset.boardAction);
-  });
+  // 板选择器与个性化按钮的绑定在 boardEnsurePill / boardEnsureStyleTrigger
+  // 里随元素创建完成：这两个元素挂在 title-row（renderList 不重建的区域），
+  // 在这里重复绑定会随每次重建叠加（一次导出触发多次下载的根源）。
 
   // 添加工具。
   $('#boardAddText', canvas)?.addEventListener('click', () => {
@@ -5476,12 +5487,7 @@ function bindBoardScene() {
   });
 
   // 板个性化：右上角按钮弹出设置浮层，改动即时生效并随板保存。
-  const styleTrigger = boardStyleTriggerEl || boardEnsureStyleTrigger();
-  styleTrigger?.addEventListener('click', () => {
-    const pop = $('#boardStylePop', canvas);
-    if (pop && !pop.hidden) { pop.hidden = true; return; }
-    boardRenderStylePop();
-  });
+  // 个性化按钮的绑定随元素创建（boardEnsureStyleTrigger）。
   // 显示内容面板：点头部关闭按钮或面板外（画布内）时收起；
   // 面板挂在画布上且开关切换只做局部重建，这里不会误伤打开中的面板。
   canvas.addEventListener('click', event => {
