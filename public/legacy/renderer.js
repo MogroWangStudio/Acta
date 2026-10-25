@@ -5079,8 +5079,10 @@ function bindBoardScene() {
     if (!boardGesture.moved && Math.hypot(event.clientX - boardGesture.pressX, event.clientY - boardGesture.pressY) > BOARD_PRESS_SLOP) {
       boardGesture.moved = true;
     }
-    boardCam.x += (event.clientX - boardGesture.lastX) / boardCam.scale;
-    boardCam.y += (event.clientY - boardGesture.lastY) / boardCam.scale;
+    // 平移量按屏幕像素 1:1 计入相机（cam 是屏幕空间偏移，与缩放锚定同一
+    // 语义）；此前除以 scale，导致不同缩放下拖动画布的量随缩放变化。
+    boardCam.x += event.clientX - boardGesture.lastX;
+    boardCam.y += event.clientY - boardGesture.lastY;
     boardGesture.lastX = event.clientX;
     boardGesture.lastY = event.clientY;
     boardConstrainDrag();
