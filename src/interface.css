@@ -1566,7 +1566,8 @@ body.sidebar-collapsed { --acta-sidebar-width: 72px; }
   /* 折叠/展开用 max-width 过渡（px↔px 可插值）；width auto↔44px 不可插值，只会瞬跳。 */
   .sidebar .new-button, .sidebar .nav-section, .sidebar .nav-section button, .sidebar .folder-section, .sidebar .section-label, .sidebar .sidebar-bottom { max-width: 400px; }
   .sidebar .nav-section, .sidebar .folder-section, .sidebar .section-label, .sidebar .sidebar-bottom { transition: max-width .46s cubic-bezier(.2,.82,.2,1), margin-top .46s cubic-bezier(.2,.82,.2,1), width .46s cubic-bezier(.2,.82,.2,1), padding .46s cubic-bezier(.2,.82,.2,1); }
-  .sidebar .new-button, .sidebar .nav-section button { transition-property: max-width, width, padding, gap, border-radius, background, color, transform, box-shadow; transition-duration: .46s, .46s, .46s, .35s, .4s, .2s, .2s, .35s, .35s; transition-timing-function: cubic-bezier(.2,.82,.2,1); }
+  /* background / color 不参与过渡：导航图标的亮起完全交给描线动画。 */
+  .sidebar .new-button, .sidebar .nav-section button { transition-property: max-width, width, padding, gap, border-radius, transform, box-shadow; transition-duration: .46s, .46s, .46s, .35s, .4s, .35s, .35s; transition-timing-function: cubic-bezier(.2,.82,.2,1); }
   .sidebar .new-button > span, .sidebar .new-button > kbd, .sidebar .nav-section button > span > span:not(.nav-icon), .sidebar .nav-section button > em, .sidebar .section-label > span:first-child { overflow: hidden; white-space: nowrap; opacity: 1; transition: opacity .16s ease, max-width .42s cubic-bezier(.2,.82,.2,1), transform .42s cubic-bezier(.2,.82,.2,1); }
   .sidebar .new-button > span { max-width: 90px; }
   .sidebar .new-button > kbd { max-width: 52px; }

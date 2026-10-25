@@ -201,7 +201,9 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .nav-section button {
   height: 37px; border: 0; border-radius: 9px; padding: 0 10px;
   background: transparent; display: flex; align-items: center; justify-content: space-between;
-  cursor: pointer; color: #63685f; transition: background .18s ease, color .18s ease, transform .18s var(--ease-out);
+  cursor: pointer; color: #63685f;
+  /* 背景与文字色瞬时切换：亮起的过程感完全交给描线动画，不做整体缓亮。 */
+  transition: transform .18s var(--ease-out);
 }
 /* 页面跳转栏设置里取消勾选的页面只在桌面侧边栏隐藏；移动端底栏由
    mobile-slot-N 决定四个位置，同一个按钮在两处可以得出不同结论。 */
