@@ -1330,7 +1330,7 @@ async function main() {
         && document.querySelector('#smartNav [data-view="trash"]')?.classList.contains('active');
       document.querySelector('[data-view="inbox"]').click();
       await waitFor(() => currentView === 'inbox');
-      document.querySelector('#settingsClose').click();
+      document.querySelector('#settingsBack').click();
       await waitFor(() => !document.querySelector('#settingsModal').classList.contains('open'));
       window.resizeTo(1280, 800);
       await waitFor(() => innerWidth > 1200 && innerHeight > 700);
@@ -1504,7 +1504,7 @@ async function main() {
       const noteEditorLabelEn = document.querySelector('[data-settings-page="note-editor"] span').textContent === 'Note editor'
         && document.querySelector('[data-settings-panel="note-editor"] h3').textContent === 'Note editor';
       const calendarDefaultOptionEn = document.querySelector('#defaultViewSetting option[value="calendar"]')?.textContent === 'Calendar';
-      document.querySelector('#settingsClose').click();
+      document.querySelector('#settingsBack').click();
       const settingsCloseAnimation = document.querySelector('#settingsModal').classList.contains('is-closing') && getComputedStyle(document.querySelector('.settings-window')).animationName === 'actaWindowClose';
       await waitFor(() => !document.querySelector('#settingsModal').classList.contains('open'));
       window.__actaSmokeStep = 'returning';
