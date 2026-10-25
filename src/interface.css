@@ -132,9 +132,8 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-header .settings-back:hover { background: color-mix(in srgb, var(--sage) 24%, var(--panel)); color: var(--ink); transform: scale(1.05); }
 .settings-header .settings-back:active { transform: scale(.94); transition-duration: .08s; }
 .settings-header .settings-back svg { width: 17px; }
-/* 主 / 副标题收在返回钮的 38px 高度之内：h2 16px + 副行 9px ≈ 33px。 */
+/* 主标题收在返回钮的 38px 高度之内。 */
 .settings-header h2 { margin: 0; font: 650 calc(16px * var(--acta-font-scale))/1.2 var(--acta-font-display); letter-spacing: -.01em; }
-.settings-header p { margin: 2px 0 0; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); letter-spacing: .02em; }
 .settings-layout { min-height: 0; display: grid; grid-template-columns: 210px minmax(0,1fr); }
 .settings-nav { padding: 16px 11px; border-right: 1px solid var(--line); background: var(--panel); overflow: hidden auto; }
 /* 功能组之间留出间隙：active / hover 的背景层不再上下相贴。 */
@@ -883,7 +882,7 @@ body { font-size: calc(14px * var(--acta-font-scale)); }
 .create-menu b { font-size: calc(12px * var(--acta-font-scale)); }
 .create-menu small, .empty-list p { font-size: calc(10px * var(--acta-font-scale)); }
 .nav-section button em, .empty-editor p { font-size: calc(11px * var(--acta-font-scale)); }
-.section-label, .settings-header p, .language-option small, .theme-option b, .color-field, .relation-dialog-hint { font-size: calc(9px * var(--acta-font-scale)); }
+.section-label, .language-option small, .theme-option b, .color-field, .relation-dialog-hint { font-size: calc(9px * var(--acta-font-scale)); }
 .item-header h1 { font-size: calc(24px * var(--acta-font-scale)); }
 .empty-list h3 { font-size: calc(16px * var(--acta-font-scale)); }
 .empty-editor h2 { font-size: calc(22px * var(--acta-font-scale)); }

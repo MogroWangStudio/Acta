@@ -232,7 +232,7 @@
       <section class="settings-window" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <header class="settings-header">
           <button class="settings-back" id="settingsBack" type="button" aria-label="返回"><svg style="transform:rotate(180deg)"><use href="#i-chevron"/></svg></button>
-          <div><h2 id="settingsTitle">设置</h2><p>按你的方式使用 Acta</p></div>
+          <div><h2 id="settingsTitle">设置</h2></div>
           <div class="settings-window-controls" id="settingsWindowControls" hidden>
             <button type="button" data-window-action="minimize" aria-label="最小化"><svg><use href="#i-window-minimize"/></svg></button>
             <button type="button" data-window-action="maximize" aria-label="最大化"><svg><use href="#i-window-maximize"/></svg></button>
