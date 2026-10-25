@@ -72,7 +72,7 @@ const dictionaries = {
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
     boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'画笔模式：可连续多笔，完成或按 Esc 退出',
-    boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出',
+    boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出', boardImportPlan:'导入计划板文件 (.actaplan)', boardImported:'计划板已导入', boardImportInvalid:'这不是有效的 Acta 计划板文件',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
   en: {
@@ -134,7 +134,7 @@ const dictionaries = {
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
     boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenMode:'Pen mode: draw as many strokes as you like; press Done or Esc to exit',
-    boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting',
+    boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting', boardImportPlan:'Import plan board file (.actaplan)', boardImported:'Plan board imported', boardImportInvalid:'This is not a valid Acta plan board file',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   },
   ja: {
@@ -196,7 +196,7 @@ const dictionaries = {
     boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
     boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenMode:'ペンモード：何筆でも描けます。完了または Esc で終了',
-    boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください',
+    boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください', boardImportPlan:'プランボードファイルを読み込む(.actaplan)', boardImported:'プランボードを読み込みました', boardImportInvalid:'有効な Acta プランボードファイルではありません',
     boardEmptyTitle:'このボードは空です', boardEmptyHint:'下のツールでテキストとマーカーを追加したり、タスクとノートを読み込んで、自由にプランボードを組み立てましょう。'
   },
   ko: {
@@ -258,7 +258,7 @@ const dictionaries = {
     boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
     boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenMode:'펜 모드: 여러 번 그릴 수 있어요. 완료 또는 Esc로 종료',
-    boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요',
+    boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요', boardImportPlan:'플랜 보드 파일 가져오기(.actaplan)', boardImported:'플랜 보드를 가져왔어요', boardImportInvalid:'유효한 Acta 플랜 보드 파일이 아니에요',
     boardEmptyTitle:'이 보드는 비어 있어요', boardEmptyHint:'아래 도구로 텍스트와 마커를 추가하거나 할 일과 노트를 가져와 자유롭게 플랜 보드를 꾸며 보세요.'
   },
   fr: {
@@ -320,7 +320,7 @@ const dictionaries = {
     boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardWidgetOpacity:'Opacité',
     boardPersonalize:'Personnaliser le tableau', boardBgPattern:'Motif de fond', boardPatternDots:'Points', boardPatternGrid:'Grille', boardPatternNone:'Aucun', boardBoardBgColor:'Couleur de fond', boardBgColorTheme:'Suivre le thème', boardSnapGrid:'Aimanter à la grille', boardGridSize:'Taille de la grille',
     boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenMode:'Mode crayon : tracez autant de traits que voulu ; terminez ou Échap pour sortir',
-    boardExportPlan:'Exporter le fichier du tableau (.actaplan)', boardExportImage:'Exporter en image', boardExportPdf:'Exporter en PDF', boardExportDone:'Tableau exporté', boardExportFailed:'Échec de l’export', boardExportEmpty:'Ce tableau est vide — ajoutez du contenu avant d’exporter',
+    boardExportPlan:'Exporter le fichier du tableau (.actaplan)', boardExportImage:'Exporter en image', boardExportPdf:'Exporter en PDF', boardExportDone:'Tableau exporté', boardExportFailed:'Échec de l’export', boardExportEmpty:'Ce tableau est vide — ajoutez du contenu avant d’exporter', boardImportPlan:'Importer le fichier du tableau (.actaplan)', boardImported:'Tableau importé', boardImportInvalid:'Ce fichier n’est pas un tableau Acta valide',
     boardEmptyTitle:'Ce tableau est vide', boardEmptyHint:'Ajoutez du texte et des annotations avec la barre d’outils, ou importez tâches et notes pour composer librement votre tableau.'
   },
   de: {
@@ -382,7 +382,7 @@ const dictionaries = {
     boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardWidgetOpacity:'Deckkraft',
     boardPersonalize:'Board gestalten', boardBgPattern:'Hintergrundmuster', boardPatternDots:'Punkte', boardPatternGrid:'Gitter', boardPatternNone:'Keine', boardBoardBgColor:'Hintergrundfarbe', boardBgColorTheme:'Wie Thema', boardSnapGrid:'Am Raster ausrichten', boardGridSize:'Rastergröße',
     boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenMode:'Stiftmodus: so viele Striche wie du willst; mit Fertig oder Esc beenden',
-    boardExportPlan:'Planboard-Datei exportieren (.actaplan)', boardExportImage:'Als Bild exportieren', boardExportPdf:'Als PDF exportieren', boardExportDone:'Planboard exportiert', boardExportFailed:'Export fehlgeschlagen', boardExportEmpty:'Dieses Board ist leer — füge zuerst Inhalte hinzu',
+    boardExportPlan:'Planboard-Datei exportieren (.actaplan)', boardExportImage:'Als Bild exportieren', boardExportPdf:'Als PDF exportieren', boardExportDone:'Planboard exportiert', boardExportFailed:'Export fehlgeschlagen', boardExportEmpty:'Dieses Board ist leer — füge zuerst Inhalte hinzu', boardImportPlan:'Planboard-Datei importieren (.actaplan)', boardImported:'Planboard importiert', boardImportInvalid:'Dies ist keine gültige Acta-Planboard-Datei',
     boardEmptyTitle:'Dieses Board ist leer', boardEmptyHint:'Füge über die Leiste unten Text und Marker hinzu oder importiere Aufgaben und Notizen und gestalte dein Planboard frei.'
   },
   es: {
@@ -444,7 +444,7 @@ const dictionaries = {
     boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardWidgetOpacity:'Opacidad',
     boardPersonalize:'Personalizar tablero', boardBgPattern:'Patrón de fondo', boardPatternDots:'Puntos', boardPatternGrid:'Cuadrícula', boardPatternNone:'Ninguno', boardBoardBgColor:'Color de fondo', boardBgColorTheme:'Según el tema', boardSnapGrid:'Ajustar a la cuadrícula', boardGridSize:'Tamaño de cuadrícula',
     boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenMode:'Modo lápiz: traza tantos trazos como quieras; termina o pulsa Esc para salir',
-    boardExportPlan:'Exportar archivo del tablero (.actaplan)', boardExportImage:'Exportar como imagen', boardExportPdf:'Exportar como PDF', boardExportDone:'Tablero exportado', boardExportFailed:'Fallo al exportar', boardExportEmpty:'Este tablero está vacío — añade contenido antes de exportar',
+    boardExportPlan:'Exportar archivo del tablero (.actaplan)', boardExportImage:'Exportar como imagen', boardExportPdf:'Exportar como PDF', boardExportDone:'Tablero exportado', boardExportFailed:'Fallo al exportar', boardExportEmpty:'Este tablero está vacío — añade contenido antes de exportar', boardImportPlan:'Importar archivo del tablero (.actaplan)', boardImported:'Tablero importado', boardImportInvalid:'No es un archivo de tablero Acta válido',
     boardEmptyTitle:'Este tablero está vacío', boardEmptyHint:'Añade texto y anotaciones con la barra de abajo, o importa tareas y notas para componer tu tablero con libertad.'
   },
   ru: {
@@ -506,7 +506,7 @@ const dictionaries = {
     boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardWidgetOpacity:'Непрозрачность',
     boardPersonalize:'Оформить планшет', boardBgPattern:'Фоновый узор', boardPatternDots:'Точки', boardPatternGrid:'Сетка', boardPatternNone:'Нет', boardBoardBgColor:'Цвет фона', boardBgColorTheme:'Как в теме', boardSnapGrid:'Привязка к сетке', boardGridSize:'Шаг сетки',
     boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenMode:'Режим пера: рисуйте сколько угодно штрихов; «Готово» или Esc — выход',
-    boardExportPlan:'Экспортировать файл планшета (.actaplan)', boardExportImage:'Экспортировать как изображение', boardExportPdf:'Экспортировать в PDF', boardExportDone:'Планшет экспортирован', boardExportFailed:'Не удалось экспортировать', boardExportEmpty:'Этот планшет пуст — сначала добавьте содержимое',
+    boardExportPlan:'Экспортировать файл планшета (.actaplan)', boardExportImage:'Экспортировать как изображение', boardExportPdf:'Экспортировать в PDF', boardExportDone:'Планшет экспортирован', boardExportFailed:'Не удалось экспортировать', boardExportEmpty:'Этот планшет пуст — сначала добавьте содержимое', boardImportPlan:'Импортировать файл планшета (.actaplan)', boardImported:'Планшет импортирован', boardImportInvalid:'Это не действительный файл планшета Acta',
     boardEmptyTitle:'Этот планшет пуст', boardEmptyHint:'Добавьте текст и пометки панелью снизу или импортируйте задачи и заметки и свободно соберите свой планшет.'
   }
 };
@@ -3846,9 +3846,10 @@ function boardRenderMenu() {
   menu.innerHTML = `
     ${boards.map(board => `<button type="button" role="menuitem" class="board-pill-item${board.id === current.id ? ' active' : ''}" data-board-goto="${escapeHTML(board.id)}"><svg><use href="#i-board"/></svg><span>${escapeHTML(board.name)}</span><em>${board.widgets.length}</em></button>`).join('')}
     <div class="board-pill-sep" role="separator"></div>
-    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-plan"><svg><use href="#i-download"/></svg><span>${escapeHTML(t('boardExportPlan'))}</span></button>
-    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-image"><svg><use href="#i-image"/></svg><span>${escapeHTML(t('boardExportImage'))}</span></button>
-    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-pdf"><svg><use href="#i-note"/></svg><span>${escapeHTML(t('boardExportPdf'))}</span></button>
+    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-plan"><svg><use href="#i-upload"/></svg><span>${escapeHTML(t('boardExportPlan'))}</span></button>
+    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-image"><svg><use href="#i-upload"/></svg><span>${escapeHTML(t('boardExportImage'))}</span></button>
+    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-pdf"><svg><use href="#i-upload"/></svg><span>${escapeHTML(t('boardExportPdf'))}</span></button>
+    <button type="button" role="menuitem" class="board-pill-item" data-board-action="import-plan"><svg><use href="#i-download"/></svg><span>${escapeHTML(t('boardImportPlan'))}</span></button>
     <div class="board-pill-sep" role="separator"></div>
     <button type="button" role="menuitem" class="board-pill-item" data-board-action="new"><svg><use href="#i-plus"/></svg><span>${escapeHTML(t('boardNewBoard'))}</span></button>
     <button type="button" role="menuitem" class="board-pill-item" data-board-action="rename"><svg><use href="#i-edit"/></svg><span>${escapeHTML(t('boardRenameBoard'))}</span></button>
@@ -3902,6 +3903,79 @@ function boardDownloadBlob(fileName, blob) {
 
 function boardExportBaseName() {
   return (activeBoard().name || t('boardDefaultName')).replace(/[\\/:*?"<>|]/g, '_').trim().slice(0, 60) || t('boardDefaultName');
+}
+
+function boardPickActaplanFile() {
+  return new Promise(resolve => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.actaplan,application/json';
+    input.hidden = true;
+    const cleanup = () => input.remove();
+    input.addEventListener('cancel', () => { cleanup(); resolve(null); }, { once: true });
+    input.addEventListener('change', async () => {
+      try {
+        const file = input.files?.[0];
+        if (!file) { cleanup(); resolve(null); return; }
+        if (file.size > 20 * 1024 * 1024) throw new Error(t('fileTooLarge'));
+        const content = await file.text();
+        cleanup();
+        resolve({ content, fileName: file.name });
+      } catch (error) { cleanup(); resolve(null); }
+    }, { once: true });
+    document.body.appendChild(input);
+    input.click();
+  });
+}
+
+async function boardImportPlanFile() {
+  const picked = await boardPickActaplanFile();
+  if (!picked) return;
+  let payload;
+  try { payload = JSON.parse(picked.content); } catch { showToast(t('boardImportInvalid')); return; }
+  if (payload?.app !== 'acta' || payload?.kind !== 'actaplan' || !Array.isArray(payload.board?.widgets)) {
+    showToast(t('boardImportInvalid'));
+    return;
+  }
+  // 条目重建：文件携带的条目快照在当前资料库不存在时新建（新 id 并重映射
+  // 卡片引用）；同 id 条目已存在时直接复用，避免重复创建。
+  const idMap = new Map();
+  const importedItems = [];
+  Object.entries(payload.items || {}).forEach(([ref, item]) => {
+    if (!item || typeof item !== 'object' || (item.type !== 'note' && item.type !== 'todo')) return;
+    if (library.items.some(entry => entry.id === ref)) { idMap.set(ref, ref); return; }
+    const newId = uid();
+    idMap.set(ref, newId);
+    importedItems.push({ ...item, id: newId, folderId: library.folders.some(f => f.id === item.folderId) ? item.folderId : '' });
+  });
+  library.items.push(...importedItems);
+  const widgets = payload.board.widgets
+    .filter(widget => widget && (widget.type === 'text' || widget.type === 'marker' || (idMap.has(widget.ref))))
+    .map(widget => {
+      const copy = JSON.parse(JSON.stringify(widget));
+      if ((copy.type === 'note' || copy.type === 'todo') && idMap.has(copy.ref)) copy.ref = idMap.get(copy.ref);
+      return copy;
+    });
+  const created = {
+    id: uid(),
+    name: (payload.board.name || t('boardDefaultName')).slice(0, 60),
+    style: { ...(payload.board.style || {}) },
+    widgets,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  const [cleaned] = sanitizeBoards([{ ...created, widgets }]) || [];
+  if (!cleaned) { showToast(t('boardImportInvalid')); return; }
+  Object.assign(created, cleaned);
+  const boards = ensureBoards();
+  boards.push(created);
+  boardState.activeBoardId = created.id;
+  touchBoard(created);
+  persist();
+  boardState.cams[created.id] = { x: 0, y: 0, scale: 1 };
+  persistBoardState();
+  renderList();
+  showToast(t('boardImported'));
 }
 
 function boardExportPlanFile() {
@@ -4379,6 +4453,7 @@ async function boardMenuAction(action) {
   if (action === 'export-plan') { boardExportPlanFile(); return; }
   if (action === 'export-image') { await boardExportImage(); return; }
   if (action === 'export-pdf') { await boardExportPdf(); return; }
+  if (action === 'import-plan') { await boardImportPlanFile(); return; }
   if (action === 'new') {
     const name = await askNameDialog({ title: t('boardNamePrompt'), defaultValue: `${t('boardDefaultName')} ${boards.length + 1}`, icon: '#i-board' });
     if (!name) return;
