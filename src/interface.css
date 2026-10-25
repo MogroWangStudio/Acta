@@ -1508,7 +1508,7 @@ html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: 
 @keyframes logoRay { 0%{opacity:0;transform:rotate(var(--ray-angle)) translate3d(8px,0,0) scaleX(.25)} 24%{opacity:.78} 100%{opacity:0;transform:rotate(var(--ray-angle)) translate3d(25px,0,0) scaleX(.72)} }
 
 .brand-logo { position: relative; z-index: 1; }
-.brand-version { position: absolute; left: 143px; top: 50%; transform: translateY(-50%); z-index: 1; max-width: 76px; overflow: hidden; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--white) 48%, transparent); font: 700 calc(8px * var(--acta-font-scale))/1 "Segoe UI Variable", "PingFang SC", sans-serif; letter-spacing: .035em; white-space: nowrap; opacity: 1; transition: max-width .42s cubic-bezier(.2,.82,.2,1), padding .42s cubic-bezier(.2,.82,.2,1), border-width .28s ease, opacity .18s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
+.brand-version { position: absolute; left: 143px; top: auto; bottom: 9px; transform: none; z-index: 1; max-width: 76px; overflow: hidden; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--white) 48%, transparent); font: 700 calc(8px * var(--acta-font-scale))/1 "Segoe UI Variable", "PingFang SC", sans-serif; letter-spacing: .035em; white-space: nowrap; opacity: 1; transition: max-width .42s cubic-bezier(.2,.82,.2,1), padding .42s cubic-bezier(.2,.82,.2,1), border-width .28s ease, opacity .18s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
 @media (min-width: 801px) {
   /* macOS：logo 居中，版本号脱排到标题栏右缘，保存状态紧随其左；
      红绿灯由原生定位（traffic_light_position）垂直居中、贴左侧留间距。 */
@@ -1530,8 +1530,9 @@ html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: 
     position: absolute;
     left: auto;
     right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: auto;
+    bottom: 9px;
+    transform: none;
     transition: none;
   }
   html[data-desktop-platform="darwin"] body.sidebar-collapsed .brand-mini-logo { opacity: 0; }
@@ -1567,7 +1568,7 @@ body.sidebar-collapsed { --acta-sidebar-width: 72px; }
   .sidebar .section-label > span:first-child { max-width: 90px; }
 
   body.sidebar-collapsed .brand-logo { opacity: 0; transform: translate3d(0,0,0) scale(.82); pointer-events: none; transition: opacity .16s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
-  body.sidebar-collapsed .brand-version { visibility: hidden; max-width: 0; padding-left: 0; padding-right: 0; border-width: 0; opacity: 0; transform: translate(-8px, -50%); pointer-events: none; }
+  body.sidebar-collapsed .brand-version { visibility: hidden; max-width: 0; padding-left: 0; padding-right: 0; border-width: 0; opacity: 0; transform: translate(-8px, 0); pointer-events: none; }
   body:not(.sidebar-collapsed) .brand-logo { opacity: 1; transform: translate3d(0,0,0) scale(1); transition: opacity .22s .12s ease, transform .48s cubic-bezier(.2,.82,.2,1); }
   body.sidebar-collapsed .brand-mini-logo { opacity: 1; transform: translate3d(0,-50%,0) scale(1) rotate(0); transition-delay: .12s; }
   body.sidebar-collapsed .brand.logo-pulse .brand-mini-logo { animation: miniLogoBounce .56s cubic-bezier(.2,.72,.2,1) both; will-change: transform; }
@@ -2670,7 +2671,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .settings-row:has(> .splash-preset-controls) .splash-preset-controls { width: 100%; }
   .settings-row:has(> .splash-preset-controls) .splash-preset-controls select { flex: 1; min-width: 0; width: auto; }
   .brand-logo { width: 104px; height: 30px; }
-  .brand-version { left: 129px; }
+  .brand-version { left: 129px; bottom: 11.5px; }
   .editor-topline { position: sticky; top: 0; z-index: 12; min-height: 47px; margin: -18px -18px 0; padding: 8px 18px; background: rgba(251,250,246,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
   .note-toolbar { top: auto; bottom: 8px; }
   html[data-note-toolbar-position="bottom"] body:not(.note-focus-mode) .note-editor .note-toolbar { bottom: calc(78px + env(safe-area-inset-bottom)); }

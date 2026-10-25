@@ -67,7 +67,7 @@
 ### 修复
 
 - **雷达本机身份：占位符图标与原名称未隐藏**：占位图标是 `<svg>`（SVGElement 没有 `hidden` 属性，`.hidden = true` 不生效），自定义 emoji 下一直叠着数据库占位图标；且本机气泡优先生效服务状态的旧名称——元数据刷新与状态读取竞态时会把刚设置的自定义名覆盖回主机名。现在自定义值始终优先（未自定义才回退服务状态与「本机」），占位图标改为操作 attribute 正确隐藏，身份变更会等元数据刷新完成后再重读
-- **macOS 顶栏版本号与 logo 重叠**：版本号胶囊原是 `.brand`（transformed 元素）内的绝对定位，`right: 16px` 只相对 logo 生效，正好压在 logo 上。版本号移出 `.brand` 成为标题栏直接子元素并按平台定位——macOS 贴标题栏右缘（红绿灯同高对齐），Windows / 网页与移动端跟随 logo 右侧原位
+- **macOS 顶栏版本号与 logo 重叠**：版本号胶囊原是 `.brand`（transformed 元素）内的绝对定位，`right: 16px` 只相对 logo 生效，正好压在 logo 上。版本号移出 `.brand` 成为标题栏直接子元素并按平台定位——macOS 贴标题栏右缘（红绿灯同高对齐），Windows / 网页与移动端跟随 logo 右侧原位；垂直位置从居中改为底部对齐 logo 底部的横线（各平台与布局断点分别校准）
 - **Android 状态栏颜色与主题错位 / 不切换**：系统栏颜色原来取 `--sidebar`，而 MWS 浅色等主题会整体重绘标题栏（品牌绿），状态栏却还是粉底色。现在颜色跟随标题栏的实际底色（computed background → hex），MWS 浅色状态栏即主题绿色，其余主题随各自的标题栏色切换；`theme-color` meta 同步
 - **设置页顶栏与主顶栏不一致**：全屏设置页头部从 67px 收到与主标题栏相同的 52px（移动端 62→54 与移动标题栏一致）；Windows 的窗口按钮改为与主标题栏完全同规格的 46×52 三枚（最小化 / 最大化 / 关闭设置页），关闭按钮只关闭设置页不关窗口；macOS 红绿灯随 52px 高度自然对齐
 - **Android 端局域网同步无法通信（两侧预检全部失败）**：桌面端每次发送或提取前都会先请求对方的 `GET /acta-lan/v2/info`，并用响应里的 `app: "acta"` 校验对端身份；Android 原生插件返回的 `/info` 只有 `running / port / session / device / profiles`，没有 `app`、`protocol`、`name` 与 `icon`，于是桌面端把手机判为「不是有效的 Acta 设备」，重搜后仍然失败，最终提示设备已离线。Android 自己的 `fetchInfo` 也检查同一个 `app` 字段，因此 Android 之间同样无法收发。现在 Android 的 `/info`、发现广播与状态读取共用一份与 `lan_sync.rs` 对齐的响应：补齐 `app`、`protocol`、`name`、`icon`，并保留前端需要的 `device`、`session`、`discoverable` 等字段
