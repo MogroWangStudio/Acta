@@ -210,7 +210,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .nav-icon { position: relative; display: inline-flex; flex: 0 0 auto; width: 16px; height: 16px; }
 /* 主图标不参与收缩：一旦被压扁，与绝对定位的描线层尺寸失配就会错位重影。 */
 .nav-icon > svg { flex: none; width: 100%; height: 100%; }
-.nav-section button svg { width: 16px; height: 16px; color: #747970; transition: color .3s var(--ease-out); }
+.nav-section button svg { width: 16px; height: 16px; color: #9a9e96; transition: color .3s var(--ease-out); }
 /* 描线层是主图标的强调色副本：主图标始终可见，只有这层会随选中重绘。
    画完再淡出，切换时旧层淡出、新层重画，选中与未选中之间没有硬切。 */
 .nav-icon > .nav-icon-trace { position: absolute; inset: 0; pointer-events: none; opacity: 0; stroke-width: 2.2; transition: opacity .26s ease; }
@@ -224,7 +224,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .nav-section button.active svg { color: var(--sage); }
 /* 只动画 dash，不碰 opacity：透明度交给 transition，选中与取消选中
    都能平滑淡入淡出；旧描线改用 CSS 过渡退场，新描线同时重绘。 */
-.nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1s cubic-bezier(.4, 0, .2, 1) both; }
+.nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1.6s cubic-bezier(.4, 0, .2, 1) both; }
 /* 局域网雷达入口：可被发现（服务运行中）时播放循环扩散光效，与雷达的
    涟漪同语言；跟随「减少动态效果」关闭。 */
 @keyframes lanLivePulse {
@@ -605,8 +605,8 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .smart-nav button > span { flex-direction: column; gap: 4px; font-size: calc(10px * var(--acta-font-scale)); line-height: 1.05; }
   .smart-nav button .nav-icon { width: 19px; height: 19px; }
   .smart-nav button svg { width: 19px; height: 19px; }
-  /* 未选中的入口图标淡化到 50%；选中项恢复实心，描线层不受影响。 */
-  .smart-nav button svg:not(.nav-icon-trace) { opacity: .5; transition: opacity .2s var(--ease-out), color .3s var(--ease-out); }
+  /* 未选中的入口图标淡化到 35%；选中项恢复实心，描线层不受影响。 */
+  .smart-nav button svg:not(.nav-icon-trace) { opacity: .35; transition: opacity .2s var(--ease-out), color .3s var(--ease-out); }
   .smart-nav button.active svg:not(.nav-icon-trace) { opacity: 1; }
   /* 仅图标模式：隐藏文字，图标放大填补文字位置并居中。 */
   html[data-mobile-nav="icon"] .smart-nav button > span > span:not(.nav-icon) { display: none; }
