@@ -69,7 +69,7 @@ const dictionaries = {
     boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'画笔', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
     boardBg:'背景', boardBgNone:'无背景', boardBgOpacity:'不透明度', boardRadius:'圆角', boardPadding:'内边距', boardCustomFont:'自定义字体', boardCustomFontHint:'输入本机已安装的字体名，如 Georgia',
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
-    boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardWidgetOpacity:'不透明度',
+    boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
     boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'画笔模式：可连续多笔，完成或按 Esc 退出',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
@@ -130,7 +130,7 @@ const dictionaries = {
     boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Pen', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
     boardBg:'Background', boardBgNone:'None', boardBgOpacity:'Opacity', boardRadius:'Corner radius', boardPadding:'Padding', boardCustomFont:'Custom font', boardCustomFontHint:'Type an installed font family, e.g. Georgia',
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
-    boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardWidgetOpacity:'Opacity',
+    boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
     boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenMode:'Pen mode: draw as many strokes as you like; press Done or Esc to exit',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
@@ -191,7 +191,7 @@ const dictionaries = {
     boardMarkerArrow:'矢印', boardMarkerRect:'矩形', boardMarkerEllipse:'楕円', boardMarkerLine:'直線', boardMarkerDraw:'ペン', boardMarkerColor:'マーカーの色', boardMarkerDone:'完了',
     boardBg:'背景', boardBgNone:'背景なし', boardBgOpacity:'不透明度', boardRadius:'角丸', boardPadding:'内側余白', boardCustomFont:'カスタムフォント', boardCustomFontHint:'端末にインストール済みのフォント名を入力（例: Georgia）',
     boardDeleteArm:'もう一度タップで削除', boardUndo:'元に戻す', boardRedo:'やり直す', boardMarqueeClear:'選択を解除', boardMarqueeDelete:'選択中を削除', boardSelectedCount:'{0} 件を選択中',
-    boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardWidgetOpacity:'不透明度',
+    boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
     boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenMode:'ペンモード：何筆でも描けます。完了または Esc で終了',
     boardEmptyTitle:'このボードは空です', boardEmptyHint:'下のツールでテキストとマーカーを追加したり、タスクとノートを読み込んで、自由にプランボードを組み立てましょう。'
@@ -252,7 +252,7 @@ const dictionaries = {
     boardMarkerArrow:'화살표', boardMarkerRect:'사각형', boardMarkerEllipse:'타원', boardMarkerLine:'직선', boardMarkerDraw:'펜', boardMarkerColor:'마커 색', boardMarkerDone:'완료',
     boardBg:'배경', boardBgNone:'배경 없음', boardBgOpacity:'불투명도', boardRadius:'모서리 둥글기', boardPadding:'안쪽 여백', boardCustomFont:'사용자 지정 글꼴', boardCustomFontHint:'기기에 설치된 글꼴 이름을 입력하세요(예: Georgia)',
     boardDeleteArm:'한 번 더 누르면 삭제', boardUndo:'실행 취소', boardRedo:'다시 실행', boardMarqueeClear:'선택 해제', boardMarqueeDelete:'선택 항목 삭제', boardSelectedCount:'{0}개 선택됨',
-    boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardWidgetOpacity:'불투명도',
+    boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
     boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenMode:'펜 모드: 여러 번 그릴 수 있어요. 완료 또는 Esc로 종료',
     boardEmptyTitle:'이 보드는 비어 있어요', boardEmptyHint:'아래 도구로 텍스트와 마커를 추가하거나 할 일과 노트를 가져와 자유롭게 플랜 보드를 꾸며 보세요.'
@@ -313,7 +313,7 @@ const dictionaries = {
     boardMarkerArrow:'Flèche', boardMarkerRect:'Rectangle', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Ligne', boardMarkerDraw:'Crayon', boardMarkerColor:'Couleur d’annotation', boardMarkerDone:'Terminé',
     boardBg:'Arrière-plan', boardBgNone:'Aucun fond', boardBgOpacity:'Opacité', boardRadius:'Arrondi', boardPadding:'Marge interne', boardCustomFont:'Police personnalisée', boardCustomFontHint:'Saisissez une police installée, ex. Georgia',
     boardDeleteArm:'Touchez encore pour supprimer', boardUndo:'Annuler', boardRedo:'Rétablir', boardMarqueeClear:'Effacer la sélection', boardMarqueeDelete:'Supprimer la sélection', boardSelectedCount:'{0} sélectionnés',
-    boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardWidgetOpacity:'Opacité',
+    boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardWidgetOpacity:'Opacité',
     boardPersonalize:'Personnaliser le tableau', boardBgPattern:'Motif de fond', boardPatternDots:'Points', boardPatternGrid:'Grille', boardPatternNone:'Aucun', boardBoardBgColor:'Couleur de fond', boardBgColorTheme:'Suivre le thème', boardSnapGrid:'Aimanter à la grille', boardGridSize:'Taille de la grille',
     boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenMode:'Mode crayon : tracez autant de traits que voulu ; terminez ou Échap pour sortir',
     boardEmptyTitle:'Ce tableau est vide', boardEmptyHint:'Ajoutez du texte et des annotations avec la barre d’outils, ou importez tâches et notes pour composer librement votre tableau.'
@@ -374,7 +374,7 @@ const dictionaries = {
     boardMarkerArrow:'Pfeil', boardMarkerRect:'Kasten', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Linie', boardMarkerDraw:'Stift', boardMarkerColor:'Markerfarbe', boardMarkerDone:'Fertig',
     boardBg:'Hintergrund', boardBgNone:'Kein Hintergrund', boardBgOpacity:'Deckkraft', boardRadius:'Eckenradius', boardPadding:'Innenabstand', boardCustomFont:'Eigene Schrift', boardCustomFontHint:'Name einer installierten Schrift, z. B. Georgia',
     boardDeleteArm:'Nochmal tippen zum Löschen', boardUndo:'Widerrufen', boardRedo:'Wiederholen', boardMarqueeClear:'Auswahl aufheben', boardMarqueeDelete:'Auswahl löschen', boardSelectedCount:'{0} ausgewählt',
-    boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardWidgetOpacity:'Deckkraft',
+    boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardWidgetOpacity:'Deckkraft',
     boardPersonalize:'Board gestalten', boardBgPattern:'Hintergrundmuster', boardPatternDots:'Punkte', boardPatternGrid:'Gitter', boardPatternNone:'Keine', boardBoardBgColor:'Hintergrundfarbe', boardBgColorTheme:'Wie Thema', boardSnapGrid:'Am Raster ausrichten', boardGridSize:'Rastergröße',
     boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenMode:'Stiftmodus: so viele Striche wie du willst; mit Fertig oder Esc beenden',
     boardEmptyTitle:'Dieses Board ist leer', boardEmptyHint:'Füge über die Leiste unten Text und Marker hinzu oder importiere Aufgaben und Notizen und gestalte dein Planboard frei.'
@@ -435,7 +435,7 @@ const dictionaries = {
     boardMarkerArrow:'Flecha', boardMarkerRect:'Caja', boardMarkerEllipse:'Elipse', boardMarkerLine:'Línea', boardMarkerDraw:'Lápiz', boardMarkerColor:'Color de anotación', boardMarkerDone:'Listo',
     boardBg:'Fondo', boardBgNone:'Sin fondo', boardBgOpacity:'Opacidad', boardRadius:'Redondeo', boardPadding:'Margen interior', boardCustomFont:'Fuente personalizada', boardCustomFontHint:'Escribe una fuente instalada, p. ej. Georgia',
     boardDeleteArm:'Toca otra vez para eliminar', boardUndo:'Deshacer', boardRedo:'Rehacer', boardMarqueeClear:'Quitar selección', boardMarqueeDelete:'Eliminar selección', boardSelectedCount:'{0} seleccionados',
-    boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardWidgetOpacity:'Opacidad',
+    boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardWidgetOpacity:'Opacidad',
     boardPersonalize:'Personalizar tablero', boardBgPattern:'Patrón de fondo', boardPatternDots:'Puntos', boardPatternGrid:'Cuadrícula', boardPatternNone:'Ninguno', boardBoardBgColor:'Color de fondo', boardBgColorTheme:'Según el tema', boardSnapGrid:'Ajustar a la cuadrícula', boardGridSize:'Tamaño de cuadrícula',
     boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenMode:'Modo lápiz: traza tantos trazos como quieras; termina o pulsa Esc para salir',
     boardEmptyTitle:'Este tablero está vacío', boardEmptyHint:'Añade texto y anotaciones con la barra de abajo, o importa tareas y notas para componer tu tablero con libertad.'
@@ -496,7 +496,7 @@ const dictionaries = {
     boardMarkerArrow:'Стрелка', boardMarkerRect:'Рамка', boardMarkerEllipse:'Овал', boardMarkerLine:'Линия', boardMarkerDraw:'Перо', boardMarkerColor:'Цвет пометки', boardMarkerDone:'Готово',
     boardBg:'Фон', boardBgNone:'Без фона', boardBgOpacity:'Непрозрачность', boardRadius:'Скругление', boardPadding:'Внутренние поля', boardCustomFont:'Свой шрифт', boardCustomFontHint:'Введите установленный шрифт, напр. Georgia',
     boardDeleteArm:'Нажмите ещё раз для удаления', boardUndo:'Отменить', boardRedo:'Повторить', boardMarqueeClear:'Снять выделение', boardMarqueeDelete:'Удалить выбранное', boardSelectedCount:'Выбрано: {0}',
-    boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardWidgetOpacity:'Непрозрачность',
+    boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardWidgetOpacity:'Непрозрачность',
     boardPersonalize:'Оформить планшет', boardBgPattern:'Фоновый узор', boardPatternDots:'Точки', boardPatternGrid:'Сетка', boardPatternNone:'Нет', boardBoardBgColor:'Цвет фона', boardBgColorTheme:'Как в теме', boardSnapGrid:'Привязка к сетке', boardGridSize:'Шаг сетки',
     boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenMode:'Режим пера: рисуйте сколько угодно штрихов; «Готово» или Esc — выход',
     boardEmptyTitle:'Этот планшет пуст', boardEmptyHint:'Добавьте текст и пометки панелью снизу или импортируйте задачи и заметки и свободно соберите свой планшет.'
@@ -640,7 +640,7 @@ function sanitizeBoards(boards) {
           opacity: Math.min(100, Math.max(30, Math.round(Number(widget.opacity) ?? 100))),
           show: {
             pill: show.pill !== false, priority: show.priority !== false, date: show.date !== false,
-            preview: show.preview !== false, foot: show.foot !== false
+            tasks: show.tasks === true, preview: show.preview !== false, foot: show.foot !== false
           }
         });
         return;
@@ -2867,31 +2867,62 @@ function boardNodeHTML(card, silent) {
   const tasks = item.type === 'todo' ? (item.tasks || []) : [];
   const completedCount = tasks.filter(task => task.done).length;
   const progress = tasks.length ? Math.round((completedCount / tasks.length) * 100) : (done ? 100 : 0);
-  const stamp = item.type === 'todo'
-    ? (todoScheduleDate(item) ? `<time datetime="${escapeHTML(todoScheduleDate(item))}">${escapeHTML(formatDate(todoScheduleDate(item), true))}</time>` : '')
-    : `<time datetime="${escapeHTML(item.updatedAt)}">${escapeHTML(formatDate(item.updatedAt, true))}</time>`;
+  const stampDate = item.type === 'todo' ? todoScheduleDate(item) : item.updatedAt;
+  const stamp = stampDate ? `<time datetime="${escapeHTML(stampDate)}">${escapeHTML(formatDate(stampDate, true))}</time>` : '';
   const delay = boardEnterAnimated && !silent ? Math.min(card.rowIndex * 16, 360) : 0;
   // 首次进入按序级联落位；滚动中新增的卡片只做短淡入。
   const motion = delay ? ' data-enter="1"' : (!silent ? ' data-new="1"' : '');
   const widget = card.widget;
   const show = widget.show || {};
-  const showPill = show.pill !== false;
-  const showPriority = show.priority !== false;
-  const showDate = show.date !== false;
-  const showPreview = show.preview !== false;
-  const showFoot = show.foot !== false;
   const opacity = Number.isFinite(widget.opacity) ? Math.min(100, Math.max(30, widget.opacity)) : 100;
-  const topRow = (showPill || showPriority || showDate)
-    ? `<div class="board-node-top">${showPill ? `<span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>` : ''}${showPriority && item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : ''}${showDate ? stamp : ''}</div>`
+  // 区块始终渲染、由 hidden 承载「显示内容」开关：切换开关时只改 hidden 不重建
+  // 节点——重建会让悬停位移与层叠顺序跳动，卡片看起来像突然挪了位置。
+  const topParts = [
+    `<span class="type-pill ${item.type}"${show.pill === false ? ' hidden' : ''}><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>`,
+    item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}"${show.priority === false ? ' hidden' : ''}>${t(item.priority || 'medium')}</span>` : '',
+    stamp ? stamp.replace('<time ', `<time${show.date === false ? ' hidden' : ''} `) : ''
+  ].join('');
+  const topRow = `<div class="board-node-top">${topParts}</div>`;
+  const tasksBlock = item.type === 'todo' && tasks.length
+    ? `<div class="board-node-tasks"${show.tasks === true ? '' : ' hidden'}>${tasks.map(task => `<span class="board-node-task${task.done ? ' is-done' : ''}"><i><svg><use href="#i-check"/></svg></i><span>${escapeHTML(task.text)}</span></span>`).join('')}</div>`
     : '';
   return `<button type="button" class="board-node ${item.type} priority-${item.type === 'todo' ? (item.priority || 'medium') : 'none'}${done ? ' is-done' : ''}${item.id === selectedId ? ' active' : ''}" data-id="${escapeHTML(item.id)}" data-widget-id="${escapeHTML(card.widget.id)}" data-board-node="${escapeHTML(item.id)}"${motion} style="left:${card.x}px;top:${card.y}px;width:${card.widget.w || 264}px;height:${card.widget.h || 114}px;opacity:${(opacity / 100).toFixed(2)};${delay ? `--board-d:${delay}ms;` : ''}" aria-label="${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}">
     <i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i>
     <span class="board-node-remove" data-widget-remove="${escapeHTML(card.widget.id)}" role="button" title="${escapeHTML(t('boardRemoveWidget'))}" aria-label="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-close"/></svg></span>
     ${topRow}
     <b class="board-node-title">${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</b>
-    ${showPreview ? `<p class="board-node-preview">${escapeHTML(itemPreview(item))}</p>` : ''}
-    ${showFoot ? `<div class="board-node-foot"><span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span>${item.type === 'todo' ? (item.checkin ? boardNodeCheckinBadge(item) : (!done && tasks.length ? `<span class="board-node-count">${completedCount}/${tasks.length}</span><span class="mini-progress"><i style="width:${progress}%"></i></span>` : '')) : (getLinkedItems(item).length ? `<span class="link-count"><svg><use href="#i-link"/></svg>${getLinkedItems(item).length}</span>` : '')}</div>` : ''}
+    ${tasksBlock}
+    <p class="board-node-preview"${show.preview === false ? ' hidden' : ''}>${escapeHTML(itemPreview(item))}</p>
+    <div class="board-node-foot"${show.foot === false ? ' hidden' : ''}><span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span>${item.type === 'todo' ? (item.checkin ? boardNodeCheckinBadge(item) : (!done && tasks.length ? `<span class="board-node-count"${show.tasks === true ? ' hidden' : ''}>${completedCount}/${tasks.length}</span><span class="mini-progress"${show.tasks === true ? ' hidden' : ''}><i style="width:${progress}%"></i></span>` : '')) : (getLinkedItems(item).length ? `<span class="link-count"><svg><use href="#i-link"/></svg>${getLinkedItems(item).length}</span>` : '')}</div>
   </button>`;
+}
+
+// 「显示内容」开关切换：只改现有节点各区块的 hidden，不重建节点，
+// 悬停态、层叠顺序与位置保持原样。
+function boardApplyShownContent(node, widget) {
+  if (!node || (widget.type !== 'note' && widget.type !== 'todo')) return;
+  const show = widget.show || {};
+  const top = node.querySelector('.board-node-top');
+  if (top) {
+    const pill = top.querySelector('.type-pill');
+    const priority = top.querySelector('.priority-pill');
+    const date = top.querySelector('time');
+    if (pill) pill.hidden = show.pill === false;
+    if (priority) priority.hidden = show.priority === false;
+    if (date) date.hidden = show.date === false;
+    const parts = [...top.children];
+    top.hidden = parts.length === 0 || parts.every(el => el.hidden);
+  }
+  const tasks = node.querySelector('.board-node-tasks');
+  if (tasks) tasks.hidden = show.tasks !== true;
+  const preview = node.querySelector('.board-node-preview');
+  if (preview) preview.hidden = show.preview === false;
+  const count = node.querySelector('.board-node-count');
+  if (count) count.hidden = show.tasks === true;
+  const progress = node.querySelector('.mini-progress');
+  if (progress) progress.hidden = show.tasks === true;
+  const foot = node.querySelector('.board-node-foot');
+  if (foot) foot.hidden = show.foot === false;
 }
 
 // —— 标注绘制：形状由（可能为负的）端点向量描述，渲染时归一为外接矩形；
@@ -3396,7 +3427,7 @@ function boardRenderContentPop(widget) {
   const show = widget.show || {};
   const items = [
     ['pill', t('boardShowPill')], ['priority', t('boardShowPriority')], ['date', t('boardShowDate')],
-    ['preview', t('boardShowPreview')], ['foot', t('boardShowFoot')]
+    ['tasks', t('boardShowTasks')], ['preview', t('boardShowPreview')], ['foot', t('boardShowFoot')]
   ];
   pop.innerHTML = `
     <div class="board-style-pop-head"><b>${escapeHTML(t('boardContentSettings'))}</b><button type="button" data-content-close title="${escapeHTML(t('cancel'))}" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></div>
@@ -4743,21 +4774,9 @@ function bindBoardScene() {
         widget.show = { ...(widget.show || {}), [showBox.dataset.show]: showBox.checked };
         touchBoard(boardLayoutCache.board);
         persist();
-        // 显示内容影响卡片结构：只重建该卡片节点（局部更新），
-        // 不走 renderList 的整壳重建——那会把打开中的面板一起拆掉。
-        const card = boardLayoutCache.cards.find(entry => entry.widget.id === widget.id);
-        if (card) {
-          boardRenderedCards.get(widget.id)?.remove();
-          boardRenderedCards.delete(widget.id);
-          const template = document.createElement('template');
-          template.innerHTML = boardNodeHTML(card, true);
-          const element = template.content.firstElementChild;
-          if (element) {
-            boardEls.world.appendChild(element);
-            boardRenderedCards.set(widget.id, element);
-          }
-        }
-        boardSetSelection([widget.id]);
+        // 只更新现有节点各区块的 hidden：不重建节点（重建会让卡片悬停位移
+        // 与层叠顺序跳动），也不动选中态与打开中的面板。
+        boardApplyShownContent(boardRenderedCards.get(widget.id), widget);
       }
       return;
     }
@@ -6188,7 +6207,15 @@ function bindLinkedItems(item) {
   $$('.linked-row').forEach(row => {
     const linked = library.items.find(entry => entry.id === row.dataset.linkedId);
     if (!linked) return;
-    $('.open-linked-item', row).addEventListener('click', () => openItem(linked.id));
+    $('.open-linked-item', row).addEventListener('click', () => {
+      // 计划板内点击关联条目：留在画布上切换——目标在板上时聚焦它的卡片与
+      // 面板；不在板上时保持原行为（跳转到对应视图）。
+      if (currentView === 'board') {
+        const onBoard = boardLayoutCache?.board.widgets.some(widget => widget.ref === linked.id);
+        if (onBoard && !isTrashed(linked)) { boardSelect(linked.id); return; }
+      }
+      openItem(linked.id);
+    });
     $('.remove-item-link', row).addEventListener('click', () => {
       unlinkItems(item, linked);
       renderEditor();

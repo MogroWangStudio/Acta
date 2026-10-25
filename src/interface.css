@@ -106,9 +106,6 @@ dialog.relation-dialog:not(.quick-capture-dialog), dialog.note-export-dialog, di
 .settings-backdrop { position: fixed; inset: 0; z-index: 110; background: var(--paper); opacity: 0; pointer-events: none; transition: opacity .24s ease; }
 .settings-backdrop.open { opacity: 1; pointer-events: auto; }
 .settings-window { position: relative; width: 100vw; height: 100vh; border: 0; border-radius: 0; background: var(--paper); color: var(--ink); overflow: hidden; display: grid; grid-template-rows: 52px minmax(0,1fr); transform: translateY(12px); transition: transform .32s var(--ease-out); }
-.settings-back-dock { position: absolute; left: 16px; bottom: 16px; z-index: 5; height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 72%, transparent); color: var(--muted); display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: calc(10px * var(--acta-font-scale)); transition: color .15s ease, border-color .15s ease, background .15s ease; }
-.settings-back-dock:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); background: var(--white); }
-.settings-back-dock svg { width: 12px; height: 12px; }
 html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-backdrop.open .settings-window { transform: translateY(0); }
 .settings-backdrop.open.is-closing { pointer-events: none; animation: actaWindowBackdropOut .24s cubic-bezier(.4,0,1,1) both; }
@@ -2023,6 +2020,17 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 .board-node-top time { margin-left: auto; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .board-node-title { flex: 1; min-height: 1.4em; margin: 7px 0 0; font-size: calc(12px * var(--acta-font-scale)); font-weight: 650; line-height: 1.32; letter-spacing: .005em; overflow: hidden; overflow-wrap: anywhere; }
 .board-node-preview { margin: 4px 0 0; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 卡片上的子待办（显示内容开关控制）：勾选态只读展示，占满标题与底行之间的空间，超高滚动。 */
+.board-node-tasks { flex: 1 1 auto; min-height: 0; margin: 5px 0 0; display: grid; gap: 3px; align-content: start; overflow: hidden auto; scrollbar-width: thin; }
+.board-node-tasks[hidden] { display: none; }
+.board-node-task { display: flex; align-items: center; gap: 5px; min-width: 0; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.35; }
+.board-node-task > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-node-task i { width: 12px; height: 12px; flex: 0 0 auto; border: 1.2px solid color-mix(in srgb, var(--faint) 70%, transparent); border-radius: 4px; background: var(--white); display: grid; place-items: center; }
+.board-node-task i svg { width: 8px; height: 8px; color: #fff; opacity: 0; }
+.board-node-task.is-done i { border-color: var(--sage); background: var(--sage); }
+.board-node-task.is-done i svg { opacity: 1; }
+.board-node-task.is-done { color: var(--faint); }
+.board-node-task.is-done > span:last-child { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--faint) 70%, transparent); }
 .board-node-foot { margin-top: auto; display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
 .board-node-foot .mini-folder { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
 .board-node-count { font-variant-numeric: tabular-nums; margin-left: auto; color: var(--muted); }

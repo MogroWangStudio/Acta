@@ -4670,14 +4670,7 @@
     // 与主标题栏同位的三枚窗口按钮：最小化 / 最大化 / 关闭设置页。
     const settingsCloseControl = settingsWindowControls?.querySelector('[data-window-action="close"]');
     if (settingsCloseControl) settingsCloseControl.addEventListener('click', () => closeSettings());
-    // Windows 习惯把返回放到左下角：右上只留窗口按钮。
-    const settingsClose = byId('settingsClose');
-    if (settingsClose) settingsClose.hidden = true;
-    const backDock = byId('settingsBackDock');
-    if (backDock) {
-      backDock.hidden = false;
-      backDock.addEventListener('click', () => closeSettings());
-    }
+    // 返回统一走头部左上角的返回按钮，Windows 也不再隐藏右上关闭。
   }
   byId('clearCacheReload').addEventListener('click', async () => {
     if (autoSyncBusy) {

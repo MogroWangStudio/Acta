@@ -240,7 +240,6 @@
           </div>
           <button class="settings-close" id="settingsClose" type="button" aria-label="关闭设置"><svg><use href="#i-close"/></svg></button>
         </header>
-        <button class="settings-back-dock" id="settingsBackDock" type="button" hidden><svg style="transform:rotate(180deg)"><use href="#i-chevron"/></svg><span>返回</span></button>
         <div class="settings-layout">
           <nav class="settings-nav" aria-label="设置页面">
             <button class="active" type="button" data-settings-page="language"><svg><use href="#i-globe"/></svg><span>语言</span></button>
