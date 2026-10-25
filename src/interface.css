@@ -2075,8 +2075,10 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 .board-handle {
   position: absolute; z-index: 3; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
   border: 2px solid var(--paper); background: var(--sage); box-shadow: 0 1px 4px rgba(34,38,33,.3);
-  /* 与移除按钮同理：移出后延迟淡出，拖拽调尺寸时指针短暂离卡不闪断。 */
-  opacity: 0; pointer-events: none; transition: opacity .15s ease .45s, transform .15s var(--ease-out); cursor: grab;
+  /* 与移除按钮同理：移出后延迟淡出，拖拽调尺寸时指针短暂离卡不闪断。
+     pointer-events 常驻可命中：调节点骑缝在卡片角上，若隐藏时穿透命中，
+     指针悬停在外侧半会让卡片 :hover 断开、调节点缓缓消失。 */
+  opacity: 0; transition: opacity .15s ease .45s, transform .15s var(--ease-out); cursor: grab;
 }
 .board-widget.selected .board-handle, .board-node.selected .board-handle, .board-handle.is-active, .board-node:hover .board-handle, .board-text:hover .board-handle { opacity: 1; pointer-events: auto; transition-delay: 0s; }
 .board-handle:hover { transform: scale(1.25); }
