@@ -1617,7 +1617,7 @@ body.sidebar-collapsed #folderNav .folder-short-name.is-emoji { max-width: 30px;
 /* 未折叠也亮出自定义 emoji：小号归类色块（折叠态为 30px 大块），纯文字简称仍隐藏。
    条件与折叠态互斥，不会覆盖折叠态的 30px 徽标尺寸。 */
 body:not(.sidebar-collapsed) #folderNav .folder-dot:has(.folder-short-name.is-emoji) { width: 18px; height: 18px; border-radius: 6px; display: grid; place-items: center; font-style: normal; }
-body:not(.sidebar-collapsed) #folderNav .folder-short-name.is-emoji { display: block; max-width: 15px; overflow: visible; color: #fff !important; font: 400 calc(12px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; letter-spacing: 0; text-align: center; }
+body:not(.sidebar-collapsed) #folderNav .folder-short-name.is-emoji { display: grid; place-items: center; width: 100%; height: 100%; overflow: visible; color: #fff !important; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-size: calc(12px * var(--acta-font-scale)); line-height: normal; letter-spacing: 0; }
   body.sidebar-collapsed .create-menu { top: 18px; left: 64px; right: auto; width: 242px; transform-origin: 0 20px; }
   body.sidebar-collapsed .sidebar-bottom { max-width: 44px; align-self: center; }
   body.sidebar-collapsed .sidebar-bottom .sync-card { width: 36px; height: 36px; margin: 0 auto; padding: 0; grid-template-columns: 1fr; gap: 0; justify-items: center; }
