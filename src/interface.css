@@ -2024,6 +2024,19 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 .board-node-top time { margin-left: auto; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .board-node-title { flex: 1; min-height: 1.4em; margin: 7px 0 0; font-size: calc(12px * var(--acta-font-scale)); font-weight: 650; line-height: 1.32; letter-spacing: .005em; overflow: hidden; overflow-wrap: anywhere; }
 .board-node-preview { margin: 4px 0 0; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 笔记的完整内容（Markdown 渲染）：占满标题与底行之间，超高滚动；块级元素紧凑排布。 */
+.board-node-body { flex: 1 1 auto; min-height: 0; margin: 5px 0 0; overflow: hidden auto; scrollbar-width: thin; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.5; overflow-wrap: anywhere; }
+.board-node-body[hidden] { display: none; }
+.board-node-body p { margin: 0 0 4px; }
+.board-node-body p:last-child { margin-bottom: 0; }
+.board-node-body h1, .board-node-body h2, .board-node-body h3 { margin: 4px 0 2px; font-size: calc(10px * var(--acta-font-scale)); line-height: 1.3; }
+.board-node-body ul, .board-node-body ol { margin: 2px 0 4px; padding-left: 14px; }
+.board-node-body li { margin: 1px 0; }
+.board-node-body blockquote { margin: 2px 0 4px; padding: 1px 0 1px 7px; border-left: 2px solid var(--line); color: var(--faint); }
+.board-node-body code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: calc(8px * var(--acta-font-scale)); }
+.board-node-body pre { margin: 2px 0 4px; padding: 4px; border-radius: 5px; background: var(--panel); overflow-x: auto; }
+.board-node-body img { max-width: 100%; }
+.board-node-body strong { color: var(--ink); }
 /* 卡片上的子待办（显示内容开关控制）：勾选态只读展示，占满标题与底行之间的空间，超高滚动。 */
 .board-node-tasks { flex: 1 1 auto; min-height: 0; margin: 5px 0 0; display: grid; gap: 3px; align-content: start; overflow: hidden auto; scrollbar-width: thin; }
 .board-node-tasks[hidden] { display: none; }
