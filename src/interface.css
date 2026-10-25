@@ -1969,14 +1969,24 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 .board-canvas { position: relative; height: 100%; min-height: 0; }
 .board-viewport {
   position: absolute; inset: 0; overflow: hidden; touch-action: none; cursor: grab; contain: strict;
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1.15px);
+  /* 底纹颜色由个性化面板的网格颜色/不透明度写入 --board-grid-color。 */
+  background-image: radial-gradient(circle, var(--board-grid-color, color-mix(in srgb, var(--ink) 10%, transparent)) 1px, transparent 1.15px);
   background-size: var(--board-grid, 26px) var(--board-grid, 26px);
   background-position: var(--board-grid-x, 0px) var(--board-grid-y, 0px);
 }
 .board-viewport[data-pattern="grid"] {
   background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--ink) 8%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--ink) 8%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, var(--board-grid-color, color-mix(in srgb, var(--ink) 10%, transparent)) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--board-grid-color, color-mix(in srgb, var(--ink) 10%, transparent)) 1px, transparent 1px);
+}
+.board-viewport[data-pattern="lines"] {
+  background-image: linear-gradient(to bottom, var(--board-grid-color, color-mix(in srgb, var(--ink) 12%, transparent)) 1px, transparent 1px);
+}
+.board-viewport[data-pattern="cross"] {
+  background-image:
+    linear-gradient(to right, var(--board-grid-color, color-mix(in srgb, var(--ink) 12%, transparent)) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--board-grid-color, color-mix(in srgb, var(--ink) 12%, transparent)) 1px, transparent 1px),
+    radial-gradient(circle, var(--board-grid-color, color-mix(in srgb, var(--ink) 26%, transparent)) 1.6px, transparent 1.8px);
 }
 .board-viewport[data-pattern="none"] { background-image: none; }
 .board-viewport:active { cursor: grabbing; }
@@ -2272,7 +2282,7 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-style-toggle input:checked + i { background: var(--sage); }
 .board-style-toggle input:checked + i::after { transform: translateX(13px); }
 .board-style-toggle span { color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 600; }
-.board-style-pop-lg { left: auto; right: 14px; top: 54px; transform: none; min-width: 264px; }
+.board-style-pop-lg { left: auto; right: 14px; top: 54px; transform: none; min-width: 264px; max-height: calc(100% - 74px); overflow: hidden auto; scrollbar-width: thin; }
 
 /* 多选工具条固定在画布底部居中（添加工具条上一行），不跟随组件。 */
 .board-widget-toolbar.is-multi { left: 50% !important; top: auto !important; bottom: 74px; }
