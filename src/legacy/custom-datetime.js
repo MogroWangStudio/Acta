@@ -38,7 +38,8 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
 .acdt-nav:hover { background: var(--panel); color: var(--ink); transform: scale(1.06); }
 .acdt-nav svg { width: 13px; height: 13px; }
 /* 旋转必须以图标自身为轴心：缺 fill-box 时翻转绕 viewBox 原点，箭头跑出按钮。 */
-.acdt-nav.acdt-next svg { transform: rotate(180deg); transform-box: fill-box; transform-origin: center; }
+/* #i-chevron 默认指向右：上一月需要左箭头，旋转放在 prev 上。 */
+.acdt-nav.acdt-prev svg { transform: rotate(180deg); transform-box: fill-box; transform-origin: center; }
 .acdt-months { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 3px; margin-bottom: 2px; }
 .acdt-months button { height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font: inherit; font-size: calc(10px * var(--acta-font-scale, 1)); font-weight: 650; cursor: pointer; transition: background .13s ease, color .13s ease; }
 .acdt-months button:hover { background: var(--panel); color: var(--ink); }
@@ -268,7 +269,7 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
     head.className = 'acdt-head';
     const prev = document.createElement('button');
     prev.type = 'button';
-    prev.className = 'acdt-nav';
+    prev.className = 'acdt-nav acdt-prev';
     prev.setAttribute('aria-label', jump ? '上一年' : '上一月');
     prev.innerHTML = '<svg><use href="#i-chevron"/></svg>';
     // 标题可点击：日历 ↔ 快速年月选择（年份翻页 + 十二个月网格）。
