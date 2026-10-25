@@ -1309,6 +1309,8 @@ body.note-focus-mode .editor-pane {
   min-height: 0;
   padding: 0;
   overflow: hidden;
+  /* 全屏沉浸无滚动条，取消列表态预留的滚动条槽——否则右侧空出一条底色。 */
+  scrollbar-gutter: auto;
   opacity: 1;
   transform-origin: 50% 50%;
   box-shadow: none;
