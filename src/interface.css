@@ -720,7 +720,6 @@ html[data-acta-theme="mws-light"] .nav-section button svg { color: rgba(255,255,
 html[data-acta-theme="mws-light"] .nav-section button em { color: rgba(255,255,255,.62); }
 html[data-acta-theme="mws-light"] .nav-section button:hover { background: rgba(255,255,255,.15); color: #fff; }
 html[data-acta-theme="mws-light"] .nav-section button.active { background: rgba(255,255,255,.26); color: #fff; box-shadow: none; }
-html[data-acta-theme="mws-light"] .nav-section button.active svg { color: #fff; }
 html[data-acta-theme="mws-light"] .section-label { color: rgba(255,255,255,.72); }
 html[data-acta-theme="mws-light"] .section-label button { color: rgba(255,255,255,.85); }
 html[data-acta-theme="mws-light"] .section-label button:hover { background: rgba(255,255,255,.2); }
@@ -1491,9 +1490,7 @@ body.acta-reduce-motion.note-focus-mode :is(.editor-pane,.note-editor) { animati
 html[data-acta-theme="mono-dark"] .filter-select,
 html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: #242424; }
 .smart-nav button[data-view="todos"].active, .smart-nav button[data-view="completed"].active { color: var(--todo-accent); background: var(--todo-soft); }
-.smart-nav button[data-view="todos"].active svg, .smart-nav button[data-view="completed"].active svg { color: var(--todo-accent); }
 .smart-nav button[data-view="notes"].active { color: var(--note-accent); background: var(--note-soft); }
-.smart-nav button[data-view="notes"].active svg { color: var(--note-accent); }
 .todo-burst { background: var(--todo-accent); box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--todo-accent) 34%, transparent); }
 .todo-burst.undo { color: var(--note-accent); background: var(--note-soft); box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--note-accent) 25%, transparent); }
 .brand { --logo-center-x: 36px; position: relative; isolation: isolate; -webkit-app-region: no-drag; -webkit-tap-highlight-color: transparent; cursor: pointer; outline: none; user-select: none; transform: translateZ(0); transform-origin: left center; backface-visibility: hidden; transition: transform .28s cubic-bezier(.22,.72,.24,1), opacity .24s ease; }
@@ -1633,7 +1630,6 @@ body.calendar-view {
   --calendar-soft: var(--calendar-theme-soft);
 }
 .smart-nav button[data-view="calendar"].active { color: var(--calendar-accent); background: color-mix(in srgb, var(--calendar-soft) 78%, var(--panel)); }
-.smart-nav button[data-view="calendar"].active svg { color: var(--calendar-accent); }
 .calendar-toolbar { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .calendar-toolbar[hidden] { display: none; }
 .calendar-navigation, .calendar-view-switch { height: 34px; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 62%, transparent); display: flex; align-items: center; gap: 2px; }

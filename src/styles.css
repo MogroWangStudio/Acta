@@ -224,7 +224,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
   0% { stroke-dasharray: 220; stroke-dashoffset: 220; }
   100% { stroke-dasharray: 220; stroke-dashoffset: 0; }
 }
-.nav-section button.active svg { color: var(--sage); }
+/* 选中态的强调完全由描线层承担：主图标的颜色与透明度保持常态，不亮起。 */
 /* 只动画 dash，不碰 opacity：透明度交给 transition，选中与取消选中
    都能平滑淡入淡出；旧描线改用 CSS 过渡退场，新描线同时重绘。 */
 .nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1.6s cubic-bezier(.4, 0, .2, 1) both; }
@@ -608,9 +608,8 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .smart-nav button > span { flex-direction: column; gap: 4px; font-size: calc(10px * var(--acta-font-scale)); line-height: 1.05; }
   .smart-nav button .nav-icon { width: 19px; height: 19px; }
   .smart-nav button svg { width: 19px; height: 19px; }
-  /* 未选中的入口图标淡化到 35%；选中项恢复实心，描线层不受影响。 */
+  /* 入口图标常态淡化到 35% 且选中后保持不变：选中态的强调完全由描线层承担。 */
   .smart-nav button svg:not(.nav-icon-trace) { opacity: .35; }
-  .smart-nav button.active svg:not(.nav-icon-trace) { opacity: 1; }
   /* 仅图标模式：隐藏文字，图标放大填补文字位置并居中。 */
   html[data-mobile-nav="icon"] .smart-nav button > span > span:not(.nav-icon) { display: none; }
   html[data-mobile-nav="icon"] .smart-nav button > span { gap: 0; }
