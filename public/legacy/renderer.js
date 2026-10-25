@@ -3928,7 +3928,14 @@ async function boardSaveBlob(fileName, blob) {
     });
     if (!dataUrl) return null;
     asset.dataUrl = dataUrl;
-    const paths = await desktop([asset]);
+    // 桥失败（如格式不被支持）要显式提示：静默失败会让用户完全看不到产物。
+    let paths;
+    try {
+      paths = await desktop([asset]);
+    } catch (error) {
+      showToast(`${t('boardExportFailed')}${error?.message || error}`);
+      return null;
+    }
     return Array.isArray(paths) && paths[0] ? paths[0] : null;
   }
   const nativeExport = window.Capacitor?.Plugins?.ActaSync?.exportAsset;

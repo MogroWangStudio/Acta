@@ -870,10 +870,14 @@ fn sanitize_file_stem(file_name: &str) -> String {
 }
 
 fn decode_export_asset(asset: ExportAsset) -> Result<DecodedAsset, String> {
+    // 计划板文件（.actaplan）与笔记的纯文本 / Markdown 导出也走这条通道。
     let extension = match asset.mime_type.as_str() {
         "application/pdf" => "pdf",
         "image/png" => "png",
         "image/jpeg" => "jpg",
+        "application/json" => "actaplan",
+        "text/markdown" => "md",
+        "text/plain" => "txt",
         _ => return Err("不支持该导出格式".into()),
     };
     let prefix = format!("data:{};base64,", asset.mime_type);
