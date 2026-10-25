@@ -3889,7 +3889,28 @@ const BOARD_EXPORT_MARGIN = 60;
 const BOARD_EXPORT_SCALE = 2;
 const BOARD_EXPORT_PRIORITY_COLORS = { high: ['#a15b43', '#f4ded5'], medium: ['#94702f', '#f3e8c9'], low: ['#526b55', '#dcebdd'] };
 
-function boardDownloadBlob(fileName, blob) {
+// 导出保存：桌面端（Tauri）与移动端（Capacitor）弹系统保存对话框让用户选位置，
+// 浏览器回落为下载。返回保存位置（或 'download'），用户取消时返回 null。
+async function boardSaveBlob(fileName, blob) {
+  const asset = { fileName, mimeType: blob.type || 'application/octet-stream' };
+  const desktop = window.actaDesktop?.exportAssets;
+  if (desktop) {
+    const dataUrl = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+    if (!dataUrl) return null;
+    asset.dataUrl = dataUrl;
+    const paths = await desktop([asset]);
+    return Array.isArray(paths) && paths[0] ? paths[0] : null;
+  }
+  const nativeExport = window.Capacitor?.Plugins?.ActaSync?.exportAsset;
+  if (nativeExport) {
+    await nativeExport(asset);
+    return 'native';
+  }
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
@@ -3899,6 +3920,7 @@ function boardDownloadBlob(fileName, blob) {
   anchor.click();
   anchor.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
+  return 'download';
 }
 
 function boardExportBaseName() {
@@ -3978,7 +4000,7 @@ async function boardImportPlanFile() {
   showToast(t('boardImported'));
 }
 
-function boardExportPlanFile() {
+async function boardExportPlanFile() {
   const board = activeBoard();
   if (!board.widgets.length) { showToast(t('boardExportEmpty')); return; }
   const refs = new Set(board.widgets.filter(widget => widget.type === 'note' || widget.type === 'todo').map(widget => widget.ref));
@@ -4001,8 +4023,9 @@ function boardExportPlanFile() {
     },
     items
   };
-  boardDownloadBlob(`${boardExportBaseName()}.actaplan`, new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
-  showToast(t('boardExportDone'));
+  const saved = await boardSaveBlob(`${boardExportBaseName()}.actaplan`, new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
+  if (saved) showToast(typeof saved === 'string' && saved !== 'download' ? `${t('boardExportDone')}${saved}` : t('boardExportDone'));
+  return saved;
 }
 
 function boardExportTheme() {
@@ -4424,8 +4447,9 @@ async function boardExportImage() {
   if (!rendered) { showToast(t('boardExportEmpty')); return; }
   const blob = await new Promise(resolve => rendered.canvas.toBlob(resolve, 'image/png'));
   if (!blob) { showToast(t('boardExportFailed')); return; }
-  boardDownloadBlob(`${boardExportBaseName()}.png`, blob);
-  showToast(t('boardExportDone'));
+  const saved = await boardSaveBlob(`${boardExportBaseName()}.png`, blob);
+  if (saved) showToast(typeof saved === 'string' && saved !== 'download' && saved !== 'native' ? `${t('boardExportDone')}${saved}` : t('boardExportDone'));
+  return saved;
 }
 
 async function boardExportPdf() {
@@ -4442,15 +4466,16 @@ async function boardExportPdf() {
   const page = pdf.addPage([pageWidth, pageHeight]);
   page.drawImage(png, { x: 0, y: 0, width: pageWidth, height: pageHeight });
   const bytes = await pdf.save();
-  boardDownloadBlob(`${boardExportBaseName()}.pdf`, new Blob([bytes], { type: 'application/pdf' }));
-  showToast(t('boardExportDone'));
+  const saved = await boardSaveBlob(`${boardExportBaseName()}.pdf`, new Blob([bytes], { type: 'application/pdf' }));
+  if (saved) showToast(typeof saved === 'string' && saved !== 'download' && saved !== 'native' ? `${t('boardExportDone')}${saved}` : t('boardExportDone'));
+  return saved;
 }
 
 async function boardMenuAction(action) {
   const boards = ensureBoards();
   const board = activeBoard();
   boardToggleMenu(false);
-  if (action === 'export-plan') { boardExportPlanFile(); return; }
+  if (action === 'export-plan') { await boardExportPlanFile(); return; }
   if (action === 'export-image') { await boardExportImage(); return; }
   if (action === 'export-pdf') { await boardExportPdf(); return; }
   if (action === 'import-plan') { await boardImportPlanFile(); return; }
