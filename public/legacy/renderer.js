@@ -72,6 +72,7 @@ const dictionaries = {
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
     boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'画笔模式：可连续多笔，完成或按 Esc 退出',
+    boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
   en: {
@@ -133,6 +134,7 @@ const dictionaries = {
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
     boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenMode:'Pen mode: draw as many strokes as you like; press Done or Esc to exit',
+    boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   },
   ja: {
@@ -194,6 +196,7 @@ const dictionaries = {
     boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
     boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenMode:'ペンモード：何筆でも描けます。完了または Esc で終了',
+    boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください',
     boardEmptyTitle:'このボードは空です', boardEmptyHint:'下のツールでテキストとマーカーを追加したり、タスクとノートを読み込んで、自由にプランボードを組み立てましょう。'
   },
   ko: {
@@ -255,6 +258,7 @@ const dictionaries = {
     boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
     boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenMode:'펜 모드: 여러 번 그릴 수 있어요. 완료 또는 Esc로 종료',
+    boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요',
     boardEmptyTitle:'이 보드는 비어 있어요', boardEmptyHint:'아래 도구로 텍스트와 마커를 추가하거나 할 일과 노트를 가져와 자유롭게 플랜 보드를 꾸며 보세요.'
   },
   fr: {
@@ -316,6 +320,7 @@ const dictionaries = {
     boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardWidgetOpacity:'Opacité',
     boardPersonalize:'Personnaliser le tableau', boardBgPattern:'Motif de fond', boardPatternDots:'Points', boardPatternGrid:'Grille', boardPatternNone:'Aucun', boardBoardBgColor:'Couleur de fond', boardBgColorTheme:'Suivre le thème', boardSnapGrid:'Aimanter à la grille', boardGridSize:'Taille de la grille',
     boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenMode:'Mode crayon : tracez autant de traits que voulu ; terminez ou Échap pour sortir',
+    boardExportPlan:'Exporter le fichier du tableau (.actaplan)', boardExportImage:'Exporter en image', boardExportPdf:'Exporter en PDF', boardExportDone:'Tableau exporté', boardExportFailed:'Échec de l’export', boardExportEmpty:'Ce tableau est vide — ajoutez du contenu avant d’exporter',
     boardEmptyTitle:'Ce tableau est vide', boardEmptyHint:'Ajoutez du texte et des annotations avec la barre d’outils, ou importez tâches et notes pour composer librement votre tableau.'
   },
   de: {
@@ -377,6 +382,7 @@ const dictionaries = {
     boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardWidgetOpacity:'Deckkraft',
     boardPersonalize:'Board gestalten', boardBgPattern:'Hintergrundmuster', boardPatternDots:'Punkte', boardPatternGrid:'Gitter', boardPatternNone:'Keine', boardBoardBgColor:'Hintergrundfarbe', boardBgColorTheme:'Wie Thema', boardSnapGrid:'Am Raster ausrichten', boardGridSize:'Rastergröße',
     boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenMode:'Stiftmodus: so viele Striche wie du willst; mit Fertig oder Esc beenden',
+    boardExportPlan:'Planboard-Datei exportieren (.actaplan)', boardExportImage:'Als Bild exportieren', boardExportPdf:'Als PDF exportieren', boardExportDone:'Planboard exportiert', boardExportFailed:'Export fehlgeschlagen', boardExportEmpty:'Dieses Board ist leer — füge zuerst Inhalte hinzu',
     boardEmptyTitle:'Dieses Board ist leer', boardEmptyHint:'Füge über die Leiste unten Text und Marker hinzu oder importiere Aufgaben und Notizen und gestalte dein Planboard frei.'
   },
   es: {
@@ -438,6 +444,7 @@ const dictionaries = {
     boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardWidgetOpacity:'Opacidad',
     boardPersonalize:'Personalizar tablero', boardBgPattern:'Patrón de fondo', boardPatternDots:'Puntos', boardPatternGrid:'Cuadrícula', boardPatternNone:'Ninguno', boardBoardBgColor:'Color de fondo', boardBgColorTheme:'Según el tema', boardSnapGrid:'Ajustar a la cuadrícula', boardGridSize:'Tamaño de cuadrícula',
     boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenMode:'Modo lápiz: traza tantos trazos como quieras; termina o pulsa Esc para salir',
+    boardExportPlan:'Exportar archivo del tablero (.actaplan)', boardExportImage:'Exportar como imagen', boardExportPdf:'Exportar como PDF', boardExportDone:'Tablero exportado', boardExportFailed:'Fallo al exportar', boardExportEmpty:'Este tablero está vacío — añade contenido antes de exportar',
     boardEmptyTitle:'Este tablero está vacío', boardEmptyHint:'Añade texto y anotaciones con la barra de abajo, o importa tareas y notas para componer tu tablero con libertad.'
   },
   ru: {
@@ -499,6 +506,7 @@ const dictionaries = {
     boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardWidgetOpacity:'Непрозрачность',
     boardPersonalize:'Оформить планшет', boardBgPattern:'Фоновый узор', boardPatternDots:'Точки', boardPatternGrid:'Сетка', boardPatternNone:'Нет', boardBoardBgColor:'Цвет фона', boardBgColorTheme:'Как в теме', boardSnapGrid:'Привязка к сетке', boardGridSize:'Шаг сетки',
     boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenMode:'Режим пера: рисуйте сколько угодно штрихов; «Готово» или Esc — выход',
+    boardExportPlan:'Экспортировать файл планшета (.actaplan)', boardExportImage:'Экспортировать как изображение', boardExportPdf:'Экспортировать в PDF', boardExportDone:'Планшет экспортирован', boardExportFailed:'Не удалось экспортировать', boardExportEmpty:'Этот планшет пуст — сначала добавьте содержимое',
     boardEmptyTitle:'Этот планшет пуст', boardEmptyHint:'Добавьте текст и пометки панелью снизу или импортируйте задачи и заметки и свободно соберите свой планшет.'
   }
 };
@@ -3795,6 +3803,10 @@ function boardRenderMenu() {
   menu.innerHTML = `
     ${boards.map(board => `<button type="button" role="menuitem" class="board-pill-item${board.id === current.id ? ' active' : ''}" data-board-goto="${escapeHTML(board.id)}"><svg><use href="#i-board"/></svg><span>${escapeHTML(board.name)}</span><em>${board.widgets.length}</em></button>`).join('')}
     <div class="board-pill-sep" role="separator"></div>
+    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-plan"><svg><use href="#i-download"/></svg><span>${escapeHTML(t('boardExportPlan'))}</span></button>
+    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-image"><svg><use href="#i-image"/></svg><span>${escapeHTML(t('boardExportImage'))}</span></button>
+    <button type="button" role="menuitem" class="board-pill-item" data-board-action="export-pdf"><svg><use href="#i-note"/></svg><span>${escapeHTML(t('boardExportPdf'))}</span></button>
+    <div class="board-pill-sep" role="separator"></div>
     <button type="button" role="menuitem" class="board-pill-item" data-board-action="new"><svg><use href="#i-plus"/></svg><span>${escapeHTML(t('boardNewBoard'))}</span></button>
     <button type="button" role="menuitem" class="board-pill-item" data-board-action="rename"><svg><use href="#i-edit"/></svg><span>${escapeHTML(t('boardRenameBoard'))}</span></button>
     <button type="button" role="menuitem" class="board-pill-item is-danger" data-board-action="delete"><svg><use href="#i-trash"/></svg><span>${escapeHTML(t('boardDeleteBoard'))}</span></button>`;
@@ -3825,10 +3837,505 @@ function boardMenuOutside(event) {
   boardToggleMenu(false);
 }
 
+// —— 计划板导出：.actaplan 自包含文件 / PNG 图片 / PDF ——
+// .actaplan 携带板结构与卡片引用的条目全文，文件自包含、不依赖当前资料库即可还原。
+// 图片与 PDF 由 Canvas 按板数据重绘：卡片全部区块、文本组件、标注、关联曲线与底纹都包含在内。
+
+const BOARD_EXPORT_MARGIN = 60;
+const BOARD_EXPORT_SCALE = 2;
+const BOARD_EXPORT_PRIORITY_COLORS = { high: ['#a15b43', '#f4ded5'], medium: ['#94702f', '#f3e8c9'], low: ['#526b55', '#dcebdd'] };
+
+function boardDownloadBlob(fileName, blob) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.hidden = true;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+function boardExportBaseName() {
+  return (activeBoard().name || t('boardDefaultName')).replace(/[\\/:*?"<>|]/g, '_').trim().slice(0, 60) || t('boardDefaultName');
+}
+
+function boardExportPlanFile() {
+  const board = activeBoard();
+  if (!board.widgets.length) { showToast(t('boardExportEmpty')); return; }
+  const refs = new Set(board.widgets.filter(widget => widget.type === 'note' || widget.type === 'todo').map(widget => widget.ref));
+  const items = {};
+  refs.forEach(ref => {
+    const item = library.items.find(entry => entry.id === ref);
+    if (item) items[ref] = item;
+  });
+  const payload = {
+    app: 'acta',
+    kind: 'actaplan',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    board: {
+      name: board.name || t('boardDefaultName'),
+      style: { ...(board.style || {}) },
+      widgets: board.widgets,
+      createdAt: board.createdAt,
+      updatedAt: board.updatedAt
+    },
+    items
+  };
+  boardDownloadBlob(`${boardExportBaseName()}.actaplan`, new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
+  showToast(t('boardExportDone'));
+}
+
+function boardExportTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  const read = name => cs.getPropertyValue(name).trim();
+  return {
+    paper: read('--paper') || '#fbfaf6',
+    white: read('--white') || '#ffffff',
+    line: read('--line') || '#e2ded2',
+    ink: read('--ink') || '#2b2e29',
+    muted: read('--muted') || '#6d7168',
+    faint: read('--faint') || '#989b94',
+    sage: read('--sage') || '#526b55',
+    sage2: read('--sage-2') || '#e4ede2',
+    violet: read('--violet') || '#8a7bc8',
+    violetSoft: read('--violet-soft') || '#efeafc',
+    appFont: read('--acta-app-font') || 'system-ui, sans-serif',
+    fontScale: Number.parseFloat(read('--acta-font-scale')) || 1
+  };
+}
+
+function boardHexToRgba(hex, alpha = 1) {
+  const match = String(hex).trim().match(/^#([0-9a-f]{3,8})$/i);
+  if (!match) return hex;
+  let body = match[1];
+  if (body.length === 3) body = body.split('').map(char => char + char).join('');
+  const number = Number.parseInt(body.slice(0, 6), 16);
+  const r = (number >> 16) & 255;
+  const g = (number >> 8) & 255;
+  const b = number & 255;
+  const a = body.length === 8 ? Number.parseInt(body.slice(6, 8), 16) / 255 : alpha;
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function boardRoundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, radius);
+}
+
+function boardDrawMarker(ctx, widget, X, Y, theme) {
+  ctx.save();
+  if (widget.kind === 'draw') {
+    const points = widget.points || [];
+    const highlighter = widget.brush === 'highlighter';
+    ctx.globalCompositeOperation = highlighter ? 'multiply' : 'source-over';
+    ctx.strokeStyle = boardHexToRgba(widget.color, highlighter ? Math.min(0.5, (widget.opacity ?? 35) / 100) : (widget.opacity ?? 100) / 100);
+    ctx.lineWidth = widget.stroke || 2.5;
+    ctx.lineCap = highlighter ? 'butt' : 'round';
+    ctx.lineJoin = 'round';
+    const flow = widget.flow ?? 100;
+    if (flow < 100) ctx.setLineDash([Math.max(0.4, flow / 14), Math.max(0.5, (100 - flow) / 12)]);
+    ctx.beginPath();
+    for (let i = 0; i + 1 < points.length; i += 2) {
+      const px = X(widget.x + points[i]);
+      const py = Y(widget.y + points[i + 1]);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    ctx.restore();
+    return;
+  }
+  ctx.strokeStyle = boardHexToRgba(widget.color);
+  ctx.fillStyle = boardHexToRgba(widget.color);
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  const x1 = X(widget.x);
+  const y1 = Y(widget.y);
+  const x2 = X(widget.x + widget.w);
+  const y2 = Y(widget.y + widget.h);
+  if (widget.kind === 'rect') {
+    boardRoundRect(ctx, Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1), 10);
+    ctx.stroke();
+  } else if (widget.kind === 'ellipse') {
+    ctx.beginPath();
+    ctx.ellipse((x1 + x2) / 2, (y1 + y2) / 2, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (widget.kind === 'line') {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  } else {
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const head = 13;
+    const wing = 6.5;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2 - (head - 2) * Math.cos(angle), y2 - (head - 2) * Math.sin(angle));
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x2 - head * Math.cos(angle) + wing * Math.sin(angle), y2 - head * Math.sin(angle) - wing * Math.cos(angle));
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x2 - head * Math.cos(angle) - wing * Math.sin(angle), y2 - head * Math.sin(angle) + wing * Math.cos(angle));
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function boardDrawTextWidget(ctx, widget, X, Y, theme) {
+  const size = widget.size || 16;
+  const family = widget.font === 'custom' && widget.customFont
+    ? `"${widget.customFont}"`
+    : (BOARD_TEXT_FAMILIES[widget.font] || theme.appFont);
+  const pad = widget.pad || 0;
+  const lineHeight = size * 1.55;
+  const lines = String(widget.text || t('boardTextPlaceholder')).split('\n');
+  const maxWidth = Math.max(20, widget.w - pad * 2);
+  ctx.save();
+  ctx.font = `${widget.italic ? 'italic ' : ''}${widget.bold ? '700 ' : '400 '}${size}px ${family}`;
+  const wrapped = [];
+  lines.forEach(line => {
+    if (!line) { wrapped.push(''); return; }
+    let current = '';
+    for (const char of line) {
+      if (current && ctx.measureText(current + char).width > maxWidth) { wrapped.push(current); current = char; }
+      else current += char;
+    }
+    wrapped.push(current);
+  });
+  const textHeight = wrapped.length * lineHeight + pad * 2;
+  if (widget.bg && widget.bg !== 'none') {
+    ctx.fillStyle = boardHexToRgba(widget.bg, Math.min(1, (widget.bgOpacity ?? 100) / 100));
+    boardRoundRect(ctx, X(widget.x), Y(widget.y), widget.w, textHeight, widget.radius || 0);
+    ctx.fill();
+  }
+  ctx.fillStyle = widget.color ? boardHexToRgba(widget.color) : theme.ink;
+  ctx.textBaseline = 'top';
+  ctx.textAlign = widget.align === 'center' ? 'center' : widget.align === 'right' ? 'right' : 'left';
+  const anchorX = widget.align === 'center' ? X(widget.x) + widget.w / 2 : widget.align === 'right' ? X(widget.x) + widget.w - pad : X(widget.x) + pad;
+  let ty = Y(widget.y) + pad;
+  wrapped.forEach(line => {
+    ctx.fillText(line, anchorX, ty);
+    ty += lineHeight;
+  });
+  ctx.restore();
+}
+
+function boardDrawCard(ctx, widget, item, X, Y, theme) {
+  const show = widget.show || {};
+  const done = item.type === 'todo' && isTodoComplete(item);
+  const tasks = item.type === 'todo' ? (item.tasks || []) : [];
+  const completedCount = tasks.filter(task => task.done).length;
+  const progress = tasks.length ? Math.round((completedCount / tasks.length) * 100) : (done ? 100 : 0);
+  const x = X(widget.x);
+  const y = Y(widget.y);
+  const width = widget.w || 264;
+  const height = widget.h || 114;
+  const padX = 12;
+  const f = size => `${size * theme.fontScale}px ${theme.appFont}`;
+  ctx.save();
+  ctx.globalAlpha = (Number.isFinite(widget.opacity) ? Math.min(100, Math.max(30, widget.opacity)) : 100) / 100;
+  ctx.shadowColor = 'rgba(47,50,43,.08)';
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetY = 2;
+  ctx.fillStyle = theme.white;
+  boardRoundRect(ctx, x, y, width, height, 12);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.strokeStyle = theme.line;
+  ctx.lineWidth = 1;
+  boardRoundRect(ctx, x + 0.5, y + 0.5, width - 1, height - 1, 12);
+  ctx.stroke();
+  let cy = y + 10;
+  // 顶行：类型标签 / 优先级 / 日期
+  if (show.pill !== false || (show.priority !== false && item.type === 'todo') || show.date !== false) {
+    let cx = x + padX;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    if (show.pill !== false) {
+      const label = t(item.type).toUpperCase();
+      ctx.font = `700 ${8 * theme.fontScale}px ${theme.appFont}`;
+      const pillWidth = ctx.measureText(label).width + 22;
+      ctx.fillStyle = item.type === 'todo' ? theme.sage2 : theme.violetSoft;
+      boardRoundRect(ctx, cx, cy, pillWidth, 19, 6);
+      ctx.fill();
+      ctx.strokeStyle = item.type === 'todo' ? theme.sage : theme.violet;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      if (item.type === 'todo') {
+        ctx.moveTo(cx + 8, cy + 9.5);
+        ctx.lineTo(cx + 10.5, cy + 12);
+        ctx.lineTo(cx + 14, cy + 7);
+      } else {
+        ctx.moveTo(cx + 8, cy + 5.5);
+        ctx.lineTo(cx + 14, cy + 5.5);
+        ctx.moveTo(cx + 8, cy + 9.5);
+        ctx.lineTo(cx + 14, cy + 9.5);
+        ctx.moveTo(cx + 8, cy + 13.5);
+        ctx.lineTo(cx + 12, cy + 13.5);
+      }
+      ctx.stroke();
+      ctx.fillStyle = item.type === 'todo' ? theme.sage : theme.violet;
+      ctx.fillText(label, cx + 20, cy + 10.5);
+      cx += pillWidth + 5;
+    }
+    if (show.priority !== false && item.type === 'todo') {
+      const [fg, bg] = BOARD_EXPORT_PRIORITY_COLORS[item.priority || 'medium'] || BOARD_EXPORT_PRIORITY_COLORS.medium;
+      const label = t(item.priority || 'medium');
+      ctx.font = `700 ${8 * theme.fontScale}px ${theme.appFont}`;
+      const pillWidth = ctx.measureText(label).width + 12;
+      ctx.fillStyle = bg;
+      boardRoundRect(ctx, cx, cy, pillWidth, 19, 6);
+      ctx.fill();
+      ctx.fillStyle = fg;
+      ctx.fillText(label, cx + 6, cy + 10.5);
+      cx += pillWidth + 5;
+    }
+    if (show.date !== false) {
+      const stampDate = item.type === 'todo' ? todoScheduleDate(item) : item.updatedAt;
+      if (stampDate) {
+        ctx.font = `500 ${9 * theme.fontScale}px ${theme.appFont}`;
+        ctx.fillStyle = theme.faint;
+        ctx.textAlign = 'right';
+        ctx.fillText(formatDate(stampDate, true), x + width - padX, cy + 10.5);
+        ctx.textAlign = 'left';
+      }
+    }
+    cy += 26;
+  }
+  // 标题（单行截断，与卡片 ellipsis 一致；完成态划线）
+  const titleText = item.title || t(item.type === 'todo' ? 'untitledTodo' : 'untitledNote');
+  ctx.font = `650 ${12 * theme.fontScale}px ${theme.appFont}`;
+  ctx.fillStyle = done ? theme.muted : theme.ink;
+  ctx.textBaseline = 'top';
+  const drawnTitle = canvasTruncateText(ctx, titleText, width - padX * 2);
+  ctx.fillText(drawnTitle, x + padX, cy + 4);
+  if (done) {
+    const tw = ctx.measureText(drawnTitle).width;
+    ctx.strokeStyle = boardHexToRgba(theme.faint, 0.7);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + padX, cy + 4 + 8 * theme.fontScale);
+    ctx.lineTo(x + padX + tw, cy + 4 + 8 * theme.fontScale);
+    ctx.stroke();
+  }
+  cy += Math.round(16 * theme.fontScale) + 6;
+  // 子待办（显示内容开关）
+  if (show.tasks === true && tasks.length) {
+    tasks.slice(0, 10).forEach(task => {
+      ctx.lineWidth = 1.2;
+      boardRoundRect(ctx, x + padX, cy + 1, 12, 12, 4);
+      if (task.done) { ctx.fillStyle = theme.sage; ctx.fill(); }
+      ctx.strokeStyle = task.done ? theme.sage : boardHexToRgba(theme.faint, 0.7);
+      ctx.stroke();
+      if (task.done) {
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.6;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x + padX + 3, cy + 7);
+        ctx.lineTo(x + padX + 5.2, cy + 9.4);
+        ctx.lineTo(x + padX + 9, cy + 4.6);
+        ctx.stroke();
+      }
+      ctx.font = `400 ${9 * theme.fontScale}px ${theme.appFont}`;
+      ctx.fillStyle = task.done ? theme.faint : theme.muted;
+      ctx.fillText(canvasTruncateText(ctx, task.text, width - padX * 2 - 17), x + padX + 17, cy + 3.5);
+      cy += Math.round(12 * theme.fontScale) + 3;
+    });
+    cy += 2;
+  }
+  // 摘要（空间被子待办挤占时让位，避免与底行重叠）
+  const footY = show.foot !== false ? y + height - 9 - 12 : y + height - 9;
+  if (show.preview !== false && cy + Math.round(13 * theme.fontScale) < footY) {
+    ctx.font = `400 ${9 * theme.fontScale}px ${theme.appFont}`;
+    ctx.fillStyle = theme.muted;
+    ctx.fillText(canvasTruncateText(ctx, itemPreview(item).replace(/\s+/g, ' ').trim(), width - padX * 2), x + padX, cy + 4);
+    cy += Math.round(13 * theme.fontScale) + 4;
+  }
+  // 底行（贴卡片底部）：归类 / 完成度或关联数
+  if (show.foot !== false) {
+    const folder = getFolder(item.folderId);
+    ctx.font = `400 ${9 * theme.fontScale}px ${theme.appFont}`;
+    ctx.fillStyle = theme.muted;
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = folder?.color || '#999';
+    ctx.beginPath();
+    ctx.arc(x + padX + 2, footY + 6, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = theme.muted;
+    ctx.fillText(canvasTruncateText(ctx, folderName(folder), width / 2), x + padX + 10, footY + 6.5);
+    if (item.type === 'todo' && item.checkin) {
+      const on = Boolean((item.checkins || {})[todayISO()]);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = on ? theme.sage : theme.faint;
+      ctx.fillText(`✓ ${t(on ? 'checkinDone' : 'checkinTodoYet')}`, x + width - padX, footY + 6.5);
+      ctx.textAlign = 'left';
+    } else if (item.type === 'todo' && !done && tasks.length && show.tasks !== true) {
+      ctx.textAlign = 'right';
+      ctx.fillStyle = theme.muted;
+      ctx.fillText(`${completedCount}/${tasks.length}`, x + width - padX, footY + 6.5);
+      const barWidth = 40;
+      ctx.fillStyle = boardHexToRgba(theme.faint, 0.35);
+      boardRoundRect(ctx, x + width - padX - barWidth, footY + 11, barWidth, 3, 1.5);
+      ctx.fill();
+      ctx.fillStyle = theme.sage;
+      boardRoundRect(ctx, x + width - padX - barWidth, footY + 11, Math.max(2, barWidth * progress / 100), 3, 1.5);
+      ctx.fill();
+      ctx.textAlign = 'left';
+    } else if (item.type === 'note' && getLinkedItems(item).length) {
+      ctx.textAlign = 'right';
+      ctx.strokeStyle = theme.violet;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.arc(x + width - padX - ctx.measureText('0').width / 2 - 8, footY + 6.5, 4.5, Math.PI * 0.25, Math.PI * 1.6);
+      ctx.stroke();
+      ctx.fillStyle = theme.violet;
+      ctx.fillText(String(getLinkedItems(item).length), x + width - padX, footY + 6.5);
+      ctx.textAlign = 'left';
+    }
+  }
+  ctx.restore();
+}
+
+function boardRenderToCanvas() {
+  const board = activeBoard();
+  if (!board.widgets.length) return null;
+  const bounds = boardBoundsOf(board.widgets);
+  const margin = BOARD_EXPORT_MARGIN;
+  const width = (bounds.maxX - bounds.minX) + margin * 2;
+  const height = (bounds.maxY - bounds.minY) + margin * 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(width * BOARD_EXPORT_SCALE);
+  canvas.height = Math.round(height * BOARD_EXPORT_SCALE);
+  const ctx = canvas.getContext('2d');
+  ctx.scale(BOARD_EXPORT_SCALE, BOARD_EXPORT_SCALE);
+  const ox = bounds.minX - margin;
+  const oy = bounds.minY - margin;
+  const X = value => value - ox;
+  const Y = value => value - oy;
+  const theme = boardExportTheme();
+  const style = board.style || {};
+  const grid = style.gridSize || 26;
+  // 底色与底纹（个性化设置随图导出）
+  ctx.fillStyle = style.color ? boardHexToRgba(style.color) : theme.paper;
+  ctx.fillRect(0, 0, width, height);
+  if ((style.pattern || 'dots') === 'dots') {
+    ctx.fillStyle = boardHexToRgba(theme.ink, 0.1);
+    for (let gx = Math.ceil(ox / grid) * grid; gx <= ox + width; gx += grid) {
+      for (let gy = Math.ceil(oy / grid) * grid; gy <= oy + height; gy += grid) {
+        ctx.beginPath();
+        ctx.arc(X(gx), Y(gy), 1.1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  } else if (style.pattern === 'grid') {
+    ctx.strokeStyle = boardHexToRgba(theme.ink, 0.08);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let gx = Math.ceil(ox / grid) * grid; gx <= ox + width; gx += grid) {
+      ctx.moveTo(X(gx), 0);
+      ctx.lineTo(X(gx), height);
+    }
+    for (let gy = Math.ceil(oy / grid) * grid; gy <= oy + height; gy += grid) {
+      ctx.moveTo(0, Y(gy));
+      ctx.lineTo(width, Y(gy));
+    }
+    ctx.stroke();
+  }
+  // 关联曲线（同板互链的卡片之间，垫在组件之下）
+  if (boardState.prefs.linkCurves) {
+    const byRef = new Map(board.widgets.filter(w => w.type === 'note' || w.type === 'todo').map(w => [w.ref, w]));
+    const seen = new Set();
+    ctx.strokeStyle = boardHexToRgba(theme.sage, 0.48);
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    ctx.setLineDash([4, 5]);
+    board.widgets.forEach(widget => {
+      if (widget.type !== 'note' && widget.type !== 'todo') return;
+      const item = library.items.find(entry => entry.id === widget.ref);
+      (item?.linkedIds || []).forEach(ref => {
+        const other = byRef.get(ref);
+        if (!other || other === widget) return;
+        const key = [widget.ref, ref].sort().join('~');
+        if (seen.has(key)) return;
+        seen.add(key);
+        const aSize = boardWidgetSize(widget);
+        const bSize = boardWidgetSize(other);
+        const ax = X(widget.x + aSize.w / 2);
+        const ay = Y(widget.y + aSize.h / 2);
+        const bx = X(other.x + bSize.w / 2);
+        const by = Y(other.y + bSize.h / 2);
+        const dx = bx - ax;
+        const dy = by - ay;
+        const horizontal = Math.abs(dx) >= Math.abs(dy);
+        const bend = Math.max(Math.abs(horizontal ? dx : dy) * 0.35, 34);
+        const signX = Math.sign(dx) || 1;
+        const signY = Math.sign(dy) || 1;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.bezierCurveTo(
+          ax + (horizontal ? signX * bend : 0), ay + (horizontal ? 0 : signY * bend),
+          bx - (horizontal ? signX * bend : 0), by - (horizontal ? 0 : signY * bend),
+          bx, by
+        );
+        ctx.stroke();
+      });
+    });
+    ctx.setLineDash([]);
+  }
+  // 组件顺序与画布 DOM 一致：标注在下、文本其上、卡片最上。
+  board.widgets.filter(widget => widget.type === 'marker').forEach(widget => boardDrawMarker(ctx, widget, X, Y, theme));
+  board.widgets.filter(widget => widget.type === 'text').forEach(widget => boardDrawTextWidget(ctx, widget, X, Y, theme));
+  board.widgets.filter(widget => widget.type === 'note' || widget.type === 'todo').forEach(widget => {
+    const item = library.items.find(entry => entry.id === widget.ref);
+    if (item) boardDrawCard(ctx, widget, item, X, Y, theme);
+  });
+  return { canvas, width, height };
+}
+
+async function boardExportImage() {
+  const rendered = boardRenderToCanvas();
+  if (!rendered) { showToast(t('boardExportEmpty')); return; }
+  const blob = await new Promise(resolve => rendered.canvas.toBlob(resolve, 'image/png'));
+  if (!blob) { showToast(t('boardExportFailed')); return; }
+  boardDownloadBlob(`${boardExportBaseName()}.png`, blob);
+  showToast(t('boardExportDone'));
+}
+
+async function boardExportPdf() {
+  const rendered = boardRenderToCanvas();
+  if (!rendered) { showToast(t('boardExportEmpty')); return; }
+  const { PDFDocument, rgb } = window.PDFLib || {};
+  if (!PDFDocument) { showToast(t('boardExportFailed')); return; }
+  const dataUrl = rendered.canvas.toDataURL('image/png');
+  const pdf = await PDFDocument.create();
+  const png = await pdf.embedPng(dataUrl);
+  // 页面尺寸按画布逻辑像素换算为 pt（1px = 0.75pt），保持排版比例。
+  const pageWidth = rendered.width * 0.75;
+  const pageHeight = rendered.height * 0.75;
+  const page = pdf.addPage([pageWidth, pageHeight]);
+  page.drawImage(png, { x: 0, y: 0, width: pageWidth, height: pageHeight });
+  const bytes = await pdf.save();
+  boardDownloadBlob(`${boardExportBaseName()}.pdf`, new Blob([bytes], { type: 'application/pdf' }));
+  showToast(t('boardExportDone'));
+}
+
 async function boardMenuAction(action) {
   const boards = ensureBoards();
   const board = activeBoard();
   boardToggleMenu(false);
+  if (action === 'export-plan') { boardExportPlanFile(); return; }
+  if (action === 'export-image') { await boardExportImage(); return; }
+  if (action === 'export-pdf') { await boardExportPdf(); return; }
   if (action === 'new') {
     const name = await askNameDialog({ title: t('boardNamePrompt'), defaultValue: `${t('boardDefaultName')} ${boards.length + 1}`, icon: '#i-board' });
     if (!name) return;
