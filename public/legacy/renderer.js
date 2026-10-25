@@ -4621,19 +4621,27 @@ function askBoardImport(board) {
       }
     };
     const renderListRows = () => {
+      try {
+        renderRows();
+      } catch (error) {
+        listEl().innerHTML = `<p class="board-import-empty">${escapeHTML(String(error?.message || error))}</p>`;
+      }
+    };
+    const renderRows = () => {
       const items = visibleItems();
       listEl().innerHTML = items.length ? items.map(item => {
         const folder = getFolder(item.folderId);
         const onBoard = existing.has(item.id);
         const checked = state.selected.has(item.id);
-        return `<label class="board-import-row${checked ? ' is-checked' : ''}" data-import-row="${escapeHTML(item.id)}">
-          <input type="checkbox" data-import-check="${escapeHTML(item.id)}"${checked ? ' checked' : ''}/>
+        // 纯按钮行：不嵌原生 checkbox——label + 隐藏 input 依赖转发点击，
+        // 在部分 WebView 下行为不一致（点击无响应甚至白屏），状态也易与 UI 不同步。
+        return `<button type="button" class="board-import-row${checked ? ' is-checked' : ''}" data-import-row="${escapeHTML(item.id)}" role="listitem" aria-pressed="${checked}">
           <i class="board-import-check"><svg><use href="#i-check"/></svg></i>
           <span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>
           <b>${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</b>
           <small><span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span></small>
           ${onBoard ? `<em class="board-import-added">${escapeHTML(t('boardImportAdded'))}</em>` : ''}
-        </label>`;
+        </button>`;
       }).join('') : `<p class="board-import-empty">${escapeHTML(t('boardImportEmpty'))}</p>`;
     };
     dialog.addEventListener('click', event => {
@@ -4644,11 +4652,14 @@ function askBoardImport(board) {
         renderListRows();
         return;
       }
-      const check = event.target.closest('[data-import-check]');
-      if (check) {
-        if (check.checked) state.selected.add(check.dataset.importCheck);
-        else state.selected.delete(check.dataset.importCheck);
-        check.closest('.board-import-row')?.classList.toggle('is-checked', check.checked);
+      const row = event.target.closest('[data-import-row]');
+      if (row) {
+        const id = row.dataset.importRow;
+        const next = !state.selected.has(id);
+        if (next) state.selected.add(id);
+        else state.selected.delete(id);
+        row.classList.toggle('is-checked', next);
+        row.setAttribute('aria-pressed', String(next));
         syncApply();
       }
     });
@@ -4687,7 +4698,12 @@ async function boardRunImport() {
     const item = library.items.find(entry => entry.id === id && !entry.deletedAt);
     if (!item) return;
     const spot = boardVacantSpot();
-    board.widgets.push({ id: uid(), type: item.type, ref: item.id, x: spot.x, y: spot.y });
+    // 字段与画布新建的组件一致：补全尺寸与显示默认值，避免渲染期读缺省。
+    board.widgets.push({
+      id: uid(), type: item.type, ref: item.id, x: spot.x, y: spot.y,
+      w: BOARD_CARD_W, h: BOARD_CARD_H, opacity: 100,
+      show: { pill: true, priority: true, date: true, tasks: false, body: false, preview: true, foot: true }
+    });
   });
   touchBoard(board);
   persist();
