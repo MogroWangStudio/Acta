@@ -5314,8 +5314,11 @@
   const appIconChoices = new Set([...Object.keys(appIconPresets), 'custom']);
   if (!appIconChoices.has(uiSettings.appIconPreset)) uiSettings.appIconPreset = 'default';
   // 界面文案按 新语言 → 英文 → 中文原文 兜底：新语言先覆盖高频界面，
-  // 未及翻译的深层文案回落到英文，而不是漏出中文。
-  const appearanceText = source => interfaceTranslations[uiSettings.language]?.[source] || interfaceTranslations.en?.[source] || source;
+  // 未及翻译的深层文案回落到英文，而不是漏出中文。简体中文是源语言，
+  // 词典里没有 zh 键——必须原样返回，否则会落到英文分支把中文翻成英文。
+  const appearanceText = source => uiSettings.language === 'zh'
+    ? source
+    : interfaceTranslations[uiSettings.language]?.[source] || interfaceTranslations.en?.[source] || source;
   // 3.5.0 起应用图标更换仅保留在移动端（Android activity-alias）。桌面端与
   // 网页端不再提供入口：设置区块按 data-mobile-app-icon-only 显隐，桌面遗留
   // 的持久化运行时图标由 Tauri 启动逻辑清除并回归打包默认图标。
