@@ -4320,6 +4320,9 @@
     if (!mobileEdgeQuery.matches || reducedMotionQuery.matches || document.body.classList.contains('acta-reduce-motion') || event.touches.length !== 1) return;
     const surface = event.target.closest?.(mobileEdgeSurfaceSelector);
     if (!surface || (surface.classList.contains('editor-pane') && !surface.classList.contains('mobile-open'))) return;
+    // 计划板的画布手势占满中栏：竖直拖动是平移画布，不能再套一层列表边缘弹性，
+    // 否则画布会被整体上下拖动（看起来像页面在滑）。编辑器与设置页不在此列。
+    if (document.body.classList.contains('board-view') && surface.classList.contains('item-list')) return;
     const target = mobileEdgeTargetFor(surface);
     if (!target) return;
     clearMobileEdgeTarget(target);

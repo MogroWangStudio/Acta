@@ -2465,6 +2465,7 @@ let boardEditingText = null;      // 正在编辑的文本组件 id
 let boardPendingMarker = null;    // 待绘制的标注形状（点击画布拖出）
 let boardDraftMarker = null;      // 绘制中的临时元素
 let boardMenuTimer = 0;
+let boardMarkerMenuOutside = null; // 标注菜单的外部关闭监听（菜单移出工具条后自行管理）
 // 面板打开前的相机取景：收起时画布归位；期间用户手动平移过则尊重新位置。
 let boardCamRestore = null;
 let boardCamManual = false;
@@ -3126,14 +3127,6 @@ function renderBoardShell() {
       <button type="button" class="board-tool" id="boardAddText" title="${escapeHTML(t('boardAddText'))}"><svg><use href="#i-text"/></svg><span>${escapeHTML(t('boardAddText'))}</span></button>
       <div class="board-tool-wrap">
         <button type="button" class="board-tool" id="boardAddMarker" title="${escapeHTML(t('boardAddMarker'))}"><svg><use href="#i-marker"/></svg><span>${escapeHTML(t('boardAddMarker'))}</span></button>
-        <div class="board-marker-menu" id="boardMarkerMenu" role="menu" hidden>
-          <button type="button" data-board-marker="arrow"><svg><use href="#i-marker"/></svg>${escapeHTML(t('boardMarkerArrow'))}</button>
-          <button type="button" data-board-marker="rect"><svg><use href="#i-window-maximize"/></svg>${escapeHTML(t('boardMarkerRect'))}</button>
-          <button type="button" data-board-marker="ellipse"><svg><use href="#i-radar"/></svg>${escapeHTML(t('boardMarkerEllipse'))}</button>
-          <button type="button" data-board-marker="line"><svg><use href="#i-divider"/></svg>${escapeHTML(t('boardMarkerLine'))}</button>
-          <button type="button" data-board-marker="draw"><svg><use href="#i-edit"/></svg>${escapeHTML(t('boardMarkerDraw'))}</button>
-          <button type="button" data-board-marker="eraser"><svg><use href="#i-eraser"/></svg>${escapeHTML(t('boardMarkerEraser'))}</button>
-        </div>
       </div>
       <button type="button" class="board-tool" id="boardAddImport" title="${escapeHTML(t('boardAddItems'))}"><svg><use href="#i-plus"/></svg><span>${escapeHTML(t('boardAddItems'))}</span></button>
       <span class="board-chrome-sep" aria-hidden="true"></span>
@@ -3145,6 +3138,14 @@ function renderBoardShell() {
         <button type="button" class="board-zoom-button" id="boardZoomIn" title="${escapeHTML(t('boardZoomIn'))}" aria-label="${escapeHTML(t('boardZoomIn'))}"><svg><use href="#i-plus"/></svg></button>
         <button type="button" class="board-zoom-button" id="boardFit" title="${escapeHTML(t('boardFitView'))}" aria-label="${escapeHTML(t('boardFitView'))}"><svg><use href="#i-focus"/></svg></button>
       </div>
+    </div>
+    <div class="board-marker-menu" id="boardMarkerMenu" role="menu" hidden>
+      <button type="button" data-board-marker="arrow"><svg><use href="#i-marker"/></svg>${escapeHTML(t('boardMarkerArrow'))}</button>
+      <button type="button" data-board-marker="rect"><svg><use href="#i-window-maximize"/></svg>${escapeHTML(t('boardMarkerRect'))}</button>
+      <button type="button" data-board-marker="ellipse"><svg><use href="#i-radar"/></svg>${escapeHTML(t('boardMarkerEllipse'))}</button>
+      <button type="button" data-board-marker="line"><svg><use href="#i-divider"/></svg>${escapeHTML(t('boardMarkerLine'))}</button>
+      <button type="button" data-board-marker="draw"><svg><use href="#i-edit"/></svg>${escapeHTML(t('boardMarkerDraw'))}</button>
+      <button type="button" data-board-marker="eraser"><svg><use href="#i-eraser"/></svg>${escapeHTML(t('boardMarkerEraser'))}</button>
     </div>
     <div class="board-widget-toolbar" id="boardWidgetToolbar" hidden></div>
     <div class="board-pen-bar" id="boardPenBar" hidden></div>
@@ -3961,7 +3962,10 @@ const BOARD_EXPORT_PRIORITY_COLORS = { high: ['#a15b43', '#f4ded5'], medium: ['#
 async function boardSaveBlob(fileName, blob) {
   const asset = { fileName, mimeType: blob.type || 'application/octet-stream' };
   const desktop = window.actaDesktop?.exportAssets;
-  if (desktop) {
+  const nativeExport = window.Capacitor?.Plugins?.ActaSync?.exportAsset;
+  // 原生导出桥（桌面与移动）都按 data URL 传数据；移动端此前只传了文件名和
+  // MIME，原生侧收到空数据只能报错——用户看不到保存对话框，也没有任何产物。
+  if (desktop || nativeExport) {
     const dataUrl = await new Promise(resolve => {
       const reader = new FileReader();
       reader.onload = () => resolve(String(reader.result));
@@ -3970,6 +3974,8 @@ async function boardSaveBlob(fileName, blob) {
     });
     if (!dataUrl) return null;
     asset.dataUrl = dataUrl;
+  }
+  if (desktop) {
     // 桥失败（如格式不被支持）要显式提示：静默失败会让用户完全看不到产物。
     let paths;
     try {
@@ -3980,10 +3986,16 @@ async function boardSaveBlob(fileName, blob) {
     }
     return Array.isArray(paths) && paths[0] ? paths[0] : null;
   }
-  const nativeExport = window.Capacitor?.Plugins?.ActaSync?.exportAsset;
   if (nativeExport) {
-    await nativeExport(asset);
-    return 'native';
+    // Capacitor 返回 { fileName, path }；用户取消时原生 resolve(undefined)。
+    let result;
+    try {
+      result = await nativeExport(asset);
+    } catch (error) {
+      showToast(`${t('boardExportFailed')}${error?.message || error}`);
+      return null;
+    }
+    return result?.fileName || null;
   }
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
@@ -5073,6 +5085,11 @@ function boardRemoveStyleTrigger() {
 function bindBoardScene() {
   const canvas = $('#boardCanvas');
   if (!canvas) return;
+  // 画布每次重建都会换掉标注菜单：先撤掉上一轮的外部关闭监听，避免留住旧节点。
+  if (boardMarkerMenuOutside) {
+    document.removeEventListener('pointerdown', boardMarkerMenuOutside);
+    boardMarkerMenuOutside = null;
+  }
   const entering = !boardWasActive;
   boardWasActive = true;
   boardEnsurePill();
@@ -5598,29 +5615,59 @@ function bindBoardScene() {
     boardSetSelection([widget.id]);
     boardEditText(widget.id);
   });
+  // 标注菜单挂在画布层而不是工具条里：移动端工具条横向滚动（overflow-x:auto），
+  // 向上弹出的菜单会被滚动容器裁掉，看起来像点了没反应。这里按标注按钮在屏幕
+  // 上的实际位置，把菜单锚定到画布坐标系；上方空间不足时翻到按钮下方。
+  function boardPositionMarkerMenu(menu, canvas) {
+    const button = $('#boardAddMarker', canvas);
+    if (!button) return;
+    const btn = button.getBoundingClientRect();
+    const box = canvas.getBoundingClientRect();
+    const width = menu.offsetWidth || 128;
+    const height = menu.offsetHeight || 216;
+    const maxLeft = Math.max(8, box.width - width - 8);
+    const left = Math.min(Math.max(8, btn.left - box.left + btn.width / 2 - width / 2), maxLeft);
+    menu.style.left = `${Math.round(left)}px`;
+    if (btn.top - box.top < height + 10) {
+      menu.style.top = `${Math.round(btn.bottom - box.top + 8)}px`;
+      menu.style.bottom = 'auto';
+      menu.classList.add('is-below');
+    } else {
+      menu.style.bottom = `${Math.round(box.bottom - btn.top + 8)}px`;
+      menu.style.top = 'auto';
+      menu.classList.remove('is-below');
+    }
+  }
+  function boardCloseMarkerMenu(menu) {
+    if (menu) menu.hidden = true;
+    if (boardMarkerMenuOutside) {
+      document.removeEventListener('pointerdown', boardMarkerMenuOutside);
+      boardMarkerMenuOutside = null;
+    }
+  }
   $('#boardAddMarker', canvas)?.addEventListener('click', () => {
     const menu = $('#boardMarkerMenu', canvas);
     if (!menu) return;
-    const open = menu.hidden;
-    menu.hidden = !open;
-    if (open) {
-      document.addEventListener('pointerdown', function close(event) {
-        if (event.target.closest('#boardMarkerMenu, #boardAddMarker')) return;
-        menu.hidden = true;
-        document.removeEventListener('pointerdown', close);
-      }, { once: false });
-    }
+    if (!menu.hidden) { boardCloseMarkerMenu(menu); return; }
+    menu.hidden = false;
+    boardPositionMarkerMenu(menu, canvas);
+    boardCloseMarkerMenu(null);
+    boardMarkerMenuOutside = event => {
+      if (event.target.closest('#boardMarkerMenu, #boardAddMarker')) return;
+      boardCloseMarkerMenu(menu);
+    };
+    document.addEventListener('pointerdown', boardMarkerMenuOutside);
   });
   $$('#boardMarkerMenu [data-board-marker]', canvas).forEach(button => button.addEventListener('click', () => {
     const kind = button.dataset.boardMarker;
     // 画笔与橡皮是模式化工具：再点一次退出；形状工具保持单次绘制。
     if ((kind === 'draw' || kind === 'eraser') && boardPendingMarker === kind) {
-      $('#boardMarkerMenu', canvas).hidden = true;
+      boardCloseMarkerMenu($('#boardMarkerMenu', canvas));
       boardCancelDraw();
       return;
     }
     $$('#boardMarkerMenu [data-board-marker]', canvas).forEach(entry => entry.classList.toggle('active', entry === button));
-    $('#boardMarkerMenu', canvas).hidden = true;
+    boardCloseMarkerMenu($('#boardMarkerMenu', canvas));
     boardStartDraw(kind);
   }));
   $('#boardAddImport', canvas)?.addEventListener('click', boardRunImport);

@@ -2177,13 +2177,15 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-tool:hover, .board-zoom-button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 55%, transparent); transform: scale(1.04); }
 .board-tool:active, .board-zoom-button:active { transform: scale(.95); transition-duration: .08s; }
 .board-marker-menu {
-  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(5px); z-index: 6; min-width: 128px; padding: 5px;
+  position: absolute; left: 0; bottom: 0; z-index: 6; min-width: 128px; padding: 5px;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 12px;
   background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(24px) saturate(1.5); -webkit-backdrop-filter: blur(24px) saturate(1.5);
   box-shadow: 0 4px 12px rgba(34,38,33,.1), 0 16px 34px -14px rgba(34,38,33,.26);
   opacity: 0; pointer-events: none; transition: opacity .15s ease, transform .2s var(--ease-out);
+  transform: translateY(5px); transform-origin: 50% 100%;
 }
-.board-marker-menu:not([hidden]) { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.board-marker-menu.is-below { transform: translateY(-5px); transform-origin: 50% 0; }
+.board-marker-menu:not([hidden]) { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .board-marker-menu button {
   width: 100%; min-height: 34px; padding: 6px 9px; border: 0; border-radius: 9px; background: transparent; color: var(--muted);
   display: flex; align-items: center; gap: 8px; text-align: left; font-size: calc(10px * var(--acta-font-scale)); cursor: pointer;
@@ -2340,9 +2342,12 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-pen-field input[type="range"] { width: 74px; accent-color: var(--sage); }
 .board-pen-field output { min-width: 30px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; text-align: right; }
 @media (max-width: 800px) {
-  .board-pen-bar { top: auto; bottom: calc(138px + env(safe-area-inset-bottom)); max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  /* 画布底缘已经在底栏之上（item-pane 留白），工具条只需贴近画布底缘：
+     原先再叠一层 84px，工具栏会停在底栏上方约 100px，离手指太远。
+     画笔条与多选条依次排在主工具条上方，保持 8px 净空。 */
+  .board-pen-bar { top: auto; bottom: 62px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
   .board-pen-bar::-webkit-scrollbar { display: none; }
-  .board-widget-toolbar.is-multi { bottom: calc(138px + env(safe-area-inset-bottom)); }
+  .board-widget-toolbar.is-multi { bottom: 62px; }
 }
 
 /* 面板关闭按钮：浮动在面板左上角内侧。常驻渲染，与面板同曲线同时长滑入滑出；
@@ -2394,7 +2399,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 /* 移动端：板胶囊与工具条让出画布顶部，工具条筛选部分横向滚动；
    卡片点击进入全屏编辑器；导入对话框占满宽度。 */
 @media (max-width: 800px) {
-  .board-chrome { bottom: calc(84px + env(safe-area-inset-bottom)); max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
+  .board-chrome { bottom: 10px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
   .board-chrome::-webkit-scrollbar { display: none; }
   .board-tool span { display: none; }
   .board-zoom-level { min-width: 34px; }
@@ -2403,6 +2408,13 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .board-style-trigger { margin-right: 10px; }
   .board-style-pop-lg { right: 10px; top: 56px; bottom: auto; }
   .board-widget-toolbar { max-width: calc(100% - 16px); flex-wrap: wrap; justify-content: center; }
+  /* 320px 档再收紧间距：标注菜单已移出滚动容器，工具条本身不必横向滚动，
+     缩小间隙后全部控件（含适配视图）都能落在可视区里。 */
+  @media (max-width: 360px) {
+    .board-chrome { gap: 2px; padding: 5px; }
+    .board-chrome-sep { margin: 0 1px; }
+    .board-zoom-level { min-width: 30px; }
+  }
   .board-import-dialog { width: calc(100vw - 20px); }
   .board-import-list { max-height: 44vh; }
 }

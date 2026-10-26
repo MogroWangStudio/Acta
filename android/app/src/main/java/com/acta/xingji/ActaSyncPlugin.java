@@ -483,9 +483,14 @@ public class ActaSyncPlugin extends Plugin {
         String mimeType = call.getString("mimeType", "");
         String dataUrl = call.getString("dataUrl");
         String extension;
+        // 与 Tauri 的导出桥保持一致：计划板文件（.actaplan）与笔记的
+        // Markdown / 纯文本也走这条通道，不再只放行 PDF 与图片。
         if ("application/pdf".equals(mimeType)) extension = ".pdf";
         else if ("image/png".equals(mimeType)) extension = ".png";
         else if ("image/jpeg".equals(mimeType)) extension = ".jpg";
+        else if ("application/json".equals(mimeType)) extension = ".actaplan";
+        else if ("text/markdown".equals(mimeType)) extension = ".md";
+        else if ("text/plain".equals(mimeType)) extension = ".txt";
         else {
             call.reject("不支持该导出格式");
             return;
