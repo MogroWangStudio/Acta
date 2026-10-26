@@ -805,6 +805,8 @@ let todoFolderFilter = 'all';
 let noteFolderFilter = 'all';
 let noteRelationFilter = 'all';
 let noteUpdatedFilter = 'all';
+let trashTypeFilter = 'all';
+let trashFolderFilter = 'all';
 const listSortModes = ['updated', 'created', 'due', 'priority', 'title'];
 let listSortMode = listSortModes.includes(settings.sortMode) ? settings.sortMode : 'updated';
 let calendarViewMode = 'month';
@@ -1705,6 +1707,10 @@ function listFilterContext() {
 }
 
 function resetListFilters(context = 'all') {
+  if (context === 'all' || context === 'trash') {
+    trashTypeFilter = 'all';
+    trashFolderFilter = 'all';
+  }
   if (context === 'all' || context === 'mixed') currentFilter = 'all';
   if (context === 'all' || context === 'todo') {
     todoPriorityFilter = 'all';
@@ -1719,7 +1725,8 @@ function resetListFilters(context = 'all') {
 }
 
 function hasActiveListFilters(context = listFilterContext()) {
-  if (['calendar', 'stats', 'trash', 'board'].includes(context)) return false;
+  if (context === 'trash') return trashTypeFilter !== 'all' || trashFolderFilter !== 'all';
+  if (['calendar', 'stats', 'board'].includes(context)) return false;
   if (context === 'mixed') return currentFilter !== 'all';
   if (context === 'todo') return [todoPriorityFilter, todoDueFilter, todoFolderFilter].some(value => value !== 'all');
   return [noteFolderFilter, noteRelationFilter, noteUpdatedFilter].some(value => value !== 'all');
@@ -1751,6 +1758,20 @@ function syncListFilterUI() {
       : group.dataset.filterContext !== context;
   });
   $$('[data-filter]', row).forEach(button => button.classList.toggle('active', button.dataset.filter === currentFilter));
+  $$('[data-trash-filter]', row).forEach(button => button.classList.toggle('active', button.dataset.trashFilter === trashTypeFilter));
+  if (context === 'trash') {
+    const trashFolderSelect = $('#trashFolderFilter');
+    if (trashFolderSelect) {
+      trashFolderSelect.innerHTML = [
+        `<option value="all">${escapeHTML(t('allFolders'))}</option>`,
+        `<option value="none">${escapeHTML(t('unclassified'))}</option>`,
+        ...library.folders.map(folder => `<option value="${escapeHTML(folder.id)}">${escapeHTML(folderName(folder))}</option>`)
+      ].join('');
+      trashFolderSelect.value = trashFolderFilter;
+      if (trashFolderSelect.value !== trashFolderFilter) { trashFolderFilter = 'all'; trashFolderSelect.value = 'all'; }
+      trashFolderSelect.closest('.filter-select')?.classList.toggle('is-active', trashFolderFilter !== 'all');
+    }
+  }
 
   const values = {
     todoPriorityFilter, todoDueFilter, todoFolderFilter,
@@ -1800,6 +1821,15 @@ function syncListFilterUI() {
 
 function getVisibleItems() {
   let items = currentView === 'trash' ? trashedItems() : activeItems();
+  if (currentView === 'trash') {
+    // 回收站的类型与归类筛选：未归类 = 没有有效归类（归类本身被删也算）。
+    if (trashTypeFilter !== 'all') items = items.filter(item => item.type === trashTypeFilter);
+    if (trashFolderFilter !== 'all') {
+      items = trashFolderFilter === 'none'
+        ? items.filter(item => !getFolder(item.folderId))
+        : items.filter(item => item.folderId === trashFolderFilter);
+    }
+  }
   if (currentView === 'calendar') items = items.filter(item => (item.type === 'todo' && todoIsScheduled(item)) || item.type === 'note');
   if (currentView === 'inbox') items = items.filter(item => !isTodoComplete(item) || pendingSink.has(item.id));
   if (currentView === 'today') items = items.filter(item => item.type === 'todo' && todoScheduleDate(item) === todayISO() && (!isTodoComplete(item) || pendingSink.has(item.id)));
@@ -8586,6 +8616,16 @@ function bindShell() {
     $$('.filter-row [data-filter]').forEach(entry => entry.classList.toggle('active', entry === button));
     refreshFilteredList();
   }));
+  $$('.filter-row [data-trash-filter]').forEach(button => button.addEventListener('click', () => {
+    trashTypeFilter = button.dataset.trashFilter;
+    $$('.filter-row [data-trash-filter]').forEach(entry => entry.classList.toggle('active', entry === button));
+    refreshFilteredList();
+  }));
+  $('#trashFolderFilter')?.addEventListener('change', event => {
+    trashFolderFilter = event.target.value;
+    event.target.closest('.filter-select')?.classList.toggle('is-active', trashFolderFilter !== 'all');
+    refreshFilteredList();
+  });
   [
     ['todoPriorityFilter', value => { todoPriorityFilter = value; }],
     ['todoDueFilter', value => { todoDueFilter = value; }],

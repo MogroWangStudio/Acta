@@ -155,6 +155,17 @@
               <button data-filter="todo" data-i18n="todos">待办</button>
               <button data-filter="note" data-i18n="notes">笔记</button>
             </div>
+            <div class="filter-group contextual-filter-group" data-filter-context="trash" hidden>
+              <div class="type-filter-group" role="group" aria-label="类型">
+                <button class="active" data-trash-filter="all" data-i18n="all">全部</button>
+                <button data-trash-filter="todo" data-i18n="todos">待办</button>
+                <button data-trash-filter="note" data-i18n="notes">笔记</button>
+              </div>
+              <label class="filter-select">
+                <svg><use href="#i-folder"/></svg>
+                <select id="trashFolderFilter"></select>
+              </label>
+            </div>
             <div class="filter-group contextual-filter-group" data-filter-context="todo" hidden>
               <label class="filter-select">
                 <svg><use href="#i-spark"/></svg>

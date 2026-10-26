@@ -1476,6 +1476,8 @@ body.acta-reduce-motion.note-focus-mode :is(.editor-pane,.note-editor) { animati
      出现时独占行 2 全宽。
    「显示已完成」开关已移至标题行右端（视图级显示选项）。 */
 .filter-row .list-sort-field { grid-column: 4; grid-row: 1; }
+/* 回收站固定按删除时间排序：类型与归类筛选已足够，排序下拉不出场。 */
+#listFilterRow[data-filter-view="trash"] .list-sort-field { display: none; }
 .filter-row[data-filter-view="mixed"] .type-filter-group { grid-column: 1 / 4; grid-row: 1; gap: 4px; padding: 3px; border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--white) 55%, transparent); }
 .filter-row[data-filter-view="mixed"] .type-filter-group button { flex: 1 1 0; }
 .filter-row[data-filter-view="todo"] .contextual-filter-group .filter-select:nth-of-type(1),
@@ -1938,7 +1940,8 @@ body.stats-view .list-footer { background: transparent; }
 .stats-empty p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); max-width: 320px; line-height: 1.7; }
 
 /* --- Trash view --- */
-body.trash-view .filter-row, body.trash-view .list-resizer { display: none; }
+/* 回收站有类型与归类筛选：筛选行不再隐藏，只收起列宽拖拽条。 */
+body.trash-view .list-resizer { display: none; }
 body.trash-view .item-pane { border-right: 0; background: color-mix(in srgb, var(--note-soft) 12%, var(--panel)); }
 body.trash-view .editor-pane { display: none; }
 body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 10%, var(--panel)); }
