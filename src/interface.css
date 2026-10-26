@@ -582,6 +582,8 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .relation-dialog-hint { margin: 0 0 11px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.55; }
 .mobile-classification-list { max-height: min(520px, calc(100dvh - 104px - env(safe-area-inset-top) - env(safe-area-inset-bottom))); padding: 9px; display: grid; gap: 6px; overflow: hidden auto; overscroll-behavior: contain; }
 .mobile-classification-row { width: 100%; min-width: 0; min-height: 58px; padding: 4px; border: 1px solid transparent; border-radius: 12px; background: transparent; display: grid; grid-template-columns: minmax(0,1fr) 36px; align-items: center; gap: 3px; }
+/* 收集箱固定在列表首位：没有可编辑的归类，右侧编辑按钮列为空，入口独占整行。 */
+.mobile-classification-row.is-inbox { grid-template-columns: minmax(0,1fr); --folder-color: var(--sage); }
 .mobile-classification-row.active { border-color: color-mix(in srgb, var(--folder-color) 28%, var(--line)); background: color-mix(in srgb, var(--folder-color) 8%, var(--white)); }
 .mobile-classification-open { min-width: 0; min-height: 48px; padding: 4px 6px; border: 0; border-radius: 9px; background: transparent; color: var(--ink); display: grid; grid-template-columns: 34px minmax(0,1fr) auto; align-items: center; gap: 10px; text-align: left; cursor: pointer; }
 .mobile-classification-edit { width: 34px; height: 34px; padding: 0; border: 1px solid color-mix(in srgb, var(--folder-color) 18%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--white) 72%, transparent); color: var(--folder-color); display: grid; place-items: center; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
@@ -589,6 +591,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .mobile-classification-edit svg { width: 15px; height: 15px; }
 .mobile-classification-list .folder-dot { width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--folder-color) 14%, var(--white)); color: var(--folder-color); display: grid; place-items: center; font-style: normal; }
 .mobile-classification-list .folder-short-name { display: block; max-width: 28px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(10px * var(--acta-font-scale)); font-style: normal; font-weight: 750; }
+.mobile-classification-list .folder-dot svg { width: 16px; height: 16px; }
 .mobile-classification-open > span:nth-child(2) { min-width: 0; display: grid; gap: 3px; }
 .mobile-classification-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(11px * var(--acta-font-scale)); }
 .mobile-classification-list small { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }

@@ -1084,8 +1084,16 @@
   function renderMobileClassifications() {
     const copy = classificationText();
     const list = byId('mobileClassificationList');
-    list.setAttribute('aria-label', copy.mobileTitle);
-    list.innerHTML = library.folders.length
+    list.setAttribute('aria-label', `${t('inbox')} · ${copy.mobileTitle}`);
+    // 收集箱固定排在最前：从任意归类进入后都能在同一处切回全部内容。
+    const inboxCount = activeItems().filter(item => !isTodoComplete(item)).length;
+    const inboxRow = `<div class="mobile-classification-row is-inbox ${currentView === 'inbox' ? 'active' : ''}">
+      <button class="mobile-classification-open" type="button" data-view="inbox">
+        <i class="folder-dot"><svg><use href="#i-inbox"/></svg></i>
+        <span><strong>${escapeHTML(t('inbox'))}</strong><small>${escapeHTML(formatClassificationMessage(copy.itemCount, inboxCount))}</small></span><em>${inboxCount}</em>
+      </button>
+    </div>`;
+    const folderRows = library.folders.length
       ? library.folders.map(folder => {
         const count = library.items.filter(item => item.folderId === folder.id && !isTrashed(item)).length;
         const shortName = folderShortName(folder);
@@ -1100,6 +1108,7 @@
         </div>`;
       }).join('')
       : `<button class="mobile-classification-empty" type="button" data-classification-add><svg><use href="#i-plus"/></svg><span>${escapeHTML(copy.add)}</span></button>`;
+    list.innerHTML = inboxRow + folderRows;
   }
   let mobileClassificationCloseTimer = 0;
   function openMobileClassifications() {
@@ -1166,7 +1175,7 @@
       openClassificationManager(editButton.dataset.classificationEdit);
       return;
     }
-    if (event.target.closest('[data-view^="folder:"]')) closeMobileClassifications();
+    if (event.target.closest('[data-view^="folder:"], [data-view="inbox"]')) closeMobileClassifications();
   });
   document.addEventListener('click', event => {
     if (!mobileClassificationPanel.classList.contains('is-open')) return;
