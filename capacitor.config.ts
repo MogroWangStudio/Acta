@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.mws.acta',
-  appName: 'Acta 行记',
+  appName: 'Acta',
   webDir: 'dist',
   android: {
     backgroundColor: '#e7e7e3',

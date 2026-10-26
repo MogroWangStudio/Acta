@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Acta 行记</string>
-    <string name="title_activity_main">Acta 行记</string>
+    <string name="app_name">Acta</string>
+    <string name="title_activity_main">Acta</string>
     <string name="package_name">com.mws.acta</string>
     <string name="custom_url_scheme">com.mws.acta</string>
 </resources>
