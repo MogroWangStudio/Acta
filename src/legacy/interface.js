@@ -399,7 +399,7 @@
     '初始设置向导':'Setup guide', '重新运行首次启动引导':'Run the first-launch onboarding again', '重新运行引导':'Run the guide again',
     '基准字号':'Base font size', '正文与各级标题一起缩放':'Scales body text and headings together',
     '通过 WebDAV 或局域网设备同步完整数据文件夹。':'Sync via WebDAV or LAN devices.',
-    'Acta 局域网同步':'Acta LAN sync', '与局域网内其他 Acta 设备直接互传，不经过服务器；实验功能，传完请核对数据。':'Direct device-to-device sync over the LAN; experimental.',
+    'Acta 局域网同步':'Acta LAN sync', '与局域网内其他 Acta 设备直接互传，不经过服务器；实验功能，传完请核对数据。':'Direct device-to-device sync over the LAN; experimental.', '打开局域网同步':'Open LAN sync',
     '允许被其他设备发现':'Be discoverable', '出现在附近设备的列表中':'List this device to nearby devices',
     '附近的设备':'Nearby devices', '搜索设备':'Scan for devices', '设备雷达':'Device radar',
     '信任此局域网（自动确认）':'Trust this network (auto-confirm)', '其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络':'Other devices read/write without confirmation; trusted networks only'
@@ -461,7 +461,7 @@
     '初始设置向导':'初始設定精靈', '重新运行首次启动引导':'重新執行首次啟動引導', '重新运行引导':'重新執行引導',
     '基准字号':'基準字級', '正文与各级标题一起缩放':'正文與各級標題一起縮放',
     '通过 WebDAV 或局域网设备同步完整数据文件夹。':'透過 WebDAV 或區域網路裝置同步完整資料資料夾。',
-    'Acta 局域网同步':'Acta 區域網路同步', '与局域网内其他 Acta 设备直接互传，不经过服务器；实验功能，传完请核对数据。':'與區域網路內其他 Acta 裝置直接互傳，不經過伺服器；實驗功能，傳完請核對資料。',
+    'Acta 局域网同步':'Acta 區域網路同步', '与局域网内其他 Acta 设备直接互传，不经过服务器；实验功能，传完请核对数据。':'與區域網路內其他 Acta 裝置直接互傳，不經過伺服器；實驗功能，傳完請核對資料。', '打开局域网同步':'開啟區域網路同步',
     '允许被其他设备发现':'允許被其他裝置發現', '出现在附近设备的列表中':'出現在附近裝置的清單中',
     '附近的设备':'附近的裝置', '搜尋裝置':'搜尋裝置', '设备雷达':'裝置雷達',
     '信任此局域网（自动确认）':'信任此區域網路（自動確認）', '其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络':'其他裝置可免確認讀寫本機資料；覆寫前仍自動備份，僅限可信任網路'
@@ -485,19 +485,25 @@
     '本机主机名':'本機主機名稱', '例：🌿':'例：🌿', '自动分配':'自動分配'
   });
 
+  // 设置文案翻译的根节点：设置面板本体 + 独立的局域网同步页（它在设置
+  // 弹窗之外，但同样使用中文原文做翻译键）。
+  const settingsTranslationRoots = [settingsModal, byId('lanSyncPage')].filter(Boolean);
+  const settingsDynamicSelector = '#workspaceSettingsTitle,#workspaceFolderPath,#workspaceStatus,#generalStatus,#oneDriveStatus,#appFontSizeValue,#splashSpeedValue,#completedTodoSinkDelayValue,#lanSyncState,#lanSyncStatus,#lanPeersHint,#lanRadarSelfName,#lanRadarCount,#lanRadarPhase,#lanAutomationList';
   const settingsTextEntries = [];
-  const settingsWalker = document.createTreeWalker(settingsModal, NodeFilter.SHOW_TEXT);
-  while (settingsWalker.nextNode()) {
-    const node = settingsWalker.currentNode;
-    const source = node.nodeValue.trim();
-    if (!source) continue;
-    if (node.parentElement?.closest('#workspaceSettingsTitle,#workspaceFolderPath,#workspaceStatus,#generalStatus,#oneDriveStatus,#appFontSizeValue,#splashSpeedValue,#completedTodoSinkDelayValue')) continue;
-    settingsTextEntries.push({ node, source, leading: node.nodeValue.match(/^\s*/)[0], trailing: node.nodeValue.match(/\s*$/)[0] });
-  }
+  settingsTranslationRoots.forEach(root => {
+    const settingsWalker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (settingsWalker.nextNode()) {
+      const node = settingsWalker.currentNode;
+      const source = node.nodeValue.trim();
+      if (!source) continue;
+      if (node.parentElement?.closest(settingsDynamicSelector)) continue;
+      settingsTextEntries.push({ node, source, leading: node.nodeValue.match(/^\s*/)[0], trailing: node.nodeValue.match(/\s*$/)[0] });
+    }
+  });
   const settingsAttributeEntries = [];
-  settingsModal.querySelectorAll('[aria-label],[placeholder],[title]').forEach(node => ['aria-label', 'placeholder', 'title'].forEach(attribute => {
+  settingsTranslationRoots.forEach(root => root.querySelectorAll('[aria-label],[placeholder],[title]').forEach(node => ['aria-label', 'placeholder', 'title'].forEach(attribute => {
     if (node.hasAttribute(attribute)) settingsAttributeEntries.push({ node, attribute, source: node.getAttribute(attribute) });
-  }));
+  })));
 
   function applySettingsTranslation() {
     const translation = interfaceTranslations[uiSettings.language] || {};
@@ -521,8 +527,11 @@
   // 数据档案列表变化时由 renderDataProfiles 调用（后定义于局域网同步段），
   // 刷新对外元数据；提前声明避免初始化时的 TDZ 问题。
   let lanProfilesChangedHook = null;
-  // 设备雷达内嵌在数据同步设置页：设置页的打开/关闭/切页通过该钩子通知
-  // 雷达扫描循环启停（钩子在局域网同步段赋值）。
+  // 独立局域网同步页：设置页、侧栏与移动端快捷入口都通过该函数打开
+  // （函数在局域网同步段赋值；无原生桥时保持 null 并回落到设置页）。
+  let lanPageOpen = null;
+  // 设备雷达位于独立局域网同步页：页面打开/关闭通过该钩子通知扫描循环
+  // 启停（钩子在局域网同步段赋值）。
   let lanRadarVisibilityHook = null;
   // 扫描结果落地后调用（同上）：驱动「发现设备」类自动化条目。
   let lanAutomationEvaluator = null;
@@ -3675,8 +3684,6 @@
     settingsModal.classList.add('open');
     settingsModal.setAttribute('aria-hidden', 'false');
     switchSettingsPage(page);
-    // 全屏设置页承载了设备雷达：打开即进入扫描循环（钩子只对数据同步页起效）。
-    lanRadarVisibilityHook?.(true);
     syncLanguageChoice();
     applySettingsTranslation();
     updateOneDriveUI();
@@ -3685,7 +3692,6 @@
   function closeSettings() {
     if (!settingsModal.classList.contains('open') || settingsModal.classList.contains('is-closing')) return;
     settingsModal.setAttribute('aria-hidden', 'true');
-    lanRadarVisibilityHook?.(false);
     const finish = () => {
       clearTimeout(settingsCloseTimer);
       settingsCloseTimer = 0;
@@ -3701,8 +3707,6 @@
     document.querySelectorAll('[data-settings-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.settingsPanel === page));
     // 行记数据页内嵌的数据统计随切换刷新，保证容量与计数是最新值。
     if (page === 'workspace') void refreshDataStats();
-    // 设备雷达只在数据同步页可见：离开该页即暂停扫描循环。
-    lanRadarVisibilityHook?.(page === 'cloud');
   }
 
   byId('settingsButton').addEventListener('click', () => openSettings('language'));
@@ -3715,7 +3719,13 @@
   // 弹出窗口不因点击空白处而关闭（设计约定）：设置面板内容较多，误点空白
   // 丢失浏览位置代价高；关闭只通过关闭按钮或 Esc。
   document.querySelectorAll('[data-settings-page]').forEach(button => button.addEventListener('click', () => switchSettingsPage(button.dataset.settingsPage)));
-  document.addEventListener('keydown', event => { if (!isImeComposing(event) && event.key === 'Escape') closeSettings(); });
+  document.addEventListener('keydown', event => {
+    if (isImeComposing(event) || event.key !== 'Escape') return;
+    // 有模态弹窗在最上层时（如局域网同步页），Esc 交给弹窗自己的 cancel 处理，
+    // 不要连带关闭它下面的设置页。
+    if (document.querySelector('dialog[open]')) return;
+    closeSettings();
+  });
 
   // 注意仓库归属是 MogroWangStudio：此前写成 MogroWang 导致检查永远 404。
   const ACTA_RELEASES_URL = 'https://github.com/MogroWangStudio/Acta/releases';
@@ -4680,14 +4690,16 @@
     planLinks.addEventListener('change', savePlanPrefs);
   }
 
-  // 侧边栏「局域网雷达」入口：雷达已内嵌在数据同步设置页，这里直接打开
-  // 设置并定位到该页，不再经过独立的三级窗口。
+  // 侧栏与移动顶栏的「局域网雷达」入口：直接打开独立的 Acta 局域网同步页；
+  // 没有原生局域网桥时（浏览器环境）回落到设置页的数据同步面板。
   byId('smartNav')?.addEventListener('click', event => {
     if (!event.target.closest('[data-nav-action="lan"]')) return;
-    openSettings('cloud');
+    if (lanPageOpen) lanPageOpen(); else openSettings('cloud');
   });
   // 移动顶栏的雷达入口走同一条路径；历史记录复用桌面 dock 的行为。
-  byId('mobileLanAction')?.addEventListener('click', () => openSettings('cloud'));
+  byId('mobileLanAction')?.addEventListener('click', () => {
+    if (lanPageOpen) lanPageOpen(); else openSettings('cloud');
+  });
   byId('mobileHistoryButton')?.addEventListener('click', () => byId('historyButton').click());
 
   function applyGeneralSettings() {
@@ -5591,7 +5603,7 @@
     zh: {
       stateOff:'未开启', stateOn:'可被发现', stateNoDiscovery:'已开启',
       peersHint:'搜索同一 Wi-Fi 或网络中的 Acta 设备。', scanning:'正在搜索附近的 Acta 设备…',
-      noPeers:'没有找到其他 Acta 设备。请确认对方已打开 Acta，并在数据同步设置中开启「允许被其他设备发现」。',
+      noPeers:'没有找到其他 Acta 设备。请确认对方已打开 Acta，并在「Acta 局域网同步」中开启「允许被其他设备发现」。',
       foundPeers:'找到 {0} 台设备，可以直接开始同步。', scanFail:'搜索失败：',
       serviceStartFail:'局域网同步服务启动失败：', serviceOn:'这台设备现在可以被同一局域网中的其他 Acta 发现。',
       serviceOff:'已停止局域网同步，其他设备不再看到这台设备。',
@@ -5679,7 +5691,7 @@
     en: {
       stateOff:'Off', stateOn:'Discoverable', stateNoDiscovery:'On',
       peersHint:'Scan the same Wi-Fi or network for Acta devices.', scanning:'Scanning for nearby Acta devices…',
-      noPeers:'No other Acta devices found. Make sure Acta is open on the other device and “Be discoverable” is on in Data sync.',
+      noPeers:'No other Acta devices found. Make sure Acta is open on the other device and “Be discoverable” is on in Acta LAN sync.',
       foundPeers:'Found {0} device(s), ready to sync.', scanFail:'Scan failed: ',
       serviceStartFail:'LAN sync service failed to start: ', serviceOn:'This device is now discoverable by other Acta clients on this network.',
       serviceOff:'LAN sync stopped; other devices no longer see this device.',
@@ -5767,7 +5779,7 @@
     'zh-Hant': {
       stateOff:'未開啟', stateOn:'可被發現', stateNoDiscovery:'已開啟',
       peersHint:'搜尋同一 Wi-Fi 或網路中的 Acta 裝置。', scanning:'正在搜尋附近的 Acta 裝置…',
-      noPeers:'沒有找到其他 Acta 裝置。請確認對方已開啟 Acta，並在資料同步設定中開啟「允許被其他裝置發現」。',
+      noPeers:'沒有找到其他 Acta 裝置。請確認對方已開啟 Acta，並在「Acta 區域網路同步」中開啟「允許被其他裝置發現」。',
       foundPeers:'找到 {0} 台裝置，可以直接開始同步。', scanFail:'搜尋失敗：',
       serviceStartFail:'區域網路同步服務啟動失敗：', serviceOn:'這台裝置現在可以被同一區域網路中的其他 Acta 發現。',
       serviceOff:'已停止區域網路同步，其他裝置不再看到這台裝置。',
@@ -5858,6 +5870,7 @@
   // 事件监听入口：桌面在 actaDesktop，Android 在 renderer.js 注入的 actaMobileLan。
   const lanEvents = window.actaDesktop?.onLanIncoming ? window.actaDesktop : (window.actaMobileLan || {});
   const lanDialog = byId('lanSyncDialog');
+  const lanPage = byId('lanSyncPage');
   const lanNoticeDialog = byId('lanNoticeDialog');
   let lanServiceRunning = false;
   let lanDiscoverable = false;
@@ -6778,10 +6791,10 @@
       lanSyncUpdateMeta();
       setLanStatus(lanText(lanTrustLan ? 'trustOn' : 'trustOff'), lanTrustLan ? 'success' : '');
     });
-    // —— 设备雷达（内嵌在数据同步设置页）：面板可见时持续扫描 ——
+    // —— 设备雷达（独立局域网同步页）：页面可见时持续扫描 ——
     let lanRadarVisible = false;
     let lanRadarScanTimer = null;
-    const radarPanelActive = () => document.querySelector('[data-settings-panel="cloud"]')?.classList.contains('active') || false;
+    const radarPanelActive = () => Boolean(lanPage?.open);
     const syncRadarScanning = () => {
       const wanted = lanRadarVisible && radarPanelActive();
       if (wanted && !lanRadarScanTimer) {
@@ -6792,7 +6805,7 @@
         lanRadarScanTimer = null;
       }
     };
-    // 设置页显隐钩子（openSettings / closeSettings / switchSettingsPage 调用）。
+    // 局域网同步页显隐钩子（页面打开 / 关闭时调用）。
     lanRadarVisibilityHook = visible => {
       lanRadarVisible = visible;
       if (visible) {
@@ -6803,6 +6816,24 @@
       }
       syncRadarScanning();
     };
+    // 独立页面：设置页的入口按钮、侧栏与移动端快捷按钮都从这里打开。
+    function openLanSyncPage() {
+      openAnimatedDialog(lanPage);
+      lanRadarVisibilityHook?.(true);
+    }
+    function closeLanSyncPage() {
+      lanRadarVisibilityHook?.(false);
+      closeAnimatedDialog(lanPage);
+    }
+    lanPageOpen = openLanSyncPage;
+    byId('openLanSyncPage')?.addEventListener('click', () => openLanSyncPage());
+    byId('closeLanSyncPage')?.addEventListener('click', () => closeLanSyncPage());
+    lanPage.addEventListener('cancel', event => {
+      event.preventDefault();
+      closeLanSyncPage();
+    });
+    // 兜底：通过背景双击等路径直接关闭时也停止雷达扫描与气泡菜单。
+    lanPage.addEventListener('close', () => lanRadarVisibilityHook?.(false));
     // 气泡点击弹出操作菜单；点击空白处收起。
     byId('lanRadarStage').addEventListener('click', event => {
       const bubble = event.target.closest('.lan-peer-bubble');

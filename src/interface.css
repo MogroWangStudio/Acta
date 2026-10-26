@@ -902,7 +902,7 @@ body.acta-reduce-motion *, body.acta-reduce-motion *::before, body.acta-reduce-m
 body.acta-steady .item-card, body.acta-steady .editor-wrap, body.acta-steady .task-row, body.suppress-task-refresh .item-card { animation: none !important; }
 body.suppress-task-refresh .item-card { transition: none !important; }
 body.acta-steady .task-row.task-toggle-motion { animation: taskToggle .22s var(--ease-out) !important; }
-.settings-row input[type="text"], .settings-row input[type="url"], .settings-row input[type="password"] { width: min(320px, 52%); height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--white); color: var(--ink); outline: 0; }
+.settings-row input[type="text"], .settings-row input[type="url"], .settings-row input[type="password"], .settings-row input[type="number"] { width: min(320px, 52%); height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--white); color: var(--ink); outline: 0; }
 .cloud-mode-fields[hidden] { display: none; }
 .cloud-mode-fields { display: contents; }
 .cloud-mode-note { color: #a06f45; }
@@ -2704,7 +2704,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .classification-manager-actions #deleteClassification { min-height: 36px; margin-right: 0; grid-column: 1 / -1; justify-self: start; }
   .classification-manager-actions #cancelClassificationManager,
   .classification-manager-actions #saveClassificationManager { width: 100%; min-width: 0; min-height: 44px; padding-left: 10px; padding-right: 10px; }
-  .settings-row input[type="text"], .settings-row input[type="url"], .settings-row input[type="password"] { width: 100%; }
+  .settings-row input[type="text"], .settings-row input[type="url"], .settings-row input[type="password"], .settings-row input[type="number"] { width: 100%; }
   .cloud-mode-fields .settings-row { align-items: stretch; flex-direction: column; }
   .cloud-mode-fields .settings-row > span:first-child { width: 100%; }
   .cloud-mode-fields .settings-button { width: 100%; justify-content: center; }
@@ -2719,7 +2719,8 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .settings-row:has(> .app-data-actions),
   .settings-row:has(> input[type="text"]),
   .settings-row:has(> input[type="url"]),
-  .settings-row:has(> input[type="password"]) { align-items: stretch; flex-direction: column; gap: 9px; }
+  .settings-row:has(> input[type="password"]),
+  .settings-row:has(> input[type="number"]) { align-items: stretch; flex-direction: column; gap: 9px; }
   .settings-row:has(> .font-size-control) .font-size-control { width: 100%; }
   .settings-row:has(> .font-size-control) .font-size-control input { flex: 1; width: auto; }
   .settings-row:has(> .settings-button) .settings-button { width: 100%; justify-content: center; }
@@ -2890,7 +2891,29 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 .lan-sync-state { flex: 0 0 auto; padding: 4px 10px; border-radius: 999px; background: var(--panel); color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; transition: background .2s var(--ease-out), color .2s var(--ease-out); }
 .lan-sync-state[data-state="on"], .lan-sync-state[data-state="partial"] { background: var(--sage-2); color: var(--sage); }
 
-/* —— 设备雷达（内嵌在数据同步设置页）——
+/* —— 独立局域网同步页 ——
+   数据同步设置页只保留入口按钮；设备身份、发现开关、雷达与自动化都在
+   这个独立页面里完成。设置页头部与列表都固定，只有内容区滚动。 */
+.lan-page-dialog { width: min(620px, calc(100vw - 28px)); }
+.lan-page-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; }
+.lan-page-head .lan-page-mark { background: var(--sage-2); color: var(--sage); }
+.lan-page-head .lan-sync-state { align-self: center; }
+.lan-page-body { min-height: 0; overflow: hidden auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.lan-page-body > * { flex: 0 0 auto; }
+.lan-page-body .settings-group { margin: 0; }
+.lan-page-body .lan-page-discovery { border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); background: color-mix(in srgb, var(--sage) 6%, var(--white)); }
+@media (max-width: 800px) {
+  .lan-page-dialog { inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+  .lan-page-dialog[open] { animation: quickCaptureFullscreenIn .3s var(--ease-out) both; }
+  .lan-page-dialog[open].is-closing { animation: quickCaptureFullscreenOut .22s ease both; }
+  .lan-page-dialog::backdrop { background: rgba(28,32,27,.18); backdrop-filter: none; }
+  .lan-page-head { min-height: calc(58px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+  .lan-page-body { padding: 12px 12px calc(20px + env(safe-area-inset-bottom)); }
+  /* 手机端标题区让位给关闭按钮与两行副标题：状态徽标改由页面底部状态行表达。 */
+  .lan-page-head .lan-sync-state { display: none; }
+}
+
+/* —— 设备雷达（位于独立的局域网同步页）——
    本机居中气泡，开启发现后播放圆形扩散环；扫描到的设备以气泡渐入
    （从中心滑出 + 缩放 + 淡入，cubic-bezier(.16,1,.3,1)），点击气泡
    弹出发送/提取操作。 */

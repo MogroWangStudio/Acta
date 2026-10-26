@@ -445,31 +445,10 @@
             <section class="settings-panel" data-settings-panel="cloud">
               <header><h3>数据同步</h3><p>通过 WebDAV 或局域网设备同步完整数据文件夹。</p></header>
               <div class="settings-group lan-sync-group" id="lanSyncGroup" hidden>
-                <div class="settings-row lan-sync-head-row">
+                <div class="settings-row">
                   <span><b>Acta 局域网同步</b><small>与局域网内其他 Acta 设备直接互传，不经过服务器；覆盖前自动备份。</small></span>
-                  <span class="lan-sync-state" id="lanSyncState" data-state="off"></span>
+                  <button class="settings-button" id="openLanSyncPage" type="button"><svg><use href="#i-radar"/></svg><span>打开局域网同步</span></button>
                 </div>
-                <label class="settings-row"><span><b>设备名称</b><small>留空时使用主机名</small></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
-                <label class="settings-row"><span><b>设备图标</b><small>雷达头像，留空用默认图标</small></span><input id="lanDeviceIcon" type="text" maxlength="8" placeholder="例：🌿" autocomplete="off"/></label>
-                <label class="settings-row"><span><b>服务端口</b><small>TCP 端口，留空自动分配；修改后需重开发现</small></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>
-                <label class="settings-row"><span><b>允许被其他设备发现</b><small>出现在附近设备的列表中</small></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
-                <label class="settings-row"><span><b>信任此局域网（自动确认）</b><small>其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络</small></span><input id="lanTrustSetting" type="checkbox"/></label>
-                <div class="settings-row"><span><b>附近的设备</b><small id="lanPeersHint"></small></span></div>
-                <div class="lan-radar-inline">
-                  <div class="lan-radar-stage" id="lanRadarStage" role="group" aria-label="设备雷达">
-                    <span class="lan-radar-ring" aria-hidden="true"></span>
-                    <span class="lan-radar-ring" aria-hidden="true"></span>
-                    <span class="lan-radar-ring" aria-hidden="true"></span>
-                    <div class="lan-radar-self">
-                      <span class="lan-radar-self-bubble"><b class="lan-peer-emoji" id="lanRadarSelfIcon" hidden></b><svg id="lanRadarSelfGlyph"><use href="#i-database"/></svg></span>
-                      <small id="lanRadarSelfName">本机</small>
-                    </div>
-                  </div>
-                  <p class="settings-status lan-radar-status" id="lanRadarStatus" role="status"><span id="lanRadarCount"></span><span class="lan-radar-divider" aria-hidden="true">·</span><span id="lanRadarPhase"></span></p>
-                </div>
-                <div class="settings-row"><span><b>同步自动化</b><small>组合备份、冲突检查与收发步骤，按触发器自动执行</small></span><button class="settings-button secondary" id="lanAutomationAdd" type="button"><svg><use href="#i-plus"/></svg><span>新建自动化</span></button></div>
-                <div class="lan-automation-list" id="lanAutomationList"></div>
-                <p class="settings-status" id="lanSyncStatus" role="status"></p>
               </div>
               <div class="settings-group">
                 <div class="cloud-mode-fields" id="webDavModeFields">
@@ -521,6 +500,46 @@
         </div>
       </div>
       <footer class="settings-actions delete-confirm-actions"><button class="settings-button danger" id="confirmDestroyAll" type="button" hidden><svg><use href="#i-trash"/></svg><span id="confirmDestroyAllLabel">彻底删除</span></button><button class="settings-button secondary" id="cancelDeleteConfirm" type="button">取消</button></footer>
+    </dialog>
+
+    <dialog class="relation-dialog lan-page-dialog" id="lanSyncPage" aria-labelledby="lanPageTitle">
+      <header class="relation-dialog-head lan-page-head">
+        <span class="lan-page-mark"><svg><use href="#i-radar"/></svg></span>
+        <div><h3 id="lanPageTitle">Acta 局域网同步</h3><small id="lanPageSubtitle">与局域网内其他 Acta 设备直接互传，不经过服务器；覆盖前自动备份。</small></div>
+        <span class="lan-sync-state" id="lanSyncState" data-state="off"></span>
+        <button class="relation-dialog-close" id="closeLanSyncPage" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button>
+      </header>
+      <div class="relation-dialog-body lan-page-body">
+        <div class="settings-group lan-page-discovery">
+          <label class="settings-row"><span><b>允许被其他设备发现</b><small>出现在附近设备的列表中</small></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
+        </div>
+        <div class="settings-group">
+          <label class="settings-row"><span><b>设备名称</b><small>留空时使用主机名</small></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
+          <label class="settings-row"><span><b>设备图标</b><small>雷达头像，留空用默认图标</small></span><input id="lanDeviceIcon" type="text" maxlength="8" placeholder="例：🌿" autocomplete="off"/></label>
+          <label class="settings-row"><span><b>服务端口</b><small>TCP 端口，留空自动分配；修改后需重开发现</small></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>
+          <label class="settings-row"><span><b>信任此局域网（自动确认）</b><small>其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络</small></span><input id="lanTrustSetting" type="checkbox"/></label>
+        </div>
+        <div class="settings-group">
+          <div class="settings-row"><span><b>附近的设备</b><small id="lanPeersHint"></small></span></div>
+          <div class="lan-radar-inline">
+            <div class="lan-radar-stage" id="lanRadarStage" role="group" aria-label="设备雷达">
+              <span class="lan-radar-ring" aria-hidden="true"></span>
+              <span class="lan-radar-ring" aria-hidden="true"></span>
+              <span class="lan-radar-ring" aria-hidden="true"></span>
+              <div class="lan-radar-self">
+                <span class="lan-radar-self-bubble"><b class="lan-peer-emoji" id="lanRadarSelfIcon" hidden></b><svg id="lanRadarSelfGlyph"><use href="#i-database"/></svg></span>
+                <small id="lanRadarSelfName">本机</small>
+              </div>
+            </div>
+            <p class="settings-status lan-radar-status" id="lanRadarStatus" role="status"><span id="lanRadarCount"></span><span class="lan-radar-divider" aria-hidden="true">·</span><span id="lanRadarPhase"></span></p>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-row"><span><b>同步自动化</b><small>组合备份、冲突检查与收发步骤，按触发器自动执行</small></span><button class="settings-button secondary" id="lanAutomationAdd" type="button"><svg><use href="#i-plus"/></svg><span>新建自动化</span></button></div>
+          <div class="lan-automation-list" id="lanAutomationList"></div>
+        </div>
+        <p class="settings-status" id="lanSyncStatus" role="status"></p>
+      </div>
     </dialog>
 
     <dialog class="relation-dialog lan-sync-dialog" id="lanSyncDialog" aria-labelledby="lanSyncTitle">
