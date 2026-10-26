@@ -23,7 +23,7 @@
 .splash-line-bottom { display: none; left: 0; bottom: calc(70px + env(safe-area-inset-bottom)); width: 100%; height: 1px; }
 @media (max-width: 800px) {
   .splash-line-sidebar, .splash-line-list { display: none; }
-  .splash-line-top { top: calc(54px + env(safe-area-inset-top)); }
+  .splash-line-top { top: calc(48px + env(safe-area-inset-top)); }
   .splash-line-bottom { display: block; }
 }
 .splash-screen.is-leaving { animation: none; opacity: 0; visibility: hidden; transition: opacity calc(.4s * var(--splash-speed, 1)) ease calc(1s * var(--splash-speed, 1)), visibility 0s linear calc(1.4s * var(--splash-speed, 1)); }
@@ -2533,7 +2533,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .calendar-todo-meta { flex-wrap: wrap; }
   .calendar-subtask { min-height: 29px; }
   .calendar-subtask-title { font-size: calc(11px * var(--acta-font-scale)); }
-  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(env(safe-area-inset-top) + 9px); display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
+  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(env(safe-area-inset-top) + 6px); display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
   /* 顶栏右上角是自定义按钮区：候选按钮全部隐藏，由设置中的三个槽位
      （mobile-title-slot-N）决定显示哪三个；设置按钮固定在末尾。 */
   .mobile-titlebar-action { width: 36px; height: 36px; display: none; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 82%, transparent); color: var(--muted); -webkit-app-region: no-drag; }
@@ -2633,7 +2633,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 
 @media (max-width: 760px) {
   .settings-backdrop { padding: 0; align-items: stretch; }
-  .settings-window { width: 100vw; height: 100dvh; min-height: 0; border: 0; border-radius: 0; grid-template-rows: calc(54px + env(safe-area-inset-top)) minmax(0,1fr); }
+  .settings-window { width: 100vw; height: 100dvh; min-height: 0; border: 0; border-radius: 0; grid-template-rows: calc(48px + env(safe-area-inset-top)) minmax(0,1fr); }
   .settings-header { padding-top: env(safe-area-inset-top); }
   .settings-layout { grid-template-columns: 108px minmax(0,1fr); }
   .settings-nav { padding: 11px 7px; }
@@ -2723,7 +2723,10 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .settings-row:has(> .splash-preset-controls) .splash-preset-controls { width: 100%; }
   .settings-row:has(> .splash-preset-controls) .splash-preset-controls select { flex: 1; min-width: 0; width: auto; }
   .brand-logo { width: 104px; height: 30px; }
-  .brand-version { left: 129px; bottom: 11.5px; }
+  .brand-version { left: 129px; bottom: 8px; }
+  /* 320px 档：版本胶囊与右上角三个自定义按钮 + 设置按钮在横向上重叠，
+     版本信息在「关于」页仍可查看，这里让出位置给操作按钮。 */
+  @media (max-width: 360px) { .brand-version { display: none; } }
   .editor-topline { position: sticky; top: 0; z-index: 12; min-height: 47px; margin: -18px -18px 0; padding: 8px 18px; background: rgba(251,250,246,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
   .note-toolbar { top: auto; bottom: 8px; }
   html[data-note-toolbar-position="bottom"] body:not(.note-focus-mode) .note-editor .note-toolbar { bottom: calc(78px + env(safe-area-inset-bottom)); }
