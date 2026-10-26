@@ -1371,9 +1371,23 @@ body.note-focus-mode .note-focus-header {
 .note-focus-header strong { grid-column: 1 / -1; overflow: hidden; font-size: calc(11px * var(--acta-font-scale)); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .note-focus-header time { grid-column: 2; grid-row: 1; color: var(--muted); display: inline-flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: calc(8px * var(--acta-font-scale)); white-space: nowrap; }
 .note-focus-header time svg { width: 11px; height: 11px; }
-.note-focus-header > button { min-width: 38px; height: 34px; padding: 0 11px; border: 1px solid color-mix(in srgb, var(--note-accent) 14%, var(--line)); border-radius: 9px; background: color-mix(in srgb, var(--white) 72%, var(--panel)); color: var(--muted); display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; }
-.note-focus-header > button:hover { color: var(--note-accent); background: var(--note-soft); }
-.note-focus-header > button svg { width: 15px; height: 15px; }
+/* 退出沉浸模式：accent 描边药丸 + 悬停反色填充——沉浸模式里唯一的
+   出口，要比标题栏的次要信息更可辨认；收缩箭头图标 14px。 */
+.note-focus-header > button {
+  min-width: 38px; height: 34px; padding: 0 13px;
+  border: 1px solid color-mix(in srgb, var(--note-accent) 36%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--white) 80%, var(--panel));
+  color: var(--note-accent);
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: calc(9px * var(--acta-font-scale)); font-weight: 700;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease, border-color .16s ease, transform .16s var(--ease-out);
+}
+.note-focus-header > button:hover { color: var(--paper); background: var(--note-accent); border-color: var(--note-accent); }
+.note-focus-header > button:active { transform: scale(.95); transition-duration: .08s; }
+.note-focus-header > button:focus-visible { outline: 2px solid color-mix(in srgb, var(--note-accent) 55%, transparent); outline-offset: 2px; }
+.note-focus-header > button svg { width: 14px; height: 14px; }
 body.note-focus-mode .note-body:not([hidden]) {
   grid-row: 2;
   display: block !important;
