@@ -72,7 +72,7 @@ const dictionaries = {
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardShowBody:'完整内容', boardShowDoneOnly:'仅显示已完成', boardBodyLargeConfirm:'这篇笔记超过一万字符，完整显示可能影响流畅度。仍要开启完整内容显示吗？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardPatternLines:'横线', boardPatternCross:'交叉点', boardGridColor:'网格颜色', boardGridOpacity:'网格不透明度', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
     boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'画笔模式：可连续多笔，完成或按 Esc 退出',
-    boardExportOptionsHint:'选择分辨率与图片格式；JPG 可调节压缩程度', boardExportScale:'分辨率', boardExportFormat:'图片格式', boardExportQuality:'JPG 质量', boardExportConfirm:'导出', boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出', boardImportPlan:'导入计划板文件 (.actaplan)', boardImported:'计划板已导入', boardImportInvalid:'这不是有效的 Acta 计划板文件',
+    boardExportOptionsHint:'选择分辨率与图片格式；JPG 可调节压缩程度', boardExportScale:'分辨率', boardExportFormat:'图片格式', boardExportQuality:'JPG 质量', boardExportConfirm:'导出', boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出', boardImportPlan:'导入计划板文件 (.actaplan)', boardImported:'计划板已导入', boardImportInvalid:'这不是有效的 Acta 计划板文件', boardExportRegionTitle:'选择导出区域', boardExportRegionHint:'拖动边框或角点调整范围，导出框内内容', boardExportRegionAll:'全部元素', boardExportRegionView:'当前视图', boardExportRegionNext:'下一步',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
   en: {
@@ -134,7 +134,7 @@ const dictionaries = {
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardShowBody:'Full content', boardShowDoneOnly:'Completed only', boardBodyLargeConfirm:'This note exceeds 10,000 characters — showing it in full may affect smoothness. Enable full content anyway?', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardPatternLines:'Ruled', boardPatternCross:'Crosses', boardGridColor:'Grid color', boardGridOpacity:'Grid opacity', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
     boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenMode:'Pen mode: draw as many strokes as you like; press Done or Esc to exit',
-    boardExportOptionsHint:'Pick resolution and image format; JPG compression is adjustable', boardExportScale:'Resolution', boardExportFormat:'Image format', boardExportQuality:'JPG quality', boardExportConfirm:'Export', boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting', boardImportPlan:'Import plan board file (.actaplan)', boardImported:'Plan board imported', boardImportInvalid:'This is not a valid Acta plan board file',
+    boardExportOptionsHint:'Pick resolution and image format; JPG compression is adjustable', boardExportScale:'Resolution', boardExportFormat:'Image format', boardExportQuality:'JPG quality', boardExportConfirm:'Export', boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting', boardImportPlan:'Import plan board file (.actaplan)', boardImported:'Plan board imported', boardImportInvalid:'This is not a valid Acta plan board file', boardExportRegionTitle:'Choose export area', boardExportRegionHint:'Drag the frame or handles to adjust; the framed area is exported', boardExportRegionAll:'All elements', boardExportRegionView:'Current view', boardExportRegionNext:'Next',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   },
   ja: {
@@ -196,7 +196,7 @@ const dictionaries = {
     boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardShowBody:'全文表示', boardShowDoneOnly:'完了のみ表示', boardBodyLargeConfirm:'このノートは1万文字を超えています。全文表示は動作に影響する可能性があります。それでも有効にしますか？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardPatternLines:'罫線', boardPatternCross:'交差ポイント', boardGridColor:'グリッドの色', boardGridOpacity:'グリッドの不透明度', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
     boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenMode:'ペンモード：何筆でも描けます。完了または Esc で終了',
-    boardExportOptionsHint:'解像度と画像形式を選択。JPG は圧縮率を調整できます', boardExportScale:'解像度', boardExportFormat:'画像形式', boardExportQuality:'JPG 画質', boardExportConfirm:'書き出す', boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください', boardImportPlan:'プランボードファイルを読み込む(.actaplan)', boardImported:'プランボードを読み込みました', boardImportInvalid:'有効な Acta プランボードファイルではありません',
+    boardExportOptionsHint:'解像度と画像形式を選択。JPG は圧縮率を調整できます', boardExportScale:'解像度', boardExportFormat:'画像形式', boardExportQuality:'JPG 画質', boardExportConfirm:'書き出す', boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください', boardImportPlan:'プランボードファイルを読み込む(.actaplan)', boardImported:'プランボードを読み込みました', boardImportInvalid:'有効な Acta プランボードファイルではありません', boardExportRegionTitle:'書き出し範囲を選択', boardExportRegionHint:'枠やハンドルをドラッグして調整。枠内が書き出されます', boardExportRegionAll:'すべての要素', boardExportRegionView:'現在のビュー', boardExportRegionNext:'次へ',
     boardEmptyTitle:'このボードは空です', boardEmptyHint:'下のツールでテキストとマーカーを追加したり、タスクとノートを読み込んで、自由にプランボードを組み立てましょう。'
   },
   ko: {
@@ -258,7 +258,7 @@ const dictionaries = {
     boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardShowBody:'전체 내용', boardShowDoneOnly:'완료된 항목만', boardBodyLargeConfirm:'이 노트는 1만 자를 넘습니다. 전체 표시가 성능에 영향을 줄 수 있어요. 그래도 켜시겠어요?', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardPatternLines:'줄선', boardPatternCross:'교차점', boardGridColor:'격자 색', boardGridOpacity:'격자 불투명도', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
     boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenMode:'펜 모드: 여러 번 그릴 수 있어요. 완료 또는 Esc로 종료',
-    boardExportOptionsHint:'해상도와 이미지 형식을 선택하세요. JPG는 압축 수준을 조절할 수 있어요', boardExportScale:'해상도', boardExportFormat:'이미지 형식', boardExportQuality:'JPG 품질', boardExportConfirm:'내보내기', boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요', boardImportPlan:'플랜 보드 파일 가져오기(.actaplan)', boardImported:'플랜 보드를 가져왔어요', boardImportInvalid:'유효한 Acta 플랜 보드 파일이 아니에요',
+    boardExportOptionsHint:'해상도와 이미지 형식을 선택하세요. JPG는 압축 수준을 조절할 수 있어요', boardExportScale:'해상도', boardExportFormat:'이미지 형식', boardExportQuality:'JPG 품질', boardExportConfirm:'내보내기', boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요', boardImportPlan:'플랜 보드 파일 가져오기(.actaplan)', boardImported:'플랜 보드를 가져왔어요', boardImportInvalid:'유효한 Acta 플랜 보드 파일이 아니에요', boardExportRegionTitle:'내보낼 영역 선택', boardExportRegionHint:'테두리나 핸들을 드래그해 조정하면 프레임 안이 내보내져요', boardExportRegionAll:'모든 요소', boardExportRegionView:'현재 보기', boardExportRegionNext:'다음',
     boardEmptyTitle:'이 보드는 비어 있어요', boardEmptyHint:'아래 도구로 텍스트와 마커를 추가하거나 할 일과 노트를 가져와 자유롭게 플랜 보드를 꾸며 보세요.'
   },
   fr: {
@@ -320,7 +320,7 @@ const dictionaries = {
     boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardShowBody:'Contenu complet', boardShowDoneOnly:'Terminées uniquement', boardBodyLargeConfirm:'Cette note dépasse 10 000 caractères — l’affichage complet peut nuire à la fluidité. Activer quand même ?', boardWidgetOpacity:'Opacité',
     boardPersonalize:'Personnaliser le tableau', boardBgPattern:'Motif de fond', boardPatternDots:'Points', boardPatternGrid:'Grille', boardPatternNone:'Aucun', boardPatternLines:'Lignes', boardPatternCross:'Croix', boardGridColor:'Couleur du quadrillage', boardGridOpacity:'Opacité du quadrillage', boardBoardBgColor:'Couleur de fond', boardBgColorTheme:'Suivre le thème', boardSnapGrid:'Aimanter à la grille', boardGridSize:'Taille de la grille',
     boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenMode:'Mode crayon : tracez autant de traits que voulu ; terminez ou Échap pour sortir',
-    boardExportOptionsHint:'Choisissez la résolution et le format ; la compression JPG est réglable', boardExportScale:'Résolution', boardExportFormat:'Format d’image', boardExportQuality:'Qualité JPG', boardExportConfirm:'Exporter', boardExportPlan:'Exporter le fichier du tableau (.actaplan)', boardExportImage:'Exporter en image', boardExportPdf:'Exporter en PDF', boardExportDone:'Tableau exporté', boardExportFailed:'Échec de l’export', boardExportEmpty:'Ce tableau est vide — ajoutez du contenu avant d’exporter', boardImportPlan:'Importer le fichier du tableau (.actaplan)', boardImported:'Tableau importé', boardImportInvalid:'Ce fichier n’est pas un tableau Acta valide',
+    boardExportOptionsHint:'Choisissez la résolution et le format ; la compression JPG est réglable', boardExportScale:'Résolution', boardExportFormat:'Format d’image', boardExportQuality:'Qualité JPG', boardExportConfirm:'Exporter', boardExportPlan:'Exporter le fichier du tableau (.actaplan)', boardExportImage:'Exporter en image', boardExportPdf:'Exporter en PDF', boardExportDone:'Tableau exporté', boardExportFailed:'Échec de l’export', boardExportEmpty:'Ce tableau est vide — ajoutez du contenu avant d’exporter', boardImportPlan:'Importer le fichier du tableau (.actaplan)', boardImported:'Tableau importé', boardImportInvalid:'Ce fichier n’est pas un tableau Acta valide', boardExportRegionTitle:'Choisir la zone à exporter', boardExportRegionHint:'Faites glisser le cadre ou les poignées ; la zone encadrée est exportée', boardExportRegionAll:'Tous les éléments', boardExportRegionView:'Vue actuelle', boardExportRegionNext:'Suivant',
     boardEmptyTitle:'Ce tableau est vide', boardEmptyHint:'Ajoutez du texte et des annotations avec la barre d’outils, ou importez tâches et notes pour composer librement votre tableau.'
   },
   de: {
@@ -382,7 +382,7 @@ const dictionaries = {
     boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardShowBody:'Vollständiger Inhalt', boardShowDoneOnly:'Nur erledigte', boardBodyLargeConfirm:'Diese Notiz überschreitet 10.000 Zeichen — die vollständige Anzeige kann die Flüssigkeit beeinträchtigen. Trotzdem aktivieren?', boardWidgetOpacity:'Deckkraft',
     boardPersonalize:'Board gestalten', boardBgPattern:'Hintergrundmuster', boardPatternDots:'Punkte', boardPatternGrid:'Gitter', boardPatternNone:'Keine', boardPatternLines:'Linien', boardPatternCross:'Kreuze', boardGridColor:'Rasterfarbe', boardGridOpacity:'Rasterdeckkraft', boardBoardBgColor:'Hintergrundfarbe', boardBgColorTheme:'Wie Thema', boardSnapGrid:'Am Raster ausrichten', boardGridSize:'Rastergröße',
     boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenMode:'Stiftmodus: so viele Striche wie du willst; mit Fertig oder Esc beenden',
-    boardExportOptionsHint:'Auflösung und Bildformat wählen; JPG-Komprimierung ist einstellbar', boardExportScale:'Auflösung', boardExportFormat:'Bildformat', boardExportQuality:'JPG-Qualität', boardExportConfirm:'Exportieren', boardExportPlan:'Planboard-Datei exportieren (.actaplan)', boardExportImage:'Als Bild exportieren', boardExportPdf:'Als PDF exportieren', boardExportDone:'Planboard exportiert', boardExportFailed:'Export fehlgeschlagen', boardExportEmpty:'Dieses Board ist leer — füge zuerst Inhalte hinzu', boardImportPlan:'Planboard-Datei importieren (.actaplan)', boardImported:'Planboard importiert', boardImportInvalid:'Dies ist keine gültige Acta-Planboard-Datei',
+    boardExportOptionsHint:'Auflösung und Bildformat wählen; JPG-Komprimierung ist einstellbar', boardExportScale:'Auflösung', boardExportFormat:'Bildformat', boardExportQuality:'JPG-Qualität', boardExportConfirm:'Exportieren', boardExportPlan:'Planboard-Datei exportieren (.actaplan)', boardExportImage:'Als Bild exportieren', boardExportPdf:'Als PDF exportieren', boardExportDone:'Planboard exportiert', boardExportFailed:'Export fehlgeschlagen', boardExportEmpty:'Dieses Board ist leer — füge zuerst Inhalte hinzu', boardImportPlan:'Planboard-Datei importieren (.actaplan)', boardImported:'Planboard importiert', boardImportInvalid:'Dies ist keine gültige Acta-Planboard-Datei', boardExportRegionTitle:'Exportbereich wählen', boardExportRegionHint:'Rahmen oder Griffe ziehen, um den Bereich anzupassen; der Rahmeninhalt wird exportiert', boardExportRegionAll:'Alle Elemente', boardExportRegionView:'Aktuelle Ansicht', boardExportRegionNext:'Weiter',
     boardEmptyTitle:'Dieses Board ist leer', boardEmptyHint:'Füge über die Leiste unten Text und Marker hinzu oder importiere Aufgaben und Notizen und gestalte dein Planboard frei.'
   },
   es: {
@@ -444,7 +444,7 @@ const dictionaries = {
     boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardShowBody:'Contenido completo', boardShowDoneOnly:'Solo completadas', boardBodyLargeConfirm:'Esta nota supera los 10.000 caracteres; mostrarla completa puede afectar la fluidez. ¿Activar de todos modos?', boardWidgetOpacity:'Opacidad',
     boardPersonalize:'Personalizar tablero', boardBgPattern:'Patrón de fondo', boardPatternDots:'Puntos', boardPatternGrid:'Cuadrícula', boardPatternNone:'Ninguno', boardPatternLines:'Líneas', boardPatternCross:'Cruces', boardGridColor:'Color de cuadrícula', boardGridOpacity:'Opacidad de cuadrícula', boardBoardBgColor:'Color de fondo', boardBgColorTheme:'Según el tema', boardSnapGrid:'Ajustar a la cuadrícula', boardGridSize:'Tamaño de cuadrícula',
     boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenMode:'Modo lápiz: traza tantos trazos como quieras; termina o pulsa Esc para salir',
-    boardExportOptionsHint:'Elige resolución y formato de imagen; la compresión JPG es ajustable', boardExportScale:'Resolución', boardExportFormat:'Formato de imagen', boardExportQuality:'Calidad JPG', boardExportConfirm:'Exportar', boardExportPlan:'Exportar archivo del tablero (.actaplan)', boardExportImage:'Exportar como imagen', boardExportPdf:'Exportar como PDF', boardExportDone:'Tablero exportado', boardExportFailed:'Fallo al exportar', boardExportEmpty:'Este tablero está vacío — añade contenido antes de exportar', boardImportPlan:'Importar archivo del tablero (.actaplan)', boardImported:'Tablero importado', boardImportInvalid:'No es un archivo de tablero Acta válido',
+    boardExportOptionsHint:'Elige resolución y formato de imagen; la compresión JPG es ajustable', boardExportScale:'Resolución', boardExportFormat:'Formato de imagen', boardExportQuality:'Calidad JPG', boardExportConfirm:'Exportar', boardExportPlan:'Exportar archivo del tablero (.actaplan)', boardExportImage:'Exportar como imagen', boardExportPdf:'Exportar como PDF', boardExportDone:'Tablero exportado', boardExportFailed:'Fallo al exportar', boardExportEmpty:'Este tablero está vacío — añade contenido antes de exportar', boardImportPlan:'Importar archivo del tablero (.actaplan)', boardImported:'Tablero importado', boardImportInvalid:'No es un archivo de tablero Acta válido', boardExportRegionTitle:'Elegir área de exportación', boardExportRegionHint:'Arrastra el marco o las asas para ajustarlo; se exporta el área marcada', boardExportRegionAll:'Todos los elementos', boardExportRegionView:'Vista actual', boardExportRegionNext:'Siguiente',
     boardEmptyTitle:'Este tablero está vacío', boardEmptyHint:'Añade texto y anotaciones con la barra de abajo, o importa tareas y notas para componer tu tablero con libertad.'
   },
   ru: {
@@ -506,7 +506,7 @@ const dictionaries = {
     boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardShowBody:'Полное содержимое', boardShowDoneOnly:'Только выполненные', boardBodyLargeConfirm:'Эта заметка больше 10 000 символов — полное отображение может снизить плавность. Всё равно включить?', boardWidgetOpacity:'Непрозрачность',
     boardPersonalize:'Оформить планшет', boardBgPattern:'Фоновый узор', boardPatternDots:'Точки', boardPatternGrid:'Сетка', boardPatternNone:'Нет', boardPatternLines:'Линии', boardPatternCross:'Перекрестия', boardGridColor:'Цвет сетки', boardGridOpacity:'Непрозрачность сетки', boardBoardBgColor:'Цвет фона', boardBgColorTheme:'Как в теме', boardSnapGrid:'Привязка к сетке', boardGridSize:'Шаг сетки',
     boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenMode:'Режим пера: рисуйте сколько угодно штрихов; «Готово» или Esc — выход',
-    boardExportOptionsHint:'Выберите разрешение и формат; сжатие JPG настраивается', boardExportScale:'Разрешение', boardExportFormat:'Формат изображения', boardExportQuality:'Качество JPG', boardExportConfirm:'Экспортировать', boardExportPlan:'Экспортировать файл планшета (.actaplan)', boardExportImage:'Экспортировать как изображение', boardExportPdf:'Экспортировать в PDF', boardExportDone:'Планшет экспортирован', boardExportFailed:'Не удалось экспортировать', boardExportEmpty:'Этот планшет пуст — сначала добавьте содержимое', boardImportPlan:'Импортировать файл планшета (.actaplan)', boardImported:'Планшет импортирован', boardImportInvalid:'Это не действительный файл планшета Acta',
+    boardExportOptionsHint:'Выберите разрешение и формат; сжатие JPG настраивается', boardExportScale:'Разрешение', boardExportFormat:'Формат изображения', boardExportQuality:'Качество JPG', boardExportConfirm:'Экспортировать', boardExportPlan:'Экспортировать файл планшета (.actaplan)', boardExportImage:'Экспортировать как изображение', boardExportPdf:'Экспортировать в PDF', boardExportDone:'Планшет экспортирован', boardExportFailed:'Не удалось экспортировать', boardExportEmpty:'Этот планшет пуст — сначала добавьте содержимое', boardImportPlan:'Импортировать файл планшета (.actaplan)', boardImported:'Планшет импортирован', boardImportInvalid:'Это не действительный файл планшета Acta', boardExportRegionTitle:'Выбрать область экспорта', boardExportRegionHint:'Потяните рамку или маркеры, чтобы изменить область; экспортируется содержимое рамки', boardExportRegionAll:'Все элементы', boardExportRegionView:'Текущий вид', boardExportRegionNext:'Далее',
     boardEmptyTitle:'Этот планшет пуст', boardEmptyHint:'Добавьте текст и пометки панелью снизу или импортируйте задачи и заметки и свободно соберите свой планшет.'
   }
 };
@@ -4614,17 +4614,29 @@ function boardRenderToCanvas(options = {}) {
   const exportScale = Math.min(4, Math.max(1, Number(options.scale) || BOARD_EXPORT_SCALE));
   const board = activeBoard();
   if (!board.widgets.length) return null;
-  const bounds = boardBoundsOf(board.widgets);
-  const margin = BOARD_EXPORT_MARGIN;
-  const width = (bounds.maxX - bounds.minX) + margin * 2;
-  const height = (bounds.maxY - bounds.minY) + margin * 2;
+  const region = options.region || null;
+  let ox;
+  let oy;
+  let width;
+  let height;
+  if (region) {
+    ox = region.x;
+    oy = region.y;
+    width = Math.max(1, region.w);
+    height = Math.max(1, region.h);
+  } else {
+    const bounds = boardBoundsOf(board.widgets);
+    const margin = BOARD_EXPORT_MARGIN;
+    width = (bounds.maxX - bounds.minX) + margin * 2;
+    height = (bounds.maxY - bounds.minY) + margin * 2;
+    ox = bounds.minX - margin;
+    oy = bounds.minY - margin;
+  }
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(width * exportScale);
   canvas.height = Math.round(height * exportScale);
   const ctx = canvas.getContext('2d');
   ctx.scale(exportScale, exportScale);
-  const ox = bounds.minX - margin;
-  const oy = bounds.minY - margin;
   const X = value => value - ox;
   const Y = value => value - oy;
   const theme = boardExportTheme();
@@ -4727,6 +4739,205 @@ function boardRenderToCanvas(options = {}) {
   return { canvas, width, height };
 }
 
+// —— 导出区域选择：导出图片 / PDF 前在画布上框定范围 ——
+// 默认框为"包含全部元素、四边等距留白"的区域；可拖动整框或八个角/边手柄
+// 调整，也可以一键切回全部元素或当前视图。世界矩形与相机解耦，导出渲染
+// 不受取景影响。
+function boardWidgetVisualBounds(widget) {
+  if (widget.type === 'marker') {
+    if (widget.kind === 'draw') {
+      const points = widget.points || [];
+      let minX = 0;
+      let minY = 0;
+      let maxX = 1;
+      let maxY = 1;
+      for (let i = 0; i + 1 < points.length; i += 2) {
+        if (i === 0 || points[i] < minX) minX = points[i];
+        if (i === 0 || points[i + 1] < minY) minY = points[i + 1];
+        if (points[i] > maxX) maxX = points[i];
+        if (points[i + 1] > maxY) maxY = points[i + 1];
+      }
+      return { x: widget.x + minX, y: widget.y + minY, w: Math.max(maxX - minX, 1), h: Math.max(maxY - minY, 1) };
+    }
+    return { x: Math.min(widget.x, widget.x + widget.w), y: Math.min(widget.y, widget.y + widget.h), w: Math.max(Math.abs(widget.w), 1), h: Math.max(Math.abs(widget.h), 1) };
+  }
+  const size = boardWidgetSize(widget);
+  return { x: widget.x, y: widget.y, w: size.w, h: size.h };
+}
+
+function boardExportContentRegion() {
+  const widgets = activeBoard().widgets;
+  if (!widgets.length) return null;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  widgets.forEach(widget => {
+    const bounds = boardWidgetVisualBounds(widget);
+    minX = Math.min(minX, bounds.x);
+    minY = Math.min(minY, bounds.y);
+    maxX = Math.max(maxX, bounds.x + bounds.w);
+    maxY = Math.max(maxY, bounds.y + bounds.h);
+  });
+  return {
+    x: minX - BOARD_EXPORT_MARGIN,
+    y: minY - BOARD_EXPORT_MARGIN,
+    w: (maxX - minX) + BOARD_EXPORT_MARGIN * 2,
+    h: (maxY - minY) + BOARD_EXPORT_MARGIN * 2
+  };
+}
+
+// 临时取景：缩放不受画布限制（超小板也能整框入镜），恢复相机由调用方负责。
+function boardFitCameraToRect(rect) {
+  const { w, h } = boardViewportSize();
+  const pad = Math.min(96, Math.max(28, w * 0.08));
+  const scale = Math.min(4, Math.max(0.05, Math.min((w - pad * 2) / rect.w, (h - pad * 2) / rect.h)));
+  boardCam.scale = scale;
+  boardCam.x = (w - rect.w * scale) / 2 - rect.x * scale;
+  boardCam.y = (h - rect.h * scale) / 2 - rect.y * scale;
+  boardApplyCamera();
+}
+
+function boardSelectExportRegion() {
+  return new Promise(resolve => {
+    const canvas = boardEls?.canvas;
+    const region = boardExportContentRegion();
+    if (!canvas || !region) { resolve(null); return; }
+    const savedCam = { x: boardCam.x, y: boardCam.y, scale: boardCam.scale };
+    boardStopMotion();
+    boardFitCameraToRect(region);
+    const dirs = ['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se'];
+    const layer = document.createElement('div');
+    layer.className = 'board-export-region';
+    layer.innerHTML = `
+      <div class="board-export-frame" data-export-frame>
+        ${dirs.map(dir => `<i class="board-export-handle" data-export-handle="${dir}" data-dir="${dir}"></i>`).join('')}
+      </div>
+      <div class="board-export-region-bar">
+        <b>${escapeHTML(t('boardExportRegionTitle'))}</b>
+        <small>${escapeHTML(t('boardExportRegionHint'))}</small>
+        <span class="board-export-region-spacer"></span>
+        <button type="button" data-export-region="all">${escapeHTML(t('boardExportRegionAll'))}</button>
+        <button type="button" data-export-region="view">${escapeHTML(t('boardExportRegionView'))}</button>
+        <button type="button" data-export-region="cancel">${escapeHTML(t('cancel'))}</button>
+        <button type="button" class="is-primary" data-export-region="next">${escapeHTML(t('boardExportRegionNext'))}</button>
+      </div>`;
+    canvas.appendChild(layer);
+    canvas.classList.add('is-export-region');
+    const frame = layer.querySelector('.board-export-frame');
+    const state = { world: { ...region }, dir: null, start: null };
+    const viewportSize = () => ({ w: boardEls.viewport.clientWidth, h: boardEls.viewport.clientHeight });
+    const MIN_SCREEN = 80;
+    const paint = () => {
+      const s = boardCam.scale;
+      frame.style.left = `${boardCam.x + state.world.x * s}px`;
+      frame.style.top = `${boardCam.y + state.world.y * s}px`;
+      frame.style.width = `${state.world.w * s}px`;
+      frame.style.height = `${state.world.h * s}px`;
+    };
+    // 屏幕空间夹取：框始终留在画布可视区内（手柄够得着），最小 80px。
+    const clampWorld = () => {
+      const { w, h } = viewportSize();
+      const s = boardCam.scale;
+      let left = boardCam.x + state.world.x * s;
+      let top = boardCam.y + state.world.y * s;
+      let width = state.world.w * s;
+      let height = state.world.h * s;
+      width = Math.min(Math.max(width, MIN_SCREEN), Math.max(MIN_SCREEN, w));
+      height = Math.min(Math.max(height, MIN_SCREEN), Math.max(MIN_SCREEN, h));
+      left = Math.min(Math.max(left, 0), Math.max(0, w - width));
+      top = Math.min(Math.max(top, 0), Math.max(0, h - height));
+      state.world = {
+        x: (left - boardCam.x) / s,
+        y: (top - boardCam.y) / s,
+        w: width / s,
+        h: height / s
+      };
+    };
+    const onKey = event => {
+      if (event.key !== 'Escape' || isImeComposing(event)) return;
+      event.preventDefault();
+      cleanup(null);
+    };
+    // 画布被整壳重建（数据刷新等）时选择层会随 DOM 消失：兜底结算，避免 Promise 悬挂。
+    const observer = new MutationObserver(() => {
+      if (layer.isConnected) return;
+      observer.disconnect();
+      document.removeEventListener('keydown', onKey);
+      canvas.classList.remove('is-export-region');
+      Object.assign(boardCam, savedCam);
+      boardApplyCamera();
+      resolve(null);
+    });
+    observer.observe(canvas, { childList: true });
+    const cleanup = value => {
+      observer.disconnect();
+      document.removeEventListener('keydown', onKey);
+      layer.remove();
+      canvas.classList.remove('is-export-region');
+      Object.assign(boardCam, savedCam);
+      boardApplyCamera();
+      resolve(value);
+    };
+    layer.addEventListener('pointerdown', event => {
+      const handle = event.target.closest('[data-export-handle]');
+      const onFrame = event.target.closest('[data-export-frame]');
+      if (!handle && !onFrame) return;
+      event.preventDefault();
+      event.stopPropagation();
+      layer.setPointerCapture(event.pointerId);
+      state.dir = handle ? handle.dataset.dir : 'move';
+      state.start = { x: event.clientX, y: event.clientY, world: { ...state.world } };
+    });
+    layer.addEventListener('pointermove', event => {
+      if (!state.dir || !state.start) return;
+      const s = boardCam.scale;
+      const dx = (event.clientX - state.start.x) / s;
+      const dy = (event.clientY - state.start.y) / s;
+      const base = state.start.world;
+      const dir = state.dir;
+      let x = base.x;
+      let y = base.y;
+      let w = base.w;
+      let h = base.h;
+      if (dir === 'move') { x = base.x + dx; y = base.y + dy; }
+      else {
+        if (dir.includes('e')) w = base.w + dx;
+        if (dir.includes('w')) { x = base.x + dx; w = base.w - dx; }
+        if (dir.includes('s')) h = base.h + dy;
+        if (dir.includes('n')) { y = base.y + dy; h = base.h - dy; }
+      }
+      state.world = { x, y, w, h };
+      clampWorld();
+      paint();
+    });
+    const endDrag = () => { state.dir = null; state.start = null; };
+    layer.addEventListener('pointerup', endDrag);
+    layer.addEventListener('pointercancel', endDrag);
+    layer.addEventListener('click', event => {
+      const action = event.target.closest('[data-export-region]')?.dataset.exportRegion;
+      if (!action) return;
+      event.preventDefault();
+      if (action === 'cancel') { cleanup(null); return; }
+      if (action === 'all') {
+        const all = boardExportContentRegion();
+        if (all) { state.world = { ...all }; boardFitCameraToRect(state.world); paint(); }
+        return;
+      }
+      if (action === 'view') {
+        const { w, h } = viewportSize();
+        state.world = { x: -boardCam.x / boardCam.scale, y: -boardCam.y / boardCam.scale, w: w / boardCam.scale, h: h / boardCam.scale };
+        clampWorld();
+        paint();
+        return;
+      }
+      cleanup({ rect: { ...state.world } });
+    });
+    document.addEventListener('keydown', onKey);
+    paint();
+  });
+}
+
 // 导出选项：分辨率倍率、图片格式（PNG / JPG）与 JPG 压缩质量。
 function askBoardExportOptions(kind) {
   return new Promise(resolve => {
@@ -4795,9 +5006,11 @@ function askBoardExportOptions(kind) {
 
 async function boardExportImage() {
   if (!activeBoard().widgets.length) { showToast(t('boardExportEmpty')); return null; }
+  const selection = await boardSelectExportRegion();
+  if (!selection) return null;
   const options = await askBoardExportOptions('image');
   if (!options) return null;
-  const rendered = boardRenderToCanvas({ scale: options.scale });
+  const rendered = boardRenderToCanvas({ scale: options.scale, region: selection.rect });
   if (!rendered) { showToast(t('boardExportEmpty')); return null; }
   const jpg = options.format === 'jpg';
   const mimeType = jpg ? 'image/jpeg' : 'image/png';
@@ -4812,9 +5025,11 @@ async function boardExportPdf() {
   if (!activeBoard().widgets.length) { showToast(t('boardExportEmpty')); return null; }
   const { PDFDocument, rgb } = window.PDFLib || {};
   if (!PDFDocument) { showToast(t('boardExportFailed')); return null; }
+  const selection = await boardSelectExportRegion();
+  if (!selection) return null;
   const options = await askBoardExportOptions('pdf');
   if (!options) return null;
-  const rendered = boardRenderToCanvas({ scale: options.scale });
+  const rendered = boardRenderToCanvas({ scale: options.scale, region: selection.rect });
   if (!rendered) { showToast(t('boardExportEmpty')); return null; }
   const jpg = options.format === 'jpg';
   const dataUrl = rendered.canvas.toDataURL(jpg ? 'image/jpeg' : 'image/png', jpg ? options.quality : undefined);
