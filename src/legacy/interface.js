@@ -54,7 +54,7 @@
   if (migratedTodayView || migratedAppIconPreset) saveUISettings();
   const saveRendererSettings = () => localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...settings, language: uiSettings.language === 'zh-Hant' ? 'zh' : uiSettings.language }));
   if (migratedTodayView || migratedStatsView) saveUISettings();
-  Object.assign(dictionaries.zh, { syncTitle:'连接本地文件夹', syncCopy:'选择设备本地、局域网或系统已挂载的网络文件夹。Acta 会在其中读写清单、归类、notes 和 todos 完整数据文件夹。', download:'下载完整数据文件夹', upload:'上传完整数据文件夹', taskDoneSortHint:'按完成时间正序或倒序排列已完成的子任务' });
+  Object.assign(dictionaries.zh, { syncTitle:'连接本地文件夹', syncCopy:'选择设备本地、局域网或系统已挂载的网络文件夹。Acta 会在其中读写清单、归类、notes 和 todos 完整数据文件夹。', download:'下载完整数据文件夹', upload:'上传完整数据文件夹', taskDoneSortHint:'按完成时间正序或倒序排列已完成的子任务', navSwapHint:'点击两个入口互换位置', navPreviewSidebarHint:'预览：点击入口切换显示与隐藏' });
   Object.assign(dictionaries.en, { syncTitle:'Connect a local folder', syncCopy:'Choose a device folder, LAN location, or mounted network folder. Acta reads and writes the complete manifest, classifications, notes, and todos data folder there.', download:'Download complete data folder', upload:'Upload complete data folder', taskDoneSortHint:'Sort completed subtasks by completion time, oldest or newest first' });
   dictionaries['zh-Hant'] = {
     ...dictionaries.zh,
@@ -240,7 +240,7 @@
       '整个资料库保存在所选文件夹内唯一的':'The entire library is stored in a single', '文件中。':'file inside the selected folder.', '演示工作区':'Demo workspace', '演示行记数据':'Demo Acta Data', '尚未选择文件夹；本次修改不会保存。':'No folder selected; changes in this session will not be saved.',
       '选择本地文件夹':'Choose local folder', '立即保存':'Save now', '从文件重载':'Reload from file', '返回演示工作区':'Return to demo workspace', '返回演示行记数据':'Return to demo Acta Data', '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is the demo workspace. Its content resets when you close or refresh the page and is not written to browser storage.', '当前是演示行记数据。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'This is demo Acta Data. Its content resets when you close or refresh the page and is not written to browser storage.',
       '启动、密度与动效偏好。':'Startup, density, and motion.', '默认启动页面':'Default startup view', '启动时进入的视图':'The view shown at launch', '收集箱':'Inbox', '今天':'Today', '所有待办':'All tasks', '所有笔记':'All notes', '日历':'Calendar', '汇总板':'Plan board', '已完成':'Completed',
-      '紧凑列表':'Compact lists', '中栏密度更高':'Denser middle pane', '减少动态效果':'Reduce motion', '预见式返回':'Predictive back', '边缘滑动时预览返回效果，中途可取消':'Preview the back gesture from the screen edge; cancel mid-gesture', '降低转场与弹性动画':'Fewer transitions and springs', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
+      '紧凑列表':'Compact lists', '中栏密度更高':'Denser middle pane', '减少动态效果':'Reduce motion', 'navSwapHint':'Click two entries to swap them', 'navPreviewSidebarHint':'Preview — click an entry to show or hide it', '预见式返回':'Predictive back', '边缘滑动时预览返回效果，中途可取消':'Preview the back gesture from the screen edge; cancel mid-gesture', '降低转场与弹性动画':'Fewer transitions and springs', '设置会自动保存在当前设备。':'Settings are saved automatically on this device.',
       '点击空白处':'Click outside dialogs', '点空白处如何关闭弹窗，默认双击防误触':'How clicks on blank areas close dialogs; double click by default', '不关闭（防误触）':"Don't close (accident protection)", '单击关闭':'Single click closes', '双击关闭':'Double click closes',
       '计划板':'Plan board', '渲染余量':'Render margin', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'How far beyond the viewport the canvas pre-renders; larger is smoother but heavier', '小 · 流畅优先':'Small · performance first', '中 · 均衡':'Medium · balanced', '大 · 预览优先':'Large · preview first', '关联曲线':'Link curves', '在同板互相关联的待办与笔记之间显示连接曲线':'Show connection curves between linked tasks and notes on the same board', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Render-performance and link-display preferences for the plan board on this device.', '设置即时生效，保存在本机。':'Applies immediately; saved on this device.', '页面跳转栏':'Navigation bar', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'Show the entries for this device — the desktop sidebar, or the mobile bottom bar and titlebar.', '桌面端侧边栏':'Desktop sidebar', '勾选要显示的页面；待办与笔记默认隐藏':'Tick the pages to show; tasks and notes are hidden by default', '移动端底栏':'Mobile bottom bar', '两个槽位可替换；两端固定为收集箱与日历':'Two replaceable slots; Inbox and Calendar stay fixed', '槽位一':'Slot one', '槽位二':'Slot two', '移动端顶栏':'Mobile titlebar', '右上角三个按钮可自定义；设置按钮固定显示':'Customize the three top-right buttons; Settings stays fixed', '顶栏槽位一':'Titlebar slot one', '顶栏槽位二':'Titlebar slot two', '顶栏槽位三':'Titlebar slot three', '刷新数据':'Refresh data', '历史记录':'History', '回收站':'Trash',
       '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes only change the appearance; your notes and tasks are unaffected.', '黑白浅色':'Monochrome light', '黑白深色':'Monochrome dark', '蓝黄':'Blue and yellow', '纸色护眼':'Eye-comfort paper', '默认':'Default', '自定义':'Custom',
@@ -259,7 +259,7 @@
       '设置':'設定', '按你的方式使用 Acta':'依照你的方式使用 Acta', '关闭设置':'關閉設定', '设置页面':'設定頁面', '语言':'語言', '工作区':'工作區', '行记数据':'行記資料', '数据同步':'資料同步', '常规设置':'一般設定', '外观设置':'外觀設定', '关于':'關於',
       '切换界面语言，不影响笔记内容。':'切換介面語言，不影響筆記內容。', '简体中文':'簡體中文', '英语':'英文',
       '整个资料库保存在所选文件夹内唯一的':'整個資料庫儲存在所選資料夾內唯一的', '文件中。':'檔案中。', '演示工作区':'示範工作區', '尚未选择文件夹；本次修改不会保存。':'尚未選擇資料夾；本次修改不會儲存。', '选择本地文件夹':'選擇本機資料夾', '立即保存':'立即儲存', '从文件重载':'從檔案重新載入', '返回演示工作区':'返回示範工作區',
-      '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '启动、密度与动效偏好。':'啟動、密度與動效偏好。', '默认启动页面':'預設啟動頁面', '启动时进入的视图':'啟動時進入的視圖', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '汇总板':'計劃板', '紧凑列表':'緊湊清單', '中栏密度更高':'中欄密度更高', '减少动态效果':'減少動態效果', '预见式返回':'預見式返回', '边缘滑动时预览返回效果，中途可取消':'邊緣滑動時預覽返回效果，中途可取消', '降低转场与弹性动画':'降低轉場與彈性動畫', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
+      '当前是演示工作区。关闭或刷新页面后，演示内容会恢复，不会写入浏览器本地资料库。':'目前是示範工作區。關閉或重新整理頁面後，示範內容會還原，不會寫入瀏覽器本機資料庫。', '启动、密度与动效偏好。':'啟動、密度與動效偏好。', '默认启动页面':'預設啟動頁面', '启动时进入的视图':'啟動時進入的視圖', '收集箱':'收集箱', '今天':'今天', '所有待办':'所有待辦', '所有笔记':'所有筆記', '日历':'日曆', '汇总板':'計劃板', '紧凑列表':'緊湊清單', '中栏密度更高':'中欄密度更高', '减少动态效果':'減少動態效果', 'navSwapHint':'點擊兩個入口互換位置', 'navPreviewSidebarHint':'預覽：點擊入口切換顯示與隱藏', '预见式返回':'預見式返回', '边缘滑动时预览返回效果，中途可取消':'邊緣滑動時預覽返回效果，中途可取消', '降低转场与弹性动画':'降低轉場與彈性動畫', '设置会自动保存在当前设备。':'設定會自動儲存在目前裝置。',
       '点击空白处':'點擊空白處', '点空白处如何关闭弹窗，默认双击防误触':'點空白處如何關閉彈窗，預設雙擊防誤觸', '不关闭（防误触）':'不關閉（防誤觸）', '单击关闭':'單擊關閉', '双击关闭':'雙擊關閉',
       '计划板':'計劃板', '渲染余量':'渲染餘量', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'畫布提前渲染視窗外內容的距離，越大越順暢、越耗效能', '小 · 流畅优先':'小 · 流暢優先', '中 · 均衡':'中 · 均衡', '大 · 预览优先':'大 · 預覽優先', '关联曲线':'關聯曲線', '在同板互相关联的待办与笔记之间显示连接曲线':'在同板互相關聯的待辦與筆記之間顯示連接曲線', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'渲染效能與關聯顯示偏好，只影響本機的計劃板視圖。', '设置即时生效，保存在本机。':'設定即時生效，儲存在本機。', '页面跳转欄':'頁面跳轉欄', '页面跳转栏':'頁面跳轉欄', '按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。':'按目前裝置顯示桌面側邊欄或行動端底欄與頂欄的入口。', '桌面端侧边栏':'桌面端側邊欄', '勾选要显示的页面；待办与笔记默认隐藏':'勾選要顯示的頁面；待辦與筆記預設隱藏', '移动端底栏':'行動端底欄', '两个槽位可替换；两端固定为收集箱与日历':'兩個槽位可替換；兩端固定為收集箱與日曆', '槽位一':'槽位一', '槽位二':'槽位二', '移动端顶栏':'行動端頂欄', '右上角三个按钮可自定义；设置按钮固定显示':'右上角三個按鈕可自訂；設定按鈕固定顯示', '顶栏槽位一':'頂欄槽位一', '顶栏槽位二':'頂欄槽位二', '顶栏槽位三':'頂欄槽位三', '刷新数据':'重新整理資料', '历史记录':'歷史記錄',
       '勾选框旁显示完成日期，悬停看时刻':'勾選框旁顯示完成日期，懸停看時刻',
@@ -297,7 +297,7 @@
   Object.assign(interfaceTranslations.ja, {
     '设置':'設定', '按你的方式使用 Acta':'Acta をあなた流に', '关闭设置':'設定を閉じる', '语言':'言語', '工作区':'ワークスペース', '行记数据':'Acta データ', '数据同步':'データ同期', '常规设置':'一般', '外观设置':'外観', '关于':'情報', '页面跳转栏':'ページバー', '计划板':'プランボード', '笔记编辑器':'ノートエディター', '返回':'戻る', '待办设置':'タスク', '数据统计':'統計', '局域网雷达':'LANレーダー', '总结':'まとめ', '缓存与页面':'キャッシュとページ',
     '切换界面语言，不影响笔记内容。':'表示言語を切り替えます。ノート内容には影響しません。', '简体中文':'簡体字中国語', '繁體中文':'繁体字中国語', '英语':'英語', '日语':'日本語', '韩语':'韓国語', '法语':'フランス語', '德语':'ドイツ語', '西班牙语':'スペイン語', '俄语':'ロシア語',
-    '默认启动页面':'起動時のページ', '启动时进入的视图':'起動時に表示するビュー', '收集箱':'インボックス', '今天':'今日', '所有待办':'すべてのタスク', '所有笔记':'すべてのノート', '日历':'カレンダー', '汇总板':'プランボード', '已完成':'完了', '紧凑列表':'コンパクトリスト', '减少动态效果':'動きを減らす', '预见式返回':'予測型の戻る', '边缘滑动时预览返回效果，中途可取消':'画面端からのスワイプで戻る操作をプレビューし、途中でキャンセルできます', '设置会自动保存在当前设备。':'設定はこの端末に自動保存されます。', '点击空白处':'ダイアログ外をクリック', '不关闭（防误触）':'閉じない（誤タップ防止）', '单击关闭':'シングルクリックで閉じる', '双击关闭':'ダブルクリックで閉じる',
+    '默认启动页面':'起動時のページ', '启动时进入的视图':'起動時に表示するビュー', '收集箱':'インボックス', '今天':'今日', '所有待办':'すべてのタスク', '所有笔记':'すべてのノート', '日历':'カレンダー', '汇总板':'プランボード', '已完成':'完了', '紧凑列表':'コンパクトリスト', '减少动态效果':'動きを減らす', 'navSwapHint':'2つのエントリーをクリックして入れ替え', 'navPreviewSidebarHint':'プレビュー：クリックで表示・非表示を切り替え', '预见式返回':'予測型の戻る', '边缘滑动时预览返回效果，中途可取消':'画面端からのスワイプで戻る操作をプレビューし、途中でキャンセルできます', '设置会自动保存在当前设备。':'設定はこの端末に自動保存されます。', '点击空白处':'ダイアログ外をクリック', '不关闭（防误触）':'閉じない（誤タップ防止）', '单击关闭':'シングルクリックで閉じる', '双击关闭':'ダブルクリックで閉じる',
     '渲染余量':'描画マージン', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'ビューポート外を先読みで描画する範囲。大きいほど滑らかで負荷も増します。', '小 · 流畅优先':'小 · 軽快優先', '中 · 均衡':'中 · バランス', '大 · 预览优先':'大 · 先読み優先', '关联曲线':'関連曲線', '在同板互相关联的待办与笔记之间显示连接曲线':'同じボード上で関連付けられたタスクとノートの間に曲線を表示します', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'描画性能と関連表示の設定。この端末のプランボードにのみ適用されます。', '设置即时生效，保存在本机。':'設定は即時反映され、この端末に保存されます。',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'テーマは表示だけを変えます。ノートやタスクのデータには影響しません。', '黑白浅色':'白黒ライト', '黑白深色':'白黒ダーク', '纸色护眼':'ペーパー', '默认':'デフォルト', '自定义':'カスタム', '纸张颜色':'紙の色', '侧栏颜色':'サイドバーの色', '强调颜色':'アクセントカラー', '界面字体':'画面のフォント', '应用于列表、编辑器与设置页':'リスト・エディター・設定に適用', '系统默认':'システムデフォルト', '衬线字体':'明朝体', '圆体':'丸ゴシック', '等宽字体':'等幅', '自定义字体':'カスタムフォント', '字体家族':'フォントファミリー', '字体大小':'文字サイズ', '界面整体缩放':'画面全体の拡大率', '记录，然后行动。Acta 让笔记与待办自然连接。':'記録して、行動する。Acta はノートとタスクを自然につなげます。',
     '开始使用':'はじめる', '下一步':'次へ', '上一步':'戻る', '尚未选择':'未選択', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Please choose the software data folder first, or click "Use default location".', '默认位置：':'既定の場所: ', '使用默认位置':'既定の場所を使う', '选择文件夹…':'フォルダーを選択…', '选择主题、字体与大小':'テーマ・フォント・サイズを選択', '选择启动动画':'起動アニメーションを選択', '软件数据位置':'ソフトウェアデータの場所', '打开文件夹':'フォルダーを開く', '更改位置':'場所を変更', '本机存储':'この端末に保存',
@@ -308,7 +308,7 @@
   Object.assign(interfaceTranslations.ko, {
     '设置':'설정', '按你的方式使用 Acta':'Acta를 나만의 방식으로', '关闭设置':'설정 닫기', '语言':'언어', '工作区':'작업 공간', '行记数据':'Acta 데이터', '数据同步':'데이터 동기화', '常规设置':'일반', '外观设置':'모양', '关于':'정보', '页面跳转栏':'페이지 바', '计划板':'플랜 보드', '笔记编辑器':'노트 편집기', '返回':'뒤로', '待办设置':'할 일', '数据统计':'통계', '局域网雷达':'LAN 레이더', '总结':'요약', '缓存与页面':'캐시와 페이지',
     '切换界面语言，不影响笔记内容。':'인터페이스 언어를 전환합니다. 노트 내용은 영향받지 않아요.', '简体中文':'중국어(간체)', '繁體中文':'중국어(번체)', '英语':'영어', '日语':'일본어', '韩语':'한국어', '法语':'프랑스어', '德语':'독일어', '西班牙语':'스페인어', '俄语':'러시아어',
-    '默认启动页面':'시작 페이지', '启动时进入的视图':'실행 시 표시할 뷰', '收集箱':'수집함', '今天':'오늘', '所有待办':'모든 할 일', '所有笔记':'모든 노트', '日历':'달력', '汇总板':'플랜 보드', '已完成':'완료됨', '紧凑列表':'컴팩트 목록', '减少动态效果':'움직임 줄이기', '预见式返回':'예측형 뒤로 가기', '边缘滑动时预览返回效果，中途可取消':'화면 가장자리에서 뒤로 가기를 미리 보고 중간에 취소할 수 있어요', '设置会自动保存在当前设备。':'설정은 이 기기에 자동 저장돼요.', '点击空白处':'빈 곳 클릭', '不关闭（防误触）':'닫지 않음(오작동 방지)', '单击关闭':'한 번 클릭해서 닫기', '双击关闭':'두 번 클릭해서 닫기',
+    '默认启动页面':'시작 페이지', '启动时进入的视图':'실행 시 표시할 뷰', '收集箱':'수집함', '今天':'오늘', '所有待办':'모든 할 일', '所有笔记':'모든 노트', '日历':'달력', '汇总板':'플랜 보드', '已完成':'완료됨', '紧凑列表':'컴팩트 목록', '减少动态效果':'움직임 줄이기', 'navSwapHint':'두 개의 항목을 클릭해 위치를 바꿔요', 'navPreviewSidebarHint':'미리보기: 항목을 클릭해 표시 여부를 전환', '预见式返回':'예측형 뒤로 가기', '边缘滑动时预览返回效果，中途可取消':'화면 가장자리에서 뒤로 가기를 미리 보고 중간에 취소할 수 있어요', '设置会自动保存在当前设备。':'설정은 이 기기에 자동 저장돼요.', '点击空白处':'빈 곳 클릭', '不关闭（防误触）':'닫지 않음(오작동 방지)', '单击关闭':'한 번 클릭해서 닫기', '双击关闭':'두 번 클릭해서 닫기',
     '渲染余量':'렌더링 여백', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'뷰포트 밖을 미리 렌더링하는 범위. 클수록 부드럽지만 무거워요.', '小 · 流畅优先':'작게 · 가볍게', '中 · 均衡':'중간 · 균형', '大 · 预览优先':'크게 · 미리보기', '关联曲线':'연결 곡선', '在同板互相关联的待办与笔记之间显示连接曲线':'같은 보드에서 서로 연결된 할 일과 노트 사이에 곡선을 표시해요', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'렌더링 성능과 연결 표시 설정. 이 기기의 플랜 보드에만 적용돼요.', '设置即时生效，保存在本机。':'설정은 즉시 적용되어 이 기기에 저장돼요.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'테마는 표시만 바꿔요. 노트나 할 일 데이터는 영향받지 않아요.', '黑白浅色':'흑백 라이트', '黑白深色':'흑백 다크', '纸色护眼':'페이퍼', '默认':'기본값', '自定义':'사용자 지정', '纸张颜色':'종이 색', '侧栏颜色':'사이드바 색', '强调颜色':'강조 색', '界面字体':'인터페이스 글꼴', '应用于列表、编辑器与设置页':'목록·편집기·설정에 적용돼요', '系统默认':'시스템 기본값', '衬线字体':'명조', '圆体':'둥근 글꼴', '等宽字体':'고정폭', '自定义字体':'사용자 지정 글꼴', '字体家族':'글꼴 종류', '字体大小':'글자 크기', '界面整体缩放':'인터페이스 전체 배율', '记录，然后行动。Acta 让笔记与待办自然连接。':'기록하고, 행동하세요. Acta는 노트와 할 일을 자연스럽게 연결해요.',
     '开始使用':'시작하기', '下一步':'다음', '上一步':'이전', '尚未选择':'선택 안 함', '请先选择软件数据文件夹，或点击「使用默认位置」。':'先にソフトウェアデータフォルダを選択するか、「デフォルトの位置を使用」をクリックしてください。', '默认位置：':'기본 위치: ', '使用默认位置':'기본 위치 사용', '选择文件夹…':'폴더 선택…', '选择主题、字体与大小':'테마·글꼴·크기 선택', '选择启动动画':'시작 애니메이션 선택', '软件数据位置':'앱 데이터 위치', '打开文件夹':'폴더 열기', '更改位置':'위치 변경', '本机存储':'이 기기에 저장',
@@ -319,7 +319,7 @@
   Object.assign(interfaceTranslations.fr, {
     '设置':'Réglages', '按你的方式使用 Acta':'Acta, à votre façon', '关闭设置':'Fermer les réglages', '语言':'Langue', '工作区':'Espace de travail', '行记数据':'Données Acta', '数据同步':'Synchro des données', '常规设置':'Général', '外观设置':'Apparence', '关于':'À propos', '页面跳转栏':'Barre de navigation', '计划板':'Tableau', '笔记编辑器':'Éditeur de notes', '返回':'Retour', '待办设置':'Tâches', '数据统计':'Statistiques', '局域网雷达':'Radar LAN', '总结':'Bilan', '缓存与页面':'Cache et page',
     '切换界面语言，不影响笔记内容。':'Change la langue de l’interface ; les notes ne sont pas touchées.', '简体中文':'Chinois simplifié', '繁體中文':'Chinois traditionnel', '英语':'Anglais', '日语':'Japonais', '韩语':'Coréen', '法语':'Français', '德语':'Allemand', '西班牙语':'Espagnol', '俄语':'Russe',
-    '默认启动页面':'Vue au démarrage', '启动时进入的视图':'La vue affichée au lancement', '收集箱':'Boîte de réception', '今天':'Aujourd’hui', '所有待办':'Toutes les tâches', '所有笔记':'Toutes les notes', '日历':'Calendrier', '汇总板':'Tableau', '已完成':'Terminé', '紧凑列表':'Listes compactes', '减少动态效果':'Réduire les animations', '预见式返回':'Retour prédictif', '边缘滑动时预览返回效果，中途可取消':'Aperçu du geste retour depuis le bord de l’écran ; annulable en cours de geste', '设置会自动保存在当前设备。':'Les réglages sont enregistrés automatiquement sur cet appareil.', '点击空白处':'Clic à l’extérieur', '不关闭（防误触）':'Ne pas fermer (anti-erreur)', '单击关闭':'Clic simple pour fermer', '双击关闭':'Double clic pour fermer',
+    '默认启动页面':'Vue au démarrage', '启动时进入的视图':'La vue affichée au lancement', '收集箱':'Boîte de réception', '今天':'Aujourd’hui', '所有待办':'Toutes les tâches', '所有笔记':'Toutes les notes', '日历':'Calendrier', '汇总板':'Tableau', '已完成':'Terminé', '紧凑列表':'Listes compactes', '减少动态效果':'Réduire les animations', 'navSwapHint':'Cliquez sur deux entrées pour les échanger', 'navPreviewSidebarHint':'Aperçu — cliquez sur une entrée pour l’afficher ou la masquer', '预见式返回':'Retour prédictif', '边缘滑动时预览返回效果，中途可取消':'Aperçu du geste retour depuis le bord de l’écran ; annulable en cours de geste', '设置会自动保存在当前设备。':'Les réglages sont enregistrés automatiquement sur cet appareil.', '点击空白处':'Clic à l’extérieur', '不关闭（防误触）':'Ne pas fermer (anti-erreur)', '单击关闭':'Clic simple pour fermer', '双击关闭':'Double clic pour fermer',
     '渲染余量':'Marge de rendu', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Distance de pré-rendu hors du viewport ; plus grand est plus fluide mais plus lourd.', '小 · 流畅优先':'Petit · fluidité', '中 · 均衡':'Moyen · équilibré', '大 · 预览优先':'Grand · aperçu', '关联曲线':'Courbes de liaison', '在同板互相关联的待办与笔记之间显示连接曲线':'Affiche des courbes entre tâches et notes liées sur un même tableau', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Préférences de rendu et de liaison pour le tableau de cet appareil.', '设置即时生效，保存在本机。':'Appliqué immédiatement ; enregistré sur cet appareil.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Les thèmes ne changent que l’apparence ; notes et tâches ne sont pas touchées.', '黑白浅色':'Noir et blanc clair', '黑白深色':'Noir et blanc sombre', '纸色护眼':'Papier', '默认':'Par défaut', '自定义':'Personnalisé', '纸张颜色':'Couleur du papier', '侧栏颜色':'Couleur de la barre latérale', '强调颜色':'Couleur d’accent', '界面字体':'Police de l’interface', '应用于列表、编辑器与设置页':'S’applique aux listes, à l’éditeur et aux réglages', '系统默认':'Police système', '衬线字体':'Avec empattement', '圆体':'Arrondie', '等宽字体':'Chasse fixe', '自定义字体':'Police personnalisée', '字体家族':'Famille de police', '字体大小':'Taille de police', '界面整体缩放':'Échelle de toute l’interface', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capter, puis agir. Acta relie notes et tâches naturellement.',
     '开始使用':'Commencer', '下一步':'Suivant', '上一步':'Retour', '尚未选择':'Pas encore choisi', '请先选择软件数据文件夹，或点击「使用默认位置」。':'먼저 소프트웨어 데이터 폴더를 선택하거나 "기본 위치 사용"을 눌러 주세요.', '默认位置：':'Emplacement par défaut : ', '使用默认位置':'Utiliser l’emplacement par défaut', '选择文件夹…':'Choisir un dossier…', '选择主题、字体与大小':'Choisir thème, police et taille', '选择启动动画':'Choisir l’animation de lancement', '软件数据位置':'Emplacement des données', '打开文件夹':'Ouvrir le dossier', '更改位置':'Changer d’emplacement', '本机存储':'Stockage local',
@@ -330,7 +330,7 @@
   Object.assign(interfaceTranslations.de, {
     '设置':'Einstellungen', '按你的方式使用 Acta':'Acta auf deine Art', '关闭设置':'Einstellungen schließen', '语言':'Sprache', '工作区':'Arbeitsbereich', '行记数据':'Acta-Daten', '数据同步':'Datensync', '常规设置':'Allgemein', '外观设置':'Erscheinungsbild', '关于':'Über', '页面跳转栏':'Navigationsleiste', '计划板':'Planboard', '笔记编辑器':'Notiz-Editor', '返回':'Zurück', '待办设置':'Aufgaben', '数据统计':'Statistik', '局域网雷达':'LAN-Radar', '总结':'Bilanz', '缓存与页面':'Cache & Seite',
     '切换界面语言，不影响笔记内容。':'Ändert die Sprache der Oberfläche; Notizen bleiben unverändert.', '简体中文':'Vereinfachtes Chinesisch', '繁體中文':'Traditionelles Chinesisch', '英语':'Englisch', '日语':'Japanisch', '韩语':'Koreanisch', '法语':'Französisch', '德语':'Deutsch', '西班牙语':'Spanisch', '俄语':'Russisch',
-    '默认启动页面':'Startansicht', '启动时进入的视图':'Die beim Start gezeigte Ansicht', '收集箱':'Eingang', '今天':'Heute', '所有待办':'Alle Aufgaben', '所有笔记':'Alle Notizen', '日历':'Kalender', '汇总板':'Planboard', '已完成':'Erledigt', '紧凑列表':'Kompakte Listen', '减少动态效果':'Bewegung reduzieren', '预见式返回':'Predictive Back', '边缘滑动时预览返回效果，中途可取消':'Rückgabe-Geste vom Displayrand mit Vorschau; jederzeit abbrechbar', '设置会自动保存在当前设备。':'Einstellungen werden automatisch auf diesem Gerät gespeichert.', '点击空白处':'Klick außerhalb', '不关闭（防误触）':'Nicht schließen (Schutz)', '单击关闭':'Einfachklick schließt', '双击关闭':'Doppelklick schließt',
+    '默认启动页面':'Startansicht', '启动时进入的视图':'Die beim Start gezeigte Ansicht', '收集箱':'Eingang', '今天':'Heute', '所有待办':'Alle Aufgaben', '所有笔记':'Alle Notizen', '日历':'Kalender', '汇总板':'Planboard', '已完成':'Erledigt', '紧凑列表':'Kompakte Listen', '减少动态效果':'Bewegung reduzieren', 'navSwapHint':'Zwei Einträge anklicken, um sie zu tauschen', 'navPreviewSidebarHint':'Vorschau – Eintrag anklicken, um ihn ein-/auszublenden', '预见式返回':'Predictive Back', '边缘滑动时预览返回效果，中途可取消':'Rückgabe-Geste vom Displayrand mit Vorschau; jederzeit abbrechbar', '设置会自动保存在当前设备。':'Einstellungen werden automatisch auf diesem Gerät gespeichert.', '点击空白处':'Klick außerhalb', '不关闭（防误触）':'Nicht schließen (Schutz)', '单击关闭':'Einfachklick schließt', '双击关闭':'Doppelklick schließt',
     '渲染余量':'Render-Abstand', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Wie weit außerhalb des Viewports vorgemerkt wird; größer ist flüssiger, aber schwerer.', '小 · 流畅优先':'Klein · performant', '中 · 均衡':'Mittel · ausgewogen', '大 · 预览优先':'Groß · Vorschau', '关联曲线':'Verbindungskurven', '在同板互相关联的待办与笔记之间显示连接曲线':'Zeigt Kurven zwischen verknüpften Aufgaben und Notizen auf einem Board', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Render- und Anzeigepräferenzen für das Planboard auf diesem Gerät.', '设置即时生效，保存在本机。':'Wirkt sofort; wird auf diesem Gerät gespeichert.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes ändern nur die Optik; Notizen und Aufgaben bleiben unberührt.', '黑白浅色':'Monochrom hell', '黑白深色':'Monochrom dunkel', '纸色护眼':'Papier', '默认':'Standard', '自定义':'Benutzerdefiniert', '纸张颜色':'Papierfarbe', '侧栏颜色':'Farbe der Seitenleiste', '强调颜色':'Akzentfarbe', '界面字体':'Oberflächenschrift', '应用于列表、编辑器与设置页':'Gilt für Listen, Editor und Einstellungen', '系统默认':'Systemstandard', '衬线字体':'Serif', '圆体':'Gerundet', '等宽字体':'Monospace', '自定义字体':'Eigene Schrift', '字体家族':'Schriftfamilie', '字体大小':'Schriftgröße', '界面整体缩放':'Gesamte Oberfläche skalieren', '记录，然后行动。Acta 让笔记与待办自然连接。':'Erfassen, dann handeln. Acta verbindet Notizen und Aufgaben natürlich.',
     '开始使用':'Los geht’s', '下一步':'Weiter', '上一步':'Zurück', '尚未选择':'Noch nicht gewählt', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Choisissez d’abord le dossier de données du logiciel, ou cliquez sur « Emplacement par défaut ».', '默认位置：':'Standardort: ', '使用默认位置':'Standardort verwenden', '选择文件夹…':'Ordner wählen…', '选择主题、字体与大小':'Theme, Schrift und Größe wählen', '选择启动动画':'Startanimation wählen', '软件数据位置':'Speicherort der App-Daten', '打开文件夹':'Ordner öffnen', '更改位置':'Ort ändern', '本机存储':'Lokaler Speicher',
@@ -341,7 +341,7 @@
   Object.assign(interfaceTranslations.es, {
     '设置':'Ajustes', '按你的方式使用 Acta':'Acta a tu manera', '关闭设置':'Cerrar ajustes', '语言':'Idioma', '工作区':'Espacio de trabajo', '行记数据':'Datos de Acta', '数据同步':'Sincronización', '常规设置':'General', '外观设置':'Apariencia', '关于':'Acerca de', '页面跳转栏':'Barra de navegación', '计划板':'Tablero', '笔记编辑器':'Editor de notas', '返回':'Atrás', '待办设置':'Tareas', '数据统计':'Estadísticas', '局域网雷达':'Radar LAN', '总结':'Resumen', '缓存与页面':'Caché y página',
     '切换界面语言，不影响笔记内容。':'Cambia el idioma de la interfaz; las notas no se tocan.', '简体中文':'Chino simplificado', '繁體中文':'Chino tradicional', '英语':'Inglés', '日语':'Japonés', '韩语':'Coreano', '法语':'Francés', '德语':'Alemán', '西班牙语':'Español', '俄语':'Ruso',
-    '默认启动页面':'Vista inicial', '启动时进入的视图':'La vista mostrada al iniciar', '收集箱':'Bandeja', '今天':'Hoy', '所有待办':'Todas las tareas', '所有笔记':'Todas las notas', '日历':'Calendario', '汇总板':'Tablero', '已完成':'Completadas', '紧凑列表':'Listas compactas', '减少动态效果':'Reducir movimiento', '预见式返回':'Atrás predictivo', '边缘滑动时预览返回效果，中途可取消':'Previsualiza el gesto de retroceso desde el borde; cancelable a mitad del gesto', '设置会自动保存在当前设备。':'Los ajustes se guardan automáticamente en este dispositivo.', '点击空白处':'Clic fuera de los diálogos', '不关闭（防误触）':'No cerrar (protección)', '单击关闭':'Un clic cierra', '双击关闭':'Doble clic cierra',
+    '默认启动页面':'Vista inicial', '启动时进入的视图':'La vista mostrada al iniciar', '收集箱':'Bandeja', '今天':'Hoy', '所有待办':'Todas las tareas', '所有笔记':'Todas las notas', '日历':'Calendario', '汇总板':'Tablero', '已完成':'Completadas', '紧凑列表':'Listas compactas', '减少动态效果':'Reducir movimiento', 'navSwapHint':'Haz clic en dos entradas para intercambiarlas', 'navPreviewSidebarHint':'Vista previa: haz clic en una entrada para mostrarla u ocultarla', '预见式返回':'Atrás predictivo', '边缘滑动时预览返回效果，中途可取消':'Previsualiza el gesto de retroceso desde el borde; cancelable a mitad del gesto', '设置会自动保存在当前设备。':'Los ajustes se guardan automáticamente en este dispositivo.', '点击空白处':'Clic fuera de los diálogos', '不关闭（防误触）':'No cerrar (protección)', '单击关闭':'Un clic cierra', '双击关闭':'Doble clic cierra',
     '渲染余量':'Margen de renderizado', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Cuánto se pre-renderiza fuera del visor; más es más fluido pero pesa más.', '小 · 流畅优先':'Pequeño · rendimiento', '中 · 均衡':'Medio · equilibrado', '大 · 预览优先':'Grande · vista previa', '关联曲线':'Curvas de vínculo', '在同板互相关联的待办与笔记之间显示连接曲线':'Muestra curvas entre tareas y notas vinculadas en el mismo tablero', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Preferencias de renderizado y vínculos del tablero en este dispositivo.', '设置即时生效，保存在本机。':'Se aplica al instante; se guarda en este dispositivo.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Los temas solo cambian la apariencia; notas y tareas no se afectan.', '黑白浅色':'Blanco y negro claro', '黑白深色':'Blanco y negro oscuro', '纸色护眼':'Papel', '默认':'Predeterminado', '自定义':'Personalizado', '纸张颜色':'Color del papel', '侧栏颜色':'Color de la barra lateral', '强调颜色':'Color de acento', '界面字体':'Fuente de la interfaz', '应用于列表、编辑器与设置页':'Se aplica a listas, editor y ajustes', '系统默认':'Predeterminado del sistema', '衬线字体':'Con serifa', '圆体':'Redondeada', '等宽字体':'Monoespaciada', '自定义字体':'Fuente personalizada', '字体家族':'Familia tipográfica', '字体大小':'Tamaño de fuente', '界面整体缩放':'Escala de toda la interfaz', '记录，然后行动。Acta 让笔记与待办自然连接。':'Registra y actúa. Acta conecta notas y tareas con naturalidad.',
     '开始使用':'Empezar', '下一步':'Siguiente', '上一步':'Atrás', '尚未选择':'Sin elegir', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Wähle zuerst den Software-Datenordner, oder klicke auf „Standardort verwenden“.', '默认位置：':'Ubicación predeterminada: ', '使用默认位置':'Usar ubicación predeterminada', '选择文件夹…':'Elegir carpeta…', '选择主题、字体与大小':'Elige tema, fuente y tamaño', '选择启动动画':'Elige la animación de inicio', '软件数据位置':'Ubicación de los datos', '打开文件夹':'Abrir carpeta', '更改位置':'Cambiar ubicación', '本机存储':'Almacenamiento local',
@@ -352,7 +352,7 @@
   Object.assign(interfaceTranslations.ru, {
     '设置':'Настройки', '按你的方式使用 Acta':'Acta по-вашему', '关闭设置':'Закрыть настройки', '语言':'Язык', '工作区':'Рабочее пространство', '行记数据':'Данные Acta', '数据同步':'Синхронизация', '常规设置':'Основные', '外观设置':'Оформление', '关于':'О программе', '页面跳转栏':'Панель навигации', '计划板':'Планшет', '笔记编辑器':'Редактор заметок', '返回':'Назад', '待办设置':'Задачи', '数据统计':'Статистика', '局域网雷达':'LAN-радар', '总结':'Итоги', '缓存与页面':'Кэш и страница',
     '切换界面语言，不影响笔记内容。':'Меняет язык интерфейса; заметки не затрагиваются.', '简体中文':'Китайский упрощённый', '繁體中文':'Китайский традиционный', '英语':'Английский', '日语':'Японский', '韩语':'Корейский', '法语':'Французский', '德语':'Немецкий', '西班牙语':'Испанский', '俄语':'Русский',
-    '默认启动页面':'Стартовый вид', '启动时进入的视图':'Вид при запуске', '收集箱':'Входящие', '今天':'Сегодня', '所有待办':'Все задачи', '所有笔记':'Все заметки', '日历':'Календарь', '汇总板':'Планшет', '已完成':'Выполнено', '紧凑列表':'Компактные списки', '减少动态效果':'Меньше анимации', '预见式返回':'Прогнозируемый возврат', '边缘滑动时预览返回效果，中途可取消':'Предпросмотр жеста возврата от края экрана; жест можно отменить', '设置会自动保存在当前设备。':'Настройки автоматически сохраняются на этом устройстве.', '点击空白处':'Клик вне диалогов', '不关闭（防误触）':'Не закрывать (защита)', '单击关闭':'Один клик закрывает', '双击关闭':'Двойной клик закрывает',
+    '默认启动页面':'Стартовый вид', '启动时进入的视图':'Вид при запуске', '收集箱':'Входящие', '今天':'Сегодня', '所有待办':'Все задачи', '所有笔记':'Все заметки', '日历':'Календарь', '汇总板':'Планшет', '已完成':'Выполнено', '紧凑列表':'Компактные списки', '减少动态效果':'Меньше анимации', 'navSwapHint':'Щёлкните два входа, чтобы поменять их местами', 'navPreviewSidebarHint':'Предпросмотр — щёлкните вход, чтобы показать или скрыть его', '预见式返回':'Прогнозируемый возврат', '边缘滑动时预览返回效果，中途可取消':'Предпросмотр жеста возврата от края экрана; жест можно отменить', '设置会自动保存在当前设备。':'Настройки автоматически сохраняются на этом устройстве.', '点击空白处':'Клик вне диалогов', '不关闭（防误触）':'Не закрывать (защита)', '单击关闭':'Один клик закрывает', '双击关闭':'Двойной клик закрывает',
     '渲染余量':'Запас рендера', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Насколько далеко за пределы видимой области рендерить заранее; больше — плавнее, но тяжелее.', '小 · 流畅优先':'Малый · скорость', '中 · 均衡':'Средний · баланс', '大 · 预览优先':'Большой · обзор', '关联曲线':'Линии связей', '在同板互相关联的待办与笔记之间显示连接曲线':'Показывает линии между связанными задачами и заметками на планшете', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Настройки рендера и связей планшета на этом устройстве.', '设置即时生效，保存在本机。':'Применяется сразу; сохраняется на устройстве.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Темы меняют только оформление; заметки и задачи не затрагиваются.', '黑白浅色':'Светлый ч/б', '黑白深色':'Тёмный ч/б', '纸色护眼':'Бумага', '默认':'По умолчанию', '自定义':'Своё', '纸张颜色':'Цвет бумаги', '侧栏颜色':'Цвет боковой панели', '强调颜色':'Акцентный цвет', '界面字体':'Шрифт интерфейса', '应用于列表、编辑器与设置页':'Применяется к спискам, редактору и настройкам', '系统默认':'Системный', '衬线字体':'С засечками', '圆体':'Округлый', '等宽字体':'Моноширинный', '自定义字体':'Свой шрифт', '字体家族':'Семейство шрифтов', '字体大小':'Размер шрифта', '界面整体缩放':'Масштаб интерфейса', '记录，然后行动。Acta 让笔记与待办自然连接。':'Записывай и действуй. Acta естественно связывает заметки и задачи.',
     '开始使用':'Начать', '下一步':'Далее', '上一步':'Назад', '尚未选择':'Ещё не выбрано', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Elige primero la carpeta de datos del software, o pulsa «Usar ubicación predeterminada».', '默认位置：':'Расположение по умолчанию: ', '使用默认位置':'Использовать место по умолчанию', '选择文件夹…':'Выбрать папку…', '选择主题、字体与大小':'Выберите тему, шрифт и размер', '选择启动动画':'Выберите анимацию запуска', '软件数据位置':'Расположение данных', '打开文件夹':'Открыть папку', '更改位置':'Изменить расположение', '本机存储':'Локальное хранилище',
@@ -4736,6 +4736,191 @@
     return buttons;
   };
   const mobileSlotSelects = () => [byId('mobileSlotOne'), byId('mobileSlotTwo')].filter(Boolean);
+
+  // —— 页面跳转栏的可视化预览 ——
+  // 三块预览（桌面侧栏 / 移动底栏 / 移动顶栏）实时呈现当前设置的样子：
+  // 所有候选入口都亮起可点，点击两个入口即互换位置（槽位 ↔ 槽位、
+  // 候选 ↔ 槽位），固定入口（收集箱 / 日历 / 新建按钮 / 设置）不可点。
+  const NAV_PREVIEW_ICON = {
+    inbox: 'i-inbox', calendar: 'i-calendar', board: 'i-board', todos: 'i-check',
+    notes: 'i-note', trash: 'i-trash', stats: 'i-chart', lan: 'i-radar',
+    refresh: 'i-refresh', history: 'i-clock'
+  };
+  const NAV_PREVIEW_LABEL = {
+    inbox: 'inbox', calendar: 'calendar', board: 'board', todos: 'todos', notes: 'notes',
+    trash: 'trash', stats: 'stats', lan: 'lanRadarNav', refresh: 'refreshData', history: 'history'
+  };
+  const navPreviewChip = (id, extra = '') => `<span class="nav-preview-chip ${extra}" data-preview-id="${id}"><svg><use href="#${NAV_PREVIEW_ICON[id]}"/></svg><em>${escapeHTML(t(NAV_PREVIEW_LABEL[id]))}</em></span>`;
+  let navSwapPicked = null;
+
+  function renderNavPreviewSidebar() {
+    const host = byId('navPreviewSidebar');
+    if (!host) return;
+    const pages = normalizeNavPages();
+    host.innerHTML = [...NAV_PAGE_IDS, ...NAV_ACTION_PAGES]
+      .map(id => navPreviewChip(id, pages[id] === false ? 'is-off' : ''))
+      .join('');
+  }
+
+  function renderNavPreviewBottom() {
+    const bar = byId('navPreviewBottom');
+    const pool = byId('navPreviewBottomPool');
+    if (!bar || !pool) return;
+    const slots = normalizeMobileSlots();
+    const cell = (id, extra, attrs) => `<span class="nav-preview-cell ${extra}" ${attrs || ''}><svg><use href="#${NAV_PREVIEW_ICON[id] || 'i-plus'}"/></svg><em>${escapeHTML(id ? t(NAV_PREVIEW_LABEL[id] || id) : t('new'))}</em></span>`;
+    bar.innerHTML = [
+      cell('inbox', 'is-fixed'),
+      cell('calendar', 'is-fixed'),
+      `<span class="nav-preview-cell is-new"><svg><use href="#i-plus"/></svg><em>${escapeHTML(t('new'))}</em></span>`,
+      cell(slots[0], 'is-slot', 'data-preview-slot="0"'),
+      cell(slots[1], 'is-slot', 'data-preview-slot="1"')
+    ].join('');
+    pool.innerHTML = NAV_PAGE_IDS.filter(id => !MOBILE_FIXED_PAGES.includes(id))
+      .map(id => navPreviewChip(id, slots.includes(id) ? 'is-used' : '')).join('');
+  };
+
+  function renderNavPreviewTop() {
+    const bar = byId('navPreviewTop');
+    const pool = byId('navPreviewTopPool');
+    if (!bar || !pool) return;
+    const slots = normalizeMobileTitleActions();
+    const cell = (id, extra, attrs) => `<span class="nav-preview-cell ${extra}" ${attrs || ''}><svg><use href="#${NAV_PREVIEW_ICON[id]}"/></svg><em>${escapeHTML(t(NAV_PREVIEW_LABEL[id]))}</em></span>`;
+    bar.innerHTML = [
+      cell(slots[0], 'is-slot', 'data-preview-slot="0"'),
+      cell(slots[1], 'is-slot', 'data-preview-slot="1"'),
+      cell(slots[2], 'is-slot', 'data-preview-slot="2"'),
+      `<span class="nav-preview-cell is-fixed" title="${escapeHTML(t('settings'))}"><svg><use href="#i-settings"/></svg><em>${escapeHTML(t('settings'))}</em></span>`
+    ].join('');
+    pool.innerHTML = MOBILE_TITLE_POOL.map(id => navPreviewChip(id, slots.includes(id) ? 'is-used' : '')).join('');
+  };
+
+  function renderNavPreviews() {
+    navSwapPicked = null;
+    renderNavPreviewSidebar();
+    renderNavPreviewBottom();
+    renderNavPreviewTop();
+  }
+
+  function saveBottomSlots(slots) {
+    uiSettings.mobileSlots = slots;
+    saveUISettings();
+    syncMobileSlotControls();
+    syncMobileSlotOptions();
+    applyNavSettings();
+  }
+  function saveTitleActions(slots) {
+    uiSettings.mobileTitleActions = slots;
+    saveUISettings();
+    syncMobileTitleControls();
+    syncMobileTitleOptions();
+    applyNavSettings();
+  }
+
+  // 预览互换：第一次点击选中入口，第二次点击另一入口即两者互换。
+  function clearPreviewPicked() {
+    $$('#navPreviewBottom .is-picked, #navPreviewTop .is-picked, #navPreviewBottomPool .is-picked, #navPreviewTopPool .is-picked')
+      .forEach(el => el.classList.remove('is-picked'));
+  }
+  function previewBarClick(area, target, slots, persistSlots) {
+    const slotAttr = target.dataset.previewSlot;
+    const poolChip = target.dataset.previewId;
+    if (slotAttr == null && !poolChip) return false;
+    if (slotAttr != null) {
+      const index = Number(slotAttr);
+      const picked = navSwapPicked;
+      // 再点同一槽位：取消选中。
+      if (picked && picked.area === area && picked.index === index) { navSwapPicked = null; clearPreviewPicked(); return false; }
+      // 有已选入口：与点击的槽位互换（槽位 ↔ 槽位、候选 → 槽位、
+      // 已占位候选 ↔ 槽位）。
+      if (picked && picked.area === area && (picked.index != null || picked.value != null)) {
+        const next = [...slots];
+        if (picked.index != null) {
+          [next[picked.index], next[index]] = [next[index], next[picked.index]];
+        } else {
+          const from = next.indexOf(picked.value);
+          if (from !== -1) [next[index], next[from]] = [next[from], next[index]];
+          else next[index] = picked.value;
+        }
+        navSwapPicked = null;
+        persistSlots(next);
+        return true;
+      }
+      // 第一次点击：选中该槽位。
+      clearPreviewPicked();
+      navSwapPicked = { area, index };
+      target.classList.add('is-picked');
+      return false;
+    }
+    const value = poolChip;
+    if (navSwapPicked && navSwapPicked.area === area && navSwapPicked.index != null) {
+      const next = [...slots];
+      next[navSwapPicked.index] = value;
+      navSwapPicked = null;
+      persistSlots(next);
+      return true;
+    }
+    return false;
+  };
+
+  const navPreviewSidebarHost = byId('navPreviewSidebar');
+  navPreviewSidebarHost?.addEventListener('click', event => {
+    const chip = event.target.closest('[data-preview-id]');
+    if (!chip) return;
+    const id = chip.dataset.previewId;
+    const pages = normalizeNavPages();
+    pages[id] = pages[id] === false;
+    uiSettings.navPages = pages;
+    saveUISettings();
+    // 勾选网格与预览是同一状态的两个视图，双向同步。
+    navPageGrid.querySelector(`input[data-nav-page="${id}"]`) && (navPageGrid.querySelector(`input[data-nav-page="${id}"]`).checked = pages[id] !== false);
+    applyNavSettings();
+  });
+  byId('navPreviewBottom')?.addEventListener('click', event => {
+    const target = event.target.closest('.nav-preview-cell');
+    if (!target || target.classList.contains('is-fixed') || target.classList.contains('is-new')) return;
+    previewBarClick('bottom', target, normalizeMobileSlots(), saveBottomSlots);
+  });
+  byId('navPreviewBottomPool')?.addEventListener('click', event => {
+    const chip = event.target.closest('[data-preview-id]');
+    if (!chip) return;
+    const value = chip.dataset.previewId;
+    if (navSwapPicked?.area === 'bottom' && navSwapPicked.index != null) {
+      const slots = normalizeMobileSlots();
+      const next = [...slots];
+      next[navSwapPicked.index] = value;
+      navSwapPicked = null;
+      saveBottomSlots(next);
+      return;
+    }
+    // 无已选槽位：选中该候选（再点一次取消），等待与某个槽位互换。
+    clearPreviewPicked();
+    if (navSwapPicked?.area === 'bottom' && navSwapPicked.value === value) { navSwapPicked = null; return; }
+    navSwapPicked = { area: 'bottom', value };
+    chip.classList.add('is-picked');
+  });
+  byId('navPreviewTop')?.addEventListener('click', event => {
+    const target = event.target.closest('.nav-preview-cell');
+    if (!target || target.classList.contains('is-fixed')) return;
+    previewBarClick('top', target, normalizeMobileTitleActions(), saveTitleActions);
+  });
+  byId('navPreviewTopPool')?.addEventListener('click', event => {
+    const chip = event.target.closest('[data-preview-id]');
+    if (!chip) return;
+    const value = chip.dataset.previewId;
+    if (navSwapPicked?.area === 'top' && navSwapPicked.index != null) {
+      const slots = normalizeMobileTitleActions();
+      const next = [...slots];
+      next[navSwapPicked.index] = value;
+      navSwapPicked = null;
+      saveTitleActions(next);
+      return;
+    }
+    clearPreviewPicked();
+    if (navSwapPicked?.area === 'top' && navSwapPicked.value === value) { navSwapPicked = null; return; }
+    navSwapPicked = { area: 'top', value };
+    chip.classList.add('is-picked');
+  });
+
   // 两个槽位互斥：固定占位的收集箱/日历、以及另一槽位已选中的页面都不可再选，
   // 否则选了也不生效——底栏只会留出一格空位。
   const syncMobileSlotOptions = () => {
@@ -4768,6 +4953,7 @@
     });
     syncMobileSlotOptions();
     syncMobileTitleOptions();
+    renderNavPreviews();
   }
   const navPageGrid = byId('navPageGrid');
   const navPageInputs = navPageGrid ? [...navPageGrid.querySelectorAll('input[data-nav-page]')] : [];
@@ -4792,7 +4978,7 @@
     uiSettings.mobileSlots = [mobileSlotOne.value, mobileSlotTwo.value];
     saveUISettings();
     applyNavSettings();
-  };
+  }
   mobileSlotOne.addEventListener('change', saveMobileSlots);
   mobileSlotTwo.addEventListener('change', saveMobileSlots);
   // 顶栏三个槽位同样互斥：其余槽位与固定设置按钮不提供重复选项。
@@ -4815,7 +5001,7 @@
     uiSettings.mobileTitleActions = mobileTitleSelects().map(select => select.value);
     saveUISettings();
     applyNavSettings();
-  };
+  }
   mobileTitleSelects().forEach(select => select.addEventListener('change', saveMobileTitleActions));
   applyNavSettings();
 

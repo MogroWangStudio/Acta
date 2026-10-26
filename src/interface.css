@@ -3275,3 +3275,39 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .new-button svg { transition: transform .3s var(--ease-out); }
 }
 @media (min-width: 801px) { .mobile-create-layer { display: none !important; } }
+
+/* ===== 页面跳转栏的可视化预览 =====
+   三块预览（桌面侧栏 / 移动底栏 / 移动顶栏）实时呈现当前设置的样子，
+   所有候选入口全部亮起可点；点击两个入口即互换位置。 */
+.nav-preview-hint { margin: 2px 0 8px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
+.nav-preview-sidebar { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--sidebar) 40%, var(--panel)); }
+.nav-preview-sidebar .nav-preview-chip { background: var(--white); border-color: var(--line); color: var(--ink); }
+.nav-preview-sidebar .nav-preview-chip.is-off { opacity: .38; }
+.nav-preview-bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--panel) 74%, transparent); }
+.nav-preview-cell {
+  display: grid; place-items: center; gap: 4px; min-height: 54px; padding: 7px 4px;
+  border-radius: 11px; color: var(--muted); text-align: center;
+}
+.nav-preview-cell svg { width: 20px; height: 20px; }
+.nav-preview-cell em { font-size: calc(9px * var(--acta-font-scale)); font-style: normal; font-weight: 650; line-height: 1.05; }
+.nav-preview-cell.is-fixed { opacity: .55; }
+.nav-preview-cell.is-new { background: var(--ink); color: var(--paper); border-radius: 999px; }
+.nav-preview-cell.is-slot, .nav-preview-cell.is-fixed { background: color-mix(in srgb, var(--white) 66%, transparent); }
+.nav-preview-cell.is-slot { cursor: pointer; transition: background .15s ease, box-shadow .15s ease, transform .15s var(--ease-out); }
+.nav-preview-cell.is-slot:hover { background: var(--white); }
+.nav-preview-cell.is-picked { box-shadow: 0 0 0 2px var(--sage); transform: scale(1.04); color: var(--ink); }
+.nav-preview-pool { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.nav-preview-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: color-mix(in srgb, var(--white) 72%, transparent); color: var(--ink);
+  font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer;
+  transition: background .15s ease, box-shadow .15s ease, transform .15s var(--ease-out), opacity .15s ease;
+}
+.nav-preview-chip svg { width: 14px; height: 14px; }
+.nav-preview-chip:hover { background: var(--white); transform: translateY(-1px); }
+.nav-preview-chip.is-used { border-color: color-mix(in srgb, var(--sage) 42%, var(--line)); background: color-mix(in srgb, var(--sage-2) 34%, transparent); }
+.nav-preview-chip.is-used::after { content: "●"; font-size: calc(7px * var(--acta-font-scale)); color: var(--sage); margin-left: -2px; }
+.nav-preview-chip.is-picked { box-shadow: 0 0 0 2px var(--sage); border-color: transparent; }
+.nav-preview-cell.is-picked, .nav-preview-chip.is-picked { cursor: pointer; }
+body.acta-reduce-motion .nav-preview-cell, body.acta-reduce-motion .nav-preview-chip { transition: none; }

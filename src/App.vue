@@ -351,17 +351,25 @@
                   <label><input type="checkbox" data-nav-page="stats"/><span>总结</span></label>
                   <label><input type="checkbox" data-nav-page="lan"/><span>局域网雷达</span></label>
                 </div>
+                <p class="nav-preview-hint" data-i18n="navPreviewSidebarHint">预览：点击入口切换显示与隐藏</p>
+                <div class="nav-preview-sidebar" id="navPreviewSidebar"></div>
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端底栏</b><small>两个槽位可替换；两端固定为收集箱与日历</small></span></div>
                 <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
                 <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
+                <p class="nav-preview-hint" data-i18n="navSwapHint">点击两个入口互换位置</p>
+                <div class="nav-preview-bar" id="navPreviewBottom"></div>
+                <div class="nav-preview-pool" id="navPreviewBottomPool"></div>
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端顶栏</b><small>右上角三个按钮可自定义；设置按钮固定显示</small></span></div>
                 <label class="settings-row"><span><b>顶栏槽位一</b></span><select id="mobileTitleOne"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
                 <label class="settings-row"><span><b>顶栏槽位二</b></span><select id="mobileTitleTwo"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
                 <label class="settings-row"><span><b>顶栏槽位三</b></span><select id="mobileTitleThree"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
+                <p class="nav-preview-hint" data-i18n="navSwapHint">点击两个入口互换位置</p>
+                <div class="nav-preview-bar" id="navPreviewTop"></div>
+                <div class="nav-preview-pool" id="navPreviewTopPool"></div>
               </div>
               <p class="settings-status" id="navSettingsStatus">设置会自动保存在当前设备。</p>
             </section>
