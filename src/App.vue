@@ -313,6 +313,7 @@
                 <label class="settings-row"><span><b>紧凑列表</b><small>中栏密度更高</small></span><input id="compactModeSetting" type="checkbox"/></label>
                 <label class="settings-row"><span><b>减少动态效果</b><small>降低转场与弹性动画</small></span><input id="reduceMotionSetting" type="checkbox"/></label>
                 <label class="settings-row" id="backgroundRunRow" hidden><span><b>关闭窗口时转入后台</b><small>关闭窗口后保留在系统托盘，局域网同步继续；可从托盘恢复或退出</small></span><input id="backgroundRunSetting" type="checkbox"/></label>
+                <label class="settings-row" id="predictiveBackRow" hidden><span><b>预见式返回</b><small>边缘滑动时预览返回效果，中途可取消</small></span><input id="predictiveBackSetting" type="checkbox"/></label>
                 <label class="settings-row"><span><b>点击空白处</b><small>点空白处如何关闭弹窗，默认双击防误触</small></span><select id="backdropCloseSetting"><option value="none">不关闭（防误触）</option><option value="single">单击关闭</option><option value="double">双击关闭</option></select></label>
                 <div class="settings-row"><span><b>初始设置向导</b><small>重新运行首次启动引导</small></span><button class="settings-button secondary" id="openOobeButton" type="button"><svg><use href="#i-spark"/></svg><span>重新运行引导</span></button></div>
                 <div class="settings-row"><span><b>缓存与页面</b><small>清空缓存并重新加载，不删数据。</small></span><button class="settings-button secondary" id="clearCacheReload" type="button"><svg><use href="#i-refresh"/></svg><span>清除缓存重新加载</span></button></div>

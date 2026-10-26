@@ -8404,6 +8404,8 @@ function bindShell() {
     const layer = $('#mobileCreateLayer');
     if (layer && !layer.hidden) closeMobileCreate(); else openMobileCreate();
   };
+  // 返回键统一入口（interface.js 的 __actaHandleBackButton）会调用：放射菜单是返回层级之一。
+  window.__actaCloseMobileCreate = () => { if (!layer.hidden) closeMobileCreate(); };
   $('#newButton').addEventListener('click', event => {
     event.stopPropagation();
     if (matchMedia('(max-width: 800px)').matches) {

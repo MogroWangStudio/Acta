@@ -62,6 +62,20 @@ public class ActaSyncPlugin extends Plugin {
         });
     }
 
+    // 预见式返回开关（仅 Android 13+ 生效）：把常规设置的开关落到
+    // MainActivity 的系统级 OnBackInvokedCallback 注册 / 反注册上。
+    @PluginMethod
+    public void setPredictiveBack(PluginCall call) {
+        Boolean enabled = call.getBoolean("enabled", true);
+        getActivity().runOnUiThread(() -> {
+            Activity activity = getActivity();
+            if (activity instanceof com.mws.acta.MainActivity) {
+                ((com.mws.acta.MainActivity) activity).applyPredictiveBack(enabled);
+            }
+            call.resolve();
+        });
+    }
+
     @PluginMethod
     public void setAppIcon(PluginCall call) {
         String preset = call.getString("preset", "default");
