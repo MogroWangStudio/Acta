@@ -2012,8 +2012,11 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 .board-node.selected { border-color: color-mix(in srgb, var(--sage) 46%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 10%, transparent); }
 .board-node { cursor: grab; }
 .board-node:active { cursor: grabbing; }
-.board-node:hover { background: var(--white); border-color: color-mix(in srgb, var(--faint) 38%, var(--line)); transform: translateY(-2px); box-shadow: 0 6px 16px -6px rgba(55,53,45,.14); }
-.board-node:active { transform: translateY(0) scale(1.012); transition-duration: .08s; }
+/* 悬停只改表面：卡片在画布上的位置就是它的坐标，上浮 2px 会让「对不齐」变成
+   视觉事实——拖动、吸附、导出的取景都按坐标算，表面不能先动起来。 */
+.board-node:hover { background: var(--white); border-color: color-mix(in srgb, var(--faint) 38%, var(--line)); box-shadow: 0 2px 6px rgba(47,50,43,.07); }
+/* 按下即反馈（不等松手）：内阴影替代以前的放大——按下去该感到被压住，而不是浮起来。 */
+.board-node:active { background: color-mix(in srgb, var(--white) 86%, var(--panel)); box-shadow: inset 0 1px 2px rgba(47,50,43,.1); transition-duration: .08s; }
 /* 调节尺寸期间锁定卡片本体：悬停上浮与按压缩放都会让正在定边的卡片
    看起来位移，这里只让被拖动的边跟随指针。 */
 .board-node.is-resizing, .board-text.is-resizing { transform: none !important; transition: none !important; }
@@ -2138,7 +2141,7 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
      流内的板胶囊用它会被永久左移半宽、压住标题，入场用纯垂直的 boardPillIn。 */
   animation: boardPillIn .45s var(--ease-out) .06s both;
 }
-.board-pill-button:hover { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); transform: scale(1.02); }
+.board-pill-button:hover { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); background: color-mix(in srgb, var(--paper) 88%, transparent); }
 .board-pill-button:active { transform: scale(.97); transition-duration: .08s; }
 .board-pill-button > svg:first-child { width: 14px; height: 14px; color: var(--sage); flex: 0 0 auto; }
 .board-pill-button b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2180,8 +2183,8 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-tool-wrap { position: relative; }
 .board-tool, .board-zoom-button { height: 30px; min-width: 30px; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
 .board-tool svg, .board-zoom-button svg { width: 14px; height: 14px; }
-.board-tool:hover, .board-zoom-button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 55%, transparent); transform: scale(1.04); }
-.board-tool:active, .board-zoom-button:active { transform: scale(.95); transition-duration: .08s; }
+.board-tool:hover, .board-zoom-button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 55%, transparent); }
+.board-tool:active, .board-zoom-button:active { background: color-mix(in srgb, var(--sage-2) 46%, transparent); transform: scale(.96); transition-duration: .08s; }
 .board-marker-menu {
   position: absolute; left: 0; bottom: 0; z-index: 6; min-width: 128px; padding: 5px;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 12px;
@@ -2329,7 +2332,7 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
   animation: boardPillIn .45s var(--ease-out) .1s backwards;
 }
 .board-style-trigger svg { width: 15px; height: 15px; }
-.board-style-trigger:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); transform: scale(1.05); }
+.board-style-trigger:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); background: color-mix(in srgb, var(--paper) 88%, transparent); }
 .board-style-trigger:active { transform: scale(.95); transition-duration: .08s; }
 
 /* 工具条小色板 / 滑杆 / 内容开关。 */
@@ -2423,6 +2426,23 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 /* 减少透明度：玻璃层加实、撤掉模糊，保留同一层次结构。 */
 @media (prefers-reduced-transparency: reduce) {
   .board-chrome, .board-pill-button, .board-pill-menu, .board-marker-menu, .board-widget-toolbar, .board-pen-bar { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+/* 高对比度：玻璃与半透明卡片改为实色 + 明确边线，只提高可辨识度，不动排布。
+   卡片文字在底纹上是弱对比的，这里一并加深到正文色。 */
+@media (prefers-contrast: more) {
+  .board-node, .board-text { background: var(--white); border-color: color-mix(in srgb, var(--ink) 26%, var(--line)); }
+  .board-node-preview, .board-node-top time, .board-node-body { color: var(--ink); }
+  .board-chrome, .board-pill-button, .board-pill-menu, .board-marker-menu, .board-widget-toolbar, .board-pen-bar { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; border-color: color-mix(in srgb, var(--ink) 24%, var(--line)); }
+  .board-links path { stroke: var(--sage); stroke-width: 2; }
+}
+
+/* 触屏（鼠标缺席）上工具条按钮按手指尺寸放大：30px 的方形按钮在捏合 /
+   拖动画布时太容易误触，这里只加高加大命中区，不增加控件数量。 */
+@media (hover: none) and (pointer: coarse) {
+  .board-tool, .board-zoom-button { height: 38px; min-width: 38px; padding: 0 9px; }
+  .board-pill-button { height: 38px; }
+  .board-handle { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
+  .board-handle.is-resize { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
 }
 
 /* 移动端：板胶囊与工具条让出画布顶部，工具条筛选部分横向滚动；

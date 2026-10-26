@@ -37,6 +37,9 @@ public class ActaSyncPlugin extends Plugin {
     private static final String SYNC_FILE = "acta-library.json";
     private static final String DATA_MANIFEST_FILE = "acta-manifest.json";
     private static final String CLASSIFICATIONS_FILE = "classifications.json";
+    // 计划板文件：v4 数据档案的一部分（与桌面端、WebDAV 共用同一份格式）。
+    private static final String BOARDS_FILE = "boards.json";
+    private static final int DATA_FOLDER_VERSION = 4;
     private static final String NOTES_DIRECTORY = "notes";
     private static final String TODOS_DIRECTORY = "todos";
     private static final int MAX_NOTE_BYTES = 5 * 1024 * 1024;
@@ -196,21 +199,28 @@ public class ActaSyncPlugin extends Plugin {
         }
 
         try {
-            if (!"acta-data-folder-bundle".equals(library.optString("format")) || library.optInt("version") != 3) {
-                throw new IllegalStateException("This is not a valid Acta V3 data folder bundle");
+            // v3 档案（没有计划板）与 v4 档案（带 boards.json）都接受，v4 之外的
+            // 更高版本不认，避免误读未来的结构。
+            int bundleVersion = library.optInt("version", 0);
+            if (!"acta-data-folder-bundle".equals(library.optString("format"))
+                || bundleVersion < 3
+                || bundleVersion > DATA_FOLDER_VERSION) {
+                throw new IllegalStateException("This is not a valid Acta data folder bundle");
             }
             JSONObject files = requireObject(library, "files");
             JSONObject manifest = requireObject(files, DATA_MANIFEST_FILE);
             JSONObject classifications = requireObject(files, CLASSIFICATIONS_FILE);
+            int manifestVersion = manifest.optInt("version", 0);
             if (
                 !"acta-data-folder".equals(manifest.optString("format")) ||
-                manifest.optInt("version") != 3 ||
+                manifestVersion < 3 ||
+                manifestVersion > DATA_FOLDER_VERSION ||
                 !CLASSIFICATIONS_FILE.equals(manifest.optString("classifications")) ||
                 !"acta-classifications".equals(classifications.optString("format")) ||
                 classifications.optInt("version") != 1 ||
                 classifications.optJSONArray("folders") == null
             ) {
-                throw new IllegalStateException("This is not a valid Acta V3 data folder structure");
+                throw new IllegalStateException("This is not a valid Acta data folder structure");
             }
 
             DocumentFile directory = requireDirectory(folder);
@@ -219,6 +229,9 @@ public class ActaSyncPlugin extends Plugin {
             writeDocument(directory, CLASSIFICATIONS_FILE, "application/json", classifications.toString(2));
             Set<String> noteFiles = writeCollection(notesDirectory, files.optJSONObject(NOTES_DIRECTORY), true);
             Set<String> todoFiles = writeCollection(todosDirectory, files.optJSONObject(TODOS_DIRECTORY), false);
+            // 计划板先落盘，清单最后写：读的一方不会看到「清单已升到 v4、板还没写」。
+            JSONObject boards = files.optJSONObject(BOARDS_FILE);
+            if (boards != null) writeDocument(directory, BOARDS_FILE, "application/json", boards.toString(2));
             writeDocument(directory, DATA_MANIFEST_FILE, "application/json", manifest.toString(2));
             cleanCollection(notesDirectory, noteFiles);
             cleanCollection(todosDirectory, todoFiles);
@@ -301,11 +314,15 @@ public class ActaSyncPlugin extends Plugin {
             JSONObject files = new JSONObject();
             files.put(DATA_MANIFEST_FILE, manifest);
             files.put(CLASSIFICATIONS_FILE, readJsonDocument(classificationsFile));
+            // 计划板文件缺失（v3 档案）时不下发空板，让前端沿用本机已有的板。
+            DocumentFile boardsFile = directory.findFile(BOARDS_FILE);
+            if (boardsFile != null && boardsFile.isFile()) files.put(BOARDS_FILE, readJsonDocument(boardsFile));
             files.put(NOTES_DIRECTORY, noteFiles);
             files.put(TODOS_DIRECTORY, todoFiles);
             JSONObject bundle = new JSONObject();
             bundle.put("format", "acta-data-folder-bundle");
-            bundle.put("version", manifest.optInt("version", 2) >= 3 ? 3 : 2);
+            int manifestVersion = manifest.optInt("version", 2);
+            bundle.put("version", manifestVersion >= DATA_FOLDER_VERSION ? DATA_FOLDER_VERSION : (manifestVersion >= 3 ? 3 : 2));
             bundle.put("files", files);
 
             JSObject response = new JSObject();

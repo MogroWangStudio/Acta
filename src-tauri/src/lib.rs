@@ -244,6 +244,9 @@ async fn lan_sync_backup_local(
 const SYNC_FILE: &str = "acta-library.json";
 const DATA_MANIFEST_FILE: &str = "acta-manifest.json";
 const CLASSIFICATIONS_FILE: &str = "classifications.json";
+// 计划板文件：v4 数据档案的一部分，与笔记 / 待办一起读写与备份。
+const BOARDS_FILE: &str = "boards.json";
+const DATA_FOLDER_VERSION: u64 = 4;
 const NOTES_DIRECTORY: &str = "notes";
 const TODOS_DIRECTORY: &str = "todos";
 const NOTE_SIZE_LIMIT: u64 = 5 * 1024 * 1024;
@@ -333,26 +336,30 @@ fn remove_stale_item_files(directory: &Path, expected_files: &HashSet<String>) -
 fn object_file<'a>(files: &'a Map<String, Value>, name: &str) -> Result<&'a Value, String> {
     files
         .get(name)
-        .ok_or_else(|| "这不是有效的 Acta V3 完整数据档案".to_string())
+        .ok_or_else(|| "这不是有效的 Acta 完整数据档案".to_string())
 }
 
 fn write_portable_data_folder(folder: &Path, bundle: &Value) -> Result<(), String> {
     let files = bundle
         .get("files")
         .and_then(Value::as_object)
-        .ok_or_else(|| "这不是有效的 Acta V3 完整数据档案".to_string())?;
+        .ok_or_else(|| "这不是有效的 Acta 完整数据档案".to_string())?;
     let manifest = object_file(files, DATA_MANIFEST_FILE)?;
     let classifications = object_file(files, CLASSIFICATIONS_FILE)?;
+    // v3 档案（没有计划板）与 v4 档案（带 boards.json）都能写，便于旧设备推来的
+    // 同步包落到本机时自动升格；更高版本不认，避免误读未来的结构。
+    let bundle_version = bundle.get("version").and_then(Value::as_u64).unwrap_or(0);
+    let manifest_version = manifest.get("version").and_then(Value::as_u64).unwrap_or(0);
     let valid = bundle.get("format").and_then(Value::as_str) == Some("acta-data-folder-bundle")
-        && bundle.get("version").and_then(Value::as_u64) == Some(3)
+        && (3..=DATA_FOLDER_VERSION).contains(&bundle_version)
         && manifest.get("format").and_then(Value::as_str) == Some("acta-data-folder")
-        && manifest.get("version").and_then(Value::as_u64) == Some(3)
+        && (3..=DATA_FOLDER_VERSION).contains(&manifest_version)
         && manifest.get("classifications").and_then(Value::as_str) == Some(CLASSIFICATIONS_FILE)
         && classifications.get("format").and_then(Value::as_str) == Some("acta-classifications")
         && classifications.get("version").and_then(Value::as_u64) == Some(1)
         && classifications.get("folders").and_then(Value::as_array).is_some();
     if !valid {
-        return Err("这不是有效的 Acta V3 完整数据档案".into());
+        return Err("这不是有效的 Acta 完整数据档案".into());
     }
 
     let notes = files
@@ -384,6 +391,10 @@ fn write_portable_data_folder(folder: &Path, bundle: &Value) -> Result<(), Strin
     }
 
     write_json(&folder.join(CLASSIFICATIONS_FILE), classifications)?;
+    // 计划板紧跟归类落盘：清单最后写，读的一方不会看到「清单已升到 v4、板还没写」。
+    if let Some(boards) = files.get(BOARDS_FILE) {
+        write_json(&folder.join(BOARDS_FILE), boards)?;
+    }
     // The manifest is written last so readers never observe a partially written bundle.
     write_json(&folder.join(DATA_MANIFEST_FILE), manifest)?;
     remove_stale_item_files(&notes_path, &note_files)?;
@@ -469,14 +480,26 @@ fn read_portable_data_folder(folder: &Path) -> io::Result<Value> {
         todos.insert(name, value);
     }
 
-    let version = if manifest.get("version").and_then(Value::as_u64).unwrap_or(2) >= 3 {
-        3
-    } else {
-        2
+    // 计划板文件是 v4 才有的：缺失时不下发空板，让前端沿用本机已有的板，
+    // 由随后的保存把 boards.json 补进档案。
+    let boards = read_json(&folder.join(BOARDS_FILE)).ok();
+
+    let version = {
+        let manifest_version = manifest.get("version").and_then(Value::as_u64).unwrap_or(2);
+        if manifest_version >= DATA_FOLDER_VERSION {
+            DATA_FOLDER_VERSION
+        } else if manifest_version >= 3 {
+            3
+        } else {
+            2
+        }
     };
     let mut files = Map::new();
     files.insert(DATA_MANIFEST_FILE.into(), manifest);
     files.insert(CLASSIFICATIONS_FILE.into(), classifications);
+    if let Some(boards) = boards {
+        files.insert(BOARDS_FILE.into(), boards);
+    }
     files.insert(NOTES_DIRECTORY.into(), Value::Object(notes));
     files.insert(TODOS_DIRECTORY.into(), Value::Object(todos));
     Ok(json!({

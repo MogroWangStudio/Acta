@@ -517,10 +517,14 @@
 
   const dataManifestFile = 'acta-manifest.json';
   const classificationsFile = 'classifications.json';
+  // 计划板（白板）与笔记 / 待办一样是行记数据的一部分：v4 起作为独立文件
+  // 写进数据档案，随档案一起备份、局域网同步、跨设备还原。
+  const boardsFile = 'boards.json';
   const notesDirectoryName = 'notes';
   const todosDirectoryName = 'todos';
   const legacyLibraryFile = 'acta-library.json';
-  const workspaceFileName = `${dataManifestFile} · ${classificationsFile} · ${notesDirectoryName}/ · ${todosDirectoryName}/`;
+  const dataFolderVersion = 4;
+  const workspaceFileName = `${dataManifestFile} · ${classificationsFile} · ${boardsFile} · ${notesDirectoryName}/ · ${todosDirectoryName}/`;
   const savedNativeWorkspace = settings.syncFolder || '';
   let workspaceAdapter = null;
   let dataProfiles = [];
@@ -2713,26 +2717,36 @@
       id: item.id, file: itemFileName(item), updatedAt: item.updatedAt || '',
       document: { format:'acta-todo', version:1, item }
     }));
+    // 计划板单独一份文件：板名、组件摆放、文本、标注、笔迹与板的样式全部在内。
+    // 不带 boards 字段的历史档案会在这里以空列表补齐（v3 → v4 迁移），
+    // 「格式里没有计划板」与「用户删掉了所有计划板」由此可以区分。
+    const boards = Array.isArray(snapshot.boards) ? snapshot.boards : [];
     return {
       manifest: {
-        format:'acta-data-folder', version:3, libraryVersion:snapshot.version || 1, syncedAt,
+        format:'acta-data-folder', version:dataFolderVersion, libraryVersion:snapshot.version || 1, syncedAt,
         classifications:classificationsFile,
+        boards:boardsFile,
         notes:notes.map(({ id, markdownFile, configFile, updatedAt }) => ({ id, markdown:markdownFile, config:configFile, updatedAt })),
         todos:todos.map(({ id, file, updatedAt }) => ({ id, file, updatedAt })),
         itemOrder:snapshot.items.map(item => item.id)
       },
       classifications: { format:'acta-classifications', version:1, folders:snapshot.folders || [] },
+      boards: { format:'acta-boards', version:1, boards },
       notes,
       todos
     };
   }
 
   function libraryFromDataFolderDocuments(documents) {
-    const { manifest, classifications, notes = [], todos = [] } = documents || {};
+    const { manifest, classifications, notes = [], todos = [], boards } = documents || {};
     if (manifest?.format !== 'acta-data-folder' || Number(manifest.version) < 2) throw new Error(uiText('invalidLibrary'));
     const folders = classifications?.format === 'acta-classifications' && Array.isArray(classifications.folders)
       ? classifications.folders : (Array.isArray(classifications) ? classifications : null);
     if (!folders) throw new Error(uiText('invalidLibrary'));
+    // 计划板：只有档案里真的带了 boards 字段才覆盖（空数组代表「没有板」）；
+    // 完全没带的旧档案保持 undefined，交给上层沿用当前内存里的板，
+    // 不让读取一次旧档案就把计划板清空。
+    const boardList = Array.isArray(boards?.boards) ? boards.boards : (Array.isArray(boards) ? boards : undefined);
     const unwrapItem = (document, expectedType) => {
       const item = document?.item || document;
       if (!item || item.type !== expectedType || !item.id) throw new Error(uiText('invalidLibrary'));
@@ -2753,16 +2767,19 @@
     const itemMap = new Map(items.map(item => [item.id, item]));
     const ordered = (manifest.itemOrder || []).map(id => itemMap.get(id)).filter(Boolean);
     items.forEach(item => { if (!ordered.includes(item)) ordered.push(item); });
-    return clearLegacyTags(normalizeLibrary({ version:manifest.libraryVersion || 1, folders, items:ordered }));
+    const restored = { version:manifest.libraryVersion || 1, folders, items:ordered };
+    if (boardList) restored.boards = boardList;
+    return clearLegacyTags(normalizeLibrary(restored));
   }
 
   function createPortableDataFolderBundle(librarySnapshot) {
     const documents = createDataFolderDocuments(librarySnapshot);
     return {
-      format:'acta-data-folder-bundle', version:3,
+      format:'acta-data-folder-bundle', version:dataFolderVersion,
       files: {
         [dataManifestFile]: documents.manifest,
         [classificationsFile]: documents.classifications,
+        [boardsFile]: documents.boards,
         [notesDirectoryName]: Object.fromEntries(documents.notes.flatMap(entry => [[entry.configFile, entry.config], [entry.markdownFile, entry.markdown]])),
         [todosDirectoryName]: Object.fromEntries(documents.todos.map(entry => [entry.file, entry.document]))
       }
@@ -2778,6 +2795,7 @@
     return libraryFromDataFolderDocuments({
       manifest,
       classifications:files[classificationsFile],
+      boards:files[boardsFile],
       notes:(manifest?.notes || []).map(entry => entry.config && entry.markdown
         ? { config:noteFiles[entry.config], markdown:noteFiles[entry.markdown] ?? '' }
         : noteFiles[entry.file]),
@@ -2829,6 +2847,8 @@
     ]));
     await Promise.all(documents.todos.map(entry => writeJSONFile(todosDirectory, entry.file, entry.document)));
     await writeJSONFile(handle, classificationsFile, documents.classifications);
+    // 计划板先落盘，清单最后写：读的一方永远看不到「清单已升级、板还没写」的半成品。
+    await writeJSONFile(handle, boardsFile, documents.boards);
     await writeJSONFile(handle, dataManifestFile, documents.manifest);
     await removeStaleItemFiles(notesDirectory, new Set(documents.notes.flatMap(entry => [entry.configFile, entry.markdownFile])));
     await removeStaleItemFiles(todosDirectory, new Set(documents.todos.map(entry => entry.file)));
@@ -2852,8 +2872,12 @@
       ? Promise.all([readJSONFile(notesDirectory, entry.config), readTextFile(notesDirectory, entry.markdown)]).then(([config, markdown]) => ({ config, markdown }))
       : readJSONFile(notesDirectory, entry.file)));
     const todos = await Promise.all((manifest.todos || []).map(entry => readJSONFile(todosDirectory, entry.file)));
-    const loadedLibrary = libraryFromDataFolderDocuments({ manifest, classifications, notes, todos });
-    if (Number(manifest.version) < 3) await saveDataFolder(handle, loadedLibrary);
+    let boards;
+    try { boards = await readJSONFile(handle, manifest.boards || boardsFile); }
+    catch (error) { if (error?.name !== 'NotFoundError') throw error; }
+    const loadedLibrary = libraryFromDataFolderDocuments({ manifest, classifications, notes, todos, boards });
+    // v3 及更早的档案没有计划板文件：首次读取后立即补写，把板「升格」进档案。
+    if (Number(manifest.version) < dataFolderVersion) await saveDataFolder(handle, loadedLibrary);
     return loadedLibrary;
   }
 
@@ -2881,7 +2905,10 @@
       load: async () => {
         const payload = (await bridge.downloadLibrary(folder)).library;
         const loadedLibrary = parsePortableDataFolderBundle(payload);
-        if (payload?.format !== 'acta-data-folder-bundle' || Number(payload.version) < 3 || Number(payload?.files?.[dataManifestFile]?.version) < 3) {
+        // v3 及更早的档案没有计划板文件：读进来后立刻回写一次，档案升到 v4。
+        if (payload?.format !== 'acta-data-folder-bundle'
+          || Number(payload.version) < dataFolderVersion
+          || Number(payload?.files?.[dataManifestFile]?.version) < dataFolderVersion) {
           await bridge.uploadLibrary(folder, createPortableDataFolderBundle(loadedLibrary));
         }
         return loadedLibrary;
@@ -3113,6 +3140,7 @@
         ...documents.todos.map(entry => ({ path:`${todosDirectoryName}/${entry.file}`, value:entry.document, type:'json' }))
       ], 4, entry => entry.type === 'text' ? writeText(entry.path, entry.value) : writeJSON(entry.path, entry.value));
       await writeJSON(classificationsFile, documents.classifications);
+      await writeJSON(boardsFile, documents.boards);
       await writeJSON(dataManifestFile, documents.manifest);
       await Promise.all([
         cleanCollection(notesDirectoryName + '/', new Set(documents.notes.flatMap(entry => [entry.configFile, entry.markdownFile]))),
@@ -3131,8 +3159,11 @@
           : await readJSON(`${notesDirectoryName}/${entry.file}`);
       });
       await runWithConcurrency(manifest.todos || [], 4, async (entry, index) => { todos[index] = await readJSON(`${todosDirectoryName}/${entry.file}`); });
-      const loadedLibrary = libraryFromDataFolderDocuments({ manifest, classifications, notes, todos });
-      if (Number(manifest.version) < 3) await save(loadedLibrary);
+      let boards;
+      try { boards = await readJSON(manifest.boards || boardsFile); }
+      catch (error) { if (error.status !== 404) throw error; }
+      const loadedLibrary = libraryFromDataFolderDocuments({ manifest, classifications, notes, todos, boards });
+      if (Number(manifest.version) < dataFolderVersion) await save(loadedLibrary);
       return loadedLibrary;
     }
 
@@ -3187,8 +3218,24 @@
     throw new Error(uiText('unsupportedFolder'));
   }
 
+  // 载入的数据没有携带计划板（v3 及更早的档案、旧的 acta-library.json、
+  // 旧设备推来的同步包）时，保留当前内存里的板子，并让下一次保存把它们
+  // 写进档案——「读一次旧档案」不再等于「计划板全部清空」。
+  let boardsCarriedFromLegacySource = false;
+
   function replaceLibrary(nextLibrary) {
-    library = clearLegacyTags(normalizeLibrary(nextLibrary));
+    const next = clearLegacyTags(normalizeLibrary(nextLibrary));
+    if (!Array.isArray(next.boards)) {
+      const carried = Array.isArray(library?.boards) ? library.boards : [];
+      if (carried.length) {
+        next.boards = carried;
+        // 同步回原始快照：多处调用随后会把「刚载入的那份数据」原样存回档案，
+        // 只在 next 上补板子会被那次保存重新写成空板。
+        if (nextLibrary && typeof nextLibrary === 'object') nextLibrary.boards = carried;
+        boardsCarriedFromLegacySource = true;
+      }
+    }
+    library = next;
     statsSelection.clear();
     selectedId = activeItems()[0]?.id || null;
     currentView = 'inbox';
@@ -3198,6 +3245,13 @@
     byId('searchInput').value = '';
     document.querySelectorAll('.filter-row [data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
     renderAll();
+  }
+
+  // 承接来的计划板只在内存里，必须立刻回写档案，否则下次启动又只剩空板。
+  function persistCarriedBoards() {
+    if (!boardsCarriedFromLegacySource) return;
+    boardsCarriedFromLegacySource = false;
+    persist();
   }
 
   const activeDataProfile = () => dataProfiles.find(profile => profile.id === uiSettings.activeDataProfileId) || null;
@@ -3454,6 +3508,7 @@
     renderDataProfiles();
     byId('saveState').textContent = t('saved');
     byId('saveState').classList.remove('saving');
+    persistCarriedBoards();
     if (notify) setStatus(byId('workspaceStatus'), profileText(previousId === profile.id ? 'loaded' : 'switched', profile.name), 'success');
   }
 
@@ -3531,6 +3586,7 @@
       renderDataProfiles();
       updateWorkspaceUI();
       lanSyncUpdateMeta();
+      persistCarriedBoards();
       setStatus(status, profileText('dataRefreshed', profile.name), 'success');
     } catch (error) {
       if (missingLibraryFile(error)) setStatus(status, profileText('refreshNoData'), '');
@@ -3944,6 +4000,9 @@
         setStatus(byId('workspaceStatus'), copy.localDone, 'success');
         showSyncNotice(copy.localDone);
       }
+      // 旧档案没有计划板文件时，刚载入的数据里补上了本机的板子——这一次是
+      // 修复而不是普通刷新，必须落盘，否则下次启动又回到空板。
+      persistCarriedBoards();
       settleDataRefreshStatus(source === 'sync' ? copy.syncDone : copy.localDone);
     } catch (error) {
       const message = `${copy.failed}${error.message}`;
