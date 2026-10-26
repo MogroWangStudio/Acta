@@ -2817,7 +2817,7 @@ function boardSyncNodes() {
       // 内容变化（标题 / 正文 / 子待办 / 显示设置等）时重绘：不清缓存、不动
       // 选中态，拖拽中的卡片跳过以免打断手势。
       const signature = boardCardSignature(card);
-      if (existing.dataset.signature === signature || existing.classList.contains('is-dragging')) return;
+      if (existing.dataset.signature === signature || existing.classList.contains('is-dragging') || existing.classList.contains('is-resizing')) return;
       const template = document.createElement('template');
       template.innerHTML = boardNodeHTML(card, true);
       const next = template.content.firstElementChild;
@@ -3567,10 +3567,22 @@ function boardApplyMarquee(gesture) {
 // 卡片尺寸拖拽时同步已渲染节点的 inline 尺寸（内容自适应由 CSS 完成）。
 function boardRefreshCardNode(widget) {
   const element = boardRenderedCards.get(widget.id);
-  if (!element) return;
+  if (!element) return null;
+  // 西 / 北向调节会同时改写原点：宽高之外必须同步 left/top，否则节点只朝
+  // 东南方向长，固定的对边随之移动，整张卡片看起来在「位移」。
+  element.style.left = `${widget.x}px`;
+  element.style.top = `${widget.y}px`;
   element.style.width = `${widget.w}px`;
   element.style.height = `${widget.h}px`;
   if (Number.isFinite(widget.opacity)) element.style.opacity = `${(Math.min(100, Math.max(30, widget.opacity)) / 100).toFixed(2)}`;
+  // 虚拟化重建用布局缓存里的卡片原点生成内联样式；缓存不同步会把刚调好的
+  // 位置画回旧值。顺带返回缓存项供调用方刷新内容签名。
+  const cached = boardLayoutCache?.cards.find(card => card.widget === widget) || null;
+  if (cached) {
+    cached.x = widget.x;
+    cached.y = widget.y;
+  }
+  return cached;
 }
 
 // 工具条浮在组件上方（屏幕层，不随画布缩放）；组件移出视口时暂时隐藏。
@@ -5251,10 +5263,14 @@ function bindBoardScene() {
         if (widget.h == null) widget.h = widget.type === 'note' || widget.type === 'todo' ? BOARD_CARD_H : 114;
         boardGesture = {
           mode: 'handle', widget, handle: handle.dataset.widgetHandle,
+          node: event.target.closest('[data-widget-id]'),
           originX: event.clientX, originY: event.clientY,
           baseX: widget.x, baseY: widget.y,
           baseW: widget.w, baseH: widget.h
         };
+        // 调节期间锁定位移与悬停位移：卡片本体不参与任何 transform，
+        // 只有被拖动的边跟随指针。
+        boardGesture.node?.classList.add('is-resizing');
         handle.classList.add('is-active');
         boardSelectedHandle = handle;
         return;
@@ -5415,6 +5431,13 @@ function bindBoardScene() {
           node.style.left = `${entry.x}px`;
           node.style.top = `${entry.y}px`;
         }
+        // 同步布局缓存原点：后续内容变化触发的虚拟化重建会按缓存原点生成
+        // 内联样式，缓存滞后会让卡片突然跳回拖动前的位置。
+        const cached = boardLayoutCache?.cards.find(card => card.widget === entry);
+        if (cached) {
+          cached.x = entry.x;
+          cached.y = entry.y;
+        }
       };
       if (boardGesture.groupBase) {
         boardGesture.groupBase.forEach(base => {
@@ -5470,6 +5493,7 @@ function bindBoardScene() {
       boardMotion.mode = 'idle';
       boardSelectedHandle?.classList.remove('is-active');
       boardSelectedHandle = null;
+      gesture.node?.classList.remove('is-resizing');
       if (!boardPointers.size) {
         const { widget } = gesture;
         if (widget.type === 'text' && gesture.handle === 'resize') {
@@ -5483,8 +5507,11 @@ function bindBoardScene() {
         if (unchanged) boardUndoStack.pop();
         touchBoard(boardLayoutCache.board);
         persist();
-        if (widget.type === 'note' || widget.type === 'todo') boardRefreshCardNode(widget);
-        else boardRefreshStatic(widget);
+        if (widget.type === 'note' || widget.type === 'todo') {
+          // 尺寸与原点已经落定：同步内容签名，避免下一次虚拟化按旧尺寸重建节点。
+          const cached = boardRefreshCardNode(widget);
+          if (cached && gesture.node) gesture.node.dataset.signature = boardCardSignature(cached);
+        } else boardRefreshStatic(widget);
         boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
         boardSyncUndoButtons();
       }

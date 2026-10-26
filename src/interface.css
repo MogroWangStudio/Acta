@@ -2014,6 +2014,9 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 .board-node:active { cursor: grabbing; }
 .board-node:hover { background: var(--white); border-color: color-mix(in srgb, var(--faint) 38%, var(--line)); transform: translateY(-2px); box-shadow: 0 6px 16px -6px rgba(55,53,45,.14); }
 .board-node:active { transform: translateY(0) scale(1.012); transition-duration: .08s; }
+/* 调节尺寸期间锁定卡片本体：悬停上浮与按压缩放都会让正在定边的卡片
+   看起来位移，这里只让被拖动的边跟随指针。 */
+.board-node.is-resizing, .board-text.is-resizing { transform: none !important; transition: none !important; }
 .board-node:focus-visible { outline: none; border-color: color-mix(in srgb, var(--sage) 46%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 16%, transparent); }
 .board-node.active { border-color: color-mix(in srgb, var(--sage) 52%, var(--line)); background: var(--white); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 13%, transparent), 0 8px 20px -8px rgba(55,53,45,.18); }
 /* 拖动中的组件：脱离表面、浮到最上层，跟随指针 1:1 移动。 */
