@@ -103,7 +103,7 @@
     boardDeleteArm:'再點一次刪除', boardUndo:'復原', boardRedo:'重做', boardMarqueeClear:'取消選擇', boardMarqueeDelete:'刪除所選', boardSelectedCount:'已選 {0} 項',
     boardTextColor:'文字顏色', boardContentSettings:'顯示內容', boardShowPill:'類型標籤', boardShowPriority:'優先順序', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部資訊', boardWidgetOpacity:'不透明度',
     boardPersonalize:'個性化計劃板', boardBgPattern:'背景圖案', boardPatternDots:'點陣', boardPatternGrid:'網格', boardPatternNone:'無', boardBoardBgColor:'背景顏色', boardBgColorTheme:'跟隨主題', boardSnapGrid:'吸附到網格', boardGridSize:'圖案網格大小',
-    boardCustomColor:'自訂顏色', boardBrushPen:'鋼筆', boardBrushHighlighter:'螢光筆', boardPenStroke:'粗細', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'筆尖', boardCapRound:'圓頭', boardCapFlat:'平頭', boardCapSquare:'方頭', boardBrushEraser:'橡皮', boardPenMode:'筆繪模式：可連續繪製，橡皮擦在面板中切換，完成或按 Esc 退出', boardLayers:'圖層', boardLayerShow:'顯示圖層', boardLayerHide:'隱藏圖層', boardLayerGroup:'組', boardGroup:'組合所選', boardUngroup:'取消組合',
+    boardCustomColor:'自訂顏色', boardBrushPen:'鋼筆', boardBrushHighlighter:'螢光筆', boardPenStroke:'粗細', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'筆尖', boardCapRound:'圓頭', boardCapFlat:'平頭', boardCapSquare:'方頭', boardBrushEraser:'橡皮', boardPenMode:'筆繪模式：可連續繪製，橡皮擦在面板中切換，完成或按 Esc 退出', boardLayers:'圖層', boardLayerShow:'顯示圖層', boardLayerHide:'隱藏圖層', boardLayerGroup:'組', boardGroup:'組合所選', boardUngroup:'取消組合', brandEgg:'行記不輟 —— 這是 Acta 給好奇心的回禮',
     boardEmptyTitle:'這塊板還是空的', boardEmptyHint:'用下方工具新增文字與標註，或匯入想展示在這塊板上的待辦與筆記，自由擺放成你的計劃板。'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
@@ -3913,7 +3913,53 @@
       logoMotionTimer = window.setTimeout(() => brandButton.classList.remove('logo-pulse'), 620);
     });
   };
-  brandButton.addEventListener('click', playLogoMotion);
+  // —— 彩蛋：2.5 秒内连点左上角 logo 五次 —— 印章式回弹 + 纸屑飘落 +
+  // 一句致意。减少动态效果（设置或系统偏好）时只留一句 toast，不动效。
+  let brandTapCount = 0;
+  let brandTapLast = 0;
+  let brandEggPlaying = false;
+  const brandEggConfetti = origin => {
+    const layer = document.createElement('div');
+    layer.className = 'brand-egg-confetti';
+    const palette = ['#526b55', '#a8c3a5', '#daa03c', '#b96051', '#efe9d8'];
+    for (let index = 0; index < 26; index += 1) {
+      const piece = document.createElement('i');
+      piece.style.setProperty('--x', `${Math.round(origin.x + (Math.random() - 0.5) * 260)}px`);
+      piece.style.setProperty('--fall', `${(1.7 + Math.random() * 1.5).toFixed(2)}s`);
+      piece.style.setProperty('--drift', `${Math.round((Math.random() - 0.5) * 130)}px`);
+      piece.style.setProperty('--spin', `${Math.round((Math.random() - 0.5) * 720)}deg`);
+      piece.style.setProperty('--size', `${(5 + Math.random() * 7).toFixed(1)}px`);
+      piece.style.background = palette[index % palette.length];
+      piece.style.animationDelay = `${(Math.random() * 0.3).toFixed(2)}s`;
+      layer.appendChild(piece);
+    }
+    document.body.appendChild(layer);
+    setTimeout(() => layer.remove(), 3800);
+  };
+  const playBrandEgg = () => {
+    brandEggPlaying = true;
+    const reduced = document.body.classList.contains('acta-reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) {
+      brandButton.classList.remove('logo-pulse');
+      brandButton.classList.add('brand-stamp');
+      setTimeout(() => brandButton.classList.remove('brand-stamp'), 950);
+      const rect = brandButton.getBoundingClientRect();
+      brandEggConfetti({ x: rect.left + rect.width / 2, y: rect.top + rect.height * 0.4 });
+    }
+    showToast(t('brandEgg'), 3600);
+    setTimeout(() => { brandEggPlaying = false; }, 1500);
+  };
+  brandButton.addEventListener('click', () => {
+    playLogoMotion();
+    const now = Date.now();
+    if (now - brandTapLast > 2500) brandTapCount = 0;
+    brandTapLast = now;
+    brandTapCount += 1;
+    if (brandTapCount >= 5 && !brandEggPlaying) {
+      brandTapCount = 0;
+      playBrandEgg();
+    }
+  });
   brandButton.addEventListener('keydown', event => {
     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); playLogoMotion(); }
   });

@@ -1512,6 +1512,30 @@ html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: 
 @keyframes miniLogoBounce { 0%{transform:translate3d(0,-50%,0) rotate(0) scale(1)} 28%{transform:translate3d(0,-50%,0) rotate(-2.4deg) scale(.96,1.035)} 55%{transform:translate3d(0,-50%,0) rotate(1.2deg) scale(1.018,.988)} 78%{transform:translate3d(0,-50%,0) rotate(-.4deg) scale(.996,1.006)} 100%{transform:translate3d(0,-50%,0) rotate(0) scale(1)} }
 @keyframes logoRay { 0%{opacity:0;transform:rotate(var(--ray-angle)) translate3d(8px,0,0) scaleX(.25)} 24%{opacity:.78} 100%{opacity:0;transform:rotate(var(--ray-angle)) translate3d(25px,0,0) scaleX(.72)} }
 
+/* —— 左上角 logo 彩蛋：连点五次的盖章回弹与纸屑飘落。
+   纸屑走 transform / opacity（合成器友好），落完由 JS 移除整层；
+   减少动态效果时整层不渲染、盖章退化为普通脉冲。 —— */
+.brand.brand-stamp { animation: brandStamp .9s var(--ease-out) both; }
+.brand.brand-stamp .brand-logo { animation: none; }
+@keyframes brandStamp { 0%{transform:scale(1) rotate(0)} 26%{transform:scale(1.18) rotate(-2.4deg)} 52%{transform:scale(.965) rotate(1.1deg)} 76%{transform:scale(1.03) rotate(-.4deg)} 100%{transform:scale(1) rotate(0)} }
+.brand-egg-confetti { position: fixed; inset: 0; z-index: 220; pointer-events: none; overflow: hidden; }
+.brand-egg-confetti i {
+  position: absolute; left: var(--x); top: -16px; width: var(--size); height: calc(var(--size) * .68);
+  border-radius: 1.5px; opacity: 0; will-change: transform, opacity;
+  box-shadow: 0 1px 2px rgba(34,38,33,.16);
+  animation: brandEggFall var(--fall) cubic-bezier(.3,.42,.5,.94) both;
+}
+@keyframes brandEggFall {
+  0% { transform: translate3d(0, -12px, 0) rotate(0deg); opacity: 0; }
+  9% { opacity: .95; }
+  82% { opacity: .85; }
+  100% { transform: translate3d(var(--drift), 106vh, 0) rotate(var(--spin)); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand.brand-stamp { animation: none; }
+  .brand-egg-confetti { display: none; }
+}
+
 .brand-logo { position: relative; z-index: 1; }
 .brand-version { position: absolute; left: 143px; top: auto; bottom: 9px; transform: none; z-index: 1; max-width: 76px; overflow: hidden; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--white) 48%, transparent); font: 700 calc(8px * var(--acta-font-scale))/1 "Segoe UI Variable", "PingFang SC", sans-serif; letter-spacing: .035em; white-space: nowrap; opacity: 1; transition: max-width .42s cubic-bezier(.2,.82,.2,1), padding .42s cubic-bezier(.2,.82,.2,1), border-width .28s ease, opacity .18s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
 @media (min-width: 801px) {
