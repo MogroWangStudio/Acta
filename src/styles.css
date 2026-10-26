@@ -603,10 +603,14 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     gap: 2px;
   }
   .smart-nav button { height: 58px; padding: 5px 2px; justify-content: center; border-radius: 12px; display: none; }
-  .smart-nav button.mobile-slot-1 { display: flex; grid-column: 1; }
-  .smart-nav button.mobile-slot-2 { display: flex; grid-column: 2; }
-  .smart-nav button.mobile-slot-3 { display: flex; grid-column: 4; }
-  .smart-nav button.mobile-slot-4 { display: flex; grid-column: 5; }
+  /* 四个槽位显式钉在第 1 行。只写 grid-column 时，按钮在 DOM 中的先后
+     顺序与列序相反（例如槽位一选了 DOM 靠后的「总结」、槽位二选了靠前
+     的「回收站」）会让后放置的按钮按稀疏流排进隐式第 2 行，掉出 70px
+     底栏——看起来就是一个图标消失。显式行号后任何组合都在同一行。 */
+  .smart-nav button.mobile-slot-1 { display: flex; grid-row: 1; grid-column: 1; }
+  .smart-nav button.mobile-slot-2 { display: flex; grid-row: 1; grid-column: 2; }
+  .smart-nav button.mobile-slot-3 { display: flex; grid-row: 1; grid-column: 4; }
+  .smart-nav button.mobile-slot-4 { display: flex; grid-row: 1; grid-column: 5; }
   .smart-nav button > span { flex-direction: column; gap: 4px; font-size: calc(10px * var(--acta-font-scale)); line-height: 1.05; }
   .smart-nav button .nav-icon { width: 19px; height: 19px; }
   .smart-nav button svg { width: 19px; height: 19px; }
