@@ -591,6 +591,13 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .mobile-classification-edit svg { width: 15px; height: 15px; }
 .mobile-classification-list .folder-dot { width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--folder-color) 14%, var(--white)); color: var(--folder-color); display: grid; place-items: center; font-style: normal; }
 .mobile-classification-list .folder-short-name { display: block; max-width: 28px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(10px * var(--acta-font-scale)); font-style: normal; font-weight: 750; }
+/* 归类用 emoji 做图标时按图标尺寸渲染（与桌面侧栏折叠态同款处理）：
+   10px 的文字缩写字号会让 emoji 缩成一个小点。 */
+.mobile-classification-list .folder-short-name.is-emoji {
+  max-width: none; overflow: visible;
+  font: 400 calc(20px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  letter-spacing: 0;
+}
 .mobile-classification-list .folder-dot svg { width: 16px; height: 16px; }
 .mobile-classification-open > span:nth-child(2) { min-width: 0; display: grid; gap: 3px; }
 .mobile-classification-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(11px * var(--acta-font-scale)); }
