@@ -3234,7 +3234,7 @@
   // 写进档案——「读一次旧档案」不再等于「计划板全部清空」。
   let boardsCarriedFromLegacySource = false;
 
-  function replaceLibrary(nextLibrary) {
+  function replaceLibrary(nextLibrary, options = {}) {
     const next = clearLegacyTags(normalizeLibrary(nextLibrary));
     if (!Array.isArray(next.boards)) {
       const carried = Array.isArray(library?.boards) ? library.boards : [];
@@ -3249,7 +3249,11 @@
     library = next;
     statsSelection.clear();
     selectedId = activeItems()[0]?.id || null;
-    currentView = 'inbox';
+    // 刷新（下拉刷新 / 刷新按钮）传 keepView：数据更新不改变用户所在视图，
+    // 归类视图的归类已被删时回落收集箱。数据替换类调用（导入 / 下载 /
+    // 局域网接收 / 切换档案）保持默认，回到收集箱。
+    if (options.keepView !== true) currentView = 'inbox';
+    else if (currentView.startsWith('folder:') && !getFolder(currentView.slice(7))) currentView = 'inbox';
     resetListFilters();
     searchQuery = '';
     mobileEditorOpen = false;
@@ -3591,7 +3595,7 @@
       setStatus(status, profileText('refreshingData'), '');
       const adapter = await adapterForDataProfile(profile, false);
       const snapshot = await adapter.load();
-      replaceLibrary(clearLegacyTags(JSON.parse(JSON.stringify(snapshot))));
+      replaceLibrary(clearLegacyTags(JSON.parse(JSON.stringify(snapshot))), { keepView: true });
       profileStats(profile, snapshot);
       saveDataProfileRegistry();
       renderDataProfiles();
@@ -4034,7 +4038,7 @@
       let snapshot;
       if (syncAdapter) {
         snapshot = await syncAdapter.load();
-        replaceLibrary(snapshot);
+        replaceLibrary(snapshot, { keepView: true });
         await refreshCloudVersion();
         autoSyncBaseline = librarySignature(snapshot);
         autoSyncDirty = false;
@@ -4050,7 +4054,7 @@
         workspaceAdapter = adapter;
         profileStats(profile, snapshot);
         saveDataProfileRegistry();
-        replaceLibrary(snapshot);
+        replaceLibrary(snapshot, { keepView: true });
         updateWorkspaceUI();
         renderDataProfiles();
         autoSyncDirty = false;
