@@ -2257,7 +2257,8 @@ async function main() {
       const menuClosed = await waitFor(() => !document.querySelector('.acx-menu'));
       const sortChanged = sortSelect.value === 'title';
       document.querySelector('#oobeUseDefault').click();
-      const oobePrepared = await waitFor(() => !document.querySelector('#oobeNext').disabled);
+      // 「下一步」按钮常亮（不再禁用），就绪信号改看数据路径卡是否已显示就绪路径。
+      const oobePrepared = await waitFor(() => document.querySelector('#oobePathValue').textContent.includes('ActaData'));
       document.querySelector('#oobeNext').click();
       const mwsLightRadio = document.querySelector('input[name="oobeTheme"][value="mws-light"]');
       mwsLightRadio.click();

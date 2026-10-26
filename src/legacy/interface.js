@@ -300,7 +300,7 @@
     '默认启动页面':'起動時のページ', '启动时进入的视图':'起動時に表示するビュー', '收集箱':'インボックス', '今天':'今日', '所有待办':'すべてのタスク', '所有笔记':'すべてのノート', '日历':'カレンダー', '汇总板':'プランボード', '已完成':'完了', '紧凑列表':'コンパクトリスト', '减少动态效果':'動きを減らす', '设置会自动保存在当前设备。':'設定はこの端末に自動保存されます。', '点击空白处':'ダイアログ外をクリック', '不关闭（防误触）':'閉じない（誤タップ防止）', '单击关闭':'シングルクリックで閉じる', '双击关闭':'ダブルクリックで閉じる',
     '渲染余量':'描画マージン', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'ビューポート外を先読みで描画する範囲。大きいほど滑らかで負荷も増します。', '小 · 流畅优先':'小 · 軽快優先', '中 · 均衡':'中 · バランス', '大 · 预览优先':'大 · 先読み優先', '关联曲线':'関連曲線', '在同板互相关联的待办与笔记之间显示连接曲线':'同じボード上で関連付けられたタスクとノートの間に曲線を表示します', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'描画性能と関連表示の設定。この端末のプランボードにのみ適用されます。', '设置即时生效，保存在本机。':'設定は即時反映され、この端末に保存されます。',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'テーマは表示だけを変えます。ノートやタスクのデータには影響しません。', '黑白浅色':'白黒ライト', '黑白深色':'白黒ダーク', '纸色护眼':'ペーパー', '默认':'デフォルト', '自定义':'カスタム', '纸张颜色':'紙の色', '侧栏颜色':'サイドバーの色', '强调颜色':'アクセントカラー', '界面字体':'画面のフォント', '应用于列表、编辑器与设置页':'リスト・エディター・設定に適用', '系统默认':'システムデフォルト', '衬线字体':'明朝体', '圆体':'丸ゴシック', '等宽字体':'等幅', '自定义字体':'カスタムフォント', '字体家族':'フォントファミリー', '字体大小':'文字サイズ', '界面整体缩放':'画面全体の拡大率', '记录，然后行动。Acta 让笔记与待办自然连接。':'記録して、行動する。Acta はノートとタスクを自然につなげます。',
-    '开始使用':'はじめる', '下一步':'次へ', '上一步':'戻る', '尚未选择':'未選択', '默认位置：':'既定の場所: ', '使用默认位置':'既定の場所を使う', '选择文件夹…':'フォルダーを選択…', '选择主题、字体与大小':'テーマ・フォント・サイズを選択', '选择启动动画':'起動アニメーションを選択', '软件数据位置':'ソフトウェアデータの場所', '打开文件夹':'フォルダーを開く', '更改位置':'場所を変更', '本机存储':'この端末に保存',
+    '开始使用':'はじめる', '下一步':'次へ', '上一步':'戻る', '尚未选择':'未選択', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Please choose the software data folder first, or click "Use default location".', '默认位置：':'既定の場所: ', '使用默认位置':'既定の場所を使う', '选择文件夹…':'フォルダーを選択…', '选择主题、字体与大小':'テーマ・フォント・サイズを選択', '选择启动动画':'起動アニメーションを選択', '软件数据位置':'ソフトウェアデータの場所', '打开文件夹':'フォルダーを開く', '更改位置':'場所を変更', '本机存储':'この端末に保存',
     '关于 Acta':'Acta について', '检查更新':'アップデートを確認', '产品':'製品', '版本':'バージョン', '桌面框架':'デスクトップ基盤', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri（Windows/macOS）、Capacitor（Android）',
     '桌面端侧边栏':'デスクトップサイドバー', '移动端底栏':'モバイルボトムバー', '移动端顶栏':'モバイルトップバー',
     '刷新数据':'データを再読込', '历史记录':'履歴', '回收站':'ゴミ箱', '自动同步':'自動同期', '检查频率':'確認頻度', '每 1 分钟':'1分ごと', '每 5 分钟':'5分ごと', '每 15 分钟':'15分ごと', '同步模式':'同期モード', '账号':'アカウント', '密码':'パスワード', '服务器地址':'サーバーアドレス', '选择文件夹':'フォルダーを選択', '查看归类':'分類を表示', '关闭':'閉じる'
@@ -311,7 +311,7 @@
     '默认启动页面':'시작 페이지', '启动时进入的视图':'실행 시 표시할 뷰', '收集箱':'수집함', '今天':'오늘', '所有待办':'모든 할 일', '所有笔记':'모든 노트', '日历':'달력', '汇总板':'플랜 보드', '已完成':'완료됨', '紧凑列表':'컴팩트 목록', '减少动态效果':'움직임 줄이기', '设置会自动保存在当前设备。':'설정은 이 기기에 자동 저장돼요.', '点击空白处':'빈 곳 클릭', '不关闭（防误触）':'닫지 않음(오작동 방지)', '单击关闭':'한 번 클릭해서 닫기', '双击关闭':'두 번 클릭해서 닫기',
     '渲染余量':'렌더링 여백', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'뷰포트 밖을 미리 렌더링하는 범위. 클수록 부드럽지만 무거워요.', '小 · 流畅优先':'작게 · 가볍게', '中 · 均衡':'중간 · 균형', '大 · 预览优先':'크게 · 미리보기', '关联曲线':'연결 곡선', '在同板互相关联的待办与笔记之间显示连接曲线':'같은 보드에서 서로 연결된 할 일과 노트 사이에 곡선을 표시해요', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'렌더링 성능과 연결 표시 설정. 이 기기의 플랜 보드에만 적용돼요.', '设置即时生效，保存在本机。':'설정은 즉시 적용되어 이 기기에 저장돼요.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'테마는 표시만 바꿔요. 노트나 할 일 데이터는 영향받지 않아요.', '黑白浅色':'흑백 라이트', '黑白深色':'흑백 다크', '纸色护眼':'페이퍼', '默认':'기본값', '自定义':'사용자 지정', '纸张颜色':'종이 색', '侧栏颜色':'사이드바 색', '强调颜色':'강조 색', '界面字体':'인터페이스 글꼴', '应用于列表、编辑器与设置页':'목록·편집기·설정에 적용돼요', '系统默认':'시스템 기본값', '衬线字体':'명조', '圆体':'둥근 글꼴', '等宽字体':'고정폭', '自定义字体':'사용자 지정 글꼴', '字体家族':'글꼴 종류', '字体大小':'글자 크기', '界面整体缩放':'인터페이스 전체 배율', '记录，然后行动。Acta 让笔记与待办自然连接。':'기록하고, 행동하세요. Acta는 노트와 할 일을 자연스럽게 연결해요.',
-    '开始使用':'시작하기', '下一步':'다음', '上一步':'이전', '尚未选择':'선택 안 함', '默认位置：':'기본 위치: ', '使用默认位置':'기본 위치 사용', '选择文件夹…':'폴더 선택…', '选择主题、字体与大小':'테마·글꼴·크기 선택', '选择启动动画':'시작 애니메이션 선택', '软件数据位置':'앱 데이터 위치', '打开文件夹':'폴더 열기', '更改位置':'위치 변경', '本机存储':'이 기기에 저장',
+    '开始使用':'시작하기', '下一步':'다음', '上一步':'이전', '尚未选择':'선택 안 함', '请先选择软件数据文件夹，或点击「使用默认位置」。':'先にソフトウェアデータフォルダを選択するか、「デフォルトの位置を使用」をクリックしてください。', '默认位置：':'기본 위치: ', '使用默认位置':'기본 위치 사용', '选择文件夹…':'폴더 선택…', '选择主题、字体与大小':'테마·글꼴·크기 선택', '选择启动动画':'시작 애니메이션 선택', '软件数据位置':'앱 데이터 위치', '打开文件夹':'폴더 열기', '更改位置':'위치 변경', '本机存储':'이 기기에 저장',
     '关于 Acta':'Acta 정보', '检查更新':'업데이트 확인', '产品':'제품', '版本':'버전', '桌面框架':'데스크톱 프레임워크', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri(Windows/macOS), Capacitor(Android)',
     '桌面端侧边栏':'데스크톱 사이드바', '移动端底栏':'모바일 하단 바', '移动端顶栏':'모바일 상단 바',
     '刷新数据':'데이터 새로 고침', '历史记录':'기록', '回收站':'휴지통', '自动同步':'자동 동기화', '检查频率':'확인 주기', '每 1 分钟':'1분마다', '每 5 分钟':'5분마다', '每 15 分钟':'15분마다', '同步模式':'동기화 모드', '账号':'계정', '密码':'비밀번호', '服务器地址':'서버 주소', '选择文件夹':'폴더 선택', '查看归类':'분류 보기', '关闭':'닫기'
@@ -322,7 +322,7 @@
     '默认启动页面':'Vue au démarrage', '启动时进入的视图':'La vue affichée au lancement', '收集箱':'Boîte de réception', '今天':'Aujourd’hui', '所有待办':'Toutes les tâches', '所有笔记':'Toutes les notes', '日历':'Calendrier', '汇总板':'Tableau', '已完成':'Terminé', '紧凑列表':'Listes compactes', '减少动态效果':'Réduire les animations', '设置会自动保存在当前设备。':'Les réglages sont enregistrés automatiquement sur cet appareil.', '点击空白处':'Clic à l’extérieur', '不关闭（防误触）':'Ne pas fermer (anti-erreur)', '单击关闭':'Clic simple pour fermer', '双击关闭':'Double clic pour fermer',
     '渲染余量':'Marge de rendu', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Distance de pré-rendu hors du viewport ; plus grand est plus fluide mais plus lourd.', '小 · 流畅优先':'Petit · fluidité', '中 · 均衡':'Moyen · équilibré', '大 · 预览优先':'Grand · aperçu', '关联曲线':'Courbes de liaison', '在同板互相关联的待办与笔记之间显示连接曲线':'Affiche des courbes entre tâches et notes liées sur un même tableau', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Préférences de rendu et de liaison pour le tableau de cet appareil.', '设置即时生效，保存在本机。':'Appliqué immédiatement ; enregistré sur cet appareil.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Les thèmes ne changent que l’apparence ; notes et tâches ne sont pas touchées.', '黑白浅色':'Noir et blanc clair', '黑白深色':'Noir et blanc sombre', '纸色护眼':'Papier', '默认':'Par défaut', '自定义':'Personnalisé', '纸张颜色':'Couleur du papier', '侧栏颜色':'Couleur de la barre latérale', '强调颜色':'Couleur d’accent', '界面字体':'Police de l’interface', '应用于列表、编辑器与设置页':'S’applique aux listes, à l’éditeur et aux réglages', '系统默认':'Police système', '衬线字体':'Avec empattement', '圆体':'Arrondie', '等宽字体':'Chasse fixe', '自定义字体':'Police personnalisée', '字体家族':'Famille de police', '字体大小':'Taille de police', '界面整体缩放':'Échelle de toute l’interface', '记录，然后行动。Acta 让笔记与待办自然连接。':'Capter, puis agir. Acta relie notes et tâches naturellement.',
-    '开始使用':'Commencer', '下一步':'Suivant', '上一步':'Retour', '尚未选择':'Pas encore choisi', '默认位置：':'Emplacement par défaut : ', '使用默认位置':'Utiliser l’emplacement par défaut', '选择文件夹…':'Choisir un dossier…', '选择主题、字体与大小':'Choisir thème, police et taille', '选择启动动画':'Choisir l’animation de lancement', '软件数据位置':'Emplacement des données', '打开文件夹':'Ouvrir le dossier', '更改位置':'Changer d’emplacement', '本机存储':'Stockage local',
+    '开始使用':'Commencer', '下一步':'Suivant', '上一步':'Retour', '尚未选择':'Pas encore choisi', '请先选择软件数据文件夹，或点击「使用默认位置」。':'먼저 소프트웨어 데이터 폴더를 선택하거나 "기본 위치 사용"을 눌러 주세요.', '默认位置：':'Emplacement par défaut : ', '使用默认位置':'Utiliser l’emplacement par défaut', '选择文件夹…':'Choisir un dossier…', '选择主题、字体与大小':'Choisir thème, police et taille', '选择启动动画':'Choisir l’animation de lancement', '软件数据位置':'Emplacement des données', '打开文件夹':'Ouvrir le dossier', '更改位置':'Changer d’emplacement', '本机存储':'Stockage local',
     '关于 Acta':'À propos d’Acta', '检查更新':'Rechercher des mises à jour', '产品':'Produit', '版本':'Version', '桌面框架':'Framework bureau', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
     '桌面端侧边栏':'Barre latérale bureau', '移动端底栏':'Barre inférieure mobile', '移动端顶栏':'Barre supérieure mobile',
     '刷新数据':'Actualiser les données', '历史记录':'Historique', '回收站':'Corbeille', '自动同步':'Synchro automatique', '检查频率':'Fréquence de vérification', '每 1 分钟':'Chaque minute', '每 5 分钟':'Toutes les 5 minutes', '每 15 分钟':'Toutes les 15 minutes', '同步模式':'Mode de synchro', '账号':'Compte', '密码':'Mot de passe', '服务器地址':'Adresse du serveur', '选择文件夹':'Choisir un dossier', '查看归类':'Voir les classements', '关闭':'Fermer'
@@ -333,7 +333,7 @@
     '默认启动页面':'Startansicht', '启动时进入的视图':'Die beim Start gezeigte Ansicht', '收集箱':'Eingang', '今天':'Heute', '所有待办':'Alle Aufgaben', '所有笔记':'Alle Notizen', '日历':'Kalender', '汇总板':'Planboard', '已完成':'Erledigt', '紧凑列表':'Kompakte Listen', '减少动态效果':'Bewegung reduzieren', '设置会自动保存在当前设备。':'Einstellungen werden automatisch auf diesem Gerät gespeichert.', '点击空白处':'Klick außerhalb', '不关闭（防误触）':'Nicht schließen (Schutz)', '单击关闭':'Einfachklick schließt', '双击关闭':'Doppelklick schließt',
     '渲染余量':'Render-Abstand', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Wie weit außerhalb des Viewports vorgemerkt wird; größer ist flüssiger, aber schwerer.', '小 · 流畅优先':'Klein · performant', '中 · 均衡':'Mittel · ausgewogen', '大 · 预览优先':'Groß · Vorschau', '关联曲线':'Verbindungskurven', '在同板互相关联的待办与笔记之间显示连接曲线':'Zeigt Kurven zwischen verknüpften Aufgaben und Notizen auf einem Board', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Render- und Anzeigepräferenzen für das Planboard auf diesem Gerät.', '设置即时生效，保存在本机。':'Wirkt sofort; wird auf diesem Gerät gespeichert.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Themes ändern nur die Optik; Notizen und Aufgaben bleiben unberührt.', '黑白浅色':'Monochrom hell', '黑白深色':'Monochrom dunkel', '纸色护眼':'Papier', '默认':'Standard', '自定义':'Benutzerdefiniert', '纸张颜色':'Papierfarbe', '侧栏颜色':'Farbe der Seitenleiste', '强调颜色':'Akzentfarbe', '界面字体':'Oberflächenschrift', '应用于列表、编辑器与设置页':'Gilt für Listen, Editor und Einstellungen', '系统默认':'Systemstandard', '衬线字体':'Serif', '圆体':'Gerundet', '等宽字体':'Monospace', '自定义字体':'Eigene Schrift', '字体家族':'Schriftfamilie', '字体大小':'Schriftgröße', '界面整体缩放':'Gesamte Oberfläche skalieren', '记录，然后行动。Acta 让笔记与待办自然连接。':'Erfassen, dann handeln. Acta verbindet Notizen und Aufgaben natürlich.',
-    '开始使用':'Los geht’s', '下一步':'Weiter', '上一步':'Zurück', '尚未选择':'Noch nicht gewählt', '默认位置：':'Standardort: ', '使用默认位置':'Standardort verwenden', '选择文件夹…':'Ordner wählen…', '选择主题、字体与大小':'Theme, Schrift und Größe wählen', '选择启动动画':'Startanimation wählen', '软件数据位置':'Speicherort der App-Daten', '打开文件夹':'Ordner öffnen', '更改位置':'Ort ändern', '本机存储':'Lokaler Speicher',
+    '开始使用':'Los geht’s', '下一步':'Weiter', '上一步':'Zurück', '尚未选择':'Noch nicht gewählt', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Choisissez d’abord le dossier de données du logiciel, ou cliquez sur « Emplacement par défaut ».', '默认位置：':'Standardort: ', '使用默认位置':'Standardort verwenden', '选择文件夹…':'Ordner wählen…', '选择主题、字体与大小':'Theme, Schrift und Größe wählen', '选择启动动画':'Startanimation wählen', '软件数据位置':'Speicherort der App-Daten', '打开文件夹':'Ordner öffnen', '更改位置':'Ort ändern', '本机存储':'Lokaler Speicher',
     '关于 Acta':'Über Acta', '检查更新':'Nach Updates suchen', '产品':'Produkt', '版本':'Version', '桌面框架':'Desktop-Framework', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
     '桌面端侧边栏':'Desktop-Seitenleiste', '移动端底栏':'Mobile Fußleiste', '移动端顶栏':'Mobile Kopfleiste',
     '刷新数据':'Daten aktualisieren', '历史记录':'Verlauf', '回收站':'Papierkorb', '自动同步':'Automatischer Sync', '检查频率':'Prüfintervall', '每 1 分钟':'Jede Minute', '每 5 分钟':'Alle 5 Minuten', '每 15 分钟':'Alle 15 Minuten', '同步模式':'Sync-Modus', '账号':'Konto', '密码':'Passwort', '服务器地址':'Serveradresse', '选择文件夹':'Ordner wählen', '查看归类':'Kategorien anzeigen', '关闭':'Schließen'
@@ -344,7 +344,7 @@
     '默认启动页面':'Vista inicial', '启动时进入的视图':'La vista mostrada al iniciar', '收集箱':'Bandeja', '今天':'Hoy', '所有待办':'Todas las tareas', '所有笔记':'Todas las notas', '日历':'Calendario', '汇总板':'Tablero', '已完成':'Completadas', '紧凑列表':'Listas compactas', '减少动态效果':'Reducir movimiento', '设置会自动保存在当前设备。':'Los ajustes se guardan automáticamente en este dispositivo.', '点击空白处':'Clic fuera de los diálogos', '不关闭（防误触）':'No cerrar (protección)', '单击关闭':'Un clic cierra', '双击关闭':'Doble clic cierra',
     '渲染余量':'Margen de renderizado', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Cuánto se pre-renderiza fuera del visor; más es más fluido pero pesa más.', '小 · 流畅优先':'Pequeño · rendimiento', '中 · 均衡':'Medio · equilibrado', '大 · 预览优先':'Grande · vista previa', '关联曲线':'Curvas de vínculo', '在同板互相关联的待办与笔记之间显示连接曲线':'Muestra curvas entre tareas y notas vinculadas en el mismo tablero', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Preferencias de renderizado y vínculos del tablero en este dispositivo.', '设置即时生效，保存在本机。':'Se aplica al instante; se guarda en este dispositivo.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Los temas solo cambian la apariencia; notas y tareas no se afectan.', '黑白浅色':'Blanco y negro claro', '黑白深色':'Blanco y negro oscuro', '纸色护眼':'Papel', '默认':'Predeterminado', '自定义':'Personalizado', '纸张颜色':'Color del papel', '侧栏颜色':'Color de la barra lateral', '强调颜色':'Color de acento', '界面字体':'Fuente de la interfaz', '应用于列表、编辑器与设置页':'Se aplica a listas, editor y ajustes', '系统默认':'Predeterminado del sistema', '衬线字体':'Con serifa', '圆体':'Redondeada', '等宽字体':'Monoespaciada', '自定义字体':'Fuente personalizada', '字体家族':'Familia tipográfica', '字体大小':'Tamaño de fuente', '界面整体缩放':'Escala de toda la interfaz', '记录，然后行动。Acta 让笔记与待办自然连接。':'Registra y actúa. Acta conecta notas y tareas con naturalidad.',
-    '开始使用':'Empezar', '下一步':'Siguiente', '上一步':'Atrás', '尚未选择':'Sin elegir', '默认位置：':'Ubicación predeterminada: ', '使用默认位置':'Usar ubicación predeterminada', '选择文件夹…':'Elegir carpeta…', '选择主题、字体与大小':'Elige tema, fuente y tamaño', '选择启动动画':'Elige la animación de inicio', '软件数据位置':'Ubicación de los datos', '打开文件夹':'Abrir carpeta', '更改位置':'Cambiar ubicación', '本机存储':'Almacenamiento local',
+    '开始使用':'Empezar', '下一步':'Siguiente', '上一步':'Atrás', '尚未选择':'Sin elegir', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Wähle zuerst den Software-Datenordner, oder klicke auf „Standardort verwenden“.', '默认位置：':'Ubicación predeterminada: ', '使用默认位置':'Usar ubicación predeterminada', '选择文件夹…':'Elegir carpeta…', '选择主题、字体与大小':'Elige tema, fuente y tamaño', '选择启动动画':'Elige la animación de inicio', '软件数据位置':'Ubicación de los datos', '打开文件夹':'Abrir carpeta', '更改位置':'Cambiar ubicación', '本机存储':'Almacenamiento local',
     '关于 Acta':'Acerca de Acta', '检查更新':'Buscar actualizaciones', '产品':'Producto', '版本':'Versión', '桌面框架':'Framework de escritorio', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
     '桌面端侧边栏':'Barra lateral de escritorio', '移动端底栏':'Barra inferior móvil', '移动端顶栏':'Barra superior móvil',
     '刷新数据':'Actualizar datos', '历史记录':'Historial', '回收站':'Papelera', '自动同步':'Sincronización automática', '检查频率':'Frecuencia de comprobación', '每 1 分钟':'Cada minuto', '每 5 分钟':'Cada 5 minutos', '每 15 分钟':'Cada 15 minutos', '同步模式':'Modo de sincronización', '账号':'Cuenta', '密码':'Contraseña', '服务器地址':'Dirección del servidor', '选择文件夹':'Elegir carpeta', '查看归类':'Ver clasificaciones', '关闭':'Cerrar'
@@ -355,7 +355,7 @@
     '默认启动页面':'Стартовый вид', '启动时进入的视图':'Вид при запуске', '收集箱':'Входящие', '今天':'Сегодня', '所有待办':'Все задачи', '所有笔记':'Все заметки', '日历':'Календарь', '汇总板':'Планшет', '已完成':'Выполнено', '紧凑列表':'Компактные списки', '减少动态效果':'Меньше анимации', '设置会自动保存在当前设备。':'Настройки автоматически сохраняются на этом устройстве.', '点击空白处':'Клик вне диалогов', '不关闭（防误触）':'Не закрывать (защита)', '单击关闭':'Один клик закрывает', '双击关闭':'Двойной клик закрывает',
     '渲染余量':'Запас рендера', '画布提前渲染视口外内容的距离，越大越顺滑、越耗性能':'Насколько далеко за пределы видимой области рендерить заранее; больше — плавнее, но тяжелее.', '小 · 流畅优先':'Малый · скорость', '中 · 均衡':'Средний · баланс', '大 · 预览优先':'Большой · обзор', '关联曲线':'Линии связей', '在同板互相关联的待办与笔记之间显示连接曲线':'Показывает линии между связанными задачами и заметками на планшете', '渲染性能与关联显示偏好，只影响本机的计划板视图。':'Настройки рендера и связей планшета на этом устройстве.', '设置即时生效，保存在本机。':'Применяется сразу; сохраняется на устройстве.',
     '主题只改变显示效果，不会影响任何笔记或待办数据。':'Темы меняют только оформление; заметки и задачи не затрагиваются.', '黑白浅色':'Светлый ч/б', '黑白深色':'Тёмный ч/б', '纸色护眼':'Бумага', '默认':'По умолчанию', '自定义':'Своё', '纸张颜色':'Цвет бумаги', '侧栏颜色':'Цвет боковой панели', '强调颜色':'Акцентный цвет', '界面字体':'Шрифт интерфейса', '应用于列表、编辑器与设置页':'Применяется к спискам, редактору и настройкам', '系统默认':'Системный', '衬线字体':'С засечками', '圆体':'Округлый', '等宽字体':'Моноширинный', '自定义字体':'Свой шрифт', '字体家族':'Семейство шрифтов', '字体大小':'Размер шрифта', '界面整体缩放':'Масштаб интерфейса', '记录，然后行动。Acta 让笔记与待办自然连接。':'Записывай и действуй. Acta естественно связывает заметки и задачи.',
-    '开始使用':'Начать', '下一步':'Далее', '上一步':'Назад', '尚未选择':'Ещё не выбрано', '默认位置：':'Расположение по умолчанию: ', '使用默认位置':'Использовать место по умолчанию', '选择文件夹…':'Выбрать папку…', '选择主题、字体与大小':'Выберите тему, шрифт и размер', '选择启动动画':'Выберите анимацию запуска', '软件数据位置':'Расположение данных', '打开文件夹':'Открыть папку', '更改位置':'Изменить расположение', '本机存储':'Локальное хранилище',
+    '开始使用':'Начать', '下一步':'Далее', '上一步':'Назад', '尚未选择':'Ещё не выбрано', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Elige primero la carpeta de datos del software, o pulsa «Usar ubicación predeterminada».', '默认位置：':'Расположение по умолчанию: ', '使用默认位置':'Использовать место по умолчанию', '选择文件夹…':'Выбрать папку…', '选择主题、字体与大小':'Выберите тему, шрифт и размер', '选择启动动画':'Выберите анимацию запуска', '软件数据位置':'Расположение данных', '打开文件夹':'Открыть папку', '更改位置':'Изменить расположение', '本机存储':'Локальное хранилище',
     '关于 Acta':'Об Acta', '检查更新':'Проверить обновления', '产品':'Продукт', '版本':'Версия', '桌面框架':'Десктоп-фреймворк', 'Tauri（Windows/macOS），Capacitor（Android）':'Tauri (Windows/macOS), Capacitor (Android)',
     '桌面端侧边栏':'Боковая панель', '移动端底栏':'Нижняя панель', '移动端顶栏':'Верхняя панель',
     '刷新数据':'Обновить данные', '历史记录':'История', '回收站':'Корзина', '自动同步':'Автосинхронизация', '检查频率':'Частота проверки', '每 1 分钟':'Каждую минуту', '每 5 分钟':'Каждые 5 минут', '每 15 分钟':'Каждые 15 минут', '同步模式':'Режим синхронизации', '账号':'Учётная запись', '密码':'Пароль', '服务器地址':'Адрес сервера', '选择文件夹':'Выбрать папку', '查看归类':'Показать категории', '关闭':'Закрыть'
@@ -366,7 +366,7 @@
     '清除缓存重新加载':'Clear cache and reload',
     '森林晨雾':'Forest mist', '海盐晚霞':'Sea-salt sunset', '糖果气泡':'Candy pop', '深夜霓虹':'Midnight neon', '极光夜色':'Aurora night', '多彩浅色':'Colorful light', '深色发光':'Dark glow', '特殊主题':'Special theme',
     'MWS 浅色':'MWS Light', 'MWS 深色':'MWS Dark', '品牌主题':'Brand theme', '品牌深色':'Brand dark',
-    '开始使用':'Get started', '下一步':'Next', '上一步':'Back', '尚未选择':'Not chosen yet', '尚未设置':'Not set',
+    '开始使用':'Get started', '下一步':'Next', '上一步':'Back', '尚未选择':'Not chosen yet', '请先选择软件数据文件夹，或点击「使用默认位置」。':'Сначала выберите папку данных приложения или нажмите «Использовать расположение по умолчанию».', '尚未设置':'Not set',
     '默认位置：':'Default location: ', '便携版默认使用软件目录下的 data 文件夹；也可以自选位置。':'Portable builds use the data folder next to the app by default; you can also pick your own.',
     '已就绪，软件设置将保存在这里。':'Ready - Acta will keep its settings here.', '无法使用该文件夹：':'Cannot use this folder: ',
     '无法确定默认位置，请点击「选择文件夹」手动指定。':'Could not determine a default location - pick one with "Choose folder".',
@@ -430,7 +430,7 @@
     '清除缓存重新加载':'清除快取並重新載入',
     '森林晨雾':'森林晨霧', '海盐晚霞':'海鹽晚霞', '糖果气泡':'糖果氣泡', '深夜霓虹':'深夜霓虹', '极光夜色':'極光夜色', '多彩浅色':'多彩淺色', '深色发光':'深色發光', '特殊主题':'特殊主題',
     'MWS 浅色':'MWS 淺色', 'MWS 深色':'MWS 深色', '品牌主题':'品牌主題', '品牌深色':'品牌深色',
-    '开始使用':'開始使用', '下一步':'下一步', '上一步':'上一步', '尚未选择':'尚未選擇', '尚未设置':'尚未設定',
+    '开始使用':'開始使用', '下一步':'下一步', '上一步':'上一步', '尚未选择':'尚未選擇', '请先选择软件数据文件夹，或点击「使用默认位置」。':'請先選擇軟體資料資料夾，或點擊「使用預設位置」。', '尚未设置':'尚未設定',
     '默认位置：':'預設位置：', '便携版默认使用软件目录下的 data 文件夹；也可以自选位置。':'可攜版預設使用軟體目錄下的 data 資料夾；也可以自選位置。',
     '已就绪，软件设置将保存在这里。':'已就緒，軟體設定將保存在這裡。', '无法使用该文件夹：':'無法使用該資料夾：',
     '无法确定默认位置，请点击「选择文件夹」手动指定。':'無法確定預設位置，請點擊「選擇資料夾」手動指定。',
@@ -791,11 +791,12 @@
   // 点击 ::backdrop 时 event.target 是 dialog 元素自身；设置面板这类 div
   // 遮罩则是遮罩元素本身——两者统一按「event.target 就是弹层表面」判定，
   // dialog 仍派发 cancel 走各自的守卫，设置面板直接 closeSettings()。
-  // OOBE 是分步引导，空白处点击不关闭。
+  // OOBE 是分步引导：首次启动的空白处点击不关闭；从设置里二次进入
+  // （oobeDismissible）时遵循同一套空白关闭设置，点击可退出。
   const backdropClickState = { surface: null, at: 0 };
   document.addEventListener('click', event => {
     if (!(event.target instanceof Element)) return;
-    const surface = event.target.closest('dialog, .settings-backdrop');
+    const surface = event.target.closest('dialog, .settings-backdrop, .oobe-backdrop');
     if (!surface || event.target !== surface) return;
     const isOpen = surface instanceof HTMLDialogElement ? surface.open : surface.classList.contains('open');
     if (!isOpen) return;
@@ -809,6 +810,10 @@
     if (mode === 'none') return;
     const dismiss = () => {
       if (surface instanceof HTMLDialogElement) surface.dispatchEvent(new Event('cancel', { cancelable: true }));
+      else if (surface.classList.contains('oobe-backdrop')) {
+        // 二次进入的 OOBE：空白点击退出；首次启动静默（防止跳过初始化）。
+        if (oobeDismissible) closeOobe();
+      }
       else closeSettings();
     };
     if (mode === 'single') {
@@ -8189,6 +8194,7 @@
   const oobeStepCount = oobeStepEls.length;
   let oobeIndex = 0;
   let oobePrepared = false;
+  let oobeDismissible = false; // 从设置二次进入时可点击空白遮罩退出
 
   function syncOobeControls() {
     document.querySelectorAll('input[name="oobeTheme"]').forEach(option => { option.checked = option.value === uiSettings.theme; });
@@ -8213,13 +8219,15 @@
     });
     byId('oobeStepLabel').textContent = `${oobeIndex + 1} / ${oobeStepCount}`;
     byId('oobeBack').hidden = oobeIndex === 0;
-    const next = byId('oobeNext');
-    next.disabled = oobeIndex === 0 && !oobePrepared;
+    // 「下一步」按钮常亮：不再在第一步禁用（灰态看不出可点），未选择
+    // 数据文件夹时点击给出引导提示（见 oobeNext 的监听器）。
     byId('oobeNextLabel').textContent = oobeIndex === oobeStepCount - 1 ? appearanceText('开始使用') : appearanceText('下一步');
   }
 
-  function openOobe(state = {}) {
+  function openOobe(state = {}, options = {}) {
     if (!oobeOverlay || !oobeStepCount) return;
+    // 从设置里二次进入时允许点击空白遮罩退出（首次启动不允许，防止跳过初始化）。
+    oobeDismissible = Boolean(options.fromSettings);
     const hasBridge = Boolean(appDataBridge());
     // 无桌面数据桥（浏览器 / 移动端）：软件设置只存本机，第一步直接就绪，
     // 不再等待「选择数据文件夹」（那一步在无文件系统能力的环境没有意义）。
@@ -8320,7 +8328,13 @@
     });
     byId('oobeBack').addEventListener('click', () => showOobeStep(oobeIndex - 1, true));
     byId('oobeNext').addEventListener('click', () => {
-      if (oobeIndex === 0 && !oobePrepared) return;
+      if (oobeIndex === 0 && !oobePrepared) {
+        // 按钮常亮可点：未选择数据文件夹时给引导提示，而不是静默禁用。
+        const errorEl = byId('oobePathError');
+        errorEl.textContent = appearanceText('请先选择软件数据文件夹，或点击「使用默认位置」。');
+        errorEl.hidden = false;
+        return;
+      }
       if (oobeIndex === oobeStepCount - 1) {
         saveUISettings();
         closeOobe();
@@ -8404,7 +8418,7 @@
   });
 
   byId('openOobeButton')?.addEventListener('click', () => {
-    openOobe({});
+    openOobe({}, { fromSettings: true });
   });
 
   void initSoftwareData();
