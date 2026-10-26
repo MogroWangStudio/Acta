@@ -1,31 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 30 20" role="img" aria-label="大韩民国国旗">
+  <!-- 太极旗：按官方制图比例绘制。
+       太极直径 = 旗高 1/2（r=5，圆心 15,10）；分割线沿对角方向 rotate(-33.69°)
+       （tan⁻¹⅔，左低右高）；S 弧半径 = 太极半径 1/2；鱼眼半径 = S 弧 1/2，
+       红眼嵌蓝鱼头（左上）、蓝眼嵌红鱼头（右下）；四卦在对角线上按
+       건곤감리 布置：左上 ☰ 乾（全）、右上 ☷ 坤（断）、左下 ☵ 坎（断全断）、
+       右下 ☲ 离（全断全），爻序自旗角向中心。 -->
   <rect width="30" height="20" fill="#fff"/>
-  <g transform="translate(15 10) rotate(-33.7)">
-    <path d="M-6 0 A6 6 0 0 1 6 0 Z" fill="#cd2e3a"/>
-    <path d="M6 0 A6 6 0 0 1 -6 0 Z" fill="#0047a0"/>
-    <circle cx="-3" cy="0" r="3" fill="#cd2e3a"/>
-    <circle cx="3" cy="0" r="3" fill="#0047a0"/>
+  <g transform="translate(15 10) rotate(-33.69)">
+    <circle r="5" fill="#0047a0"/>
+    <path d="M-5 0A5 5 0 0 1 5 0A2.5 2.5 0 0 1 0 0A2.5 2.5 0 0 0 -5 0Z" fill="#cd2e3a"/>
+    <circle cx="-2.5" cy="0" r="1.25" fill="#cd2e3a"/>
+    <circle cx="2.5" cy="0" r="1.25" fill="#0047a0"/>
   </g>
   <g fill="#000">
-    <g transform="translate(5.2 4.2) rotate(-33.7)">
-      <rect x="-2.6" y="-1.5" width="5.2" height="1" />
-      <rect x="-2.6" y="0" width="5.2" height="1" />
-      <rect x="-2.6" y="1.5" width="5.2" height="1" />
+    <g transform="translate(5.4 3.6) rotate(-33.69)">
+      <rect x="-2.3" y="-1.6" width="4.6" height="0.8"/>
+      <rect x="-2.3" y="-0.4" width="4.6" height="0.8"/>
+      <rect x="-2.3" y="0.8" width="4.6" height="0.8"/>
     </g>
-    <g transform="translate(24.8 15.8) rotate(-33.7)">
-      <rect x="-2.6" y="-1.5" width="5.2" height="1" />
-      <rect x="-2.6" y="0" width="5.2" height="1" />
-      <rect x="-2.6" y="1.5" width="5.2" height="1" />
+    <g transform="translate(24.6 3.6) rotate(33.69)">
+      <rect x="-2.3" y="-1.6" width="1.8" height="0.8"/><rect x="0.5" y="-1.6" width="1.8" height="0.8"/>
+      <rect x="-2.3" y="-0.4" width="1.8" height="0.8"/><rect x="0.5" y="-0.4" width="1.8" height="0.8"/>
+      <rect x="-2.3" y="0.8" width="1.8" height="0.8"/><rect x="0.5" y="0.8" width="1.8" height="0.8"/>
     </g>
-    <g transform="translate(24.8 4.2) rotate(33.7)">
-      <rect x="-2.6" y="-1.5" width="2.4" height="1" />
-      <rect x="-1.2" y="0" width="2.4" height="1" />
-      <rect x="-2.6" y="1.5" width="5.2" height="1" transform="rotate(180)"/>
+    <g transform="translate(5.4 16.4) rotate(33.69)">
+      <rect x="-2.3" y="-1.6" width="1.8" height="0.8"/><rect x="0.5" y="-1.6" width="1.8" height="0.8"/>
+      <rect x="-2.3" y="-0.4" width="4.6" height="0.8"/>
+      <rect x="-2.3" y="0.8" width="1.8" height="0.8"/><rect x="0.5" y="0.8" width="1.8" height="0.8"/>
     </g>
-    <g transform="translate(5.2 15.8) rotate(33.7)">
-      <rect x="-2.6" y="-1.5" width="2.4" height="1" />
-      <rect x="-1.2" y="0" width="2.4" height="1" />
-      <rect x="-2.6" y="1.5" width="5.2" height="1" transform="rotate(180)"/>
+    <g transform="translate(24.6 16.4) rotate(-33.69)">
+      <rect x="-2.3" y="-1.6" width="4.6" height="0.8"/>
+      <rect x="-2.3" y="-0.4" width="1.8" height="0.8"/><rect x="0.5" y="-0.4" width="1.8" height="0.8"/>
+      <rect x="-2.3" y="0.8" width="4.6" height="0.8"/>
     </g>
   </g>
 </svg>
