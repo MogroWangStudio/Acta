@@ -8367,9 +8367,69 @@ function askClassificationName(defaultName) {
 }
 
 function bindShell() {
+  // —— 安卓放射式新建菜单 ——
+  // 五枚圆钮从中央新建按钮沿弧线弹出（等角围绕、依次入场），
+  // 底部渐入遮罩保证文字对比度；桌面端保持侧栏的纵向功能列表。
+  const MOBILE_CREATE_RADIUS = 112;
+  // 弧上角度（屏幕角：0°=右，逆时针；90°=正上）。速记居正上（最常用），
+  // 笔记 / 待办在两侧上位，打卡 / 导入在两侧下位，对称展开。
+  const mobileCreateAngles = { quick: 90, note: 54, todo: 126, checkin: 18, import: 162 };
+  let mobileCreateHideTimer = 0;
+  const syncMobileCreatePositions = () => {
+    $$('#mobileCreateActions .mobile-create-item').forEach(item => {
+      const angle = (mobileCreateAngles[item.dataset.create] ?? 90) * Math.PI / 180;
+      // 屏幕坐标：y 向下为正，向上弹出取负。
+      item.style.setProperty('--dx', `${Math.round(Math.cos(angle) * MOBILE_CREATE_RADIUS)}px`);
+      item.style.setProperty('--dy', `${Math.round(-Math.sin(angle) * MOBILE_CREATE_RADIUS)}px`);
+    });
+  };
+  const openMobileCreate = () => {
+    const layer = $('#mobileCreateLayer');
+    if (!layer) return;
+    clearTimeout(mobileCreateHideTimer);
+    syncMobileCreatePositions();
+    layer.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.add('open')));
+    $('#newButton').classList.add('is-open');
+  };
+  const closeMobileCreate = () => {
+    const layer = $('#mobileCreateLayer');
+    if (!layer || layer.hidden) return;
+    layer.classList.remove('open');
+    $('#newButton').classList.remove('is-open');
+    clearTimeout(mobileCreateHideTimer);
+    mobileCreateHideTimer = setTimeout(() => { layer.hidden = true; }, 300);
+  };
+  const toggleMobileCreate = () => {
+    const layer = $('#mobileCreateLayer');
+    if (layer && !layer.hidden) closeMobileCreate(); else openMobileCreate();
+  };
   $('#newButton').addEventListener('click', event => {
     event.stopPropagation();
+    if (matchMedia('(max-width: 800px)').matches) {
+      toggleMobileCreate();
+      return;
+    }
     $('#createMenu').classList.toggle('open');
+  });
+  const mobileLayer = $('#mobileCreateLayer');
+  mobileLayer?.addEventListener('click', event => {
+    if (event.target.closest('[data-mobile-create-close]')) { closeMobileCreate(); return; }
+    // 导入是既有文件选择流程，先于通用 createItem 分派（它也带 data-create 以取弧位）。
+    if (event.target.closest('[data-import]')) {
+      closeMobileCreate();
+      importNoteFromFile();
+      return;
+    }
+    const action = event.target.closest('[data-create]');
+    if (action) {
+      closeMobileCreate();
+      createItem(action.dataset.create);
+    }
+  });
+  // 旋转 / 拉宽到桌面布局时若放射菜单还开着，静默收起（桌面没有该层）。
+  matchMedia('(max-width: 800px)').addEventListener?.('change', event => {
+    if (!event.matches) closeMobileCreate();
   });
   $$('#createMenu [data-create]').forEach(button => button.addEventListener('click', () => createItem(button.dataset.create)));
   $('#importNoteButton').addEventListener('click', importNoteFromFile);

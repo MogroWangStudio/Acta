@@ -3191,3 +3191,63 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 .nav-page-grid input[type="checkbox"]:checked { border-color: var(--sage); background-color: var(--sage); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fffefa' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.6 4.6 4.6L19 7.4'/%3E%3C/svg%3E"); }
 @media (prefers-reduced-motion: reduce) { .nav-page-grid input[type="checkbox"] { transition: none; } }
 @media (max-width: 800px) { .nav-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ===== 安卓放射式新建菜单 =====
+   点击中央圆形新建按钮，五枚圆钮连同文字从按钮中心沿弧线依次弹出
+   （正上先出、向两侧展开），底部渐入半透明遮罩保证文字对比度；
+   再次点击新建按钮、遮罩或任一圆钮即收起，收起动画回到按钮中心。 */
+@media (max-width: 800px) {
+  /* 旧版纵向功能列表在移动端退役，让位给放射式圆钮。 */
+  .create-menu { display: none; }
+  .mobile-create-layer { position: fixed; inset: 0; z-index: 220; }
+  .mobile-create-layer[hidden] { display: none; }
+  .mobile-create-backdrop { position: absolute; inset: 0; background: rgba(28,32,27,.44); opacity: 0; transition: opacity .26s ease; }
+  .mobile-create-layer.open .mobile-create-backdrop { opacity: 1; }
+  .mobile-create-item {
+    /* 锚点 = 圆形新建按钮中心：底栏上方 4px + 半径 34px + 底部安全区。 */
+    position: absolute; left: 50%; bottom: calc(38px + env(safe-area-inset-bottom));
+    width: 0; height: 0;
+    transform: translate(0, 0) scale(.3);
+    opacity: 0; pointer-events: none;
+    transition: transform .26s var(--ease-out), opacity .18s ease;
+  }
+  .mobile-create-layer.open .mobile-create-item {
+    transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(1);
+    opacity: 1; pointer-events: auto;
+    transition: transform .4s cubic-bezier(.3,1.36,.58,1), opacity .2s ease;
+  }
+  /* 依次入场：正上先出，向两侧展开（第二拍、第三拍）。 */
+  .mobile-create-layer.open .mobile-create-item:nth-child(2),
+  .mobile-create-layer.open .mobile-create-item:nth-child(3) { transition-delay: .05s; }
+  .mobile-create-layer.open .mobile-create-item:nth-child(4),
+  .mobile-create-layer.open .mobile-create-item:nth-child(5) { transition-delay: .1s; }
+  .mobile-create-button {
+    position: absolute; left: 0; top: 0; width: 52px; height: 52px; margin: -26px 0 0 -26px;
+    border: 0; border-radius: 50%; background: var(--ink); color: var(--paper);
+    display: grid; place-items: center; cursor: pointer;
+    box-shadow: 0 4px 14px -4px rgba(22,25,22,.42);
+    transition: transform .16s var(--ease-out);
+  }
+  .mobile-create-button:active { transform: scale(.9); transition-duration: .08s; }
+  .mobile-create-button svg { width: 22px; height: 22px; }
+  .mobile-create-button.is-quick { background: #526b55; }
+  .mobile-create-button.is-note { background: #4f86a8; }
+  .mobile-create-button.is-todo { background: #b96051; }
+  .mobile-create-button.is-checkin { background: #987329; }
+  .mobile-create-button.is-import { background: #6d7168; }
+  .mobile-create-label {
+    position: absolute; left: 0; top: -40px; transform: translateX(-50%);
+    white-space: nowrap; padding: 4px 11px; border-radius: 999px;
+    background: color-mix(in srgb, var(--white) 90%, transparent);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); font-weight: 650;
+    box-shadow: 0 1px 5px rgba(34,38,33,.22);
+  }
+  html[data-acta-theme="mono-dark"] .mobile-create-button { background: #e6e6e6; color: #111; }
+  html[data-acta-theme="mono-dark"] .mobile-create-label { background: rgba(41,41,41,.9); color: #e6e6e6; }
+  /* 打开时新建按钮浮于遮罩之上（可再次点击收起），图标 + 旋转为 ×。 */
+  .new-button.is-open { z-index: 222; }
+  .new-button.is-open svg { transform: rotate(45deg); }
+  .new-button svg { transition: transform .3s var(--ease-out); }
+}
+@media (min-width: 801px) { .mobile-create-layer { display: none !important; } }

@@ -882,4 +882,32 @@
     <div class="sync-notice" id="syncNotice" role="status" aria-live="polite"><i></i><span></span></div>
     <div class="toast" id="toast"><span><svg><use href="#i-check"/></svg></span><p></p></div>
     <div class="context-menu" id="contextMenu" role="menu" aria-hidden="true"></div>
+
+    <!-- 安卓端放射式新建菜单：五枚圆钮从中央新建按钮沿弧线弹出，
+         底部渐入遮罩保证文字对比度；桌面端保持侧栏功能列表。 -->
+    <div class="mobile-create-layer" id="mobileCreateLayer" hidden>
+      <div class="mobile-create-backdrop" data-mobile-create-close></div>
+      <div class="mobile-create-actions" id="mobileCreateActions">
+        <div class="mobile-create-item" data-create="quick">
+          <span class="mobile-create-label" data-i18n="quickCapture">速记</span>
+          <button class="mobile-create-button is-quick" type="button" aria-label="速记"><svg><use href="#i-lightning"/></svg></button>
+        </div>
+        <div class="mobile-create-item" data-create="note">
+          <span class="mobile-create-label" data-i18n="newNote">新建笔记</span>
+          <button class="mobile-create-button is-note" type="button" aria-label="新建笔记"><svg><use href="#i-note"/></svg></button>
+        </div>
+        <div class="mobile-create-item" data-create="todo">
+          <span class="mobile-create-label" data-i18n="newTodo">新建待办</span>
+          <button class="mobile-create-button is-todo" type="button" aria-label="新建待办"><svg><use href="#i-check"/></svg></button>
+        </div>
+        <div class="mobile-create-item" data-create="checkin">
+          <span class="mobile-create-label" data-i18n="checkinTodo">打卡待办</span>
+          <button class="mobile-create-button is-checkin" type="button" aria-label="打卡待办"><svg><use href="#i-task-list"/></svg></button>
+        </div>
+        <div class="mobile-create-item" data-create="import" data-import="1">
+          <span class="mobile-create-label" data-i18n="importNote">导入笔记</span>
+          <button class="mobile-create-button is-import" type="button" aria-label="导入笔记"><svg><use href="#i-download"/></svg></button>
+        </div>
+      </div>
+    </div>
 </template>
