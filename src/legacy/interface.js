@@ -823,10 +823,15 @@
     const now = performance.now();
     if (backdropClickState.surface === surface && now - backdropClickState.at < 450) {
       backdropClickState.surface = null;
+      // 第二击立即关闭：刚才那条「点击两次关闭窗口」的提示同步收起。
+      const hintToast = document.querySelector('#toast');
+      if (hintToast?.classList.contains('show') && hintToast.querySelector('p')?.textContent === t('点击两次关闭窗口')) hintToast.classList.remove('show');
       dismiss();
     } else {
       backdropClickState.surface = surface;
       backdropClickState.at = now;
+      // 双击防误触的第一下：提示需要再点一次，避免“点了没反应”的困惑。
+      showToast(t('点击两次关闭窗口'), 1600);
     }
   }, true);
 
