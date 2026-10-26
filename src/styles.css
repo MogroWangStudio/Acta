@@ -301,6 +301,14 @@ body.lan-radar-live .smart-nav [data-nav-action="lan"] { animation: lanLivePulse
 .clear-list-filters svg { width: 12px; height: 12px; }
 
 .item-list { flex: 1; overflow: hidden auto; padding: 10px; }
+/* 底部惯性触底回弹：快速上滑松手后惯性滚到底时，列表过冲再弹回
+   （幅度由 JS 按滚动速度写入 --bottom-bounce）。 */
+.item-list.bottom-bounce { animation: itemBottomBounce .46s cubic-bezier(.3,.68,.36,1); }
+@keyframes itemBottomBounce {
+  0% { transform: translateY(0); }
+  36% { transform: translateY(var(--bottom-bounce, -18px)); }
+  100% { transform: translateY(0); }
+}
 
 /* 移动端下拉刷新：包装层承载指示器（列表内容每次渲染重建，不能内嵌）。
    静止时位移 -46px 且透明；下拉时 JS 用阻尼曲线驱动 --pull-shift 跟手，

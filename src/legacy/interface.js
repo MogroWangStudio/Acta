@@ -4223,6 +4223,37 @@
     }, { passive: false });
     pullList.addEventListener('touchend', bottomRelease, { passive: true });
     pullList.addEventListener('touchcancel', bottomRelease, { passive: true });
+
+    // —— 底部惯性触底回弹 ——
+    // 快速上滑松手后列表靠惯性滚到底：手指已离开，touch 弹性链路不在，
+    // 列表会硬停在底缘。用 scroll 事件的速度估计检测「带速度触底」，
+    // 触发一次过冲回弹（与触摸中的弹性同一条视觉语言）。Android 12+
+    // 的系统 stretch 已被列表的 overscroll-behavior: contain 关闭，
+    // 两套效果不会叠加。
+    let bottomScrollY = 0, bottomScrollT = 0, bottomVelocity = 0;
+    pullList.addEventListener('scroll', () => {
+      const now = performance.now();
+      const dt = now - bottomScrollT;
+      if (dt > 0 && dt < 120) bottomVelocity = (pullList.scrollTop - bottomScrollY) / dt;
+      bottomScrollY = pullList.scrollTop;
+      bottomScrollT = now;
+      if (pullBusy || bottomEngaged || isIosDevice) return;
+      if (document.body.classList.contains('board-view')) return;
+      if (pullList.classList.contains('bottom-bounce')) return;
+      const atBottom = pullList.scrollTop + pullList.clientHeight >= pullList.scrollHeight - 1;
+      // 触底且仍有明显的向下滚动速度（px/ms）：过冲幅度按速度映射。
+      if (atBottom && bottomVelocity > 0.55) {
+        const shift = Math.min(56, Math.max(12, Math.round(bottomVelocity * 80)));
+        bottomVelocity = 0;
+        pullList.style.setProperty('--bottom-bounce', `${-shift}px`);
+        pullList.classList.add('bottom-bounce');
+        setTimeout(() => pullList.classList.remove('bottom-bounce'), 470);
+      }
+    }, { passive: true });
+    // 触摸重新落下时终止进行中的回弹动画，交还给 touch 弹性链路。
+    pullList.addEventListener('touchstart', () => {
+      if (pullList.classList.contains('bottom-bounce')) pullList.classList.remove('bottom-bounce');
+    }, { passive: true });
   }
   sidebarToggle.addEventListener('click', () => {
     byId('createMenu').classList.remove('open');
