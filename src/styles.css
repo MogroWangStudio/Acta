@@ -629,12 +629,14 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .smart-nav button.active:hover { background: color-mix(in srgb, var(--white) 78%, transparent); color: var(--ink); }
   .smart-nav button:active { transform: scale(1.06); transition-duration: .1s; }
   /* 与底栏同处一个定位容器：left 50% 就是中列（占位方块）中心，
-     窗口尺寸或滚动条变化时不会与中列错位。 */
+     窗口尺寸或滚动条变化时不会与中列错位。底边与四个入口按钮的底边
+     对齐（栏底留 4px，和安全区一起换算），不再向上浮出一截。 */
   .new-button {
-    position: absolute; z-index: 48; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom));
+    position: absolute; z-index: 48; left: 50%; bottom: calc(4px + env(safe-area-inset-bottom));
     width: var(--mobile-new-button-size); height: var(--mobile-new-button-size);
     padding: 0; border-radius: 50%;
-    transform: translateX(-50%); justify-content: center;
+    /* 以底边为缩放轴心：按下 / 悬停放大时向上升，不会把底边推离入口按钮。 */
+    transform: translateX(-50%); transform-origin: 50% 100%; justify-content: center;
     box-shadow: 0 2px 6px rgba(22,25,22,.14), 0 10px 24px -6px rgba(22,25,22,.22);
   }
   .new-button:hover { transform: translateX(-50%) scale(1.04); background: #30362f; }
@@ -643,7 +645,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .new-button svg { width: 26px; height: 26px; }
   .create-menu {
     position: fixed; z-index: 60; top: auto; left: 14px; right: 14px;
-    bottom: calc(94px + env(safe-area-inset-bottom));
+    bottom: calc(82px + env(safe-area-inset-bottom));
     padding: 8px; border-radius: 18px; transform-origin: 50% 100%;
   }
   .folder-section, .sidebar-bottom { display: none; }
