@@ -2701,6 +2701,7 @@ function boardApplyCamera() {
   boardEls.viewport.style.setProperty('--board-grid-color', boardHexToRgba(gridColor, gridOpacity));
   if (boardEls.scaleLabel) boardEls.scaleLabel.textContent = `${Math.round(boardCam.scale * 100)}%`;
   boardSyncToolbar();
+  boardSyncMultiFrame();
 }
 
 function boardEnsureFrame() {
@@ -2860,6 +2861,7 @@ function boardSyncNodes() {
     }
   });
   boardSyncLinks();
+  boardSyncMultiFrame();
 }
 
 // —— 关联曲线：板上互相关联（linkedIds）的条目之间画一根跟随的贝塞尔曲线 ——
@@ -3173,6 +3175,9 @@ function renderBoardShell() {
     <div class="board-viewport" id="boardViewport">
       <div class="board-world" id="boardWorld"></div>
       <div class="board-marquee" id="boardMarquee" hidden></div>
+      <div class="board-multi-frame" id="boardMultiFrame" hidden aria-hidden="true">
+        ${BOARD_RESIZE_DIRS.map(dir => `<i class="board-handle is-resize" data-multi-handle="${dir}" data-dir="${dir}"></i>`).join('')}
+      </div>
       <div class="board-empty" id="boardEmpty" hidden><div><span><svg><use href="#i-board"/></svg></span><h3>${escapeHTML(t('boardEmptyTitle'))}</h3><p>${escapeHTML(t('boardEmptyHint'))}</p></div></div>
     </div>
     <div class="board-chrome" id="boardChrome">
@@ -3293,8 +3298,48 @@ function boardSetSelection(ids) {
     });
     boardRenderedCards.forEach((element, widgetId) => element.classList.toggle('selected', boardSelection.has(widgetId)));
   }
+  // 多选时调节点收敛到整体外接框（八向），单组件自身的调节点隐藏。
+  boardEls?.canvas.classList.toggle('has-multi', boardSelection.size > 1);
   boardRenderToolbar();
+  boardSyncMultiFrame();
   boardSyncLayerPop();
+}
+
+// 多选整体外接矩形（世界坐标）：框选 / 图层点选组合后的统一缩放基准。
+function boardMultiSelectionBounds() {
+  if (boardSelection.size < 2) return null;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const id of boardSelection) {
+    const widget = boardWidgetById(id);
+    if (!widget) continue;
+    const size = boardWidgetSize(widget);
+    const left = Math.min(widget.x, widget.x + widget.w);
+    const top = Math.min(widget.y, widget.y + widget.h);
+    minX = Math.min(minX, left);
+    minY = Math.min(minY, top);
+    maxX = Math.max(maxX, left + size.w);
+    maxY = Math.max(maxY, top + size.h);
+  }
+  if (!Number.isFinite(minX)) return null;
+  return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+}
+
+// 多选外接框：屏幕层（与框选矩形同级），调节点大小不随画布缩放；
+// 相机移动与组件拖动时由 boardApplyCamera / boardSyncNodes 顺带刷新。
+function boardSyncMultiFrame() {
+  const frame = $('#boardMultiFrame', boardEls?.canvas || document);
+  if (!frame) return;
+  const bounds = boardMultiSelectionBounds();
+  if (!bounds) { frame.hidden = true; return; }
+  const scale = boardCam.scale;
+  frame.hidden = false;
+  frame.style.left = `${bounds.x * scale + boardCam.x}px`;
+  frame.style.top = `${bounds.y * scale + boardCam.y}px`;
+  frame.style.width = `${bounds.w * scale}px`;
+  frame.style.height = `${bounds.h * scale}px`;
 }
 
 function boardWidgetById(id) {
@@ -5756,6 +5801,42 @@ function bindBoardScene() {
       boardGesture.erased = boardEraseAt(boardGesture.startX, boardGesture.startY);
       return;
     }
+    // 多选整体缩放：外接框上的八向调节点（按下即入栈，未移动松手弹出）。
+    const multiHandle = event.target.closest('[data-multi-handle]');
+    if (multiHandle && boardSelection.size > 1) {
+      const bounds = boardMultiSelectionBounds();
+      if (bounds) {
+        boardPushUndo();
+        const bases = [];
+        for (const id of boardSelection) {
+          const widget = boardWidgetById(id);
+          if (!widget) continue;
+          const size = boardWidgetSize(widget);
+          bases.push({
+            widget,
+            left0: Math.min(widget.x, widget.x + widget.w),
+            top0: Math.min(widget.y, widget.y + widget.h),
+            w0: size.w,
+            h0: size.h,
+            points: widget.kind === 'draw' ? [...(widget.points || [])] : null,
+            negativeW: widget.w < 0,
+            negativeH: widget.h < 0
+          });
+        }
+        boardGesture = {
+          mode: 'multi-resize',
+          dir: multiHandle.dataset.dir,
+          bounds,
+          originX: event.clientX,
+          originY: event.clientY,
+          bases,
+          moved: false
+        };
+        // 缩放期间锁定卡片虚拟化重建，防止内容刷新打断手势。
+        bases.forEach(base => $(`[data-widget-id="${CSS.escape(base.widget.id)}"]`, boardEls.world)?.classList.add('is-resizing'));
+      }
+      return;
+    }
     if (boardPendingMarker) {
       const rect = viewport.getBoundingClientRect();
       const startX = (event.clientX - rect.left - boardCam.x) / boardCam.scale;
@@ -5903,6 +5984,66 @@ function bindBoardScene() {
       boardScheduleSync();
       return;
     }
+    if (boardGesture?.mode === 'multi-resize') {
+      const gesture = boardGesture;
+      const dx = (event.clientX - gesture.originX) / boardCam.scale;
+      const dy = (event.clientY - gesture.originY) / boardCam.scale;
+      if (!gesture.moved && Math.hypot(event.clientX - gesture.originX, event.clientY - gesture.originY) > BOARD_PRESS_SLOP) gesture.moved = true;
+      let x1 = gesture.bounds.x;
+      let y1 = gesture.bounds.y;
+      let x2 = gesture.bounds.x + gesture.bounds.w;
+      let y2 = gesture.bounds.y + gesture.bounds.h;
+      if (gesture.dir.includes('w')) x1 += dx;
+      if (gesture.dir.includes('e')) x2 += dx;
+      if (gesture.dir.includes('n')) y1 += dy;
+      if (gesture.dir.includes('s')) y2 += dy;
+      // 缩放比例的下限：任何条目卡片都不被压破（按各卡最小尺寸取最紧约束）。
+      let scaleMinX = 0.08;
+      let scaleMinY = 0.08;
+      gesture.bases.forEach(base => {
+        if (base.widget.type === 'note' || base.widget.type === 'todo') {
+          scaleMinX = Math.max(scaleMinX, BOARD_CARD_MIN_W / base.w0);
+          scaleMinY = Math.max(scaleMinY, BOARD_CARD_MIN_H / base.h0);
+        }
+      });
+      let sx = Math.max((x2 - x1) / gesture.bounds.w, scaleMinX);
+      let sy = Math.max((y2 - y1) / gesture.bounds.h, scaleMinY);
+      x2 = x1 + gesture.bounds.w * sx;
+      y2 = y1 + gesture.bounds.h * sy;
+      gesture.bases.forEach(base => {
+        const widget = base.widget;
+        const nx = Math.round(x1 + (base.left0 - gesture.bounds.x) * sx);
+        const ny = Math.round(y1 + (base.top0 - gesture.bounds.y) * sy);
+        const nw = Math.max(1, Math.round(base.w0 * sx));
+        const nh = Math.max(1, Math.round(base.h0 * sy));
+        widget.x = base.negativeW ? nx + nw : nx;
+        widget.y = base.negativeH ? ny + nh : ny;
+        if (widget.type === 'text') {
+          // 文本高度由内容实测决定：只缩位置与宽度，松手后重新量高。
+          widget.w = nw;
+        } else {
+          widget.w = base.negativeW ? -nw : nw;
+          widget.h = base.negativeH ? -nh : nh;
+          if (base.points) widget.points = base.points.map((value, index) => Math.round(value * (index % 2 === 0 ? sx : sy)));
+        }
+        if (widget.type === 'note' || widget.type === 'todo') {
+          boardRefreshCardNode(widget);
+        } else {
+          boardRefreshStatic(widget);
+        }
+      });
+      // 外接框即时跟随（缩放中比例恒定，直接以手计算的新框定位）。
+      const frame = $('#boardMultiFrame', boardEls.canvas);
+      if (frame && !frame.hidden) {
+        const scale = boardCam.scale;
+        frame.style.left = `${x1 * scale + boardCam.x}px`;
+        frame.style.top = `${y1 * scale + boardCam.y}px`;
+        frame.style.width = `${(x2 - x1) * scale}px`;
+        frame.style.height = `${(y2 - y1) * scale}px`;
+      }
+      boardScheduleSync();
+      return;
+    }
     if (boardGesture?.mode === 'draw') {
       const rect = viewport.getBoundingClientRect();
       const x = (event.clientX - rect.left - boardCam.x) / boardCam.scale;
@@ -6046,6 +6187,28 @@ function bindBoardScene() {
         boardUndoStack.pop();
         boardSyncUndoButtons();
       }
+      return;
+    }
+    if (boardGesture.mode === 'multi-resize') {
+      const gesture = boardGesture;
+      boardGesture = null;
+      boardMotion.mode = 'idle';
+      gesture.bases.forEach(base => $(`[data-widget-id="${CSS.escape(base.widget.id)}"]`, boardEls.world)?.classList.remove('is-resizing'));
+      if (!gesture.moved) {
+        // 未实际缩放：撤销栈里这次空手势不留步。
+        boardUndoStack.pop();
+        boardSyncUndoButtons();
+        boardSyncMultiFrame();
+        return;
+      }
+      // 文本宽度变了：先重量高度，再按新包络重算外接框。
+      gesture.bases.forEach(base => { if (base.widget.type === 'text') boardMeasureText(base.widget); });
+      const board = boardLayoutCache.board;
+      touchBoard(board);
+      persist();
+      boardLayoutCache.bounds = boardBoundsOf(board.widgets.filter(widget => !widget.hidden));
+      boardSetSelection([...boardSelection]);
+      boardSyncToolbar();
       return;
     }
     if (boardGesture.mode === 'draw') {

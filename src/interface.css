@@ -2264,6 +2264,23 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-canvas.is-panning .board-viewport:active { cursor: grabbing; }
 .board-canvas.is-panning .board-node, .board-canvas.is-panning .board-widget { cursor: grab; }
 
+/* 多选整体外接框（屏幕层）：虚线框 + 八向调节点（四角与四边中点），
+   拖动任一点按方向整体等比缩放；框不随画布缩放，调节点大小恒定。 */
+.board-multi-frame { position: absolute; z-index: 7; pointer-events: none; border: 1.5px dashed color-mix(in srgb, var(--sage) 58%, transparent); border-radius: 8px; }
+.board-multi-frame[hidden] { display: none; }
+.board-multi-frame .board-handle { pointer-events: auto; opacity: 1; margin: -6.5px 0 0 -6.5px; width: 13px; height: 13px; border-radius: 4px; transition: transform .15s var(--ease-out); cursor: grab; }
+.board-multi-frame .board-handle:hover { transform: scale(1.2); }
+.board-multi-frame .board-handle[data-dir="nw"] { left: 0; top: 0; cursor: nwse-resize; }
+.board-multi-frame .board-handle[data-dir="n"] { left: 50%; top: 0; cursor: ns-resize; }
+.board-multi-frame .board-handle[data-dir="ne"] { left: 100%; top: 0; cursor: nesw-resize; }
+.board-multi-frame .board-handle[data-dir="e"] { left: 100%; top: 50%; cursor: ew-resize; }
+.board-multi-frame .board-handle[data-dir="se"] { left: 100%; top: 100%; cursor: nwse-resize; }
+.board-multi-frame .board-handle[data-dir="s"] { left: 50%; top: 100%; cursor: ns-resize; }
+.board-multi-frame .board-handle[data-dir="sw"] { left: 0; top: 100%; cursor: nesw-resize; }
+.board-multi-frame .board-handle[data-dir="w"] { left: 0; top: 50%; cursor: ew-resize; }
+/* 多选时单组件自身的调节点让位（调节点只在外接框上），选中描边保留。 */
+.board-canvas.has-multi .board-widget.selected .board-handle, .board-canvas.has-multi .board-node.selected .board-handle { opacity: 0 !important; pointer-events: none !important; transition-delay: 0s; }
+
 /* 工具条新增控件：字号数字输入、对齐三态图标、武装态删除。 */
 .board-tw-size-input { width: 40px; height: 28px; padding: 0 3px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); text-align: center; font-variant-numeric: tabular-nums; }
 .board-tw-size-input:focus { outline: none; border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); background: var(--white); }
