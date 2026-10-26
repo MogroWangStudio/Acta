@@ -4323,6 +4323,10 @@
     // 计划板的画布手势占满中栏：竖直拖动是平移画布，不能再套一层列表边缘弹性，
     // 否则画布会被整体上下拖动（看起来像页面在滑）。编辑器与设置页不在此列。
     if (document.body.classList.contains('board-view') && surface.classList.contains('item-list')) return;
+    // 笔记沉浸模式：整窗是固定编辑器，只有正文区（.note-body）自己滚动。
+    // 这里再套整页边缘弹性会把顶栏与底部格式工具条一起拖动——看起来就像
+    // 整个页面在滑。让正文区的原生滚动独自负责。
+    if (surface.classList.contains('editor-pane') && document.body.classList.contains('note-focus-mode')) return;
     const target = mobileEdgeTargetFor(surface);
     if (!target) return;
     clearMobileEdgeTarget(target);
