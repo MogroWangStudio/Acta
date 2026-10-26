@@ -97,12 +97,13 @@
     boardImportAdded:'已在板上', boardImportEmpty:'沒有符合的待辦或筆記', boardImportApply:'套用', boardImportChange:'新增 {0} · 移除 {1}',
     boardTextPlaceholder:'雙擊編輯文字…', boardFontSize:'字號', boardFontLabel:'字型', boardFontApp:'跟隨介面', boardFontSerif:'襯線', boardFontRounded:'圓體', boardFontMono:'等寬',
     boardAlignLeft:'靠左對齊', boardAlignCenter:'置中對齊', boardAlignRight:'靠右對齊', boardRemoveWidget:'從板上移除',
-    boardMarkerArrow:'箭頭', boardMarkerRect:'方框', boardMarkerEllipse:'橢圓', boardMarkerLine:'直線', boardMarkerDraw:'畫筆', boardMarkerColor:'標註顏色', boardMarkerDone:'完成標註',
+    boardMarkerArrow:'箭頭', boardMarkerRect:'方框', boardMarkerEllipse:'橢圓', boardMarkerLine:'直線', boardMarkerDraw:'筆繪', boardMarkerColor:'標註顏色', boardMarkerDone:'完成標註',
+    boardMarkerStroke:'線條粗細', boardMarkerFill:'填充顏色', boardFillOpacity:'填充不透明度', boardStrokeOpacity:'線條不透明度', boardArrowHead:'前端箭頭', boardArrowTail:'末端箭頭', boardArrowNone:'無', boardArrowArrow:'箭頭', boardArrowDot:'圓點', boardArrowBar:'短槓', boardMarkerStyle:'標註樣式',
     boardBg:'背景', boardBgNone:'無背景', boardBgOpacity:'不透明度', boardRadius:'圓角', boardPadding:'內邊距', boardCustomFont:'自訂字型', boardCustomFontHint:'輸入本機已安裝的字型名稱，如 Georgia',
     boardDeleteArm:'再點一次刪除', boardUndo:'復原', boardRedo:'重做', boardMarqueeClear:'取消選擇', boardMarqueeDelete:'刪除所選', boardSelectedCount:'已選 {0} 項',
     boardTextColor:'文字顏色', boardContentSettings:'顯示內容', boardShowPill:'類型標籤', boardShowPriority:'優先順序', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部資訊', boardWidgetOpacity:'不透明度',
     boardPersonalize:'個性化計劃板', boardBgPattern:'背景圖案', boardPatternDots:'點陣', boardPatternGrid:'網格', boardPatternNone:'無', boardBoardBgColor:'背景顏色', boardBgColorTheme:'跟隨主題', boardSnapGrid:'吸附到網格', boardGridSize:'圖案網格大小',
-    boardCustomColor:'自訂顏色', boardBrushPen:'鋼筆', boardBrushHighlighter:'螢光筆', boardPenStroke:'粗細', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'畫筆模式：可連續多筆，完成或按 Esc 退出',
+    boardCustomColor:'自訂顏色', boardBrushPen:'鋼筆', boardBrushHighlighter:'螢光筆', boardPenStroke:'粗細', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'筆尖', boardCapRound:'圓頭', boardCapFlat:'平頭', boardCapSquare:'方頭', boardBrushEraser:'橡皮', boardPenMode:'筆繪模式：可連續繪製，橡皮擦在面板中切換，完成或按 Esc 退出', boardLayers:'圖層', boardLayerShow:'顯示圖層', boardLayerHide:'隱藏圖層', boardLayerGroup:'組', boardGroup:'組合所選', boardUngroup:'取消組合',
     boardEmptyTitle:'這塊板還是空的', boardEmptyHint:'用下方工具新增文字與標註，或匯入想展示在這塊板上的待辦與筆記，自由擺放成你的計劃板。'
   };
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });

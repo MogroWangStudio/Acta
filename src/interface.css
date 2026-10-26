@@ -2320,6 +2320,27 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-swatch.is-none { background: var(--paper); border: 1.5px dashed color-mix(in srgb, var(--faint) 60%, transparent); position: relative; }
 .board-swatch.is-none::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: linear-gradient(to top right, transparent 44%, var(--danger-accent, #b96051) 44%, var(--danger-accent, #b96051) 56%, transparent 56%); }
 
+/* —— 图层面板：与个性化面板同位（画布右上），行式列表按 z 序自顶向下 —— */
+.board-layer-pop { max-width: 280px; }
+.board-layer-list { display: grid; gap: 3px; overflow: hidden auto; scrollbar-width: thin; max-height: min(52vh, 420px); padding-right: 2px; }
+.board-layer-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 9px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background .14s ease, border-color .14s ease; }
+.board-layer-row:hover { background: color-mix(in srgb, var(--white) 62%, transparent); }
+.board-layer-row.is-selected { border-color: color-mix(in srgb, var(--sage) 36%, var(--line)); background: color-mix(in srgb, var(--sage-2) 32%, transparent); }
+.board-layer-row > svg { flex: 0 0 auto; width: 14px; height: 14px; color: var(--faint); }
+.board-layer-row span { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(10px * var(--acta-font-scale)); font-weight: 600; }
+.board-layer-row.is-group span { font-weight: 700; }
+.board-layer-row.is-child { padding-left: 26px; }
+.board-layer-row.is-child span { font-weight: 500; color: var(--muted); }
+.board-layer-eye { flex: 0 0 auto; width: 22px; height: 22px; margin-right: -3px; border-radius: 7px; display: grid; place-items: center; color: var(--muted); font-style: normal; transition: color .14s ease, background .14s ease; }
+.board-layer-eye:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 70%, transparent); }
+.board-layer-eye svg { width: 13px; height: 13px; }
+.board-layer-eye.is-off { color: var(--faint); opacity: .55; }
+.board-pop-hint { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
+/* 标注样式面板 / 笔绘面板里的分段控件收窄一档，贴合工具条尺度。 */
+.board-style-pop .board-import-seg button, .board-pen-bar .board-import-seg button { height: 22px; padding: 0 8px; font-size: calc(8px * var(--acta-font-scale)); }
+/* 笔绘面板：颜色色板在窄屏 flex 挤压下保持正圆（此前宽度被压缩成椭圆）。 */
+.board-pen-bar .board-swatch { flex: 0 0 auto; }
+
 /* 个性化触发钮：挂在视图标题行最右（与板选择器同一行），与工具条同一材质。 */
 .board-style-trigger {
   margin-left: auto; margin-right: 8px; flex: 0 0 auto; width: 34px; height: 34px;
@@ -2939,8 +2960,9 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 
 /* —— 独立局域网同步页 ——
    数据同步设置页只保留入口按钮；设备身份、发现开关、雷达与自动化都在
-   这个独立页面里完成。设置页头部与列表都固定，只有内容区滚动。 */
-.lan-page-dialog { width: min(620px, calc(100vw - 28px)); }
+   这个独立页面里完成。设置页头部与列表都固定，只有内容区滚动。
+   安卓客户端（acta-native-mobile）无论视口宽窄一律全屏显示。 */
+.lan-page-dialog { width: min(880px, calc(100vw - 28px)); }
 .lan-page-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; }
 .lan-page-head .lan-page-mark { background: var(--sage-2); color: var(--sage); }
 .lan-page-head .lan-sync-state { align-self: center; }
@@ -2958,6 +2980,12 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   /* 手机端标题区让位给关闭按钮与两行副标题：状态徽标改由页面底部状态行表达。 */
   .lan-page-head .lan-sync-state { display: none; }
 }
+/* 安卓客户端（Capacitor）：与窄视口同款全屏页，平板与横屏也不例外。 */
+.acta-native-mobile .lan-page-dialog { inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+.acta-native-mobile .lan-page-dialog::backdrop { background: rgba(28,32,27,.18); backdrop-filter: none; }
+.acta-native-mobile .lan-page-head { min-height: calc(58px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+.acta-native-mobile .lan-page-head .lan-sync-state { display: none; }
+.acta-native-mobile .lan-page-body { padding: 12px 12px calc(20px + env(safe-area-inset-bottom)); }
 
 /* —— 设备雷达（位于独立的局域网同步页）——
    本机居中气泡，开启发现后播放圆形扩散环；扫描到的设备以气泡渐入

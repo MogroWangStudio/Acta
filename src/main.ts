@@ -1,6 +1,13 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 
+// 移动客户端标记：安卓（Capacitor）下弹窗类页面按全屏页面呈现，
+// 不依赖视口宽度判断（平板 / 横屏同样全屏）。
+type CapacitorLike = { getPlatform?: () => string };
+if ((window as unknown as { Capacitor?: CapacitorLike }).Capacitor?.getPlatform?.() === 'android') {
+  document.documentElement.classList.add('acta-native-mobile');
+}
+
 // 更新向导模式：Rust 侧用 initialization_script 注入的标记在此分岔——
 // 向导实例只渲染安装进度小窗，不挂载完整应用、不加载任何引导模块。
 if ((window as unknown as Record<string, unknown>).__ACTA_UPDATER__) {

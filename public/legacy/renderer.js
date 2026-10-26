@@ -66,12 +66,12 @@ const dictionaries = {
     boardImportAdded:'已在板上', boardImportEmpty:'没有匹配的待办或笔记', boardImportApply:'应用', boardImportChange:'添加 {0} · 移除 {1}',
     boardTextPlaceholder:'双击编辑文本…', boardFontSize:'字号', boardFontLabel:'字体', boardFontApp:'跟随界面', boardFontSerif:'衬线', boardFontRounded:'圆体', boardFontMono:'等宽',
     boardAlignLeft:'左对齐', boardAlignCenter:'居中', boardAlignRight:'右对齐', boardRemoveWidget:'从板上移除',
-    boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'画笔', boardMarkerEraser:'橡皮擦', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注',
+    boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'笔绘', boardMarkerEraser:'橡皮擦', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注', boardMarkerStroke:'线条粗细', boardMarkerFill:'填充颜色', boardFillOpacity:'填充不透明度', boardStrokeOpacity:'线条不透明度', boardArrowHead:'前端箭头', boardArrowTail:'末端箭头', boardArrowNone:'无', boardArrowArrow:'箭头', boardArrowDot:'圆点', boardArrowBar:'短杠', boardMarkerStyle:'标注样式',
     boardBg:'背景', boardBgNone:'无背景', boardBgOpacity:'不透明度', boardRadius:'圆角', boardPadding:'内边距', boardCustomFont:'自定义字体', boardCustomFontHint:'输入本机已安装的字体名，如 Georgia',
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardShowBody:'完整内容', boardShowDoneOnly:'仅显示已完成', boardBodyLargeConfirm:'这篇笔记超过一万字符，完整显示可能影响流畅度。仍要开启完整内容显示吗？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardPatternLines:'横线', boardPatternCross:'交叉点', boardGridColor:'网格颜色', boardGridOpacity:'网格不透明度', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
-    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenMode:'画笔模式：可连续多笔，完成或按 Esc 退出',
+    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合',
     boardExportOptionsHint:'选择分辨率与图片格式；JPG 可调节压缩程度', boardExportScale:'分辨率', boardExportFormat:'图片格式', boardExportQuality:'JPG 质量', boardExportConfirm:'导出', boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出', boardImportPlan:'导入计划板文件 (.actaplan)', boardImported:'计划板已导入', boardImportInvalid:'这不是有效的 Acta 计划板文件', boardExportRegionTitle:'选择导出区域', boardExportRegionHint:'拖动边框或角点调整范围，导出框内内容', boardExportRegionAll:'全部元素', boardExportRegionView:'当前视图', boardExportRegionNext:'下一步',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
@@ -128,12 +128,12 @@ const dictionaries = {
     boardImportAdded:'On the board', boardImportEmpty:'No matching tasks or notes', boardImportApply:'Apply', boardImportChange:'Add {0} · remove {1}',
     boardTextPlaceholder:'Double-click to edit…', boardFontSize:'Font size', boardFontLabel:'Font', boardFontApp:'Follow interface', boardFontSerif:'Serif', boardFontRounded:'Rounded', boardFontMono:'Monospace',
     boardAlignLeft:'Align left', boardAlignCenter:'Align center', boardAlignRight:'Align right', boardRemoveWidget:'Remove from board',
-    boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Pen', boardMarkerEraser:'Eraser', boardMarkerColor:'Marker color', boardMarkerDone:'Done',
+    boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Freehand', boardMarkerEraser:'Eraser', boardMarkerColor:'Marker color', boardMarkerDone:'Done', boardMarkerStroke:'Stroke width', boardMarkerFill:'Fill color', boardFillOpacity:'Fill opacity', boardStrokeOpacity:'Stroke opacity', boardArrowHead:'End arrowhead', boardArrowTail:'Start arrowhead', boardArrowNone:'None', boardArrowArrow:'Arrow', boardArrowDot:'Dot', boardArrowBar:'Bar', boardMarkerStyle:'Marker style',
     boardBg:'Background', boardBgNone:'None', boardBgOpacity:'Opacity', boardRadius:'Corner radius', boardPadding:'Padding', boardCustomFont:'Custom font', boardCustomFontHint:'Type an installed font family, e.g. Georgia',
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardShowBody:'Full content', boardShowDoneOnly:'Completed only', boardBodyLargeConfirm:'This note exceeds 10,000 characters — showing it in full may affect smoothness. Enable full content anyway?', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardPatternLines:'Ruled', boardPatternCross:'Crosses', boardGridColor:'Grid color', boardGridOpacity:'Grid opacity', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
-    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenMode:'Pen mode: draw as many strokes as you like; press Done or Esc to exit',
+    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup',
     boardExportOptionsHint:'Pick resolution and image format; JPG compression is adjustable', boardExportScale:'Resolution', boardExportFormat:'Image format', boardExportQuality:'JPG quality', boardExportConfirm:'Export', boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting', boardImportPlan:'Import plan board file (.actaplan)', boardImported:'Plan board imported', boardImportInvalid:'This is not a valid Acta plan board file', boardExportRegionTitle:'Choose export area', boardExportRegionHint:'Drag the frame or handles to adjust; the framed area is exported', boardExportRegionAll:'All elements', boardExportRegionView:'Current view', boardExportRegionNext:'Next',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   },
@@ -190,12 +190,12 @@ const dictionaries = {
     boardImportAdded:'ボード上', boardImportEmpty:'一致するタスクやノートがありません', boardImportApply:'適用', boardImportChange:'追加 {0} · 削除 {1}',
     boardTextPlaceholder:'ダブルクリックで編集…', boardFontSize:'文字サイズ', boardFontLabel:'フォント', boardFontApp:'画面に合わせる', boardFontSerif:'明朝体', boardFontRounded:'丸ゴシック', boardFontMono:'等幅',
     boardAlignLeft:'左揃え', boardAlignCenter:'中央揃え', boardAlignRight:'右揃え', boardRemoveWidget:'ボードから削除',
-    boardMarkerArrow:'矢印', boardMarkerRect:'矩形', boardMarkerEllipse:'楕円', boardMarkerLine:'直線', boardMarkerDraw:'ペン', boardMarkerEraser:'消しゴム', boardMarkerColor:'マーカーの色', boardMarkerDone:'完了',
+    boardMarkerArrow:'矢印', boardMarkerRect:'矩形', boardMarkerEllipse:'楕円', boardMarkerLine:'直線', boardMarkerDraw:'フリーハンド', boardMarkerEraser:'消しゴム', boardMarkerColor:'マーカーの色', boardMarkerDone:'完了', boardMarkerStroke:'線の太さ', boardMarkerFill:'塗りつぶしの色', boardFillOpacity:'塗りの不透明度', boardStrokeOpacity:'線の不透明度', boardArrowHead:'終点の矢印', boardArrowTail:'始点の矢印', boardArrowNone:'なし', boardArrowArrow:'矢印', boardArrowDot:'点', boardArrowBar:'棒', boardMarkerStyle:'マーカー設定',
     boardBg:'背景', boardBgNone:'背景なし', boardBgOpacity:'不透明度', boardRadius:'角丸', boardPadding:'内側余白', boardCustomFont:'カスタムフォント', boardCustomFontHint:'端末にインストール済みのフォント名を入力（例: Georgia）',
     boardDeleteArm:'もう一度タップで削除', boardUndo:'元に戻す', boardRedo:'やり直す', boardMarqueeClear:'選択を解除', boardMarqueeDelete:'選択中を削除', boardSelectedCount:'{0} 件を選択中',
     boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardShowBody:'全文表示', boardShowDoneOnly:'完了のみ表示', boardBodyLargeConfirm:'このノートは1万文字を超えています。全文表示は動作に影響する可能性があります。それでも有効にしますか？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardPatternLines:'罫線', boardPatternCross:'交差ポイント', boardGridColor:'グリッドの色', boardGridOpacity:'グリッドの不透明度', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
-    boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenMode:'ペンモード：何筆でも描けます。完了または Esc で終了',
+    boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenCap:'ペン先', boardCapRound:'丸', boardCapFlat:'平', boardCapSquare:'角', boardBrushEraser:'消しゴム', boardPenMode:'フリーハンドモード：何筆でも描けます。消しゴムはパネルで切り替え、完了または Esc で終了', boardLayers:'レイヤー', boardLayerShow:'レイヤーを表示', boardLayerHide:'レイヤーを非表示', boardLayerGroup:'グループ', boardGroup:'選択をグループ化', boardUngroup:'グループ解除',
     boardExportOptionsHint:'解像度と画像形式を選択。JPG は圧縮率を調整できます', boardExportScale:'解像度', boardExportFormat:'画像形式', boardExportQuality:'JPG 画質', boardExportConfirm:'書き出す', boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください', boardImportPlan:'プランボードファイルを読み込む(.actaplan)', boardImported:'プランボードを読み込みました', boardImportInvalid:'有効な Acta プランボードファイルではありません', boardExportRegionTitle:'書き出し範囲を選択', boardExportRegionHint:'枠やハンドルをドラッグして調整。枠内が書き出されます', boardExportRegionAll:'すべての要素', boardExportRegionView:'現在のビュー', boardExportRegionNext:'次へ',
     boardEmptyTitle:'このボードは空です', boardEmptyHint:'下のツールでテキストとマーカーを追加したり、タスクとノートを読み込んで、自由にプランボードを組み立てましょう。'
   },
@@ -252,12 +252,12 @@ const dictionaries = {
     boardImportAdded:'보드에 있음', boardImportEmpty:'일치하는 할 일이나 노트가 없어요', boardImportApply:'적용', boardImportChange:'추가 {0} · 삭제 {1}',
     boardTextPlaceholder:'두 번 눌러 편집…', boardFontSize:'글자 크기', boardFontLabel:'글꼴', boardFontApp:'인터페이스 따르기', boardFontSerif:'명조', boardFontRounded:'둥근 글꼴', boardFontMono:'고정폭',
     boardAlignLeft:'왼쪽 정렬', boardAlignCenter:'가운데 정렬', boardAlignRight:'오른쪽 정렬', boardRemoveWidget:'보드에서 제거',
-    boardMarkerArrow:'화살표', boardMarkerRect:'사각형', boardMarkerEllipse:'타원', boardMarkerLine:'직선', boardMarkerDraw:'펜', boardMarkerEraser:'지우개', boardMarkerColor:'마커 색', boardMarkerDone:'완료',
+    boardMarkerArrow:'화살표', boardMarkerRect:'사각형', boardMarkerEllipse:'타원', boardMarkerLine:'직선', boardMarkerDraw:'자유 곡선', boardMarkerEraser:'지우개', boardMarkerColor:'마커 색', boardMarkerDone:'완료', boardMarkerStroke:'선 굵기', boardMarkerFill:'채우기 색', boardFillOpacity:'채우기 불투명도', boardStrokeOpacity:'선 불투명도', boardArrowHead:'끝 화살촉', boardArrowTail:'시작 화살촉', boardArrowNone:'없음', boardArrowArrow:'화살표', boardArrowDot:'점', boardArrowBar:'막대', boardMarkerStyle:'마커 스타일',
     boardBg:'배경', boardBgNone:'배경 없음', boardBgOpacity:'불투명도', boardRadius:'모서리 둥글기', boardPadding:'안쪽 여백', boardCustomFont:'사용자 지정 글꼴', boardCustomFontHint:'기기에 설치된 글꼴 이름을 입력하세요(예: Georgia)',
     boardDeleteArm:'한 번 더 누르면 삭제', boardUndo:'실행 취소', boardRedo:'다시 실행', boardMarqueeClear:'선택 해제', boardMarqueeDelete:'선택 항목 삭제', boardSelectedCount:'{0}개 선택됨',
     boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardShowBody:'전체 내용', boardShowDoneOnly:'완료된 항목만', boardBodyLargeConfirm:'이 노트는 1만 자를 넘습니다. 전체 표시가 성능에 영향을 줄 수 있어요. 그래도 켜시겠어요?', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardPatternLines:'줄선', boardPatternCross:'교차점', boardGridColor:'격자 색', boardGridOpacity:'격자 불투명도', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
-    boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenMode:'펜 모드: 여러 번 그릴 수 있어요. 완료 또는 Esc로 종료',
+    boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenCap:'펜촉', boardCapRound:'둥근 촉', boardCapFlat:'평평한 촉', boardCapSquare:'각진 촉', boardBrushEraser:'지우개', boardPenMode:'자유 곡선 모드: 여러 번 그릴 수 있어요. 지우개는 패널에서 전환하고 완료 또는 Esc로 종료', boardLayers:'레이어', boardLayerShow:'레이어 보이기', boardLayerHide:'레이어 숨기기', boardLayerGroup:'그룹', boardGroup:'선택 항목 그룹화', boardUngroup:'그룹 해제',
     boardExportOptionsHint:'해상도와 이미지 형식을 선택하세요. JPG는 압축 수준을 조절할 수 있어요', boardExportScale:'해상도', boardExportFormat:'이미지 형식', boardExportQuality:'JPG 품질', boardExportConfirm:'내보내기', boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요', boardImportPlan:'플랜 보드 파일 가져오기(.actaplan)', boardImported:'플랜 보드를 가져왔어요', boardImportInvalid:'유효한 Acta 플랜 보드 파일이 아니에요', boardExportRegionTitle:'내보낼 영역 선택', boardExportRegionHint:'테두리나 핸들을 드래그해 조정하면 프레임 안이 내보내져요', boardExportRegionAll:'모든 요소', boardExportRegionView:'현재 보기', boardExportRegionNext:'다음',
     boardEmptyTitle:'이 보드는 비어 있어요', boardEmptyHint:'아래 도구로 텍스트와 마커를 추가하거나 할 일과 노트를 가져와 자유롭게 플랜 보드를 꾸며 보세요.'
   },
@@ -314,12 +314,12 @@ const dictionaries = {
     boardImportAdded:'Sur le tableau', boardImportEmpty:'Aucune tâche ou note correspondante', boardImportApply:'Appliquer', boardImportChange:'Ajouter {0} · retirer {1}',
     boardTextPlaceholder:'Double-cliquez pour modifier…', boardFontSize:'Taille de police', boardFontLabel:'Police', boardFontApp:'Suivre l’interface', boardFontSerif:'Avec empattement', boardFontRounded:'Arrondie', boardFontMono:'Chasse fixe',
     boardAlignLeft:'Aligner à gauche', boardAlignCenter:'Centrer', boardAlignRight:'Aligner à droite', boardRemoveWidget:'Retirer du tableau',
-    boardMarkerArrow:'Flèche', boardMarkerRect:'Rectangle', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Ligne', boardMarkerDraw:'Crayon', boardMarkerEraser:'Gomme', boardMarkerColor:'Couleur d’annotation', boardMarkerDone:'Terminé',
+    boardMarkerArrow:'Flèche', boardMarkerRect:'Rectangle', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Ligne', boardMarkerDraw:'Dessin', boardMarkerEraser:'Gomme', boardMarkerColor:'Couleur d’annotation', boardMarkerDone:'Terminé', boardMarkerStroke:'Épaisseur du trait', boardMarkerFill:'Couleur de remplissage', boardFillOpacity:'Opacité du remplissage', boardStrokeOpacity:'Opacité du trait', boardArrowHead:'Pointe (fin)', boardArrowTail:'Pointe (début)', boardArrowNone:'Aucune', boardArrowArrow:'Flèche', boardArrowDot:'Point', boardArrowBar:'Barre', boardMarkerStyle:'Style du marquage',
     boardBg:'Arrière-plan', boardBgNone:'Aucun fond', boardBgOpacity:'Opacité', boardRadius:'Arrondi', boardPadding:'Marge interne', boardCustomFont:'Police personnalisée', boardCustomFontHint:'Saisissez une police installée, ex. Georgia',
     boardDeleteArm:'Touchez encore pour supprimer', boardUndo:'Annuler', boardRedo:'Rétablir', boardMarqueeClear:'Effacer la sélection', boardMarqueeDelete:'Supprimer la sélection', boardSelectedCount:'{0} sélectionnés',
     boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardShowBody:'Contenu complet', boardShowDoneOnly:'Terminées uniquement', boardBodyLargeConfirm:'Cette note dépasse 10 000 caractères — l’affichage complet peut nuire à la fluidité. Activer quand même ?', boardWidgetOpacity:'Opacité',
     boardPersonalize:'Personnaliser le tableau', boardBgPattern:'Motif de fond', boardPatternDots:'Points', boardPatternGrid:'Grille', boardPatternNone:'Aucun', boardPatternLines:'Lignes', boardPatternCross:'Croix', boardGridColor:'Couleur du quadrillage', boardGridOpacity:'Opacité du quadrillage', boardBoardBgColor:'Couleur de fond', boardBgColorTheme:'Suivre le thème', boardSnapGrid:'Aimanter à la grille', boardGridSize:'Taille de la grille',
-    boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenMode:'Mode crayon : tracez autant de traits que voulu ; terminez ou Échap pour sortir',
+    boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenCap:'Pointe', boardCapRound:'Ronde', boardCapFlat:'Plate', boardCapSquare:'Carrée', boardBrushEraser:'Gomme', boardPenMode:'Mode dessin : tracez autant de traits que voulu ; la gomme se trouve dans le panneau ; terminez ou Échap pour sortir', boardLayers:'Calques', boardLayerShow:'Afficher le calque', boardLayerHide:'Masquer le calque', boardLayerGroup:'Groupe', boardGroup:'Grouper la sélection', boardUngroup:'Dissocier',
     boardExportOptionsHint:'Choisissez la résolution et le format ; la compression JPG est réglable', boardExportScale:'Résolution', boardExportFormat:'Format d’image', boardExportQuality:'Qualité JPG', boardExportConfirm:'Exporter', boardExportPlan:'Exporter le fichier du tableau (.actaplan)', boardExportImage:'Exporter en image', boardExportPdf:'Exporter en PDF', boardExportDone:'Tableau exporté', boardExportFailed:'Échec de l’export', boardExportEmpty:'Ce tableau est vide — ajoutez du contenu avant d’exporter', boardImportPlan:'Importer le fichier du tableau (.actaplan)', boardImported:'Tableau importé', boardImportInvalid:'Ce fichier n’est pas un tableau Acta valide', boardExportRegionTitle:'Choisir la zone à exporter', boardExportRegionHint:'Faites glisser le cadre ou les poignées ; la zone encadrée est exportée', boardExportRegionAll:'Tous les éléments', boardExportRegionView:'Vue actuelle', boardExportRegionNext:'Suivant',
     boardEmptyTitle:'Ce tableau est vide', boardEmptyHint:'Ajoutez du texte et des annotations avec la barre d’outils, ou importez tâches et notes pour composer librement votre tableau.'
   },
@@ -376,12 +376,12 @@ const dictionaries = {
     boardImportAdded:'Auf dem Board', boardImportEmpty:'Keine passenden Aufgaben oder Notizen', boardImportApply:'Anwenden', boardImportChange:'Hinzufügen {0} · Entfernen {1}',
     boardTextPlaceholder:'Doppelklicken zum Bearbeiten…', boardFontSize:'Schriftgröße', boardFontLabel:'Schrift', boardFontApp:'Wie Oberfläche', boardFontSerif:'Serif', boardFontRounded:'Gerundet', boardFontMono:'Monospace',
     boardAlignLeft:'Linksbündig', boardAlignCenter:'Zentriert', boardAlignRight:'Rechtsbündig', boardRemoveWidget:'Vom Board entfernen',
-    boardMarkerArrow:'Pfeil', boardMarkerRect:'Kasten', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Linie', boardMarkerDraw:'Stift', boardMarkerEraser:'Radierer', boardMarkerColor:'Markerfarbe', boardMarkerDone:'Fertig',
+    boardMarkerArrow:'Pfeil', boardMarkerRect:'Kasten', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Linie', boardMarkerDraw:'Zeichnen', boardMarkerEraser:'Radierer', boardMarkerColor:'Markerfarbe', boardMarkerDone:'Fertig', boardMarkerStroke:'Linienbreite', boardMarkerFill:'Füllfarbe', boardFillOpacity:'Füll-Deckkraft', boardStrokeOpacity:'Linien-Deckkraft', boardArrowHead:'Spitze (Ende)', boardArrowTail:'Spitze (Anfang)', boardArrowNone:'Keine', boardArrowArrow:'Pfeil', boardArrowDot:'Punkt', boardArrowBar:'Strich', boardMarkerStyle:'Markierungsstil',
     boardBg:'Hintergrund', boardBgNone:'Kein Hintergrund', boardBgOpacity:'Deckkraft', boardRadius:'Eckenradius', boardPadding:'Innenabstand', boardCustomFont:'Eigene Schrift', boardCustomFontHint:'Name einer installierten Schrift, z. B. Georgia',
     boardDeleteArm:'Nochmal tippen zum Löschen', boardUndo:'Widerrufen', boardRedo:'Wiederholen', boardMarqueeClear:'Auswahl aufheben', boardMarqueeDelete:'Auswahl löschen', boardSelectedCount:'{0} ausgewählt',
     boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardShowBody:'Vollständiger Inhalt', boardShowDoneOnly:'Nur erledigte', boardBodyLargeConfirm:'Diese Notiz überschreitet 10.000 Zeichen — die vollständige Anzeige kann die Flüssigkeit beeinträchtigen. Trotzdem aktivieren?', boardWidgetOpacity:'Deckkraft',
     boardPersonalize:'Board gestalten', boardBgPattern:'Hintergrundmuster', boardPatternDots:'Punkte', boardPatternGrid:'Gitter', boardPatternNone:'Keine', boardPatternLines:'Linien', boardPatternCross:'Kreuze', boardGridColor:'Rasterfarbe', boardGridOpacity:'Rasterdeckkraft', boardBoardBgColor:'Hintergrundfarbe', boardBgColorTheme:'Wie Thema', boardSnapGrid:'Am Raster ausrichten', boardGridSize:'Rastergröße',
-    boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenMode:'Stiftmodus: so viele Striche wie du willst; mit Fertig oder Esc beenden',
+    boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenCap:'Spitze', boardCapRound:'Rund', boardCapFlat:'Flach', boardCapSquare:'Quadratisch', boardBrushEraser:'Radierer', boardPenMode:'Zeichenmodus: so viele Striche wie du willst; der Radierer ist im Panel; mit Fertig oder Esc beenden', boardLayers:'Ebenen', boardLayerShow:'Ebene einblenden', boardLayerHide:'Ebene ausblenden', boardLayerGroup:'Gruppe', boardGroup:'Auswahl gruppieren', boardUngroup:'Gruppierung aufheben',
     boardExportOptionsHint:'Auflösung und Bildformat wählen; JPG-Komprimierung ist einstellbar', boardExportScale:'Auflösung', boardExportFormat:'Bildformat', boardExportQuality:'JPG-Qualität', boardExportConfirm:'Exportieren', boardExportPlan:'Planboard-Datei exportieren (.actaplan)', boardExportImage:'Als Bild exportieren', boardExportPdf:'Als PDF exportieren', boardExportDone:'Planboard exportiert', boardExportFailed:'Export fehlgeschlagen', boardExportEmpty:'Dieses Board ist leer — füge zuerst Inhalte hinzu', boardImportPlan:'Planboard-Datei importieren (.actaplan)', boardImported:'Planboard importiert', boardImportInvalid:'Dies ist keine gültige Acta-Planboard-Datei', boardExportRegionTitle:'Exportbereich wählen', boardExportRegionHint:'Rahmen oder Griffe ziehen, um den Bereich anzupassen; der Rahmeninhalt wird exportiert', boardExportRegionAll:'Alle Elemente', boardExportRegionView:'Aktuelle Ansicht', boardExportRegionNext:'Weiter',
     boardEmptyTitle:'Dieses Board ist leer', boardEmptyHint:'Füge über die Leiste unten Text und Marker hinzu oder importiere Aufgaben und Notizen und gestalte dein Planboard frei.'
   },
@@ -438,12 +438,12 @@ const dictionaries = {
     boardImportAdded:'En el tablero', boardImportEmpty:'Sin tareas o notas coincidentes', boardImportApply:'Aplicar', boardImportChange:'Añadir {0} · quitar {1}',
     boardTextPlaceholder:'Doble clic para editar…', boardFontSize:'Tamaño de letra', boardFontLabel:'Fuente', boardFontApp:'Como la interfaz', boardFontSerif:'Con serifa', boardFontRounded:'Redondeada', boardFontMono:'Monoespaciada',
     boardAlignLeft:'Alinear a la izquierda', boardAlignCenter:'Centrar', boardAlignRight:'Alinear a la derecha', boardRemoveWidget:'Quitar del tablero',
-    boardMarkerArrow:'Flecha', boardMarkerRect:'Caja', boardMarkerEllipse:'Elipse', boardMarkerLine:'Línea', boardMarkerDraw:'Lápiz', boardMarkerEraser:'Borrador', boardMarkerColor:'Color de anotación', boardMarkerDone:'Listo',
+    boardMarkerArrow:'Flecha', boardMarkerRect:'Caja', boardMarkerEllipse:'Elipse', boardMarkerLine:'Línea', boardMarkerDraw:'Dibujo', boardMarkerEraser:'Borrador', boardMarkerColor:'Color de anotación', boardMarkerDone:'Listo', boardMarkerStroke:'Grosor de línea', boardMarkerFill:'Color de relleno', boardFillOpacity:'Opacidad del relleno', boardStrokeOpacity:'Opacidad de la línea', boardArrowHead:'Punta final', boardArrowTail:'Punta inicial', boardArrowNone:'Ninguna', boardArrowArrow:'Flecha', boardArrowDot:'Punto', boardArrowBar:'Barra', boardMarkerStyle:'Estilo de anotación',
     boardBg:'Fondo', boardBgNone:'Sin fondo', boardBgOpacity:'Opacidad', boardRadius:'Redondeo', boardPadding:'Margen interior', boardCustomFont:'Fuente personalizada', boardCustomFontHint:'Escribe una fuente instalada, p. ej. Georgia',
     boardDeleteArm:'Toca otra vez para eliminar', boardUndo:'Deshacer', boardRedo:'Rehacer', boardMarqueeClear:'Quitar selección', boardMarqueeDelete:'Eliminar selección', boardSelectedCount:'{0} seleccionados',
     boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardShowBody:'Contenido completo', boardShowDoneOnly:'Solo completadas', boardBodyLargeConfirm:'Esta nota supera los 10.000 caracteres; mostrarla completa puede afectar la fluidez. ¿Activar de todos modos?', boardWidgetOpacity:'Opacidad',
     boardPersonalize:'Personalizar tablero', boardBgPattern:'Patrón de fondo', boardPatternDots:'Puntos', boardPatternGrid:'Cuadrícula', boardPatternNone:'Ninguno', boardPatternLines:'Líneas', boardPatternCross:'Cruces', boardGridColor:'Color de cuadrícula', boardGridOpacity:'Opacidad de cuadrícula', boardBoardBgColor:'Color de fondo', boardBgColorTheme:'Según el tema', boardSnapGrid:'Ajustar a la cuadrícula', boardGridSize:'Tamaño de cuadrícula',
-    boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenMode:'Modo lápiz: traza tantos trazos como quieras; termina o pulsa Esc para salir',
+    boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenCap:'Punta', boardCapRound:'Redonda', boardCapFlat:'Plana', boardCapSquare:'Cuadrada', boardBrushEraser:'Borrador', boardPenMode:'Modo dibujo: traza tantos trazos como quieras; el borrador está en el panel; termina o pulsa Esc para salir', boardLayers:'Capas', boardLayerShow:'Mostrar capa', boardLayerHide:'Ocultar capa', boardLayerGroup:'Grupo', boardGroup:'Agrupar selección', boardUngroup:'Desagrupar',
     boardExportOptionsHint:'Elige resolución y formato de imagen; la compresión JPG es ajustable', boardExportScale:'Resolución', boardExportFormat:'Formato de imagen', boardExportQuality:'Calidad JPG', boardExportConfirm:'Exportar', boardExportPlan:'Exportar archivo del tablero (.actaplan)', boardExportImage:'Exportar como imagen', boardExportPdf:'Exportar como PDF', boardExportDone:'Tablero exportado', boardExportFailed:'Fallo al exportar', boardExportEmpty:'Este tablero está vacío — añade contenido antes de exportar', boardImportPlan:'Importar archivo del tablero (.actaplan)', boardImported:'Tablero importado', boardImportInvalid:'No es un archivo de tablero Acta válido', boardExportRegionTitle:'Elegir área de exportación', boardExportRegionHint:'Arrastra el marco o las asas para ajustarlo; se exporta el área marcada', boardExportRegionAll:'Todos los elementos', boardExportRegionView:'Vista actual', boardExportRegionNext:'Siguiente',
     boardEmptyTitle:'Este tablero está vacío', boardEmptyHint:'Añade texto y anotaciones con la barra de abajo, o importa tareas y notas para componer tu tablero con libertad.'
   },
@@ -500,12 +500,12 @@ const dictionaries = {
     boardImportAdded:'На планшете', boardImportEmpty:'Нет подходящих задач или заметок', boardImportApply:'Применить', boardImportChange:'Добавить {0} · убрать {1}',
     boardTextPlaceholder:'Двойное нажатие — редактировать…', boardFontSize:'Размер шрифта', boardFontLabel:'Шрифт', boardFontApp:'Как в интерфейсе', boardFontSerif:'С засечками', boardFontRounded:'Округлый', boardFontMono:'Моноширинный',
     boardAlignLeft:'По левому краю', boardAlignCenter:'По центру', boardAlignRight:'По правому краю', boardRemoveWidget:'Убрать с планшета',
-    boardMarkerArrow:'Стрелка', boardMarkerRect:'Рамка', boardMarkerEllipse:'Овал', boardMarkerLine:'Линия', boardMarkerDraw:'Перо', boardMarkerEraser:'Ластик', boardMarkerColor:'Цвет пометки', boardMarkerDone:'Готово',
+    boardMarkerArrow:'Стрелка', boardMarkerRect:'Рамка', boardMarkerEllipse:'Овал', boardMarkerLine:'Линия', boardMarkerDraw:'Рисование', boardMarkerEraser:'Ластик', boardMarkerColor:'Цвет пометки', boardMarkerDone:'Готово', boardMarkerStroke:'Толщина линии', boardMarkerFill:'Цвет заливки', boardFillOpacity:'Непрозрачность заливки', boardStrokeOpacity:'Непрозрачность линии', boardArrowHead:'Наконечник (конец)', boardArrowTail:'Наконечник (начало)', boardArrowNone:'Нет', boardArrowArrow:'Стрелка', boardArrowDot:'Точка', boardArrowBar:'Черта', boardMarkerStyle:'Стиль пометки',
     boardBg:'Фон', boardBgNone:'Без фона', boardBgOpacity:'Непрозрачность', boardRadius:'Скругление', boardPadding:'Внутренние поля', boardCustomFont:'Свой шрифт', boardCustomFontHint:'Введите установленный шрифт, напр. Georgia',
     boardDeleteArm:'Нажмите ещё раз для удаления', boardUndo:'Отменить', boardRedo:'Повторить', boardMarqueeClear:'Снять выделение', boardMarqueeDelete:'Удалить выбранное', boardSelectedCount:'Выбрано: {0}',
     boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardShowBody:'Полное содержимое', boardShowDoneOnly:'Только выполненные', boardBodyLargeConfirm:'Эта заметка больше 10 000 символов — полное отображение может снизить плавность. Всё равно включить?', boardWidgetOpacity:'Непрозрачность',
     boardPersonalize:'Оформить планшет', boardBgPattern:'Фоновый узор', boardPatternDots:'Точки', boardPatternGrid:'Сетка', boardPatternNone:'Нет', boardPatternLines:'Линии', boardPatternCross:'Перекрестия', boardGridColor:'Цвет сетки', boardGridOpacity:'Непрозрачность сетки', boardBoardBgColor:'Цвет фона', boardBgColorTheme:'Как в теме', boardSnapGrid:'Привязка к сетке', boardGridSize:'Шаг сетки',
-    boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenMode:'Режим пера: рисуйте сколько угодно штрихов; «Готово» или Esc — выход',
+    boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenCap:'Перо', boardCapRound:'Круглое', boardCapFlat:'Плоское', boardCapSquare:'Квадратное', boardBrushEraser:'Ластик', boardPenMode:'Режим рисования: рисуйте сколько угодно штрихов; ластик — в панели; «Готово» или Esc — выход', boardLayers:'Слои', boardLayerShow:'Показать слой', boardLayerHide:'Скрыть слой', boardLayerGroup:'Группа', boardGroup:'Сгруппировать выбранное', boardUngroup:'Разгруппировать',
     boardExportOptionsHint:'Выберите разрешение и формат; сжатие JPG настраивается', boardExportScale:'Разрешение', boardExportFormat:'Формат изображения', boardExportQuality:'Качество JPG', boardExportConfirm:'Экспортировать', boardExportPlan:'Экспортировать файл планшета (.actaplan)', boardExportImage:'Экспортировать как изображение', boardExportPdf:'Экспортировать в PDF', boardExportDone:'Планшет экспортирован', boardExportFailed:'Не удалось экспортировать', boardExportEmpty:'Этот планшет пуст — сначала добавьте содержимое', boardImportPlan:'Импортировать файл планшета (.actaplan)', boardImported:'Планшет импортирован', boardImportInvalid:'Это не действительный файл планшета Acta', boardExportRegionTitle:'Выбрать область экспорта', boardExportRegionHint:'Потяните рамку или маркеры, чтобы изменить область; экспортируется содержимое рамки', boardExportRegionAll:'Все элементы', boardExportRegionView:'Текущий вид', boardExportRegionNext:'Далее',
     boardEmptyTitle:'Этот планшет пуст', boardEmptyHint:'Добавьте текст и пометки панелью снизу или импортируйте задачи и заметки и свободно соберите свой планшет.'
   }
@@ -680,6 +680,11 @@ function sanitizeBoards(boards) {
           // 颜色支持任意 hex（取色器自选），仅挡掉非法值。
           color: /^#[0-9a-f]{3,8}$/i.test(widget.color) ? widget.color : BOARD_MARKER_COLORS[0]
         };
+        // 通用外观：线条粗细、笔触尖端、图层分组与显隐。
+        marker.stroke = Math.min(40, Math.max(1, Number(widget.stroke) || 2.5));
+        if (['round', 'butt', 'square'].includes(widget.cap)) marker.cap = widget.cap;
+        if (typeof widget.groupId === 'string' && widget.groupId) marker.groupId = widget.groupId.slice(0, 64);
+        if (widget.hidden === true) marker.hidden = true;
         if (widget.kind === 'draw') {
           const points = Array.isArray(widget.points)
             ? widget.points.filter(value => Number.isFinite(Number(value))).map(value => Math.round(Number(value))).slice(0, 4000)
@@ -689,12 +694,23 @@ function sanitizeBoards(boards) {
           marker.w = Math.max(1, Math.round(Number(widget.w) || 1));
           marker.h = Math.max(1, Math.round(Number(widget.h) || 1));
           marker.brush = widget.brush === 'highlighter' ? 'highlighter' : 'pen';
-          marker.stroke = Math.min(24, Math.max(1, Number(widget.stroke) || 2.5));
           marker.opacity = Math.min(100, Math.max(5, Math.round(Number(widget.opacity) ?? 100)));
           marker.flow = Math.min(100, Math.max(10, Math.round(Number(widget.flow) ?? 100)));
         } else {
           marker.w = Math.round(Number(widget.w) || 120);
           marker.h = Math.round(Number(widget.h) || 80);
+          // 箭头两端端帽：无 / 箭头 / 圆点 / 短杠（终点默认箭头，起点默认无）。
+          if (widget.kind === 'arrow') {
+            const capShape = value => ['none', 'arrow', 'dot', 'bar'].includes(value) ? value : null;
+            marker.head = capShape(widget.head) || 'arrow';
+            marker.tail = capShape(widget.tail) || 'none';
+          }
+          // 椭圆填充：填充色 / 填充不透明度 / 线条不透明度。
+          if (widget.kind === 'ellipse') {
+            marker.fill = widget.fill === 'none' || /^#[0-9a-f]{3,8}$/i.test(widget.fill || '') ? widget.fill : 'none';
+            marker.fillOpacity = Math.min(100, Math.max(0, Math.round(Number(widget.fillOpacity) ?? 100)));
+            marker.strokeOpacity = Math.min(100, Math.max(5, Math.round(Number(widget.strokeOpacity) ?? 100)));
+          }
         }
         widgets.push(marker);
       }
@@ -1614,6 +1630,7 @@ function syncCalendarShell() {
     boardSetSelection([]);
     boardRemovePill();
     boardRemoveStyleTrigger();
+    boardRemoveLayerTrigger();
     boardRenderedCards.clear();
   }
   document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
@@ -2469,12 +2486,14 @@ let boardMarkerMenuOutside = null; // 标注菜单的外部关闭监听（菜单
 // 面板打开前的相机取景：收起时画布归位；期间用户手动平移过则尊重新位置。
 let boardCamRestore = null;
 let boardCamManual = false;
-// 画笔模式：选中「画笔」后进入连续绘制（多笔），完成 / Esc / 再点按钮退出。
-// 笔刷参数跨笔保持；荧光笔是宽、低透明度、multiply 混合的笔型。
-const boardPenState = { brush: 'pen', color: BOARD_MARKER_COLORS[0], stroke: 2.5, opacity: 100, flow: 100 };
+// 画笔模式：选中「笔绘」后进入连续绘制（多笔），完成 / Esc / 再点按钮退出。
+// 笔刷参数跨笔保持；荧光笔是宽、低透明度、multiply 混合的笔型；橡皮
+// 与笔集成在同一面板里切换（stroke 字段此时表示橡皮半径）。
+const boardPenState = { brush: 'pen', color: BOARD_MARKER_COLORS[0], stroke: 2.5, opacity: 100, flow: 100, cap: 'round' };
 const boardPenPresets = {
-  pen: { stroke: 2.5, opacity: 100, flow: 100 },
-  highlighter: { stroke: 14, opacity: 35, flow: 100 }
+  pen: { stroke: 2.5, opacity: 100, flow: 100, cap: 'round' },
+  highlighter: { stroke: 14, opacity: 35, flow: 100, cap: 'butt' },
+  eraser: { stroke: 12, opacity: 100, flow: 100, cap: 'round' }
 };
 let lastBoardTap = { id: null, at: 0 };
 const boardRenderedCards = new Map(); // 条目卡片 id → 已渲染元素（虚拟化的增删基准）
@@ -2541,7 +2560,7 @@ function boardVacantSpot(width = BOARD_CARD_W, height = BOARD_CARD_H) {
   const centerX = Math.round((w / 2 - boardCam.x) / boardCam.scale);
   const centerY = Math.round((h / 2 - boardCam.y) / boardCam.scale);
   const step = height + 14;
-  const occupied = board.widgets.map(widget => ({ x: widget.x, y: widget.y, ...boardWidgetSize(widget) }));
+  const occupied = board.widgets.filter(widget => !widget.hidden).map(widget => ({ x: widget.x, y: widget.y, ...boardWidgetSize(widget) }));
   const overlaps = (x, y) => occupied.some(rect => rect.x < x + width + 12 && rect.x + rect.w + 12 > x
     && rect.y < y + height + 12 && rect.y + rect.h + 12 > y);
   let top = centerY - Math.round(height / 2);
@@ -2595,14 +2614,16 @@ function boardLayout() {
   if (dirty) { touchBoard(board); persist(); }
   const cards = [];
   const statics = [];
-  const order = [...board.widgets].sort((a, b) => a.y - b.y || a.x - b.x);
+  const visible = board.widgets.filter(widget => !widget.hidden);
+  const order = [...visible].sort((a, b) => a.y - b.y || a.x - b.x);
   const rank = new Map(order.map((widget, index) => [widget.id, index]));
-  board.widgets.forEach(widget => {
+  visible.forEach(widget => {
     if (widget.type === 'note' || widget.type === 'todo') {
       cards.push({ widget, item: itemById.get(widget.ref), x: widget.x, y: widget.y, rowIndex: rank.get(widget.id) || 0 });
     } else statics.push(widget);
   });
-  return { board, cards, statics, bounds: boardBoundsOf(board.widgets) };
+  // 隐藏图层不参与渲染，也不算内容边界（总览取景、画布约束都以其为准）。
+  return { board, cards, statics, bounds: boardBoundsOf(visible) };
 }
 
 function boardViewportSize() {
@@ -2989,6 +3010,31 @@ function boardApplyShownContent(node, widget) {
 
 // —— 标注绘制：形状由（可能为负的）端点向量描述，渲染时归一为外接矩形；
 // 线段一律以归一后的容器原点为参考，斜向时也精确贴合。 ——
+// 箭头端帽：形状随线条粗细缩放。返回 { trim, svg }——trim 是线体为端帽
+// 让出的长度（从端点向内收），svg 是该端的图形片段。angle 指向线体延伸方向。
+function boardArrowCapSVG(kind, x, y, angle, stroke, strokeWidth) {
+  if (kind === 'dot') {
+    const r = Math.max(2.5, strokeWidth * 1.3 + 0.8);
+    return { trim: r * 0.5, svg: `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="${stroke}" stroke="none"/>` };
+  }
+  if (kind === 'bar') {
+    const size = Math.max(7, strokeWidth * 2.8);
+    const px = Math.cos(angle + Math.PI / 2) * size / 2;
+    const py = Math.sin(angle + Math.PI / 2) * size / 2;
+    return { trim: strokeWidth / 2, svg: `<path d="M${(x - px).toFixed(1)} ${(y - py).toFixed(1)} L${(x + px).toFixed(1)} ${(y + py).toFixed(1)}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth.toFixed(1)}" stroke-linecap="round"/>` };
+  }
+  if (kind === 'arrow') {
+    const head = Math.max(10, strokeWidth * 3.4);
+    const wing = head * 0.5;
+    const leftX = x - head * Math.cos(angle) + wing * Math.sin(angle);
+    const leftY = y - head * Math.sin(angle) - wing * Math.cos(angle);
+    const rightX = x - head * Math.cos(angle) - wing * Math.sin(angle);
+    const rightY = y - head * Math.sin(angle) + wing * Math.cos(angle);
+    return { trim: head * 0.55, svg: `<path d="M${leftX.toFixed(1)} ${leftY.toFixed(1)} L${x.toFixed(1)} ${y.toFixed(1)} L${rightX.toFixed(1)} ${rightY.toFixed(1)} Z" fill="${stroke}" stroke="none"/>` };
+  }
+  return { trim: 0, svg: '' };
+}
+
 function boardMarkerSVG(widget, originLeft = 0, originTop = 0, live = false) {
   const stroke = live ? 'currentColor' : 'var(--board-marker-color, currentColor)';
   if (widget.kind === 'draw') {
@@ -3004,34 +3050,40 @@ function boardMarkerSVG(widget, originLeft = 0, originTop = 0, live = false) {
     // 流量 < 100 用点状虚线近似出墨密度（低流量笔迹断续变浅）。
     const dash = flow < 100 ? ` stroke-dasharray="${Math.max(0.4, flow / 14).toFixed(2)} ${Math.max(0.5, (100 - flow) / 12).toFixed(2)}"` : '';
     const blend = highlighter ? ' style="mix-blend-mode:multiply"' : '';
-    const cap = highlighter ? 'butt' : 'round';
+    // 笔触尖端：round / butt / square；荧光笔默认平头才有荧光笔观感。
+    const cap = widget.cap || (highlighter ? 'butt' : 'round');
     return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"${blend}><path d="${path.trim()}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-opacity="${opacity.toFixed(3)}"${dash} stroke-linecap="${cap}" stroke-linejoin="round"/></svg>`;
   }
+  const strokeWidth = widget.stroke || 2.5;
   const x1 = widget.x - originLeft;
   const y1 = widget.y - originTop;
   const x2 = widget.x + widget.w - originLeft;
   const y2 = widget.y + widget.h - originTop;
   if (widget.kind === 'rect') {
-    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><rect x="${Math.min(x1, x2)}" y="${Math.min(y1, y2)}" width="${Math.abs(x2 - x1)}" height="${Math.abs(y2 - y1)}" rx="10" fill="none" stroke="${stroke}" stroke-width="2.5"/></svg>`;
+    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><rect x="${Math.min(x1, x2)}" y="${Math.min(y1, y2)}" width="${Math.abs(x2 - x1)}" height="${Math.abs(y2 - y1)}" rx="10" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}"/></svg>`;
   }
   if (widget.kind === 'ellipse') {
-    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><ellipse cx="${(x1 + x2) / 2}" cy="${(y1 + y2) / 2}" rx="${Math.abs(x2 - x1) / 2}" ry="${Math.abs(y2 - y1) / 2}" fill="none" stroke="${stroke}" stroke-width="2.5"/></svg>`;
+    const fillOpacity = (widget.fillOpacity ?? 100) / 100;
+    const strokeOpacity = (widget.strokeOpacity ?? 100) / 100;
+    const fill = widget.fill && widget.fill !== 'none' ? widget.fill : 'none';
+    // 填充必须走内联 style：样式表里 .board-marker-svg ellipse { fill:none }
+    // 会压过 SVG 的 fill 属性（presentation attribute 优先级最低）。
+    const fillAttr = fill === 'none' ? 'fill="none"' : `style="fill:${fill};fill-opacity:${fillOpacity.toFixed(3)}"`;
+    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><ellipse cx="${(x1 + x2) / 2}" cy="${(y1 + y2) / 2}" rx="${Math.abs(x2 - x1) / 2}" ry="${Math.abs(y2 - y1) / 2}" ${fillAttr} stroke="${stroke}" stroke-opacity="${strokeOpacity.toFixed(3)}" stroke-width="${strokeWidth}"/></svg>`;
   }
   if (widget.kind === 'line') {
-    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><path d="M${x1} ${y1} L${x2} ${y2}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+    return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><path d="M${x1} ${y1} L${x2} ${y2}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round"/></svg>`;
   }
+  // 箭头：两端均可选端帽（前端 = 终点，末端 = 起点），线体两端各为本端帽让位。
   const angle = Math.atan2(y2 - y1, x2 - x1);
-  const head = 13;
-  const wing = 6.5;
-  const tipX = x2;
-  const tipY = y2;
-  const leftX = tipX - head * Math.cos(angle) + wing * Math.sin(angle);
-  const leftY = tipY - head * Math.sin(angle) - wing * Math.cos(angle);
-  const rightX = tipX - head * Math.cos(angle) - wing * Math.sin(angle);
-  const rightY = tipY - head * Math.sin(angle) + wing * Math.cos(angle);
-  const lineEndX = tipX - (head - 2) * Math.cos(angle);
-  const lineEndY = tipY - (head - 2) * Math.sin(angle);
-  return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><path d="M${x1} ${y1} L${lineEndX.toFixed(1)} ${lineEndY.toFixed(1)}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round"/><path d="M${leftX.toFixed(1)} ${leftY.toFixed(1)} L${tipX} ${tipY} L${rightX.toFixed(1)} ${rightY.toFixed(1)} Z" fill="${stroke}" stroke="none"/></svg>`;
+  const headCap = boardArrowCapSVG(widget.head || 'arrow', x2, y2, angle, stroke, strokeWidth);
+  const tailCap = boardArrowCapSVG(widget.tail || 'none', x1, y1, angle + Math.PI, stroke, strokeWidth);
+  const fromX = x1 + tailCap.trim * Math.cos(angle);
+  const fromY = y1 + tailCap.trim * Math.sin(angle);
+  const usable = Math.max(Math.hypot(x2 - x1, y2 - y1) - headCap.trim - tailCap.trim, 0);
+  const toX = fromX + usable * Math.cos(angle);
+  const toY = fromY + usable * Math.sin(angle);
+  return `<svg class="board-marker-svg" width="100%" height="100%" overflow="visible"><path d="M${fromX.toFixed(1)} ${fromY.toFixed(1)} L${toX.toFixed(1)} ${toY.toFixed(1)}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round"/>${tailCap.svg}${headCap.svg}</svg>`;
 }
 
 function boardStaticHTML(widget) {
@@ -3145,7 +3197,6 @@ function renderBoardShell() {
       <button type="button" data-board-marker="ellipse"><svg><use href="#i-radar"/></svg>${escapeHTML(t('boardMarkerEllipse'))}</button>
       <button type="button" data-board-marker="line"><svg><use href="#i-divider"/></svg>${escapeHTML(t('boardMarkerLine'))}</button>
       <button type="button" data-board-marker="draw"><svg><use href="#i-edit"/></svg>${escapeHTML(t('boardMarkerDraw'))}</button>
-      <button type="button" data-board-marker="eraser"><svg><use href="#i-eraser"/></svg>${escapeHTML(t('boardMarkerEraser'))}</button>
     </div>
     <div class="board-widget-toolbar" id="boardWidgetToolbar" hidden></div>
     <div class="board-pen-bar" id="boardPenBar" hidden></div>
@@ -3243,6 +3294,7 @@ function boardSetSelection(ids) {
     boardRenderedCards.forEach((element, widgetId) => element.classList.toggle('selected', boardSelection.has(widgetId)));
   }
   boardRenderToolbar();
+  boardSyncLayerPop();
 }
 
 function boardWidgetById(id) {
@@ -3393,6 +3445,11 @@ function boardRenderToolbar() {
         <span class="board-tw-label">${escapeHTML(t('boardMarkerColor'))}</span>
         ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch${widget.color === color ? ' on' : ''}" data-tw="color" data-color="${color}" style="background:${color}" title="${escapeHTML(t('boardMarkerColor'))}"></button>`).join('')}
         <label class="board-swatch is-custom${/^#[0-9a-f]{6}$/i.test(widget.color) && !BOARD_MARKER_COLORS.includes(widget.color) ? ' on' : ''}" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(widget.color) ? widget.color : '#526b55'}" data-marker-color/></label>
+        <span class="board-chrome-sep" aria-hidden="true"></span>
+        <span class="board-tw-label">${escapeHTML(t('boardMarkerStroke'))}</span>
+        <input class="board-tw-range" type="range" min="1" max="24" step="0.5" value="${widget.stroke || 2.5}" data-tw="marker-stroke" aria-label="${escapeHTML(t('boardMarkerStroke'))}"/>
+        <output class="board-tw-size">${widget.stroke || 2.5}</output>
+        <button type="button" class="board-tw" data-tw="marker-pop" title="${escapeHTML(t('boardMarkerStyle'))}"><svg><use href="#i-sliders"/></svg></button>
         <button type="button" class="board-tw is-danger" data-tw="remove" title="${escapeHTML(t('boardRemoveWidget'))}"><svg><use href="#i-trash"/></svg></button>`;
       bar.hidden = false;
       boardSyncToolbar();
@@ -3441,10 +3498,67 @@ function boardRenderBgPop(widget) {
   }
 }
 
+// 标注样式小面板：粗细在工具条上，这里承载按形状差异化的设置——
+// 箭头的两端端帽、椭圆的填充与不透明度、笔绘的不透明度与笔尖。
+function boardMarkerPopPlacement(pop) {
+  const bar = boardEls?.toolbar;
+  if (!bar) return;
+  const height = pop.offsetHeight || 160;
+  const width = pop.offsetWidth || 250;
+  const left = Math.min(Math.max(bar.offsetLeft, width / 2 + 8), (boardEls.canvas.clientWidth || 400) - width / 2 - 8);
+  pop.style.left = `${left}px`;
+  pop.style.top = `${Math.max(bar.offsetTop - height - 10, 8)}px`;
+}
+
+function boardRenderMarkerPop(widget) {
+  let pop = $('#boardMarkerPop', boardEls?.canvas || document);
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = 'boardMarkerPop';
+    pop.className = 'board-style-pop';
+    boardEls.toolbar.after(pop);
+  }
+  const capOptions = value => [
+    ['none', t('boardArrowNone')], ['arrow', t('boardArrowArrow')],
+    ['dot', t('boardArrowDot')], ['bar', t('boardArrowBar')]
+  ].map(([key, label]) => `<button type="button" data-mk-cap="${key}"${value === key ? ' class="active"' : ''}>${escapeHTML(label)}</button>`).join('');
+  const tipOptions = value => [
+    ['round', t('boardCapRound')], ['butt', t('boardCapFlat')], ['square', t('boardCapSquare')]
+  ].map(([key, label]) => `<button type="button" data-mk-tip="${key}"${value === key ? ' class="active"' : ''}>${escapeHTML(label)}</button>`).join('');
+  let rows = '';
+  if (widget.kind === 'arrow') {
+    rows += `
+      <div class="board-style-row" data-row="head"><span>${escapeHTML(t('boardArrowHead'))}</span><div class="board-import-seg">${capOptions(widget.head || 'arrow')}</div></div>
+      <div class="board-style-row" data-row="tail"><span>${escapeHTML(t('boardArrowTail'))}</span><div class="board-import-seg">${capOptions(widget.tail || 'none')}</div></div>`;
+  }
+  if (widget.kind === 'ellipse') {
+    const fill = widget.fill || 'none';
+    rows += `
+      <div class="board-style-row"><span>${escapeHTML(t('boardMarkerFill'))}</span><button type="button" class="board-swatch is-none${fill === 'none' ? ' on' : ''}" data-mk-fill="none" title="${escapeHTML(t('boardBgNone'))}"></button>${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch${fill === color ? ' on' : ''}" data-mk-fill="${color}" style="background:${color}"></button>`).join('')}<label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(fill) ? fill : '#f4e2c8'}" data-mk-fill-custom/></label></div>
+      <div class="board-style-row"><span>${escapeHTML(t('boardFillOpacity'))}</span><input type="range" min="0" max="100" step="5" value="${widget.fillOpacity ?? 100}" data-mk-fillop aria-label="${escapeHTML(t('boardFillOpacity'))}"/><output>${widget.fillOpacity ?? 100}%</output></div>
+      <div class="board-style-row"><span>${escapeHTML(t('boardStrokeOpacity'))}</span><input type="range" min="5" max="100" step="5" value="${widget.strokeOpacity ?? 100}" data-mk-strokeop aria-label="${escapeHTML(t('boardStrokeOpacity'))}"/><output>${widget.strokeOpacity ?? 100}%</output></div>`;
+  }
+  if (widget.kind === 'draw') {
+    rows += `
+      <div class="board-style-row"><span>${escapeHTML(t('boardPenOpacity'))}</span><input type="range" min="5" max="100" step="5" value="${widget.opacity ?? 100}" data-mk-op aria-label="${escapeHTML(t('boardPenOpacity'))}"/><output>${widget.opacity ?? 100}%</output></div>
+      <div class="board-style-row"><span>${escapeHTML(t('boardPenCap'))}</span><div class="board-import-seg">${tipOptions(widget.cap || (widget.brush === 'highlighter' ? 'butt' : 'round'))}</div></div>`;
+  }
+  pop.innerHTML = rows || `<div class="board-style-row"><span>${escapeHTML(t('boardMarkerStroke'))}</span><span class="board-pop-hint">${escapeHTML(t('boardMarkerStyle'))}</span></div>`;
+  pop.hidden = false;
+  boardMarkerPopPlacement(pop);
+}
+
+function boardCloseMarkerPop() {
+  const pop = $('#boardMarkerPop', boardEls?.canvas || document);
+  if (pop) pop.hidden = true;
+}
+
 // —— 板个性化：背景图案 / 背景颜色 / 吸附网格 / 图案网格大小 ——
 function boardRenderStylePop() {
   const board = boardLayoutCache?.board || activeBoard();
   const style = board.style || { pattern: 'dots', color: '', gridColor: '', gridOpacity: 10, snap: false, gridSize: 26 };
+  // 浮层互斥：个性化面板打开时收起图层面板。
+  $('#boardLayerPop', boardEls?.canvas || document)?.remove();
   let pop = $('#boardStylePop', boardEls?.canvas || document);
   if (!pop) {
     pop = document.createElement('div');
@@ -3748,13 +3862,13 @@ function boardEditText(id) {
       persist();
     }
     boardRefreshStatic(widget);
-    if (boardLayoutCache) boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+    if (boardLayoutCache) boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets.filter(widget => !widget.hidden));
   };
   element.addEventListener('blur', save);
 }
 
 // —— 橡皮擦：指针路径触及的整条笔迹擦除（与主流白板的 stroke eraser 一致） ——
-const BOARD_ERASER_RADIUS = 12;
+// 半径由笔绘面板的「粗细」滑杆控制（boardPenState.stroke，橡皮预设默认 12）。
 
 function boardPointToSegment(px, py, ax, ay, bx, by) {
   const dx = bx - ax;
@@ -3767,12 +3881,13 @@ function boardPointToSegment(px, py, ax, ay, bx, by) {
 function boardEraseAt(worldX, worldY) {
   const board = boardLayoutCache?.board;
   if (!board) return false;
+  const radius = boardPenState.brush === 'eraser' ? boardPenState.stroke : 12;
   let erased = false;
   for (let i = board.widgets.length - 1; i >= 0; i -= 1) {
     const widget = board.widgets[i];
-    if (widget.type !== 'marker' || widget.kind !== 'draw') continue;
+    if (widget.type !== 'marker' || widget.kind !== 'draw' || widget.hidden) continue;
     const points = widget.points || [];
-    const tolerance = BOARD_ERASER_RADIUS + (widget.stroke || 2.5) / 2;
+    const tolerance = radius + (widget.stroke || 2.5) / 2;
     for (let p = 0; p + 3 < points.length; p += 2) {
       const hit = boardPointToSegment(
         worldX, worldY,
@@ -3788,7 +3903,7 @@ function boardEraseAt(worldX, worldY) {
   }
   if (erased) {
     if (boardEls?.empty) boardEls.empty.hidden = board.widgets.length > 0;
-    boardLayoutCache.bounds = boardBoundsOf(board.widgets);
+    boardLayoutCache.bounds = boardBoundsOf(board.widgets.filter(widget => !widget.hidden));
     touchBoard(board);
     persist();
   }
@@ -3796,15 +3911,23 @@ function boardEraseAt(worldX, worldY) {
 }
 
 // —— 标注绘制：选形状后在画布上拖出 ——
+// boardPenSessionId：一次笔绘会话的组号——进入笔绘模式时生成，退出时清空，
+// 期间每一笔都以它为 groupId 自动打组。
+let boardPenSessionId = null;
+
 function boardStartDraw(kind) {
   boardPendingMarker = kind;
   boardSetSelection([]);
   boardEls?.canvas.classList.add('is-drawing');
-  if (kind === 'draw') boardRenderPenBar();
+  if (kind === 'draw') {
+    boardPenSessionId = uid();
+    boardRenderPenBar();
+  }
 }
 
 function boardCancelDraw() {
   boardPendingMarker = null;
+  boardPenSessionId = null;
   boardDraftMarker?.remove();
   boardDraftMarker = null;
   boardEls?.canvas.classList.remove('is-drawing');
@@ -3813,21 +3936,27 @@ function boardCancelDraw() {
   $$('#boardMarkerMenu [data-board-marker]', boardEls?.canvas || document).forEach(button => button.classList.remove('active'));
 }
 
-// 画笔选项条：笔型 / 粗细 / 不透明度 / 流量 / 颜色 / 完成。
+// 笔绘面板：笔型（钢笔 / 荧光笔 / 橡皮）切换、粗细 / 不透明度 / 流量 /
+// 笔尖、颜色与完成。橡皮与笔集成在同一面板：切到橡皮时只留半径滑杆。
 function boardRenderPenBar() {
   const bar = $('#boardPenBar', boardEls?.canvas || document);
   if (!bar) return;
   const preset = boardPenPresets[boardPenState.brush];
+  const eraser = boardPenState.brush === 'eraser';
+  const caps = [['round', t('boardCapRound')], ['butt', t('boardCapFlat')], ['square', t('boardCapSquare')]];
   bar.innerHTML = `
     <button type="button" class="board-tw${boardPenState.brush === 'pen' ? ' on' : ''}" data-brush="pen" title="${escapeHTML(t('boardBrushPen'))}"><svg><use href="#i-edit"/></svg></button>
     <button type="button" class="board-tw${boardPenState.brush === 'highlighter' ? ' on' : ''}" data-brush="highlighter" title="${escapeHTML(t('boardBrushHighlighter'))}"><svg><use href="#i-highlight"/></svg></button>
+    <button type="button" class="board-tw${eraser ? ' on' : ''}" data-brush="eraser" title="${escapeHTML(t('boardBrushEraser'))}"><svg><use href="#i-eraser"/></svg></button>
     <span class="board-chrome-sep" aria-hidden="true"></span>
-    <label class="board-pen-field"><span>${escapeHTML(t('boardPenStroke'))}</span><input type="range" min="1" max="24" step="0.5" value="${boardPenState.stroke}" data-pen="stroke"/><output>${boardPenState.stroke}</output></label>
+    <label class="board-pen-field"><span>${escapeHTML(eraser ? t('boardMarkerStroke') : t('boardPenStroke'))}</span><input type="range" min="${eraser ? 6 : 1}" max="${eraser ? 40 : 24}" step="${eraser ? 2 : 0.5}" value="${boardPenState.stroke}" data-pen="stroke"/><output>${boardPenState.stroke}</output></label>
+    ${eraser ? '' : `
     <label class="board-pen-field"><span>${escapeHTML(t('boardPenOpacity'))}</span><input type="range" min="5" max="100" step="5" value="${boardPenState.opacity}" data-pen="opacity"/><output>${boardPenState.opacity}%</output></label>
     <label class="board-pen-field"><span>${escapeHTML(t('boardPenFlow'))}</span><input type="range" min="10" max="100" step="5" value="${boardPenState.flow}" data-pen="flow"/><output>${boardPenState.flow}%</output></label>
+    <label class="board-pen-field"><span>${escapeHTML(t('boardPenCap'))}</span><span class="board-import-seg board-cap-seg">${caps.map(([value, label]) => `<button type="button" data-pen-cap="${value}"${boardPenState.cap === value ? ' class="active"' : ''}>${escapeHTML(label)}</button>`).join('')}</span></label>
     <span class="board-chrome-sep" aria-hidden="true"></span>
-    ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch${boardPenState.color === color ? ' on' : ''}" data-pen-color="${color}" style="background:${color}" title="${escapeHTML(t('boardMarkerColor'))}"></button>`).join('')}
-    <label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(boardPenState.color) ? boardPenState.color : '#526b55'}" data-pen-color-custom/></label>
+    ${BOARD_MARKER_COLORS.map(color => `<button type="button" class="board-swatch board-swatch-round${boardPenState.color === color ? ' on' : ''}" data-pen-color="${color}" style="background:${color}" title="${escapeHTML(t('boardMarkerColor'))}"></button>`).join('')}
+    <label class="board-swatch is-custom" title="${escapeHTML(t('boardCustomColor'))}"><input type="color" value="${/^#[0-9a-f]{6}$/i.test(boardPenState.color) ? boardPenState.color : '#526b55'}" data-pen-color-custom/></label>`}
     <button type="button" class="board-tw is-primary" id="boardPenDone" title="${escapeHTML(t('boardPenDone'))}"><svg><use href="#i-check"/></svg>${escapeHTML(t('boardPenDone'))}</button>`;
   bar.hidden = false;
   bar.dataset.presetStroke = String(preset.stroke);
@@ -3839,7 +3968,7 @@ function boardDrawDraft(draft) {
     boardEls.world.appendChild(boardDraftMarker);
   }
   const widget = draft.kind === 'draw'
-    ? { kind: 'draw', x: draft.x, y: draft.y, points: draft.points, w: 1, h: 1, brush: boardPenState.brush, stroke: boardPenState.stroke, opacity: boardPenState.opacity, flow: boardPenState.flow }
+    ? { kind: 'draw', x: draft.x, y: draft.y, points: draft.points, w: 1, h: 1, brush: boardPenState.brush, stroke: boardPenState.stroke, opacity: boardPenState.opacity, flow: boardPenState.flow, cap: boardPenState.cap }
     : draft;
   let left;
   let top;
@@ -3891,11 +4020,14 @@ function boardCommitDraw(draft) {
       if (points[i + 1] > maxY) maxY = points[i + 1];
     }
     boardPushUndo();
-    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x + minX), y: Math.round(draft.y + minY), w: Math.round(maxX - minX), h: Math.round(maxY - minY), color: boardPenState.color, brush: boardPenState.brush, stroke: boardPenState.stroke, opacity: boardPenState.opacity, flow: boardPenState.flow, points: points.map((value, index) => Math.round(value - (index % 2 === 0 ? minX : minY))) };
+    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x + minX), y: Math.round(draft.y + minY), w: Math.round(maxX - minX), h: Math.round(maxY - minY), color: boardPenState.color, brush: boardPenState.brush, stroke: boardPenState.stroke, opacity: boardPenState.opacity, flow: boardPenState.flow, cap: boardPenState.cap, points: points.map((value, index) => Math.round(value - (index % 2 === 0 ? minX : minY))) };
+    // 一次笔绘会话（进入模式到退出）的所有笔迹自动归为一组：
+    // 图层面板里整组移动 / 显隐，手写内容的多笔不会散开。
+    widget.groupId = boardPenSessionId;
   } else {
     if (Math.hypot(draft.w || 0, draft.h || 0) < 10) { boardCancelDraw(); return; }
     boardPushUndo();
-    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x), y: Math.round(draft.y), w: Math.round(draft.w), h: Math.round(draft.h), color: boardPenState.color };
+    widget = { id: uid(), type: 'marker', kind, x: Math.round(draft.x), y: Math.round(draft.y), w: Math.round(draft.w), h: Math.round(draft.h), color: boardPenState.color, stroke: 2.5 };
   }
   board.widgets.push(widget);
   touchBoard(board);
@@ -3903,9 +4035,10 @@ function boardCommitDraw(draft) {
   // 提交只做局部更新（重建布局缓存 + 插入这一个静态组件）：
   // 走 renderList 会整壳重建画布，连续画笔时每笔都重播全部组件的入场动画。
   boardLayoutCache = boardLayout();
-  boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+  boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets.filter(entry => !entry.hidden));
   boardRefreshStatic(widget);
   boardScheduleSync();
+  boardSyncLayerPop();
   if (kind === 'draw') {
     // 画笔模式连续绘制：清掉草稿继续下一笔，不退出模式、不抢选中。
     boardDraftMarker?.remove();
@@ -4171,7 +4304,7 @@ function boardDrawMarker(ctx, widget, X, Y, theme) {
     ctx.globalCompositeOperation = highlighter ? 'multiply' : 'source-over';
     ctx.strokeStyle = boardHexToRgba(widget.color, highlighter ? Math.min(0.5, (widget.opacity ?? 35) / 100) : (widget.opacity ?? 100) / 100);
     ctx.lineWidth = widget.stroke || 2.5;
-    ctx.lineCap = highlighter ? 'butt' : 'round';
+    ctx.lineCap = widget.cap || (highlighter ? 'butt' : 'round');
     ctx.lineJoin = 'round';
     const flow = widget.flow ?? 100;
     if (flow < 100) ctx.setLineDash([Math.max(0.4, flow / 14), Math.max(0.5, (100 - flow) / 12)]);
@@ -4185,9 +4318,10 @@ function boardDrawMarker(ctx, widget, X, Y, theme) {
     ctx.restore();
     return;
   }
-  ctx.strokeStyle = boardHexToRgba(widget.color);
+  const lineWidth = widget.stroke || 2.5;
+  ctx.strokeStyle = boardHexToRgba(widget.color, widget.kind === 'ellipse' ? (widget.strokeOpacity ?? 100) / 100 : 1);
   ctx.fillStyle = boardHexToRgba(widget.color);
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = lineWidth;
   ctx.lineCap = 'round';
   const x1 = X(widget.x);
   const y1 = Y(widget.y);
@@ -4199,6 +4333,10 @@ function boardDrawMarker(ctx, widget, X, Y, theme) {
   } else if (widget.kind === 'ellipse') {
     ctx.beginPath();
     ctx.ellipse((x1 + x2) / 2, (y1 + y2) / 2, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2, 0, 0, Math.PI * 2);
+    if (widget.fill && widget.fill !== 'none') {
+      ctx.fillStyle = boardHexToRgba(widget.fill, (widget.fillOpacity ?? 100) / 100);
+      ctx.fill();
+    }
     ctx.stroke();
   } else if (widget.kind === 'line') {
     ctx.beginPath();
@@ -4206,19 +4344,46 @@ function boardDrawMarker(ctx, widget, X, Y, theme) {
     ctx.lineTo(x2, y2);
     ctx.stroke();
   } else {
+    // 箭头：与画布渲染同构的两端端帽（无 / 箭头 / 圆点 / 短杠）。
     const angle = Math.atan2(y2 - y1, x2 - x1);
-    const head = 13;
-    const wing = 6.5;
+    const capAt = (kind, x, y, dir) => {
+      if (kind === 'dot') {
+        const r = Math.max(2.5, lineWidth * 1.3 + 0.8);
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+        return r * 0.5;
+      }
+      if (kind === 'bar') {
+        const size = Math.max(7, lineWidth * 2.8) / 2;
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(dir + Math.PI / 2) * size, y + Math.sin(dir + Math.PI / 2) * size);
+        ctx.lineTo(x + Math.cos(dir - Math.PI / 2) * size, y + Math.sin(dir - Math.PI / 2) * size);
+        ctx.stroke();
+        return lineWidth / 2;
+      }
+      if (kind === 'arrow') {
+        const head = Math.max(10, lineWidth * 3.4);
+        const wing = head * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x - head * Math.cos(dir) + wing * Math.sin(dir), y - head * Math.sin(dir) - wing * Math.cos(dir));
+        ctx.lineTo(x, y);
+        ctx.lineTo(x - head * Math.cos(dir) - wing * Math.sin(dir), y - head * Math.sin(dir) + wing * Math.cos(dir));
+        ctx.closePath();
+        ctx.fill();
+        return head * 0.55;
+      }
+      return 0;
+    };
+    const headKind = widget.head || 'arrow';
+    const tailKind = widget.tail || 'none';
+    const headTrim = capAt(headKind, x2, y2, angle);
+    const tailTrim = capAt(tailKind, x1, y1, angle + Math.PI);
+    const usable = Math.max(Math.hypot(x2 - x1, y2 - y1) - headTrim - tailTrim, 0);
     ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2 - (head - 2) * Math.cos(angle), y2 - (head - 2) * Math.sin(angle));
+    ctx.moveTo(x1 + tailTrim * Math.cos(angle), y1 + tailTrim * Math.sin(angle));
+    ctx.lineTo(x1 + (tailTrim + usable) * Math.cos(angle), y1 + (tailTrim + usable) * Math.sin(angle));
     ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x2 - head * Math.cos(angle) + wing * Math.sin(angle), y2 - head * Math.sin(angle) - wing * Math.cos(angle));
-    ctx.lineTo(x2, y2);
-    ctx.lineTo(x2 - head * Math.cos(angle) - wing * Math.sin(angle), y2 - head * Math.sin(angle) + wing * Math.cos(angle));
-    ctx.closePath();
-    ctx.fill();
   }
   ctx.restore();
 }
@@ -4625,7 +4790,7 @@ function boardRenderToCanvas(options = {}) {
     width = Math.max(1, region.w);
     height = Math.max(1, region.h);
   } else {
-    const bounds = boardBoundsOf(board.widgets);
+    const bounds = boardBoundsOf(board.widgets.filter(widget => !widget.hidden));
     const margin = BOARD_EXPORT_MARGIN;
     width = (bounds.maxX - bounds.minX) + margin * 2;
     height = (bounds.maxY - bounds.minY) + margin * 2;
@@ -4729,10 +4894,10 @@ function boardRenderToCanvas(options = {}) {
     });
     ctx.setLineDash([]);
   }
-  // 组件顺序与画布 DOM 一致：标注在下、文本其上、卡片最上。
-  board.widgets.filter(widget => widget.type === 'marker').forEach(widget => boardDrawMarker(ctx, widget, X, Y, theme));
-  board.widgets.filter(widget => widget.type === 'text').forEach(widget => boardDrawTextWidget(ctx, widget, X, Y, theme));
-  board.widgets.filter(widget => widget.type === 'note' || widget.type === 'todo').forEach(widget => {
+  // 组件顺序与画布 DOM 一致：标注在下、文本其上、卡片最上；隐藏图层不导出。
+  board.widgets.filter(widget => widget.type === 'marker' && !widget.hidden).forEach(widget => boardDrawMarker(ctx, widget, X, Y, theme));
+  board.widgets.filter(widget => widget.type === 'text' && !widget.hidden).forEach(widget => boardDrawTextWidget(ctx, widget, X, Y, theme));
+  board.widgets.filter(widget => (widget.type === 'note' || widget.type === 'todo') && !widget.hidden).forEach(widget => {
     const item = library.items.find(entry => entry.id === widget.ref);
     if (item) boardDrawCard(ctx, widget, item, X, Y, theme);
   });
@@ -5257,6 +5422,9 @@ function boardEnsurePill() {
     const goto = event.target.closest('[data-board-goto]');
     if (goto) {
       const id = goto.dataset.boardGoto;
+      // 切换后必须收起菜单：菜单挂在 title-row 上，renderList 重建的只是画布壳，
+      // 留在原地的旧菜单里高亮还停在切换前的板上（菜单重开时才重渲染）。
+      boardToggleMenu(false);
       if (boardState.activeBoardId !== id) {
         boardState.activeBoardId = id;
         boardUndoStack.length = 0;
@@ -5264,7 +5432,7 @@ function boardEnsurePill() {
         boardSetSelection([]);
         persistBoardState();
         renderList();
-      } else boardToggleMenu(false);
+      }
       return;
     }
     const action = event.target.closest('[data-board-action]');
@@ -5309,6 +5477,141 @@ function boardRemoveStyleTrigger() {
   boardStyleTriggerEl = null;
 }
 
+// —— 图层面板：以 z 序列出板上全部元素，组（groupId）聚合展示；
+// 支持选中、显隐；笔绘会话自动成组，Ctrl/⌘+G 组合所选、+Shift 解组。 ——
+let boardLayerTriggerEl = null;
+
+function boardEnsureLayerTrigger() {
+  const titleRow = $('.item-title-row');
+  if (!titleRow) return null;
+  if (boardLayerTriggerEl && document.contains(boardLayerTriggerEl)) return boardLayerTriggerEl;
+  if (!boardStyleTriggerEl) return null;
+  boardLayerTriggerEl = document.createElement('button');
+  boardLayerTriggerEl.type = 'button';
+  boardLayerTriggerEl.className = 'board-style-trigger board-layer-trigger';
+  boardLayerTriggerEl.id = 'boardLayerTrigger';
+  boardLayerTriggerEl.title = t('boardLayers');
+  boardLayerTriggerEl.setAttribute('aria-label', t('boardLayers'));
+  boardLayerTriggerEl.setAttribute('aria-haspopup', 'dialog');
+  boardLayerTriggerEl.innerHTML = '<svg><use href="#i-layers"/></svg>';
+  // 图层按钮在个性化按钮左侧（同一行、同一材质）。右推的 auto 边距移到
+  // 图层按钮上，两钮相邻成组；卸载时还原个性化按钮的推法。
+  titleRow.insertBefore(boardLayerTriggerEl, boardStyleTriggerEl);
+  boardStyleTriggerEl.style.marginLeft = 'auto';
+  boardLayerTriggerEl.style.marginLeft = 'auto';
+  boardStyleTriggerEl.style.marginLeft = '0';
+  boardLayerTriggerEl.addEventListener('click', () => {
+    const pop = $('#boardLayerPop', boardEls?.canvas || document);
+    if (pop && !pop.hidden) { pop.hidden = true; return; }
+    boardRenderLayerPop();
+  });
+  return boardLayerTriggerEl;
+}
+
+function boardRemoveLayerTrigger() {
+  $('#boardLayerPop', boardEls?.canvas || document)?.remove();
+  if (boardStyleTriggerEl) boardStyleTriggerEl.style.marginLeft = '';
+  boardLayerTriggerEl?.remove();
+  boardLayerTriggerEl = null;
+}
+
+function boardLayerName(widget) {
+  if (widget.type === 'note' || widget.type === 'todo') {
+    const item = library.items.find(entry => entry.id === widget.ref);
+    return item?.title || t(widget.type === 'note' ? 'untitledNote' : 'untitledTodo');
+  }
+  if (widget.type === 'text') return (widget.text || '').split('\n')[0].trim().slice(0, 24) || t('boardAddText');
+  const names = { arrow: t('boardMarkerArrow'), rect: t('boardMarkerRect'), ellipse: t('boardMarkerEllipse'), line: t('boardMarkerLine'), draw: t('boardMarkerDraw') };
+  return names[widget.kind] || t('boardAddMarker');
+}
+
+function boardLayerIcon(widget) {
+  if (widget.type === 'note' || widget.type === 'todo') return 'i-board';
+  if (widget.type === 'text') return 'i-text';
+  return widget.kind === 'draw' ? 'i-edit' : 'i-marker';
+}
+
+function boardLayerRow(widget, isChild = false) {
+  const selected = boardSelection.has(widget.id) ? ' is-selected' : '';
+  return `<button type="button" class="board-layer-row${isChild ? ' is-child' : ''}${selected}" data-layer-pick="${escapeHTML(widget.id)}">
+    <svg><use href="#${boardLayerIcon(widget)}"/></svg><span>${escapeHTML(boardLayerName(widget))}</span>
+    <i class="board-layer-eye${widget.hidden ? ' is-off' : ''}" data-layer-toggle="${escapeHTML(widget.id)}" title="${escapeHTML(widget.hidden ? t('boardLayerShow') : t('boardLayerHide'))}"><svg><use href="#${widget.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></i>
+  </button>`;
+}
+
+function boardRenderLayerPop() {
+  const board = boardLayoutCache?.board || activeBoard();
+  // 浮层互斥：图层面板打开时收起个性化与标注样式面板。
+  $('#boardStylePop', boardEls?.canvas || document)?.remove();
+  boardCloseMarkerPop();
+  let pop = $('#boardLayerPop', boardEls?.canvas || document);
+  if (!pop) {
+    pop = document.createElement('div');
+    pop.id = 'boardLayerPop';
+    pop.className = 'board-style-pop board-style-pop-lg board-layer-pop';
+    pop.setAttribute('role', 'dialog');
+    boardEls.canvas.appendChild(pop);
+  }
+  // z 序与画布 DOM 一致：卡片最上、文本其上、标注铺底；段内后画的在上。
+  const section = types => board.widgets.filter(widget => types.includes(widget.type)).reverse();
+  const zOrder = [
+    ...section(['note', 'todo']),
+    ...section(['text']),
+    ...section(['marker'])
+  ];
+  const groupDone = new Set();
+  const rows = zOrder.map(widget => {
+    if (!widget.groupId) return boardLayerRow(widget);
+    if (groupDone.has(widget.groupId)) return '';
+    groupDone.add(widget.groupId);
+    const members = zOrder.filter(entry => entry.groupId === widget.groupId);
+    const selected = members.every(entry => boardSelection.has(entry.id));
+    const allHidden = members.every(entry => entry.hidden);
+    const childRows = members.map(entry => boardLayerRow(entry, true)).join('');
+    return `<button type="button" class="board-layer-row is-group${selected ? ' is-selected' : ''}" data-layer-pick-group="${escapeHTML(widget.groupId)}">
+      <svg><use href="#i-layers"/></svg><span>${escapeHTML(t('boardLayerGroup'))} · ${members.length}</span>
+      <i class="board-layer-eye${allHidden ? ' is-off' : ''}" data-layer-toggle-group="${escapeHTML(widget.groupId)}" title="${escapeHTML(allHidden ? t('boardLayerShow') : t('boardLayerHide'))}"><svg><use href="#${allHidden ? 'i-eye-off' : 'i-eye'}"/></svg></i>
+    </button>${childRows}`;
+  }).join('');
+  pop.innerHTML = `<div class="board-style-pop-head"><b>${escapeHTML(t('boardLayers'))}</b><button type="button" data-layer-close title="${escapeHTML(t('cancel'))}" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></div>
+    <div class="board-layer-list">${rows || `<div class="board-import-empty">${escapeHTML(t('boardEmptyHint'))}</div>`}</div>`;
+  pop.hidden = false;
+}
+
+// 面板开着时同步重渲染（绘制提交 / 删除 / 选中变化后调用；关着直接返回）。
+function boardSyncLayerPop() {
+  const pop = $('#boardLayerPop', boardEls?.canvas || document);
+  if (!pop || pop.hidden) return;
+  boardRenderLayerPop();
+}
+
+// 组合所选：选中 ≥2 个元素时给它们统一 groupId（Ctrl/⌘+G）。
+function boardGroupSelection() {
+  if (boardSelection.size < 2 || currentView !== 'board') return;
+  const board = boardLayoutCache?.board || activeBoard();
+  const targets = board.widgets.filter(widget => boardSelection.has(widget.id));
+  if (targets.length < 2) return;
+  boardPushUndo();
+  const groupId = uid();
+  targets.forEach(widget => { widget.groupId = groupId; });
+  touchBoard(board);
+  persist();
+  boardSyncLayerPop();
+}
+
+// 解组：选中成员所在的组整体解散（Ctrl/⌘+Shift+G）。
+function boardUngroupSelection() {
+  if (!boardSelection.size || currentView !== 'board') return;
+  const board = boardLayoutCache?.board || activeBoard();
+  const groups = new Set(board.widgets.filter(widget => boardSelection.has(widget.id)).map(widget => widget.groupId).filter(Boolean));
+  if (!groups.size) return;
+  boardPushUndo();
+  board.widgets.forEach(widget => { if (groups.has(widget.groupId)) delete widget.groupId; });
+  touchBoard(board);
+  persist();
+  boardSyncLayerPop();
+}
+
 function bindBoardScene() {
   const canvas = $('#boardCanvas');
   if (!canvas) return;
@@ -5321,6 +5624,7 @@ function bindBoardScene() {
   boardWasActive = true;
   boardEnsurePill();
   boardEnsureStyleTrigger();
+  boardEnsureLayerTrigger();
   boardEls = {
     canvas,
     pill: boardPillEl,
@@ -5372,7 +5676,7 @@ function bindBoardScene() {
     boardEnterAnimated = false;
     boardApplyCamera();
   }
-  if (boardLayoutCache) boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+  if (boardLayoutCache) boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets.filter(widget => !widget.hidden));
   boardSyncNodes();
   boardSyncLinks();
   boardEnterAnimated = false;
@@ -5438,7 +5742,8 @@ function bindBoardScene() {
       return;
     }
     // 选中标注形状后按下即绘制：明确的意图优先于组件命中（标注常画在卡片上或跨卡片）。
-    if (boardPendingMarker === 'eraser') {
+    // 笔绘模式下切到橡皮即进入擦除手势（橡皮与笔集成在同一面板）。
+    if (boardPendingMarker === 'draw' && boardPenState.brush === 'eraser') {
       const rect = viewport.getBoundingClientRect();
       boardPushUndo();
       boardGesture = {
@@ -5727,7 +6032,7 @@ function bindBoardScene() {
           const cached = boardRefreshCardNode(widget);
           if (cached && gesture.node) gesture.node.dataset.signature = boardCardSignature(cached);
         } else boardRefreshStatic(widget);
-        boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+        boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets.filter(widget => !widget.hidden));
         boardSyncUndoButtons();
       }
       return;
@@ -5793,7 +6098,7 @@ function bindBoardScene() {
       // 组件落位：坐标已是组件字段（拖动中直接写入），这里只结算与刷新边界。
       touchBoard(boardLayoutCache.board);
       persist();
-      boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets);
+      boardLayoutCache.bounds = boardBoundsOf(boardLayoutCache.board.widgets.filter(widget => !widget.hidden));
       boardSyncToolbar();
       return;
     }
@@ -5902,8 +6207,8 @@ function bindBoardScene() {
   });
   $$('#boardMarkerMenu [data-board-marker]', canvas).forEach(button => button.addEventListener('click', () => {
     const kind = button.dataset.boardMarker;
-    // 画笔与橡皮是模式化工具：再点一次退出；形状工具保持单次绘制。
-    if ((kind === 'draw' || kind === 'eraser') && boardPendingMarker === kind) {
+    // 笔绘是模式化工具（橡皮在面板里切换）：再点一次退出；形状工具保持单次绘制。
+    if (kind === 'draw' && boardPendingMarker === kind) {
       boardCloseMarkerMenu($('#boardMarkerMenu', canvas));
       boardCancelDraw();
       return;
@@ -5965,8 +6270,18 @@ function bindBoardScene() {
       const pop = $('#boardBgPop', canvas);
       if (pop && !pop.hidden) { boardCloseBgPop(); return; }
       boardCloseContentPop();
+      boardCloseMarkerPop();
       boardPushUndo('style');
       boardRenderBgPop(widget);
+      return;
+    }
+    if (action === 'marker-pop') {
+      const pop = $('#boardMarkerPop', canvas);
+      if (pop && !pop.hidden) { boardCloseMarkerPop(); return; }
+      boardCloseBgPop();
+      boardCloseContentPop();
+      boardPushUndo('style');
+      boardRenderMarkerPop(widget);
       return;
     }
     if (action === 'content-pop') {
@@ -5995,6 +6310,17 @@ function bindBoardScene() {
       const output = cardOpacity.parentElement?.querySelector('output');
       if (output) output.textContent = `${widget.opacity}%`;
       boardRefreshCardNode(widget);
+      touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const markerStroke = event.target.closest('[data-tw="marker-stroke"]');
+    if (markerStroke && widget.type === 'marker') {
+      boardPushUndo('style');
+      widget.stroke = Number(markerStroke.value);
+      const output = markerStroke.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.stroke}`;
+      boardRefreshStatic(widget);
+      boardCloseMarkerPop();
       touchBoard(boardLayoutCache.board);
       return;
     }
@@ -6116,6 +6442,88 @@ function bindBoardScene() {
       touchBoard(boardLayoutCache.board);
     }
   });
+  // 标注样式面板（委托：端帽 / 填充 / 不透明度 / 笔尖），改动即时落盘。
+  boardEls.toolbar.parentElement?.addEventListener('click', event => {
+    if (!event.target.closest('#boardMarkerPop, [data-tw="marker-pop"]')) boardCloseMarkerPop();
+  });
+  boardEls.canvas.addEventListener('click', event => {
+    const pop = $('#boardMarkerPop', canvas);
+    if (!pop || pop.hidden) return;
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+    if (!widget || widget.type !== 'marker') { boardCloseMarkerPop(); return; }
+    const cap = event.target.closest('[data-mk-cap]');
+    if (cap) {
+      boardPushUndo('style');
+      if (cap.closest('[data-row="head"]')) widget.head = cap.dataset.mkCap; else widget.tail = cap.dataset.mkCap;
+      boardRefreshStatic(widget);
+      boardRenderMarkerPop(widget);
+      touchBoard(boardLayoutCache.board);
+      persist();
+      return;
+    }
+    const tip = event.target.closest('[data-mk-tip]');
+    if (tip) {
+      boardPushUndo('style');
+      widget.cap = tip.dataset.mkTip;
+      boardRefreshStatic(widget);
+      boardRenderMarkerPop(widget);
+      touchBoard(boardLayoutCache.board);
+      persist();
+      return;
+    }
+    const fill = event.target.closest('[data-mk-fill]');
+    if (fill) {
+      boardPushUndo('style');
+      widget.fill = fill.dataset.mkFill;
+      boardRefreshStatic(widget);
+      boardRenderMarkerPop(widget);
+      touchBoard(boardLayoutCache.board);
+      persist();
+    }
+  });
+  boardEls.canvas.addEventListener('input', event => {
+    const widget = boardSelection.size === 1 ? boardWidgetById([...boardSelection][0]) : null;
+    if (!widget || widget.type !== 'marker') return;
+    const pop = $('#boardMarkerPop', canvas);
+    if (!pop || pop.hidden) return;
+    const fillOpacity = event.target.closest('[data-mk-fillop]');
+    if (fillOpacity) {
+      boardPushUndo('style');
+      widget.fillOpacity = Number(fillOpacity.value);
+      const output = fillOpacity.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.fillOpacity}%`;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const strokeOpacity = event.target.closest('[data-mk-strokeop]');
+    if (strokeOpacity) {
+      boardPushUndo('style');
+      widget.strokeOpacity = Number(strokeOpacity.value);
+      const output = strokeOpacity.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.strokeOpacity}%`;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const drawOpacity = event.target.closest('[data-mk-op]');
+    if (drawOpacity) {
+      boardPushUndo('style');
+      widget.opacity = Number(drawOpacity.value);
+      const output = drawOpacity.parentElement?.querySelector('output');
+      if (output) output.textContent = `${widget.opacity}%`;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+      return;
+    }
+    const fillCustom = event.target.closest('[data-mk-fill-custom]');
+    if (fillCustom) {
+      boardPushUndo('style');
+      widget.fill = fillCustom.value;
+      boardRefreshStatic(widget);
+      touchBoard(boardLayoutCache.board);
+    }
+  });
   boardEls.canvas.addEventListener('change', event => {
     const showBox = event.target.closest('[data-show]');
     if (showBox) {
@@ -6148,7 +6556,7 @@ function bindBoardScene() {
   $('#boardUndo', canvas)?.addEventListener('click', boardUndo);
   $('#boardRedo', canvas)?.addEventListener('click', boardRedo);
 
-  // 画笔选项条：笔型切换（带预设）、粗细 / 不透明度 / 流量滑杆、颜色与完成。
+  // 笔绘面板：笔型切换（带预设）、粗细 / 不透明度 / 流量 / 笔尖、颜色与完成。
   const penBar = $('#boardPenBar', canvas);
   penBar?.addEventListener('click', event => {
     const done = event.target.closest('#boardPenDone');
@@ -6157,6 +6565,12 @@ function bindBoardScene() {
     if (brush) {
       boardPenState.brush = brush.dataset.brush;
       Object.assign(boardPenState, boardPenPresets[boardPenState.brush]);
+      boardRenderPenBar();
+      return;
+    }
+    const cap = event.target.closest('[data-pen-cap]');
+    if (cap) {
+      boardPenState.cap = cap.dataset.penCap;
       boardRenderPenBar();
       return;
     }
@@ -6218,6 +6632,47 @@ function bindBoardScene() {
       return;
     }
     if (!event.target.closest('#boardStylePop, #boardStyleTrigger')) pop.hidden = true;
+  });
+  // 图层面板：行点击选中（组行选整组）、眼睛显隐、头部关闭；点面板外收起。
+  canvas.addEventListener('click', event => {
+    const pop = $('#boardLayerPop', canvas);
+    if (!pop || pop.hidden) return;
+    if (event.target.closest('[data-layer-close]')) { pop.hidden = true; return; }
+    if (!event.target.closest('#boardLayerPop, #boardLayerTrigger')) { pop.hidden = true; return; }
+    const toggleGroup = event.target.closest('[data-layer-toggle-group]');
+    if (toggleGroup) {
+      const board = boardLayoutCache.board;
+      const members = board.widgets.filter(widget => widget.groupId === toggleGroup.dataset.layerToggleGroup);
+      if (!members.length) return;
+      const hide = !members.every(widget => widget.hidden);
+      boardPushUndo();
+      members.forEach(widget => { widget.hidden = hide; });
+      touchBoard(board);
+      persist();
+      renderList();
+      boardRenderLayerPop();
+      return;
+    }
+    const toggle = event.target.closest('[data-layer-toggle]');
+    if (toggle) {
+      const widget = boardWidgetById(toggle.dataset.layerToggle);
+      if (!widget) return;
+      boardPushUndo();
+      widget.hidden = !widget.hidden;
+      touchBoard(boardLayoutCache.board);
+      persist();
+      renderList();
+      boardRenderLayerPop();
+      return;
+    }
+    const pickGroup = event.target.closest('[data-layer-pick-group]');
+    if (pickGroup) {
+      const ids = boardLayoutCache.board.widgets.filter(widget => widget.groupId === pickGroup.dataset.layerPickGroup).map(widget => widget.id);
+      if (ids.length) boardSetSelection(ids);
+      return;
+    }
+    const pick = event.target.closest('[data-layer-pick]');
+    if (pick) boardSetSelection([pick.dataset.layerPick]);
   });
   canvas.addEventListener('input', event => {
     const pop = $('#boardStylePop', canvas);
@@ -7985,11 +8440,14 @@ function bindShell() {
     if (document.querySelector('dialog[open]')) return;
     if (event.key.toLowerCase() === 'n') { event.preventDefault(); createItem('note'); }
     if (event.key.toLowerCase() === 'k') { event.preventDefault(); $('#searchInput').focus(); }
-    // 计划板：Ctrl/⌘+Z 撤销、Shift+Z 或 Y 重做（画布手势专用，不抢编辑器内撤销）。
+    // 计划板：Ctrl/⌘+Z 撤销、Shift+Z 或 Y 重做、G 组合所选、Shift+G 解组
+    // （画布手势专用，不抢编辑器内快捷键）。
     if (currentView === 'board' && !event.target?.closest?.('.editor-pane, input, textarea, [contenteditable="true"], [contenteditable="plaintext-only"]')) {
       const key = event.key.toLowerCase();
       if (key === 'z' && !event.shiftKey) { event.preventDefault(); boardUndo(); }
       else if ((key === 'z' && event.shiftKey) || key === 'y') { event.preventDefault(); boardRedo(); }
+      else if (key === 'g' && event.shiftKey) { event.preventDefault(); boardUngroupSelection(); }
+      else if (key === 'g') { event.preventDefault(); boardGroupSelection(); }
     }
   });
 }
