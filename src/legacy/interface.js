@@ -3677,7 +3677,7 @@
   const dataProfilesReady = initializeDataProfiles();
   let settingsCloseTimer = 0;
 
-  function openSettings(page = 'language') {
+  function openSettings(page = 'general') {
     clearTimeout(settingsCloseTimer);
     settingsCloseTimer = 0;
     settingsModal.classList.remove('is-closing');
@@ -3709,7 +3709,7 @@
     if (page === 'workspace') void refreshDataStats();
   }
 
-  byId('settingsButton').addEventListener('click', () => openSettings('language'));
+  byId('settingsButton').addEventListener('click', () => openSettings('general'));
   byId('mobileListSettings').addEventListener('click', event => {
     event.preventDefault();
     openSettings('general');

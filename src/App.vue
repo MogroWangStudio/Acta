@@ -241,8 +241,8 @@
         </header>
         <div class="settings-layout">
           <nav class="settings-nav" aria-label="设置页面">
-            <button class="active" type="button" data-settings-page="language"><svg><use href="#i-globe"/></svg><span>语言</span></button>
-            <button type="button" data-settings-page="general"><svg><use href="#i-sliders"/></svg><span>常规设置</span></button>
+            <button class="active" type="button" data-settings-page="general"><svg><use href="#i-sliders"/></svg><span>常规设置</span></button>
+            <button type="button" data-settings-page="language"><svg><use href="#i-globe"/></svg><span>语言</span></button>
             <button type="button" data-settings-page="nav"><svg><use href="#i-more"/></svg><span>页面跳转栏</span></button>
             <button type="button" data-settings-page="plan-board"><svg><use href="#i-board"/></svg><span>计划板</span></button>
             <button type="button" data-settings-page="workspace"><svg><use href="#i-folder"/></svg><span>行记数据</span></button>
@@ -253,7 +253,7 @@
             <button type="button" data-settings-page="about"><svg><use href="#i-info"/></svg><span>关于</span></button>
           </nav>
           <div class="settings-content">
-            <section class="settings-panel active" data-settings-panel="language">
+            <section class="settings-panel" data-settings-panel="language">
               <header><h3>语言</h3><p>切换界面语言，不影响笔记内容。</p></header>
               <div class="language-options">
                 <label class="language-option"><input type="radio" name="actaLanguage" value="zh"/><span><span class="language-flag" role="img" aria-label="中华人民共和国国旗"><img src="/icons/flag-cn.svg" alt="" aria-hidden="true"/></span><span><strong>简体中文</strong><small>Chinese, Simplified</small></span></span></label>
@@ -306,7 +306,7 @@
               <p class="settings-status" id="workspaceStatus" role="status" aria-live="polite">正在读取行记数据档案…</p>
             </section>
 
-            <section class="settings-panel" data-settings-panel="general">
+            <section class="settings-panel active" data-settings-panel="general">
               <header><h3>常规设置</h3><p>启动、密度与动效偏好。</p></header>
               <div class="settings-group">
                 <label class="settings-row"><span><b>默认启动页面</b><small>启动时进入的视图</small></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
