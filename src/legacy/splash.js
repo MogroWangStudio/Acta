@@ -28,7 +28,7 @@
 // (scaled by --splash-speed), and CSS keyframes hide the splash and reveal
 // the shell even if this script never ran at all.
 (() => {
-  const SPLASH_PRESETS = new Set(['acta-lines', 'calm-fade', 'focus-zoom']);
+  const SPLASH_PRESETS = new Set(['acta-lines', 'calm-fade', 'focus-zoom', 'ink-write', 'curtain-up', 'breathe']);
   const clampSpeed = value => {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? Math.min(2, Math.max(0.5, parsed)) : 1;

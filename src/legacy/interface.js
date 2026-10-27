@@ -384,7 +384,7 @@
     '默认图标已恢复。':'Default icon restored.', '应用图标应用失败。':'Failed to apply the app icon.',
     '底栏图标':'Bottom bar icons', '图标和文字':'Icons and labels', '仅图标':'Icons only',
     '启动动画':'Splash animation', '启动过渡画面，可关闭':'Launch splash; can be turned off',
-    '动画预设':'Animation preset', '启动画面的演绎方式，可预览效果':'How the splash plays out; preview to compare.', 'Acta 线构（默认）':'Acta lines (default)', '静谧淡入':'Calm fade', '聚焦缩放':'Focus zoom',
+    '动画预设':'Animation preset', '启动画面的演绎方式，可预览效果':'How the splash plays out; preview to compare.', 'Acta 线构（默认）':'Acta lines (default)', '静谧淡入':'Calm fade', '聚焦缩放':'Focus zoom', '墨迹书写':'Ink write', '幕布上滑':'Curtain up', '呼吸呈现':'Breathe',
     '动画时间':'Animation speed', '启动动画的整体播放倍率':'Overall playback speed of the splash animation', '预览动画':'Preview animation',
     '笔记编辑器':'Note editor', 'Markdown 渲染与格式工具栏。':'Markdown rendering and the format toolbar.',
     '一级标题字号':'Heading 1 size', 'Markdown 一级标题大小':'H1 size after Markdown rendering',
@@ -446,7 +446,7 @@
     '默认图标已恢复。':'預設圖示已恢復。', '应用图标应用失败。':'套用應用程式圖示失敗。',
     '底栏图标':'底欄圖示', '图标和文字':'圖示與文字', '仅图标':'僅圖示',
     '启动动画':'啟動動畫', '启动过渡画面，可关闭':'啟動過渡畫面，可關閉',
-    '动画预设':'動畫預設', '启动画面的演绎方式，可预览效果':'啟動畫面的演繹方式，可預覽效果', 'Acta 线构（默认）':'Acta 線構（預設）', '静谧淡入':'靜謐淡入', '聚焦缩放':'聚焦縮放',
+    '动画预设':'動畫預設', '启动画面的演绎方式，可预览效果':'啟動畫面的演繹方式，可預覽效果', 'Acta 线构（默认）':'Acta 線構（預設）', '静谧淡入':'靜謐淡入', '聚焦缩放':'聚焦縮放', '墨迹书写':'墨跡書寫', '幕布上滑':'幕布上滑', '呼吸呈现':'呼吸呈現',
     '动画时间':'動畫時間', '启动动画的整体播放倍率':'啟動動畫的整體播放倍率', '预览动画':'預覽動畫',
     '笔记编辑器':'筆記編輯器', 'Markdown 渲染与格式工具栏。':'Markdown 渲染與格式工具列。',
     '一级标题字号':'一級標題字級', 'Markdown 一级标题大小':'Markdown 一級標題大小',
@@ -5541,7 +5541,7 @@
   const splashPresetSetting = byId('splashPresetSetting');
   const splashSpeedSetting = byId('splashSpeedSetting');
   const splashSpeedValue = byId('splashSpeedValue');
-  const splashPresetChoices = new Set(['acta-lines', 'calm-fade', 'focus-zoom']);
+  const splashPresetChoices = new Set(['acta-lines', 'calm-fade', 'focus-zoom', 'ink-write', 'curtain-up', 'breathe']);
   const clampSplashSpeed = value => {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? Math.min(2, Math.max(0.5, parsed)) : 1;

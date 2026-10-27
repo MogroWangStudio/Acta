@@ -49,6 +49,24 @@ html.acta-app-reveal .splash-screen ~ .app-shell { opacity: 1; }
 :root[data-acta-splash-preset="focus-zoom"] .splash-screen.is-leaving .splash-logo { animation: actaSplashFocusOut calc(.6s * var(--splash-speed, 1)) cubic-bezier(.6, .05, .3, 1) forwards; }
 :root[data-acta-splash-preset="focus-zoom"] .splash-screen ~ .app-shell { transform: scale(.988); transform-origin: 50% 50%; transition: opacity calc(.4s * var(--splash-speed, 1)) ease calc(1s * var(--splash-speed, 1)), transform calc(.7s * var(--splash-speed, 1)) var(--ease-out); animation: actaAppShellFailsafe 0s linear calc(5.5s * var(--splash-speed, 1)) forwards; }
 :root[data-acta-splash-preset="focus-zoom"] html.acta-app-reveal .splash-screen ~ .app-shell { opacity: 1; transform: none; }
+/* —— 墨迹书写：字标像落笔一样自左向右写出（clip-path 扫掠），
+   离场顺着同一方向继续写出画面外。 —— */
+:root[data-acta-splash-preset="ink-write"] .splash-lines { display: none; }
+:root[data-acta-splash-preset="ink-write"] .splash-logo { animation: actaSplashInkIn calc(1.15s * var(--splash-speed, 1)) cubic-bezier(.3, .6, .2, 1) both; }
+:root[data-acta-splash-preset="ink-write"] .splash-screen.is-leaving .splash-logo { animation: actaSplashInkOut calc(.55s * var(--splash-speed, 1)) cubic-bezier(.5, .05, .7, .4) both; }
+/* —— 幕布上滑：启动层作为一整块幕布向上收起，露出 beneath 的工作区；
+   工作区揭示去掉延迟（幕布一开始动就要看得见）。 —— */
+:root[data-acta-splash-preset="curtain-up"] .splash-lines { display: none; }
+:root[data-acta-splash-preset="curtain-up"] .splash-logo { animation: actaSplashCurtainIn calc(.9s * var(--splash-speed, 1)) var(--ease-out) both; }
+:root[data-acta-splash-preset="curtain-up"] .splash-screen.is-leaving { opacity: 1; visibility: visible; transform: translateY(0); transition: transform calc(.55s * var(--splash-speed, 1)) cubic-bezier(.7, 0, .3, 1); }
+:root[data-acta-splash-preset="curtain-up"] .splash-screen.is-leaving .splash-logo { animation: none; opacity: 1; }
+:root[data-acta-splash-preset="curtain-up"] .splash-screen ~ .app-shell { transition: opacity calc(.2s * var(--splash-speed, 1)) ease; }
+:root[data-acta-splash-preset="curtain-up"] html.acta-app-reveal .splash-screen ~ .app-shell { opacity: 1; transition: none; }
+html.acta-app-reveal[data-acta-splash-preset="curtain-up"] .splash-screen.is-leaving { transform: translateY(-103%); }
+/* —— 呼吸呈现：字标以两次轻微的呼吸节拍浮现（近定格，动效极轻）。 —— */
+:root[data-acta-splash-preset="breathe"] .splash-lines { display: none; }
+:root[data-acta-splash-preset="breathe"] .splash-logo { animation: actaSplashBreatheIn calc(1.7s * var(--splash-speed, 1)) ease-in-out both; }
+:root[data-acta-splash-preset="breathe"] .splash-screen.is-leaving .splash-logo { animation: actaSplashBreatheOut calc(.5s * var(--splash-speed, 1)) ease both; }
 @keyframes actaSplashLogoIn { from { opacity: 0; transform: scale(.94); } }
 @keyframes actaSplashLogoFly {
   0% { opacity: 1; transform: none; }
@@ -59,6 +77,11 @@ html.acta-app-reveal .splash-screen ~ .app-shell { opacity: 1; }
 @keyframes actaSplashCalmIn { from { opacity: 0; transform: translateY(14px) scale(.985); } }
 @keyframes actaSplashCalmOut { to { opacity: 0; transform: translateY(-8px); } }
 @keyframes actaSplashFocusIn { from { opacity: 0; transform: scale(1.05); filter: blur(12px); } 55% { opacity: 1; } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes actaSplashInkIn { from { clip-path: inset(-2% 100% -2% 0); opacity: .35; } 55% { opacity: 1; } to { clip-path: inset(-2% -4% -2% 0); opacity: 1; } }
+@keyframes actaSplashInkOut { from { clip-path: inset(-2% -4% -2% 0); opacity: 1; } to { clip-path: inset(-2% 0 -2% 100%); opacity: .2; } }
+@keyframes actaSplashCurtainIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes actaSplashBreatheIn { 0% { opacity: 0; transform: scale(.97); } 36% { opacity: 1; transform: scale(1); } 58% { transform: scale(.996); } 80% { transform: scale(1.003); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes actaSplashBreatheOut { to { opacity: 0; transform: scale(.985); } }
 @keyframes actaSplashFocusOut { to { opacity: 0; transform: translate(var(--splash-fly-x, 0px), var(--splash-fly-y, 0px)) scale(var(--splash-fly-scale, 1.14)); filter: blur(4px); } }
 @keyframes actaSplashFailsafe { to { opacity: 0; visibility: hidden; } }
 @keyframes actaAppShellFailsafe { to { opacity: 1; } }

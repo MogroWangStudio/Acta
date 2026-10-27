@@ -447,7 +447,7 @@
               </div>
               <div class="settings-group" style="margin-top:18px">
                 <label class="settings-row"><span><b>启动动画</b></span><input id="splashAnimationSetting" type="checkbox" checked/></label>
-                <div class="settings-row splash-preset-row"><span><b>动画预设</b></span><span class="splash-preset-controls"><select id="splashPresetSetting"><option value="acta-lines">Acta 线构（默认）</option><option value="calm-fade">静谧淡入</option><option value="focus-zoom">聚焦缩放</option></select><button class="icon-button splash-preview-button" id="previewSplashAnimation" type="button" title="预览启动动画" aria-label="预览启动动画"><svg><use href="#i-spark"/></svg></button></span></div>
+                <div class="settings-row splash-preset-row"><span><b>动画预设</b></span><span class="splash-preset-controls"><select id="splashPresetSetting"><option value="acta-lines">Acta 线构（默认）</option><option value="calm-fade">静谧淡入</option><option value="focus-zoom">聚焦缩放</option><option value="ink-write">墨迹书写</option><option value="curtain-up">幕布上滑</option><option value="breathe">呼吸呈现</option></select><button class="icon-button splash-preview-button" id="previewSplashAnimation" type="button" title="预览启动动画" aria-label="预览启动动画"><svg><use href="#i-spark"/></svg></button></span></div>
                 <label class="settings-row"><span><b>动画速度</b></span><span class="font-size-control"><input id="splashSpeedSetting" type="range" min="0.5" max="2" step="0.1"/><output id="splashSpeedValue">1.0×</output></span></label>
                 <label class="settings-row"><span><b>输入框选中动画</b></span><input id="focusAnimationSetting" type="checkbox" checked/></label>
               </div>
@@ -879,7 +879,7 @@
             <p>启动时的一段过渡画面；不喜欢可以关闭，速度也由你决定。</p>
             <div class="settings-group oobe-splash-group">
               <label class="settings-row"><span><b>启动动画</b><small>关闭后直接进入工作区</small></span><input id="oobeSplashEnabled" type="checkbox" checked/></label>
-              <div class="settings-row splash-preset-row"><span><b>动画预设</b><small>点右侧按钮立即预览</small></span><span class="splash-preset-controls"><select id="oobeSplashPreset"><option value="acta-lines">Acta 线构（默认）</option><option value="calm-fade">静谧淡入</option><option value="focus-zoom">聚焦缩放</option></select><button class="icon-button splash-preview-button" id="oobeSplashPreview" type="button" title="预览启动动画" aria-label="预览启动动画"><svg><use href="#i-spark"/></svg></button></span></div>
+              <div class="settings-row splash-preset-row"><span><b>动画预设</b><small>点右侧按钮立即预览</small></span><span class="splash-preset-controls"><select id="oobeSplashPreset"><option value="acta-lines">Acta 线构（默认）</option><option value="calm-fade">静谧淡入</option><option value="focus-zoom">聚焦缩放</option><option value="ink-write">墨迹书写</option><option value="curtain-up">幕布上滑</option><option value="breathe">呼吸呈现</option></select><button class="icon-button splash-preview-button" id="oobeSplashPreview" type="button" title="预览启动动画" aria-label="预览启动动画"><svg><use href="#i-spark"/></svg></button></span></div>
               <label class="settings-row"><span><b>动画速度</b><small>数值越大播放越快</small></span><span class="font-size-control"><input id="oobeSplashSpeed" type="range" min="0.5" max="2" step="0.1"/><output id="oobeSplashSpeedValue">1.0×</output></span></label>
             </div>
           </section>
