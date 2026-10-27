@@ -74,7 +74,9 @@ public class MainActivity extends BridgeActivity {
                 @Override
                 public void onBackStarted(BackEvent event) {
                     lastBackProgress = 0f;
-                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('start')");
+                    // 把侧滑边缘（EDGE_LEFT=0 / 其他=右）一并传给页面：
+                    // 页面据此决定偏移方向——哪边侧滑就往哪偏移。
+                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('start'," + event.getSwipeEdge() + ")");
                 }
 
                 @Override
@@ -82,7 +84,7 @@ public class MainActivity extends BridgeActivity {
                     float rounded = Math.round(event.getProgress() * 100f) / 100f;
                     if (rounded == lastBackProgress) return;
                     lastBackProgress = rounded;
-                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('progress'," + rounded + ")");
+                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('progress'," + rounded + "," + event.getSwipeEdge() + ")");
                 }
 
                 @Override

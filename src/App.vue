@@ -326,6 +326,7 @@
                 <label class="settings-row"><span><b>减少动态效果</b></span><input id="reduceMotionSetting" type="checkbox"/></label>
                 <label class="settings-row" id="backgroundRunRow" hidden><span><b>关闭窗口时转入后台</b></span><input id="backgroundRunSetting" type="checkbox"/></label>
                 <label class="settings-row" id="predictiveBackRow" hidden><span><b>预见式返回</b></span><input id="predictiveBackSetting" type="checkbox"/></label>
+                <label class="settings-row" id="backGestureScaleRow" hidden><span><b>返回缩放幅度</b></span><span class="font-size-control"><input id="backGestureScaleSetting" type="range" min="0" max="100" step="5"/><output id="backGestureScaleValue">45%</output></span></label>
                 <label class="settings-row"><span><b>点击空白处</b></span><select id="backdropCloseSetting"><option value="none">不关闭（防误触）</option><option value="single">单击关闭</option><option value="double">双击关闭</option></select></label>
                 <div class="settings-row"><span><b>初始设置向导</b></span><button class="settings-button secondary" id="openOobeButton" type="button"><svg><use href="#i-spark"/></svg><span>重新运行引导</span></button></div>
                 <div class="settings-row"><span><b>缓存与页面</b></span><button class="settings-button secondary" id="clearCacheReload" type="button"><svg><use href="#i-refresh"/></svg><span>清除缓存重新加载</span></button></div>

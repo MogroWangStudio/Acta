@@ -8,6 +8,7 @@
     appIconPreset: 'default', customAppIcon: '',
     splashAnimationEnabled: true, splashAnimationPreset: 'acta-lines', splashAnimationSpeed: 1, inputFocusAnimation: true, subtaskCompletedDates: true,
     completedTodoSink: true, completedTodoSinkDelay: 1, subtaskDoneSort: 'asc', backdropClose: 'double',
+    backGestureScale: 45,
     navPages: { inbox: true, calendar: true, todos: false, notes: false, trash: true, stats: true, lan: true },
     mobileSlots: ['trash', 'stats'], mobileTitleActions: ['trash', 'stats', 'refresh'], mobileNavStyle: 'labeled',
     runInBackground: false,
@@ -5312,6 +5313,21 @@
     predictiveBackRow.hidden = false;
     const predictiveBackSetting = byId('predictiveBackSetting');
     predictiveBackSetting.checked = uiSettings.predictiveBack !== false;
+    // 缩放幅度滑杆（0–100）：控制预见式手势里页面收缩的最大比例。
+    const backGestureScaleRow = byId('backGestureScaleRow');
+    const backGestureScaleSetting = byId('backGestureScaleSetting');
+    if (backGestureScaleRow && backGestureScaleSetting) {
+      backGestureScaleRow.hidden = false;
+      const scaleValue = byId('backGestureScaleValue');
+      const syncScaleLabel = () => { scaleValue.textContent = `${backGestureScaleSetting.value}%`; };
+      backGestureScaleSetting.value = String(Math.min(Math.max(Math.round(Number(uiSettings.backGestureScale)) || 45, 0), 100));
+      syncScaleLabel();
+      backGestureScaleSetting.addEventListener('input', () => {
+        uiSettings.backGestureScale = Number(backGestureScaleSetting.value);
+        syncScaleLabel();
+        saveUISettings();
+      });
+    }
     const syncNativePredictiveBack = enabled => {
       try { predictiveNative.setPredictiveBack({ enabled }); } catch { /* 桥不可用时不打断设置页 */ }
     };
@@ -8864,11 +8880,14 @@
 
     // —— 预见式返回的手势进度（Android 14+，MainActivity 桥接）——
     // 进度实时作用在「下一次返回会关闭的那一层」上，目标选择与
-    // __actaHandleBackButton 的层级完全一致；提交时先复位样式再执行
+    // __actaHandleBackButton 的层级完全一致；页面随进度缩小（幅度由
+    // 常规设置的「返回缩放幅度」滑杆控制）、收圆角（页面级表面），
+    // 并按侧滑边缘偏移——哪边侧滑就往哪偏移。提交时先复位样式再执行
     // 返回动作（原生侧把它们放进同一次 JS 求值，同一帧内完成），
     // 取消时带回弹回到原位。变换用 !important 内联样式——弹层的
     // 打开动画（fill both）最终帧会盖过普通内联样式。
     let backGestureEl = null;
+    let backGestureEdge = 1;
     let backGestureTransitionTimer = 0;
     const backGestureTarget = () => {
       if (document.body.classList.contains('note-focus-mode')) return byId('editorPane');
@@ -8888,25 +8907,37 @@
       el.style.removeProperty('overflow');
       el.style.removeProperty('transition');
     };
-    window.__actaBackGesture = (phase, progress) => {
+    // phase：'start' / 'progress' / 'cancel' / 'commit'。'start' 的第二参是
+    // 侧滑边缘（EDGE_LEFT=0 → 向左偏移，其余含右缘向右），'progress' 的
+    // 第二参是进度、第三参是边缘（与原生 onBackStarted / onBackProgressed
+    // 的参数一一对应）。
+    window.__actaBackGesture = (phase, value, edge) => {
       if (phase === 'start' || phase === 'progress') {
         if (document.body.classList.contains('acta-reduce-motion')) return;
+        if (phase === 'start') backGestureEdge = Number(value) === 0 ? -1 : 1;
         const target = backGestureTarget();
-        const shell = target || document.querySelector('.app-shell');
-        if (!shell) return;
-        if (backGestureEl && backGestureEl !== shell) clearBackGestureStyles(backGestureEl);
-        backGestureEl = shell;
+        const page = target || document.querySelector('.app-shell');
+        if (!page) return;
+        if (backGestureEl && backGestureEl !== page) clearBackGestureStyles(backGestureEl);
+        backGestureEl = page;
         if (phase === 'start') {
           clearTimeout(backGestureTransitionTimer);
-          shell.style.transition = 'none';
+          page.style.transition = 'none';
         }
-        const value = Math.min(Math.max(Number(progress) || 0, 0), 1);
-        const scale = 1 - value * (target ? .05 : .09);
-        shell.style.setProperty('transform', `scale(${scale.toFixed(4)})`, 'important');
-        if (!target) {
-          // 根层：模仿系统的「返回桌面」预览——窗口整体缩小并收圆角。
-          shell.style.setProperty('border-radius', `${(value * 26).toFixed(1)}px`, 'important');
-          shell.style.setProperty('overflow', 'hidden', 'important');
+        const gestureProgress = phase === 'progress' ? value : 0;
+        const v = Math.min(Math.max(Number(gestureProgress) || 0, 0), 1);
+        // 缩放幅度随常规设置的「返回缩放幅度」滑杆（0–100）调整：
+        // 整页最大收缩 18%、弹层 10%，默认 45 对应此前的视觉强度。
+        const scaleSetting = Number(uiSettings.backGestureScale);
+        const scaleRatio = Number.isFinite(scaleSetting) ? Math.min(Math.max(scaleSetting, 0), 100) / 100 : .45;
+        const scale = 1 - (target ? .10 : .18) * scaleRatio * v;
+        // 哪边侧滑就往哪偏移：随进度线性增加，最多 20px。
+        const offsetX = backGestureEdge * 20 * v;
+        page.style.setProperty('transform', `translateX(${offsetX.toFixed(1)}px) scale(${scale.toFixed(4)})`, 'important');
+        // 页面级表面（根层与全屏编辑器）随进度收圆角；小浮层自带圆角，保持原样。
+        if (!target || target === byId('editorPane')) {
+          page.style.setProperty('border-radius', `${(v * 26).toFixed(1)}px`, 'important');
+          page.style.setProperty('overflow', 'hidden', 'important');
         }
         return;
       }
