@@ -5637,13 +5637,14 @@
 
   function syncNativeSystemBar(color = currentSystemBarColor()) {
     const lightIcons = isDarkSystemBarColor(color);
+    // 安卓端状态栏 / 导航栏已透明（页面延伸到栏下，edge-to-edge），
+    // ActaSync 只保留窗口兜底底色与图标明暗的同步。
     const nativeSystemBars = window.Capacitor?.Plugins?.ActaSync;
     if (nativeSystemBars?.setSystemBars) nativeSystemBars.setSystemBars({ color }).catch(() => {});
-    const nativeStatusBar = window.Capacitor?.Plugins?.StatusBar;
-    if (!nativeStatusBar) return;
-    nativeStatusBar.setOverlaysWebView({ overlay:false }).catch(() => {});
-    nativeStatusBar.setBackgroundColor({ color }).catch(() => {});
-    nativeStatusBar.setStyle({ style:lightIcons ? 'DARK' : 'LIGHT' }).catch(() => {});
+    // 内置 SystemBars 插件接管图标明暗：这里同步后，旋转等配置变化时
+    // 插件会重放同样的样式，不会退回系统明暗。
+    const systemBars = window.Capacitor?.Plugins?.SystemBars;
+    if (systemBars?.setStyle) systemBars.setStyle({ style: lightIcons ? 'DARK' : 'LIGHT' }).catch(() => {});
   }
 
   function applyTheme() {

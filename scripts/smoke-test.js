@@ -868,28 +868,26 @@ async function main() {
         && document.querySelector('#trashCount')?.textContent === '0'
         && !document.querySelector('#deleteConfirmDialog').open);
       document.querySelector('[data-view="todos"]').click();
-      const nativeStatusBarCalls = [];
+      const nativeSystemBarsStyleCalls = [];
       const nativeSystemBarCalls = [];
       const nativeAppIconCalls = [];
       window.Capacitor = { Plugins:{ ActaSync:{
         setSystemBars: options => { nativeSystemBarCalls.push(options); return Promise.resolve(); },
         setAppIcon: options => { nativeAppIconCalls.push(options); return Promise.resolve(); }
-      }, StatusBar:{
-        setOverlaysWebView: options => { nativeStatusBarCalls.push(['overlay', options.overlay]); return Promise.resolve(); },
-        setBackgroundColor: options => { nativeStatusBarCalls.push(['background', options.color]); return Promise.resolve(); },
-        setStyle: options => { nativeStatusBarCalls.push(['style', options.style]); return Promise.resolve(); }
+      }, SystemBars:{
+        setStyle: options => { nativeSystemBarsStyleCalls.push(options.style); return Promise.resolve(); }
       } } };
-      const latestStatusBarCall = type => [...nativeStatusBarCalls].reverse().find(call => call[0] === type)?.[1];
+      const latestSystemBarsStyle = () => nativeSystemBarsStyleCalls[nativeSystemBarsStyleCalls.length - 1];
       const darkTheme = document.querySelector('input[name="actaTheme"][value="mono-dark"]');
       darkTheme.checked = true;
       darkTheme.dispatchEvent(new Event('change'));
       const darkCreateMenuBackground = getComputedStyle(document.querySelector('#createMenu')).backgroundColor;
       const darkThemeColor = document.querySelector('meta[name="theme-color"]').content;
-      const darkNativeStatusBar = [latestStatusBarCall('background'), latestStatusBarCall('style')];
+      const darkSystemBarsStyle = latestSystemBarsStyle();
       const customSidebarTheme = document.querySelector('#customSidebarColor');
       customSidebarTheme.value = '#101820';
       customSidebarTheme.dispatchEvent(new Event('input'));
-      const customDarkNativeStatusBar = [latestStatusBarCall('background'), latestStatusBarCall('style')];
+      const customDarkSystemBarsStyle = latestSystemBarsStyle();
       const detailedColorInputs = {
         customTodoColor:'#246f9b',
         customTodoSoftColor:'#d5ebf6',
@@ -931,8 +929,8 @@ async function main() {
       const lightTheme = document.querySelector('input[name="actaTheme"][value="mono-light"]');
       lightTheme.checked = true;
       lightTheme.dispatchEvent(new Event('change'));
-      const lightNativeStatusBar = [latestStatusBarCall('background'), latestStatusBarCall('style')];
-      const nativeStatusBarMatchesThemes = darkNativeStatusBar[0] === '#111111' && darkNativeStatusBar[1] === 'DARK' && customDarkNativeStatusBar[0] === '#101820' && customDarkNativeStatusBar[1] === 'DARK' && lightNativeStatusBar[0] === '#e6e6e6' && lightNativeStatusBar[1] === 'LIGHT' && nativeSystemBarCalls.some(call => call.color === '#111111' && !('lightIcons' in call)) && nativeSystemBarCalls.some(call => call.color === '#e6e6e6' && !('lightIcons' in call));
+      const lightSystemBarsStyle = latestSystemBarsStyle();
+      const nativeStatusBarMatchesThemes = darkSystemBarsStyle === 'DARK' && customDarkSystemBarsStyle === 'DARK' && lightSystemBarsStyle === 'LIGHT' && nativeSystemBarCalls.some(call => call.color === '#111111' && !('lightIcons' in call)) && nativeSystemBarCalls.some(call => call.color === '#e6e6e6' && !('lightIcons' in call));
       const readAppearanceSettings = () => JSON.parse(localStorage.getItem('acta.interface.settings.v1') || '{}');
       const fontSizeSetting = document.querySelector('#appFontSizeSetting');
       fontSizeSetting.value = '14';
@@ -1586,7 +1584,7 @@ async function main() {
         quickCheckinTypeSelectable,
         quickCheckinCreated,
         nativeStatusBarMatchesThemes,
-        nativeStatusBarCalls,
+        nativeSystemBarsStyleCalls,
         reciprocalLink,
         reciprocalTodoLink,
         todoClassificationSelectOnly,
@@ -1920,7 +1918,7 @@ async function main() {
     assert.equal(result.removeConfirmDeletes, true);
     assert.equal(result.quickCheckinTypeSelectable, true);
     assert.equal(result.quickCheckinCreated, true);
-    assert.equal(result.nativeStatusBarMatchesThemes, true, JSON.stringify(result.nativeStatusBarCalls));
+    assert.equal(result.nativeStatusBarMatchesThemes, true, JSON.stringify(result.nativeSystemBarsStyleCalls));
     assert.equal(result.reciprocalLink, true);
     assert.equal(result.reciprocalTodoLink, true);
     assert.equal(result.todoClassificationSelectOnly, true);

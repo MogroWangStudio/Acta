@@ -15,11 +15,6 @@ const config: CapacitorConfig = {
       smallIcon: 'ic_stat_acta',
       iconColor: '#526b55',
     },
-    StatusBar: {
-      overlaysWebView: false,
-      backgroundColor: '#e7e7e3',
-      style: 'DARK',
-    },
   },
 };
 

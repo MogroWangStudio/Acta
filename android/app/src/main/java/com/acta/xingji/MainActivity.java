@@ -125,16 +125,18 @@ public class MainActivity extends BridgeActivity {
 
     public static void applySystemBars(Activity activity, int background) {
         Window window = activity.getWindow();
-        window.setStatusBarColor(background);
-        window.setNavigationBarColor(background);
+        // Edge-to-edge：WebView 全幅延伸到系统栏下方，状态栏 / 导航栏透明，
+        // 状态栏区域成为页面的一部分，由页面统一处理——顶栏 / 底栏 / 弹窗
+        // 已按 env(safe-area-inset-*) 预留安全区内边距，弹窗遮罩打开时会盖
+        // 到状态栏、随之一起变暗。background 只作窗口兜底底色与图标明暗
+        // 依据，不再作为系统栏的固定色。
+        WindowCompat.setDecorFitsSystemWindows(window, false);
+        window.setStatusBarColor(Color.TRANSPARENT);
+        window.setNavigationBarColor(Color.TRANSPARENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.setStatusBarContrastEnforced(false);
             window.setNavigationBarContrastEnforced(false);
         }
-        WindowCompat.setDecorFitsSystemWindows(window, true);
-        // Android 15+ enforces edge-to-edge and ignores setStatusBarColor /
-        // setNavigationBarColor, so the strips behind the transparent system bars
-        // show the window background instead. Keep it in sync with the theme color.
         window.setBackgroundDrawable(new ColorDrawable(background));
         WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
         boolean darkIcons = relativeLuminance(background) >= .42;
