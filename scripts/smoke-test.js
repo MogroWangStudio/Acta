@@ -1493,13 +1493,12 @@ async function main() {
       const deleteProfileEnabled = Boolean(deleteProfileAction && !deleteProfileAction.disabled);
       document.querySelector('[data-settings-page="cloud"]').click();
       const dataSyncHeadingZh = document.querySelector('[data-settings-panel="cloud"] h3').textContent === '数据同步';
-      const cloudPanelDescriptionZh = document.querySelector('[data-settings-panel="cloud"] header p').textContent;
       const webDavFieldsVisible = !document.querySelector('#webDavModeFields').hidden && Boolean(document.querySelector('#webDavServer'));
       const englishLanguage = document.querySelector('input[name="actaLanguage"][value="en"]');
       englishLanguage.checked = true;
       englishLanguage.dispatchEvent(new Event('change'));
-      await waitFor(() => document.querySelector('[data-settings-panel="cloud"] header p').textContent === 'Sync via WebDAV or LAN devices.');
-      const cloudPanelDescriptionEn = document.querySelector('[data-settings-panel="cloud"] header p').textContent;
+      // 面板功能描述行已移除：语言切换改由标题 h3 的英文文案验证。
+      await waitFor(() => document.querySelector('[data-settings-panel="cloud"] h3').textContent === 'Data sync');
       const dataSyncLabelEn = document.querySelector('[data-settings-page="cloud"] span').textContent === 'Data sync' && document.querySelector('[data-settings-panel="cloud"] h3').textContent === 'Data sync';
       const noteEditorLabelEn = document.querySelector('[data-settings-page="note-editor"] span').textContent === 'Note editor'
         && document.querySelector('[data-settings-panel="note-editor"] h3').textContent === 'Note editor';
@@ -1802,9 +1801,7 @@ async function main() {
         appearanceSettingsComplete,
         appearanceLayoutFits,
         dataSyncHeadingZh,
-        cloudPanelDescriptionZh,
         webDavFieldsVisible,
-        cloudPanelDescriptionEn,
         dataSyncLabelEn,
         noteEditorLabelEn,
         calendarDefaultOptionEn
@@ -2119,9 +2116,7 @@ async function main() {
     assert.equal(result.appearanceSettingsComplete, true);
     assert.equal(result.appearanceLayoutFits, true);
     assert.equal(result.dataSyncHeadingZh, true);
-    assert.equal(result.cloudPanelDescriptionZh, '通过 WebDAV 或局域网设备同步完整数据文件夹。');
     assert.equal(result.webDavFieldsVisible, true);
-    assert.equal(result.cloudPanelDescriptionEn, 'Sync via WebDAV or LAN devices.');
     assert.equal(result.dataSyncLabelEn, true);
     assert.equal(result.noteEditorLabelEn, true);
     assert.equal(result.calendarDefaultOptionEn, true);

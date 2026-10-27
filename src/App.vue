@@ -265,7 +265,7 @@
           </nav>
           <div class="settings-content">
             <section class="settings-panel" data-settings-panel="language">
-              <header><h3>语言</h3><p>切换界面语言，不影响笔记内容。</p></header>
+              <header><h3>语言</h3></header>
               <div class="language-options">
                 <label class="language-option"><input type="radio" name="actaLanguage" value="zh"/><span><span class="language-flag" role="img" aria-label="中华人民共和国国旗"><img src="/icons/flag-cn.svg" alt="" aria-hidden="true"/></span><span><strong>简体中文</strong><small>Chinese, Simplified</small></span></span></label>
                 <label class="language-option"><input type="radio" name="actaLanguage" value="zh-Hant"/><span><span class="language-flag" role="img" aria-label="中华人民共和国国旗"><img src="/icons/flag-cn.svg" alt="" aria-hidden="true"/></span><span><strong>繁體中文</strong><small>Chinese, Traditional</small></span></span></label>
@@ -280,18 +280,18 @@
             </section>
 
             <section class="settings-panel" data-settings-panel="plan-board">
-              <header><h3>计划板</h3><p>渲染性能与关联显示偏好，只影响本机的计划板视图。</p></header>
+              <header><h3>计划板</h3></header>
               <div class="settings-group">
-                <label class="settings-row"><span><b>渲染余量</b><small>画布提前渲染视口外内容的距离，越大越顺滑、越耗性能</small></span><select id="planBoardRenderMargin"><option value="small">小 流畅优先</option><option value="medium" selected>中 均衡</option><option value="large">大 预览优先</option></select></label>
-                <label class="settings-row"><span><b>关联曲线</b><small>在同板互相关联的待办与笔记之间显示连接曲线</small></span><input id="planBoardLinkCurves" type="checkbox" checked/></label>
+                <label class="settings-row"><span><b>渲染余量</b></span><select id="planBoardRenderMargin"><option value="small">小 流畅优先</option><option value="medium" selected>中 均衡</option><option value="large">大 预览优先</option></select></label>
+                <label class="settings-row"><span><b>关联曲线</b></span><input id="planBoardLinkCurves" type="checkbox" checked/></label>
               </div>
               <p class="settings-status" id="planBoardStatus">设置即时生效，保存在本机。</p>
             </section>
 
             <section class="settings-panel" data-settings-panel="workspace">
-              <header class="data-profile-header"><div><h3>行记数据</h3><p>每个档案都包含完整的归类、笔记和待办，可保存在本地或指定文件夹。</p></div><div class="data-profile-header-actions"><button class="settings-button" id="newDataProfile" type="button"><svg><use href="#i-plus"/></svg><span>新建空白档案</span></button><button class="settings-button secondary" id="readDataProfile" type="button"><svg><use href="#i-folder"/></svg><span>读取现有档案</span></button><button class="settings-button secondary" id="refreshDataProfile" type="button"><svg><use href="#i-refresh"/></svg><span>刷新行记数据</span></button></div></header>
+              <header class="data-profile-header"><div><h3>行记数据</h3></div><div class="data-profile-header-actions"><button class="settings-button" id="newDataProfile" type="button"><svg><use href="#i-plus"/></svg><span>新建空白档案</span></button><button class="settings-button secondary" id="readDataProfile" type="button"><svg><use href="#i-folder"/></svg><span>读取现有档案</span></button><button class="settings-button secondary" id="refreshDataProfile" type="button"><svg><use href="#i-refresh"/></svg><span>刷新行记数据</span></button></div></header>
               <div class="appearance-subsection data-stats-subsection">
-                <header><b>数据统计</b><small id="dataStatsSubtitle">当前档案的容量与内容概览</small></header>
+                <header><b>数据统计</b></header>
                 <div class="data-stats-grid">
                   <div class="data-stats-tile"><b id="dataStatsSize">—</b><span id="dataStatsSizeLabel">文件总大小</span></div>
                   <div class="data-stats-tile"><b id="dataStatsFiles">—</b><span>文件数</span></div>
@@ -306,9 +306,9 @@
               <aside class="browser-storage-notice" id="browserStorageNotice" hidden><svg><use href="#i-info"/></svg><p><b>浏览器本地空间有限</b><span>空间不足时浏览器可能清理本地数据，请定期导出备份。</span></p></aside>
               <div class="data-profile-create" id="dataProfileCreate" aria-hidden="true">
                 <div class="data-profile-create-inner">
-                  <div class="data-profile-create-title"><span><svg><use href="#i-database"/></svg></span><div><b id="newDataProfileTitle">新建空白档案</b><small id="newDataProfileSubtitle">从一份没有笔记和待办的数据开始</small></div></div>
+                  <div class="data-profile-create-title"><span><svg><use href="#i-database"/></svg></span><div><b id="newDataProfileTitle">新建空白档案</b></div></div>
                   <label class="data-profile-name-field"><span id="newDataProfileNameLabel">档案名称</span><input id="newDataProfileName" type="text" maxlength="60" autocomplete="off" value="新的行记数据"/></label>
-                  <fieldset class="data-profile-storage"><legend id="newDataProfileStorageLabel">保存位置</legend><label><input type="radio" name="newDataProfileStorage" value="local" checked/><span><svg><use href="#i-database"/></svg><b id="newDataProfileLocalLabel">软件本地</b><small id="newDataProfileLocalHint">默认位置，无需选择文件夹</small></span></label><label><input type="radio" name="newDataProfileStorage" value="folder"/><span><svg><use href="#i-folder"/></svg><b id="newDataProfileFolderLabel">自选文件夹</b><small id="newDataProfileFolderHint">创建时选择保存位置</small></span></label></fieldset>
+                  <fieldset class="data-profile-storage"><legend id="newDataProfileStorageLabel">保存位置</legend><label><input type="radio" name="newDataProfileStorage" value="local" checked/><span><svg><use href="#i-database"/></svg><b id="newDataProfileLocalLabel">软件本地</b></span></label><label><input type="radio" name="newDataProfileStorage" value="folder"/><span><svg><use href="#i-folder"/></svg><b id="newDataProfileFolderLabel">自选文件夹</b></span></label></fieldset>
                   <div class="data-profile-create-actions"><button class="settings-button secondary" id="cancelDataProfile" type="button">取消</button><button class="settings-button" id="confirmDataProfile" type="button"><svg><use href="#i-plus"/></svg><span>创建并打开</span></button></div>
                 </div>
               </div>
@@ -318,29 +318,29 @@
             </section>
 
             <section class="settings-panel active" data-settings-panel="general">
-              <header><h3>常规设置</h3><p>启动、密度与动效偏好。</p></header>
+              <header><h3>常规设置</h3></header>
               <div class="settings-group">
-                <label class="settings-row"><span><b>默认启动页面</b><small>启动时进入的视图</small></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
-                <label class="settings-row"><span><b>紧凑列表</b><small>中栏密度更高</small></span><input id="compactModeSetting" type="checkbox"/></label>
-                <label class="settings-row"><span><b>减少动态效果</b><small>降低转场与弹性动画</small></span><input id="reduceMotionSetting" type="checkbox"/></label>
-                <label class="settings-row" id="backgroundRunRow" hidden><span><b>关闭窗口时转入后台</b><small>关闭窗口后保留在系统托盘，局域网同步继续；可从托盘恢复或退出</small></span><input id="backgroundRunSetting" type="checkbox"/></label>
-                <label class="settings-row" id="predictiveBackRow" hidden><span><b>预见式返回</b><small>边缘滑动时预览返回效果，中途可取消</small></span><input id="predictiveBackSetting" type="checkbox"/></label>
-                <label class="settings-row"><span><b>点击空白处</b><small>点空白处如何关闭弹窗，默认双击防误触</small></span><select id="backdropCloseSetting"><option value="none">不关闭（防误触）</option><option value="single">单击关闭</option><option value="double">双击关闭</option></select></label>
-                <div class="settings-row"><span><b>初始设置向导</b><small>重新运行首次启动引导</small></span><button class="settings-button secondary" id="openOobeButton" type="button"><svg><use href="#i-spark"/></svg><span>重新运行引导</span></button></div>
-                <div class="settings-row"><span><b>缓存与页面</b><small>清空缓存并重新加载，不删数据。</small></span><button class="settings-button secondary" id="clearCacheReload" type="button"><svg><use href="#i-refresh"/></svg><span>清除缓存重新加载</span></button></div>
+                <label class="settings-row"><span><b>默认启动页面</b></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
+                <label class="settings-row"><span><b>紧凑列表</b></span><input id="compactModeSetting" type="checkbox"/></label>
+                <label class="settings-row"><span><b>减少动态效果</b></span><input id="reduceMotionSetting" type="checkbox"/></label>
+                <label class="settings-row" id="backgroundRunRow" hidden><span><b>关闭窗口时转入后台</b></span><input id="backgroundRunSetting" type="checkbox"/></label>
+                <label class="settings-row" id="predictiveBackRow" hidden><span><b>预见式返回</b></span><input id="predictiveBackSetting" type="checkbox"/></label>
+                <label class="settings-row"><span><b>点击空白处</b></span><select id="backdropCloseSetting"><option value="none">不关闭（防误触）</option><option value="single">单击关闭</option><option value="double">双击关闭</option></select></label>
+                <div class="settings-row"><span><b>初始设置向导</b></span><button class="settings-button secondary" id="openOobeButton" type="button"><svg><use href="#i-spark"/></svg><span>重新运行引导</span></button></div>
+                <div class="settings-row"><span><b>缓存与页面</b></span><button class="settings-button secondary" id="clearCacheReload" type="button"><svg><use href="#i-refresh"/></svg><span>清除缓存重新加载</span></button></div>
               </div>
               <div class="settings-group app-data-settings" id="appDataSettingsGroup" hidden>
-                <div class="settings-row"><span><b>软件数据位置</b><small>保存 Acta 自身的设置；行记数据仍按数据档案的位置存储。</small></span><code class="app-data-path" id="appDataPath">读取中…</code></div>
-                <div class="settings-row"><span><b>位置操作</b><small>更改后立即迁移现有设置</small></span><span class="app-data-actions"><button class="settings-button secondary" id="openAppDataFolder" type="button"><svg><use href="#i-folder"/></svg><span>打开文件夹</span></button><button class="settings-button secondary" id="changeAppDataFolder" type="button"><svg><use href="#i-edit"/></svg><span>更改位置</span></button></span></div>
+                <div class="settings-row"><span><b>软件数据位置</b></span><code class="app-data-path" id="appDataPath">读取中…</code></div>
+                <div class="settings-row"><span><b>位置操作</b></span><span class="app-data-actions"><button class="settings-button secondary" id="openAppDataFolder" type="button"><svg><use href="#i-folder"/></svg><span>打开文件夹</span></button><button class="settings-button secondary" id="changeAppDataFolder" type="button"><svg><use href="#i-edit"/></svg><span>更改位置</span></button></span></div>
                 <p class="settings-status" id="appDataStatus"></p>
               </div>
               <p class="settings-status" id="generalStatus">设置会自动保存在当前设备。</p>
             </section>
 
             <section class="settings-panel" data-settings-panel="nav">
-              <header><h3>页面跳转栏</h3><p>按当前设备显示桌面侧边栏或移动端底栏与顶栏的入口。</p></header>
+              <header><h3>页面跳转栏</h3></header>
               <div class="settings-group nav-desktop-settings-only">
-                <div class="settings-row"><span><b>桌面端侧边栏</b><small>勾选要显示的页面；待办与笔记默认隐藏</small></span></div>
+                <div class="settings-row"><span><b>桌面端侧边栏</b></span></div>
                 <div class="nav-page-grid" id="navPageGrid">
                   <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
                   <label><input type="checkbox" data-nav-page="calendar"/><span>日历</span></label>
@@ -351,23 +351,20 @@
                   <label><input type="checkbox" data-nav-page="stats"/><span>总结</span></label>
                   <label><input type="checkbox" data-nav-page="lan"/><span>局域网雷达</span></label>
                 </div>
-                <p class="nav-preview-hint" data-i18n="navPreviewSidebarHint">预览：点击入口切换显示与隐藏</p>
                 <div class="nav-preview-sidebar" id="navPreviewSidebar"></div>
               </div>
               <div class="settings-group nav-mobile-settings-only">
-                <div class="settings-row"><span><b>移动端底栏</b><small>两个槽位可替换；两端固定为收集箱与日历</small></span></div>
+                <div class="settings-row"><span><b>移动端底栏</b></span></div>
                 <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
                 <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
-                <p class="nav-preview-hint" data-i18n="navSwapHint">点击两个入口互换位置</p>
                 <div class="nav-preview-bar" id="navPreviewBottom"></div>
                 <div class="nav-preview-pool" id="navPreviewBottomPool"></div>
               </div>
               <div class="settings-group nav-mobile-settings-only">
-                <div class="settings-row"><span><b>移动端顶栏</b><small>右上角三个按钮可自定义；设置按钮固定显示</small></span></div>
+                <div class="settings-row"><span><b>移动端顶栏</b></span></div>
                 <label class="settings-row"><span><b>顶栏槽位一</b></span><select id="mobileTitleOne"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
                 <label class="settings-row"><span><b>顶栏槽位二</b></span><select id="mobileTitleTwo"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
                 <label class="settings-row"><span><b>顶栏槽位三</b></span><select id="mobileTitleThree"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
-                <p class="nav-preview-hint" data-i18n="navSwapHint">点击两个入口互换位置</p>
                 <div class="nav-preview-bar" id="navPreviewTop"></div>
                 <div class="nav-preview-pool" id="navPreviewTopPool"></div>
               </div>
@@ -375,48 +372,48 @@
             </section>
 
             <section class="settings-panel" data-settings-panel="note-editor">
-              <header><h3>笔记编辑器</h3><p>Markdown 渲染与格式工具栏。</p></header>
+              <header><h3>笔记编辑器</h3></header>
               <div class="settings-group">
-                <label class="settings-row"><span><b>基准字号</b><small>正文与各级标题一起缩放</small></span><span class="font-size-control"><input id="noteBaseSize" type="range" min="13" max="22" step="1"/><output id="noteBaseSizeValue">17 px</output></span></label>
-                <label class="settings-row"><span><b>一级标题字号</b><small>Markdown 一级标题大小</small></span><select id="noteHeadingH1Size"><option value="26">26 px</option><option value="28">28 px</option><option value="30">30 px</option><option value="32">32 px</option><option value="36">36 px</option><option value="40">40 px</option></select></label>
-                <label class="settings-row"><span><b>二级标题字号</b><small>Markdown 二级标题大小</small></span><select id="noteHeadingH2Size"><option value="20">20 px</option><option value="22">22 px</option><option value="24">24 px</option><option value="26">26 px</option><option value="28">28 px</option><option value="32">32 px</option></select></label>
-                <label class="settings-row"><span><b>三级标题字号</b><small>Markdown 三级标题大小</small></span><select id="noteHeadingH3Size"><option value="16">16 px</option><option value="17">17 px</option><option value="18">18 px</option><option value="19">19 px</option><option value="20">20 px</option><option value="22">22 px</option><option value="24">24 px</option></select></label>
-                <label class="settings-row"><span><b>标题字体</b><small>Markdown 标题字体</small></span><select id="noteHeadingFont"><option value="app">跟随界面</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
-                <label class="settings-row conditional-font" id="noteHeadingCustomFontRow"><span><b>标题字体家族</b><small>本机已安装的字体，如 Georgia</small></span><input id="noteHeadingCustomFont" type="text" value="Georgia" placeholder="Georgia, Songti SC" maxlength="120"/></label>
-                <label class="settings-row"><span><b>正文行间距</b><small>段落内行与行的距离</small></span><span class="font-size-control"><input id="noteLineHeight" type="range" min="1" max="2" step="0.1"/><output id="noteLineHeightValue">1.6</output></span></label>
-                <label class="settings-row"><span><b>段落块间距</b><small>段落之间的留白</small></span><span class="font-size-control"><input id="noteParagraphGap" type="range" min="0" max="2" step="0.1"/><output id="noteParagraphGapValue">1.0 em</output></span></label>
+                <label class="settings-row"><span><b>基准字号</b></span><span class="font-size-control"><input id="noteBaseSize" type="range" min="13" max="22" step="1"/><output id="noteBaseSizeValue">17 px</output></span></label>
+                <label class="settings-row"><span><b>一级标题字号</b></span><select id="noteHeadingH1Size"><option value="26">26 px</option><option value="28">28 px</option><option value="30">30 px</option><option value="32">32 px</option><option value="36">36 px</option><option value="40">40 px</option></select></label>
+                <label class="settings-row"><span><b>二级标题字号</b></span><select id="noteHeadingH2Size"><option value="20">20 px</option><option value="22">22 px</option><option value="24">24 px</option><option value="26">26 px</option><option value="28">28 px</option><option value="32">32 px</option></select></label>
+                <label class="settings-row"><span><b>三级标题字号</b></span><select id="noteHeadingH3Size"><option value="16">16 px</option><option value="17">17 px</option><option value="18">18 px</option><option value="19">19 px</option><option value="20">20 px</option><option value="22">22 px</option><option value="24">24 px</option></select></label>
+                <label class="settings-row"><span><b>标题字体</b></span><select id="noteHeadingFont"><option value="app">跟随界面</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
+                <label class="settings-row conditional-font" id="noteHeadingCustomFontRow"><span><b>标题字体家族</b></span><input id="noteHeadingCustomFont" type="text" value="Georgia" placeholder="Georgia, Songti SC" maxlength="120"/></label>
+                <label class="settings-row"><span><b>正文行间距</b></span><span class="font-size-control"><input id="noteLineHeight" type="range" min="1" max="2" step="0.1"/><output id="noteLineHeightValue">1.6</output></span></label>
+                <label class="settings-row"><span><b>段落块间距</b></span><span class="font-size-control"><input id="noteParagraphGap" type="range" min="0" max="2" step="0.1"/><output id="noteParagraphGapValue">1.0 em</output></span></label>
               </div>
               <div class="note-heading-preview" id="noteHeadingPreview" aria-label="标题预览"><h1>一级标题</h1><h2>二级标题</h2><h3>三级标题</h3></div>
               <div class="settings-group">
-                <label class="settings-row"><span><b>工具栏位置</b><small>编辑器上方或下方</small></span><select id="noteToolbarPosition"><option value="top">上方</option><option value="bottom">下方</option></select></label>
-                <label class="settings-row"><span><b>显示工具名称</b><small>图标旁显示工具名称</small></span><input id="noteToolbarShowLabels" type="checkbox"/></label>
+                <label class="settings-row"><span><b>工具栏位置</b></span><select id="noteToolbarPosition"><option value="top">上方</option><option value="bottom">下方</option></select></label>
+                <label class="settings-row"><span><b>显示工具名称</b></span><input id="noteToolbarShowLabels" type="checkbox"/></label>
               </div>
             </section>
 
             <section class="settings-panel" data-settings-panel="todo">
-              <header><h3>待办设置</h3><p>调整待办与子任务的显示偏好，不会修改任何待办数据。</p></header>
+              <header><h3>待办设置</h3></header>
               <div class="settings-group">
-                <label class="settings-row"><span><b>子任务完成时间</b><small>勾选框旁显示完成日期，悬停看时刻</small></span><input id="subtaskDatesSetting" type="checkbox" checked/></label>
-                <label class="settings-row"><span><b>显示已完成待办</b><small>列表与归类视图默认显示已完成待办</small></span><input id="showCompletedSetting" type="checkbox" checked/></label>
-                <label class="settings-row"><span><b>已完成待办自动置底</b><small>完成后先停留再移到列表末尾，可撤回</small></span><input id="completedTodoSinkSetting" type="checkbox" checked/></label>
-                <label class="settings-row"><span><b>置底延迟</b><small>完成到开始移动的等待时间</small></span><span class="font-size-control"><input id="completedTodoSinkDelaySetting" type="range" min="0.5" max="5" step="0.1"/><output id="completedTodoSinkDelayValue">1.0 秒</output></span></label>
+                <label class="settings-row"><span><b>子任务完成时间</b></span><input id="subtaskDatesSetting" type="checkbox" checked/></label>
+                <label class="settings-row"><span><b>显示已完成待办</b></span><input id="showCompletedSetting" type="checkbox" checked/></label>
+                <label class="settings-row"><span><b>已完成待办自动置底</b></span><input id="completedTodoSinkSetting" type="checkbox" checked/></label>
+                <label class="settings-row"><span><b>置底延迟</b></span><span class="font-size-control"><input id="completedTodoSinkDelaySetting" type="range" min="0.5" max="5" step="0.1"/><output id="completedTodoSinkDelayValue">1.0 秒</output></span></label>
               </div>
             </section>
 
             <section class="settings-panel" data-settings-panel="appearance">
-              <header><h3>外观设置</h3><p>主题只改变显示效果，不会影响任何笔记或待办数据。</p></header>
+              <header><h3>外观设置</h3></header>
               <div class="theme-grid">
-                <label class="theme-option"><input type="radio" name="actaTheme" value="eye-yellow"/><span><span class="theme-swatch"><i style="background:#f9f5e8"></i><i style="background:#e8e1c8"></i><i style="background:#6f6748"></i></span><b>纸色护眼</b><small>默认</small></span></label>
-                <label class="theme-option"><input type="radio" name="actaTheme" value="mws-light"/><span><span class="theme-swatch"><i style="background:#fffbfa"></i><i style="background:#ffe5e1"></i><i style="background:#ff6666"></i></span><b>MWS 浅色</b><small>品牌主题</small></span></label>
-                <label class="theme-option"><input type="radio" name="actaTheme" value="mws-dark"/><span><span class="theme-swatch"><i style="background:#181113"></i><i style="background:#0f0a0b"></i><i style="background:#ff8080"></i></span><b>MWS 深色</b><small>品牌深色</small></span></label>
+                <label class="theme-option"><input type="radio" name="actaTheme" value="eye-yellow"/><span><span class="theme-swatch"><i style="background:#f9f5e8"></i><i style="background:#e8e1c8"></i><i style="background:#6f6748"></i></span><b>纸色护眼</b></span></label>
+                <label class="theme-option"><input type="radio" name="actaTheme" value="mws-light"/><span><span class="theme-swatch"><i style="background:#fffbfa"></i><i style="background:#ffe5e1"></i><i style="background:#ff6666"></i></span><b>MWS 浅色</b></span></label>
+                <label class="theme-option"><input type="radio" name="actaTheme" value="mws-dark"/><span><span class="theme-swatch"><i style="background:#181113"></i><i style="background:#0f0a0b"></i><i style="background:#ff8080"></i></span><b>MWS 深色</b></span></label>
                 <label class="theme-option"><input type="radio" name="actaTheme" value="mono-light"/><span><span class="theme-swatch"><i style="background:#ffffff"></i><i style="background:#e6e6e6"></i><i style="background:#1b1b1b"></i></span><b>黑白浅色</b></span></label>
                 <label class="theme-option"><input type="radio" name="actaTheme" value="mono-dark"/><span><span class="theme-swatch"><i style="background:#111111"></i><i style="background:#292929"></i><i style="background:#f0f0f0"></i></span><b>黑白深色</b></span></label>
                 <label class="theme-option"><input type="radio" name="actaTheme" value="blue-yellow"/><span><span class="theme-swatch"><i style="background:#e9cd5e"></i><i style="background:#eaf0f4"></i><i style="background:#2d6487"></i></span><b>蓝黄</b></span></label>
-                <label class="theme-option"><input type="radio" name="actaTheme" value="forest-mist"/><span><span class="theme-swatch"><i style="background:#cbe4d6"></i><i style="background:#55a893"></i><i style="background:#b76a3c"></i></span><b>森林晨雾</b><small>多彩浅色</small></span></label>
-                <label class="theme-option"><input type="radio" name="actaTheme" value="sunset-coral"/><span><span class="theme-swatch"><i style="background:#f5c6b6"></i><i style="background:#b25a76"></i><i style="background:#466e97"></i></span><b>海盐晚霞</b><small>多彩浅色</small></span></label>
-                <label class="theme-option"><input type="radio" name="actaTheme" value="candy-pop"/><span><span class="theme-swatch"><i style="background:#f8d7e0"></i><i style="background:#3f8f7a"></i><i style="background:#c04f74"></i></span><b>糖果气泡</b><small>多彩浅色</small></span></label>
-                <label class="theme-option glow-theme"><input type="radio" name="actaTheme" value="neon-ocean"/><span><span class="theme-swatch"><i style="background:#08061a"></i><i style="background:#a78bfa"></i><i style="background:#37e0f2"></i></span><b>深夜霓虹</b><small>特殊主题</small></span></label>
-                <label class="theme-option glow-theme"><input type="radio" name="actaTheme" value="aurora-night"/><span><span class="theme-swatch"><i style="background:#060e0d"></i><i style="background:#54d6a4"></i><i style="background:#8fc5e8"></i></span><b>极光夜色</b><small>深色发光</small></span></label>
+                <label class="theme-option"><input type="radio" name="actaTheme" value="forest-mist"/><span><span class="theme-swatch"><i style="background:#cbe4d6"></i><i style="background:#55a893"></i><i style="background:#b76a3c"></i></span><b>森林晨雾</b></span></label>
+                <label class="theme-option"><input type="radio" name="actaTheme" value="sunset-coral"/><span><span class="theme-swatch"><i style="background:#f5c6b6"></i><i style="background:#b25a76"></i><i style="background:#466e97"></i></span><b>海盐晚霞</b></span></label>
+                <label class="theme-option"><input type="radio" name="actaTheme" value="candy-pop"/><span><span class="theme-swatch"><i style="background:#f8d7e0"></i><i style="background:#3f8f7a"></i><i style="background:#c04f74"></i></span><b>糖果气泡</b></span></label>
+                <label class="theme-option glow-theme"><input type="radio" name="actaTheme" value="neon-ocean"/><span><span class="theme-swatch"><i style="background:#08061a"></i><i style="background:#a78bfa"></i><i style="background:#37e0f2"></i></span><b>深夜霓虹</b></span></label>
+                <label class="theme-option glow-theme"><input type="radio" name="actaTheme" value="aurora-night"/><span><span class="theme-swatch"><i style="background:#060e0d"></i><i style="background:#54d6a4"></i><i style="background:#8fc5e8"></i></span><b>极光夜色</b></span></label>
                 <label class="theme-option"><input type="radio" name="actaTheme" value="custom"/><span><span class="theme-swatch"><i id="customSwatchPaper" style="background:#fbfaf6"></i><i id="customSwatchSidebar" style="background:#ebe7dc"></i><i id="customSwatchAccent" style="background:#526b55"></i></span><b>自定义</b></span></label>
               </div>
               <div class="custom-colors" id="customColorSettings">
@@ -436,7 +433,7 @@
                 <label class="settings-row"><span><b>底栏图标</b></span><select id="mobileNavStyleSetting"><option value="labeled">图标和文字</option><option value="icon">仅图标</option></select></label>
               </div>
               <div class="appearance-subsection app-icon-settings" data-mobile-app-icon-only>
-                <header><b>应用图标</b><small>仅用于 Android 桌面图标。</small></header>
+                <header><b>应用图标</b></header>
                 <div class="app-icon-options">
                   <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="default"/><span><img data-app-icon-preview="default" src="/icons/icon-512-square.png" alt=""/><b>默认书页</b></span></label>
                   <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="positive"/><span><img data-app-icon-preview="positive" src="/icons/app-icon-positive-page.png" alt=""/><b>正 书页</b></span></label>
@@ -449,36 +446,36 @@
                 <p class="settings-status" id="appIconStatus">四个预设仅用于 Android 客户端；切换后桌面启动器可能需要稍候刷新。</p>
               </div>
               <div class="settings-group" style="margin-top:18px">
-                <label class="settings-row"><span><b>启动动画</b><small>启动过渡画面，可关闭</small></span><input id="splashAnimationSetting" type="checkbox" checked/></label>
-                <div class="settings-row splash-preset-row"><span><b>动画预设</b><small>点击右侧按钮可预览</small></span><span class="splash-preset-controls"><select id="splashPresetSetting"><option value="acta-lines">Acta 线构（默认）</option><option value="calm-fade">静谧淡入</option><option value="focus-zoom">聚焦缩放</option></select><button class="icon-button splash-preview-button" id="previewSplashAnimation" type="button" title="预览启动动画" aria-label="预览启动动画"><svg><use href="#i-spark"/></svg></button></span></div>
-                <label class="settings-row"><span><b>动画速度</b><small>数值越大播放越快</small></span><span class="font-size-control"><input id="splashSpeedSetting" type="range" min="0.5" max="2" step="0.1"/><output id="splashSpeedValue">1.0×</output></span></label>
-                <label class="settings-row"><span><b>输入框选中动画</b><small>聚焦时边框与光环淡入</small></span><input id="focusAnimationSetting" type="checkbox" checked/></label>
+                <label class="settings-row"><span><b>启动动画</b></span><input id="splashAnimationSetting" type="checkbox" checked/></label>
+                <div class="settings-row splash-preset-row"><span><b>动画预设</b></span><span class="splash-preset-controls"><select id="splashPresetSetting"><option value="acta-lines">Acta 线构（默认）</option><option value="calm-fade">静谧淡入</option><option value="focus-zoom">聚焦缩放</option></select><button class="icon-button splash-preview-button" id="previewSplashAnimation" type="button" title="预览启动动画" aria-label="预览启动动画"><svg><use href="#i-spark"/></svg></button></span></div>
+                <label class="settings-row"><span><b>动画速度</b></span><span class="font-size-control"><input id="splashSpeedSetting" type="range" min="0.5" max="2" step="0.1"/><output id="splashSpeedValue">1.0×</output></span></label>
+                <label class="settings-row"><span><b>输入框选中动画</b></span><input id="focusAnimationSetting" type="checkbox" checked/></label>
               </div>
               <div class="settings-group" style="margin-top:18px">
-                <label class="settings-row"><span><b>界面字体</b><small>应用于列表、编辑器与设置页</small></span><select id="appFontSetting"><option value="system">系统默认</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
-                <label class="settings-row conditional-font" id="customFontRow"><span><b>字体家族</b><small>本机已安装的字体，如 Inter</small></span><input id="customFontFamily" type="text" value="Inter" placeholder="Inter, Microsoft YaHei" maxlength="120"/></label>
-                <label class="settings-row"><span><b>字体大小</b><small>界面整体缩放</small></span><span class="font-size-control"><input id="appFontSizeSetting" type="range" min="12" max="18" step="1"/><output id="appFontSizeValue">14 px</output></span></label>
+                <label class="settings-row"><span><b>界面字体</b></span><select id="appFontSetting"><option value="system">系统默认</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
+                <label class="settings-row conditional-font" id="customFontRow"><span><b>字体家族</b></span><input id="customFontFamily" type="text" value="Inter" placeholder="Inter, Microsoft YaHei" maxlength="120"/></label>
+                <label class="settings-row"><span><b>字体大小</b></span><span class="font-size-control"><input id="appFontSizeSetting" type="range" min="12" max="18" step="1"/><output id="appFontSizeValue">14 px</output></span></label>
               </div>
               <div class="font-preview"><p>记录，然后行动。Acta 让笔记与待办自然连接。</p></div>
             </section>
 
             <section class="settings-panel" data-settings-panel="cloud">
-              <header><h3>数据同步</h3><p>通过 WebDAV 或局域网设备同步完整数据文件夹。</p></header>
+              <header><h3>数据同步</h3></header>
               <div class="settings-group lan-sync-group" id="lanSyncGroup" hidden>
                 <div class="settings-row">
-                  <span><b>Acta 局域网同步</b><small>与局域网内其他 Acta 设备直接互传，不经过服务器；覆盖前自动备份。</small></span>
+                  <span><b>Acta 局域网同步</b></span>
                   <button class="settings-button" id="openLanSyncPage" type="button"><svg><use href="#i-radar"/></svg><span>打开局域网同步</span></button>
                 </div>
               </div>
               <div class="settings-group">
                 <div class="cloud-mode-fields" id="webDavModeFields">
-                  <label class="settings-row"><span><b>服务器地址</b><small>WebDAV 目录地址</small></span><input id="webDavServer" type="url" inputmode="url" autocomplete="url" placeholder="https://dav.example.com/Acta/"/></label>
-                  <label class="settings-row"><span><b>账号</b><small>WebDAV 用户名</small></span><input id="webDavUsername" type="text" autocomplete="username" maxlength="180"/></label>
-                  <label class="settings-row"><span><b>密码</b><small>建议使用应用专用密码</small></span><input id="webDavPassword" type="password" autocomplete="current-password" maxlength="300"/></label>
+                  <label class="settings-row"><span><b>服务器地址</b></span><input id="webDavServer" type="url" inputmode="url" autocomplete="url" placeholder="https://dav.example.com/Acta/"/></label>
+                  <label class="settings-row"><span><b>账号</b></span><input id="webDavUsername" type="text" autocomplete="username" maxlength="180"/></label>
+                  <label class="settings-row"><span><b>密码</b></span><input id="webDavPassword" type="password" autocomplete="current-password" maxlength="300"/></label>
                   <div class="settings-row"><span><b>WebDAV 连接</b><small id="webDavConnectionPath">尚未连接 WebDAV</small></span><button class="settings-button" id="connectWebDav" type="button"><svg><use href="#i-cloud"/></svg><span>保存并测试连接</span></button></div>
                 </div>
-                <label class="settings-row"><span><b>自动同步</b><small>变化后自动上传，定时检查更新</small></span><input id="autoSyncSetting" type="checkbox"/></label>
-                <label class="settings-row" id="autoSyncIntervalRow"><span><b>检查频率</b><small>仅 Acta 运行时执行</small></span><select id="autoSyncInterval"><option value="1">每 1 分钟</option><option value="5">每 5 分钟</option><option value="15">每 15 分钟</option></select></label>
+                <label class="settings-row"><span><b>自动同步</b></span><input id="autoSyncSetting" type="checkbox"/></label>
+                <label class="settings-row" id="autoSyncIntervalRow"><span><b>检查频率</b></span><select id="autoSyncInterval"><option value="1">每 1 分钟</option><option value="5">每 5 分钟</option><option value="15">每 15 分钟</option></select></label>
               </div>
               <div class="settings-actions">
                 <button class="settings-button secondary" id="downloadOneDrive" type="button" disabled><svg><use href="#i-download"/></svg>下载完整数据文件夹</button>
@@ -525,20 +522,20 @@
     <dialog class="relation-dialog lan-page-dialog" id="lanSyncPage" aria-labelledby="lanPageTitle">
       <header class="relation-dialog-head lan-page-head">
         <span class="lan-page-mark"><svg><use href="#i-radar"/></svg></span>
-        <div><h3 id="lanPageTitle">Acta 局域网同步</h3><small id="lanPageSubtitle">与局域网内其他 Acta 设备直接互传，不经过服务器；覆盖前自动备份。</small></div>
+        <div><h3 id="lanPageTitle">Acta 局域网同步</h3></div>
         <span class="lan-sync-state" id="lanSyncState" data-state="off"></span>
         <button class="relation-dialog-close" id="closeLanSyncPage" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button>
       </header>
       <div class="relation-dialog-body lan-page-body">
         <div class="settings-group lan-page-discovery">
-          <label class="settings-row"><span><b>允许被其他设备发现</b><small>出现在附近设备的列表中</small></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
+          <label class="settings-row"><span><b>允许被其他设备发现</b></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
         </div>
         <div class="settings-group">
           <div class="settings-row" id="lanNetworkInfoRow"><span><b data-i18n="lanNetwork">本机网络</b><small id="lanNetworkInfo" data-i18n="lanNetworkUnknown">读取中…</small></span></div>
-          <label class="settings-row"><span><b>设备名称</b><small>留空时使用主机名</small></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
-          <label class="settings-row"><span><b>设备图标</b><small>雷达头像，留空用默认图标</small></span><input id="lanDeviceIcon" type="text" maxlength="8" placeholder="例：🌿" autocomplete="off"/></label>
-          <label class="settings-row"><span><b>服务端口</b><small>TCP 端口，留空自动分配；修改后需重开发现</small></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>
-          <label class="settings-row"><span><b>信任此局域网（自动确认）</b><small>其他设备可免确认读写本机数据；覆盖前仍自动备份，仅限可信网络</small></span><input id="lanTrustSetting" type="checkbox"/></label>
+          <label class="settings-row"><span><b>设备名称</b></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
+          <label class="settings-row"><span><b>设备图标</b></span><input id="lanDeviceIcon" type="text" maxlength="8" placeholder="例：🌿" autocomplete="off"/></label>
+          <label class="settings-row"><span><b>服务端口</b></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>
+          <label class="settings-row"><span><b>信任此局域网（自动确认）</b></span><input id="lanTrustSetting" type="checkbox"/></label>
         </div>
         <div class="settings-group">
           <div class="settings-row"><span><b>附近的设备</b><small id="lanPeersHint"></small></span></div>
@@ -556,7 +553,7 @@
           </div>
         </div>
         <div class="settings-group">
-          <div class="settings-row"><span><b>同步自动化</b><small>组合备份、冲突检查与收发步骤，按触发器自动执行</small></span><button class="settings-button secondary" id="lanAutomationAdd" type="button"><svg><use href="#i-plus"/></svg><span>新建自动化</span></button></div>
+          <div class="settings-row"><span><b>同步自动化</b></span><button class="settings-button secondary" id="lanAutomationAdd" type="button"><svg><use href="#i-plus"/></svg><span>新建自动化</span></button></div>
           <div class="lan-automation-list" id="lanAutomationList"></div>
         </div>
         <p class="settings-status" id="lanSyncStatus" role="status"></p>

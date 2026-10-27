@@ -3493,19 +3493,14 @@
   function renderDataProfiles() {
     const copy = profileMessages[uiSettings.language] || profileMessages.zh;
     const active = activeDataProfile();
-    const panelHeader = document.querySelector('[data-settings-panel="workspace"] .data-profile-header');
-    panelHeader.querySelector('p').textContent = copy.panelDescription;
     byId('newDataProfile').querySelector('span').textContent = copy.newProfile;
     byId('readDataProfile').querySelector('span').textContent = copy.readExisting;
     byId('refreshDataProfile').querySelector('span').textContent = copy.refreshData;
     byId('newDataProfileTitle').textContent = copy.newProfile;
-    byId('newDataProfileSubtitle').textContent = copy.newSubtitle;
     byId('newDataProfileNameLabel').textContent = copy.name;
     byId('newDataProfileStorageLabel').textContent = copy.location;
     byId('newDataProfileLocalLabel').textContent = localProfileLocation();
-    byId('newDataProfileLocalHint').textContent = copy.localHint;
     byId('newDataProfileFolderLabel').textContent = copy.folder;
-    byId('newDataProfileFolderHint').textContent = copy.folderHint;
     byId('cancelDataProfile').textContent = copy.cancel;
     byId('confirmDataProfile').querySelector('span').textContent = copy.createOpen;
     byId('dataProfileListTitle').textContent = copy.profiles;
