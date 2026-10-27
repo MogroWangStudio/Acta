@@ -575,7 +575,12 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 }
 
 @media (max-width: 800px) {
-  html, body { overscroll-behavior: none; }
+  /* 根视口钉扎：安卓 WebView 的 100vh 是最大视口，系统栏 insets 让根滚动层
+     多出几十像素——任何页面的滑动（尤其日历）都会拖动整个页面。把外壳
+     钉在真实视口上后，滑动只发生在列表等内部滚动容器里。 */
+  html { height: 100%; overflow: hidden; }
+  body { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
+  .app-shell { height: 100%; width: 100%; }
   .titlebar {
     height: calc(48px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
