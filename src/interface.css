@@ -2427,6 +2427,15 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-layer-eye:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 70%, transparent); }
 .board-layer-eye svg { width: 13px; height: 13px; }
 .board-layer-eye.is-off { color: var(--faint); opacity: .55; }
+/* 图层拖移：行首拖柄（触摸与鼠标统一走 pointer 捕获），拖动行半透明、
+   目标位置以 sage 色横线指示。 */
+.board-layer-grip { flex: 0 0 auto; display: grid; place-items: center; width: 18px; height: 24px; margin: -2px 0 -2px -4px; border-radius: 6px; color: var(--faint); font-style: normal; cursor: grab; touch-action: none; transition: color .14s ease, background .14s ease; }
+.board-layer-grip svg { width: 12px; height: 12px; }
+.board-layer-grip:hover { color: var(--muted); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.board-layer-grip:active { cursor: grabbing; color: var(--ink); }
+.board-layer-row.is-dragging { opacity: .38; }
+.board-layer-row.is-drop-before { box-shadow: 0 -2px 0 var(--sage); }
+.board-layer-row.is-drop-after { box-shadow: 0 2px 0 var(--sage); }
 .board-pop-hint { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
 /* 标注样式面板 / 笔绘面板里的分段控件收窄一档，贴合工具条尺度。 */
 .board-style-pop .board-import-seg button, .board-pen-bar .board-import-seg button { height: 22px; padding: 0 8px; font-size: calc(8px * var(--acta-font-scale)); }
