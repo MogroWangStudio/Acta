@@ -379,7 +379,7 @@
                 <label class="settings-row"><span><b>二级标题字号</b></span><select id="noteHeadingH2Size"><option value="20">20 px</option><option value="22">22 px</option><option value="24">24 px</option><option value="26">26 px</option><option value="28">28 px</option><option value="32">32 px</option></select></label>
                 <label class="settings-row"><span><b>三级标题字号</b></span><select id="noteHeadingH3Size"><option value="16">16 px</option><option value="17">17 px</option><option value="18">18 px</option><option value="19">19 px</option><option value="20">20 px</option><option value="22">22 px</option><option value="24">24 px</option></select></label>
                 <label class="settings-row"><span><b>标题字体</b></span><select id="noteHeadingFont"><option value="app">跟随界面</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
-                <label class="settings-row conditional-font" id="noteHeadingCustomFontRow"><span><b>标题字体家族</b></span><input id="noteHeadingCustomFont" type="text" value="Georgia" placeholder="Georgia, Songti SC" maxlength="120"/></label>
+                <label class="settings-row conditional-font" id="noteHeadingCustomFontRow"><span><b>标题字体家族</b></span><span class="font-input-wrap"><input id="noteHeadingCustomFont" type="text" value="Georgia" placeholder="Georgia, Songti SC" maxlength="120"/><button type="button" class="font-browse-button" id="browseHeadingFonts" data-font-target="noteHeadingCustomFont">浏览系统字体</button></span></label>
                 <label class="settings-row"><span><b>正文行间距</b></span><span class="font-size-control"><input id="noteLineHeight" type="range" min="1" max="2" step="0.1"/><output id="noteLineHeightValue">1.6</output></span></label>
                 <label class="settings-row"><span><b>段落块间距</b></span><span class="font-size-control"><input id="noteParagraphGap" type="range" min="0" max="2" step="0.1"/><output id="noteParagraphGapValue">1.0 em</output></span></label>
               </div>
@@ -453,7 +453,7 @@
               </div>
               <div class="settings-group" style="margin-top:18px">
                 <label class="settings-row"><span><b>界面字体</b></span><select id="appFontSetting"><option value="system">系统默认</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
-                <label class="settings-row conditional-font" id="customFontRow"><span><b>字体家族</b></span><input id="customFontFamily" type="text" value="Inter" placeholder="Inter, Microsoft YaHei" maxlength="120"/></label>
+                <label class="settings-row conditional-font" id="customFontRow"><span><b>字体家族</b></span><span class="font-input-wrap"><input id="customFontFamily" type="text" value="Inter" placeholder="Inter, Microsoft YaHei" maxlength="120"/><button type="button" class="font-browse-button" id="browseAppFonts" data-font-target="customFontFamily">浏览系统字体</button></span></label>
                 <label class="settings-row"><span><b>字体大小</b></span><span class="font-size-control"><input id="appFontSizeSetting" type="range" min="12" max="18" step="1"/><output id="appFontSizeValue">14 px</output></span></label>
               </div>
               <div class="font-preview"><p>记录，然后行动。Acta 让笔记与待办自然连接。</p></div>

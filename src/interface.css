@@ -3382,3 +3382,25 @@ html[data-acta-theme="mono-dark"] .about-studio:hover { background: color-mix(in
   .about-studio { background: var(--paper); }
   .about-studio:hover img { filter: none; opacity: .5; }
 }
+
+/* ===== 系统字体选择器（外观设置 · 自定义字体）===== */
+.font-input-wrap { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; justify-content: flex-end; }
+.font-input-wrap input { min-width: 0; }
+.font-browse-button { flex: 0 0 auto; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 70%, transparent); color: var(--muted); font: 650 calc(9px * var(--acta-font-scale)) inherit; cursor: pointer; white-space: nowrap; transition: color .15s ease, border-color .15s ease, background .15s ease; }
+.font-browse-button:hover { color: var(--ink); border-color: color-mix(in srgb, var(--faint) 40%, var(--line)); background: var(--white); }
+.font-picker-dialog { width: min(480px, calc(100vw - 28px)); height: min(620px, calc(100dvh - 28px)); }
+.font-picker-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; }
+.font-picker-body { min-height: 0; display: grid; grid-template-rows: auto auto minmax(0,1fr); gap: 9px; }
+.font-picker-search { display: flex; align-items: center; gap: 7px; height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 55%, transparent); }
+.font-picker-search svg { width: 14px; height: 14px; color: var(--faint); flex: 0 0 auto; }
+.font-picker-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; font-size: calc(11px * var(--acta-font-scale)); }
+.font-picker-status { margin: 0; }
+.font-picker-status.error { color: var(--danger-accent, #b96051); }
+.font-picker-list { min-height: 0; overflow: hidden auto; overscroll-behavior: contain; display: grid; gap: 10px; align-content: start; padding-right: 3px; scrollbar-width: thin; }
+.font-picker-group h4 { margin: 2px 0 5px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-weight: 700; letter-spacing: .04em; position: sticky; top: -2px; background: var(--paper); padding: 3px 0; }
+.font-picker-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; padding: 8px 11px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 60%, transparent); color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: border-color .14s ease, background .14s ease; }
+.font-picker-row:hover { background: var(--white); border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); }
+.font-picker-row.is-current { border-color: color-mix(in srgb, var(--sage) 52%, var(--line)); background: color-mix(in srgb, var(--sage-2) 30%, transparent); }
+.font-picker-row b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(12px * var(--acta-font-scale)); font-weight: 600; }
+.font-picker-row small { flex: 0 0 auto; color: var(--faint); font-size: calc(10px * var(--acta-font-scale)); }
+.font-picker-empty { margin: 20px 0; text-align: center; color: var(--faint); font-size: calc(10px * var(--acta-font-scale)); }
