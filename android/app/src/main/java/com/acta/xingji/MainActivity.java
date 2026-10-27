@@ -7,6 +7,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
+import android.window.BackEvent;
+import android.window.OnBackAnimationCallback;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
 import androidx.core.view.WindowCompat;
@@ -19,6 +21,7 @@ public class MainActivity extends BridgeActivity {
     public static final String PREDICTIVE_BACK = "predictive_back";
 
     private OnBackInvokedCallback predictiveBackCallback;
+    private float lastBackProgress = -1f;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,12 +42,16 @@ public class MainActivity extends BridgeActivity {
     }
 
     // —— 预见式返回（Android 13+）——
-    // 开启时注册系统级 OnBackInvokedCallback：边缘滑动手势出现系统预览
-    // 动画、中途可取消，提交后把返回事件转发给 WebView 内的统一处理函数
-    // （window.__actaHandleBackButton，与 backButton 事件共用一套层级逻辑）。
-    // 本 callback 晚于 Capacitor App 插件的 Jetpack 桥接注册，系统按
-    // 「最近注册的最高优先级回调」分派，不会双触发；关闭时反注册，返回
-    // 事件回到 App 插件的 backButton 通道，行为与适配前一致。
+    // 开启时注册系统级回调：API 34+ 用 OnBackAnimationCallback（继承
+    // OnBackInvokedCallback），手势过程中持续回报进度并桥接进 WebView，
+    // 由页面驱动最上层界面的预见式动画——普通回调在手势全程没有任何
+    // 动画，提交后界面层瞬间关闭，看起来就像功能不存在（这正是此前
+    // 适配无效的原因）；API 33 只有提交回调。提交后把返回事件转发给
+    // WebView 内的统一处理函数（window.__actaHandleBackButton，与
+    // backButton 事件共用一套层级逻辑）。本 callback 晚于 Capacitor
+    // App 插件的 Jetpack 桥接注册，系统在同优先级内按注册逆序分派，
+    // 不会双触发；关闭时反注册，返回事件回到 App 插件的 backButton
+    // 通道，行为与适配前一致。
     public void applyPredictiveBack(Boolean enabledOverride) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
         SharedPreferences preferences = getSharedPreferences(SYSTEM_BAR_PREFERENCES, 0);
@@ -60,17 +67,54 @@ public class MainActivity extends BridgeActivity {
             predictiveBackCallback = null;
         }
         if (!enabled) return;
-        // forOnBackInvoked 静态工厂是 API 34 新增：为兼容 compileSdk 下
-        // API 33 的运行时，这里用接口的匿名实现（onBackInvoked 在提交时触发）。
-        predictiveBackCallback = new OnBackInvokedCallback() {
-            @Override
-            public void onBackInvoked() {
-                runOnUiThread(() -> getBridge().getWebView().evaluateJavascript(
-                    "window.__actaHandleBackButton && window.__actaHandleBackButton();", null));
-            }
-        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // OnBackAnimationCallback 是 API 34 新增接口：匿名实现只在
+            // API 34+ 分支创建，API 33 的运行时不会加载这个类。
+            predictiveBackCallback = new OnBackAnimationCallback() {
+                @Override
+                public void onBackStarted(BackEvent event) {
+                    lastBackProgress = 0f;
+                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('start')");
+                }
+
+                @Override
+                public void onBackProgressed(BackEvent event) {
+                    float rounded = Math.round(event.getProgress() * 100f) / 100f;
+                    if (rounded == lastBackProgress) return;
+                    lastBackProgress = rounded;
+                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('progress'," + rounded + ")");
+                }
+
+                @Override
+                public void onBackCancelled() {
+                    lastBackProgress = -1f;
+                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('cancel')");
+                }
+
+                @Override
+                public void onBackInvoked() {
+                    lastBackProgress = -1f;
+                    // 先复位手势动画再执行返回动作：同一次 JS 求值内完成，
+                    // 复位与层级关闭落在同一帧，不会闪跳。
+                    evaluateBackGesture("window.__actaBackGesture&&window.__actaBackGesture('commit');window.__actaHandleBackButton&&window.__actaHandleBackButton()");
+                }
+            };
+        } else {
+            // forOnBackInvoked 静态工厂是 API 34 新增：为兼容 compileSdk 下
+            // API 33 的运行时，这里用接口的匿名实现（onBackInvoked 在提交时触发）。
+            predictiveBackCallback = new OnBackInvokedCallback() {
+                @Override
+                public void onBackInvoked() {
+                    evaluateBackGesture("window.__actaHandleBackButton&&window.__actaHandleBackButton()");
+                }
+            };
+        }
         dispatcher.registerOnBackInvokedCallback(
             OnBackInvokedDispatcher.PRIORITY_DEFAULT, predictiveBackCallback);
+    }
+
+    private void evaluateBackGesture(String script) {
+        runOnUiThread(() -> getBridge().getWebView().evaluateJavascript(script, null));
     }
 
     private void applySavedSystemBars() {

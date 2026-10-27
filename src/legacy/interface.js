@@ -8856,6 +8856,72 @@
       if (nativeApp.minimizeApp) await nativeApp.minimizeApp();
     };
     nativeApp.addListener('backButton', () => window.__actaHandleBackButton());
+
+    // —— 预见式返回的手势进度（Android 14+，MainActivity 桥接）——
+    // 进度实时作用在「下一次返回会关闭的那一层」上，目标选择与
+    // __actaHandleBackButton 的层级完全一致；提交时先复位样式再执行
+    // 返回动作（原生侧把它们放进同一次 JS 求值，同一帧内完成），
+    // 取消时带回弹回到原位。变换用 !important 内联样式——弹层的
+    // 打开动画（fill both）最终帧会盖过普通内联样式。
+    let backGestureEl = null;
+    let backGestureTransitionTimer = 0;
+    const backGestureTarget = () => {
+      if (document.body.classList.contains('note-focus-mode')) return byId('editorPane');
+      const dialog = document.querySelector('.relation-dialog[open]');
+      if (dialog) return dialog;
+      if (settingsModal.classList.contains('open')) return settingsModal;
+      const createLayer = byId('mobileCreateLayer');
+      if (createLayer && !createLayer.hidden) return createLayer;
+      const createMenu = byId('createMenu');
+      if (createMenu.classList.contains('open')) return createMenu;
+      if (byId('editorPane').classList.contains('mobile-open')) return byId('editorPane');
+      return null;
+    };
+    const clearBackGestureStyles = el => {
+      el.style.removeProperty('transform');
+      el.style.removeProperty('border-radius');
+      el.style.removeProperty('overflow');
+      el.style.removeProperty('transition');
+    };
+    window.__actaBackGesture = (phase, progress) => {
+      if (phase === 'start' || phase === 'progress') {
+        if (document.body.classList.contains('acta-reduce-motion')) return;
+        const target = backGestureTarget();
+        const shell = target || document.querySelector('.app-shell');
+        if (!shell) return;
+        if (backGestureEl && backGestureEl !== shell) clearBackGestureStyles(backGestureEl);
+        backGestureEl = shell;
+        if (phase === 'start') {
+          clearTimeout(backGestureTransitionTimer);
+          shell.style.transition = 'none';
+        }
+        const value = Math.min(Math.max(Number(progress) || 0, 0), 1);
+        const scale = 1 - value * (target ? .05 : .09);
+        shell.style.setProperty('transform', `scale(${scale.toFixed(4)})`, 'important');
+        if (!target) {
+          // 根层：模仿系统的「返回桌面」预览——窗口整体缩小并收圆角。
+          shell.style.setProperty('border-radius', `${(value * 26).toFixed(1)}px`, 'important');
+          shell.style.setProperty('overflow', 'hidden', 'important');
+        }
+        return;
+      }
+      if (!backGestureEl) return;
+      const el = backGestureEl;
+      backGestureEl = null;
+      if (phase === 'cancel') {
+        // 先落过渡再清变换：过渡声明在层叠里高于动画填充与普通内联，
+        // 移除 !important 变换后由它接管，平滑回到原位。
+        el.style.transition = 'transform .18s cubic-bezier(.2,.8,.3,1), border-radius .18s cubic-bezier(.2,.8,.3,1)';
+        el.style.removeProperty('transform');
+        el.style.removeProperty('border-radius');
+        el.style.removeProperty('overflow');
+        clearTimeout(backGestureTransitionTimer);
+        backGestureTransitionTimer = setTimeout(() => { el.style.removeProperty('transition'); }, 220);
+        return;
+      }
+      // commit：同步清除内联样式（无过渡、当帧生效），层级自身的关闭动画接手。
+      clearBackGestureStyles(el);
+    };
   }
 
   if ('serviceWorker' in navigator && location.protocol.startsWith('http') && location.hostname !== 'tauri.localhost') {
