@@ -25,7 +25,7 @@ const dictionaries = {
     created: '创建于', updated: '更新于', dueDate: '截止日期', priority: '优先级', tags: '标签', high: '高', medium: '中', low: '低',
     progress: '任务进度', done: '已完成', addTask: '添加子任务', taskPlaceholder: '输入一个具体行动…', description: '补充说明',
     checkinTodo: '打卡待办', checkinTodoHint: '每天打卡，养成习惯', checkinToday: '今日打卡', checkinDone: '今日已打卡', checkinTodoYet: '今日未打卡',
-    checkinStreak: '连续', checkinTotal: '累计', checkinDays: '天', checkinRecent: '最近 7 天', checkinUndo: '取消打卡', checkinMarkedToast: '打卡成功，继续保持',
+    checkinStreak: '连续', checkinTotal: '累计', checkinDays: '天', checkinRecent: '最近 7 天', checkinUndo: '取消打卡', checkinMarkedToast: '打卡成功，继续保持', checkinExpiredDone:'打卡已结束', checkinDurationLabel:'已坚持', checkinDurationSetting:'打卡持续', checkinDurationHint:'设为 0 表示不设期限；超过截止时间后此打卡默认完成',
     orderedTasks: '顺序执行', unorderedTasks: '无序子任务', taskOrderHint: '开启后子任务按顺序执行，可上下移动调整先后',
     taskMoveUp: '上移', taskMoveDown: '下移', taskDragHint: '拖动调整顺序',
     descriptionPlaceholder: '写下背景、上下文或任何需要记住的细节…', notePlaceholder: '从一个想法开始…', words: '字', chars: '字符',
@@ -87,7 +87,7 @@ const dictionaries = {
     created: 'Created', updated: 'Updated', dueDate: 'Due date', priority: 'Priority', tags: 'Tags', high: 'High', medium: 'Medium', low: 'Low',
     progress: 'Task progress', done: 'complete', addTask: 'Add subtask', taskPlaceholder: 'Type a concrete action…', description: 'Notes',
     checkinTodo: 'Check-in task', checkinTodoHint: 'Check in daily to build a habit', checkinToday: "Today's check-in", checkinDone: 'Checked in today', checkinTodoYet: 'Not checked in yet',
-    checkinStreak: 'streak', checkinTotal: 'total', checkinDays: 'days', checkinRecent: 'Last 7 days', checkinUndo: 'Undo check-in', checkinMarkedToast: 'Checked in — keep it going',
+    checkinStreak: 'streak', checkinTotal: 'total', checkinDays: 'days', checkinRecent: 'Last 7 days', checkinUndo: 'Undo check-in', checkinMarkedToast: 'Checked in — keep it going', checkinExpiredDone:'Check-in period ended', checkinDurationLabel:'Kept up', checkinDurationSetting:'Check-in length', checkinDurationHint:'0 = no end date; past the end date this check-in counts as done',
     orderedTasks: 'In order', unorderedTasks: 'Any order', taskOrderHint: 'Subtasks run in order; use the arrows to reorder',
     taskMoveUp: 'Move up', taskMoveDown: 'Move down', taskDragHint: 'Drag to reorder',
     descriptionPlaceholder: 'Add context, background, or anything worth remembering…', notePlaceholder: 'Start with an idea…', words: 'words', chars: 'characters',
@@ -149,7 +149,7 @@ const dictionaries = {
     created: '作成', updated: '更新', dueDate: '期限', priority: '優先度', tags: 'タグ', high: '高', medium: '中', low: '低',
     progress: 'タスクの進捗', done: '完了', addTask: 'サブタスクを追加', taskPlaceholder: '具体的な行動を入力…', description: 'メモ',
     checkinTodo: 'チェックインタスク', checkinTodoHint: '毎日のチェックインで習慣に', checkinToday: '今日のチェックイン', checkinDone: 'チェックイン済み', checkinTodoYet: '今日は未チェックイン',
-    checkinStreak: '連続', checkinTotal: '合計', checkinDays: '日', checkinRecent: '過去 7 日間', checkinUndo: 'チェックインを取消', checkinMarkedToast: 'チェックインしました。この調子で',
+    checkinStreak: '連続', checkinTotal: '合計', checkinDays: '日', checkinRecent: '過去 7 日間', checkinUndo: 'チェックインを取消', checkinMarkedToast: 'チェックインしました。この調子で', checkinExpiredDone:'チェックイン期間は終了', checkinDurationLabel:'継続', checkinDurationSetting:'チェックイン期間', checkinDurationHint:'0 で期限なし。期限を過ぎると完了扱いになります',
     orderedTasks: '順序あり', unorderedTasks: '順序なし', taskOrderHint: 'サブタスクを順番に実行。矢印で並べ替えできます',
     taskMoveUp: '上へ移動', taskMoveDown: '下へ移動', taskDragHint: 'ドラッグで並べ替え',
     descriptionPlaceholder: '背景や文脈、覚えておきたいことを書きます…', notePlaceholder: 'アイデアから始めましょう…', words: '語', chars: '文字',
@@ -211,7 +211,7 @@ const dictionaries = {
     created: '생성됨', updated: '업데이트됨', dueDate: '마감일', priority: '우선순위', tags: '태그', high: '높음', medium: '보통', low: '낮음',
     progress: '할 일 진행률', done: '완료', addTask: '하위 작업 추가', taskPlaceholder: '구체적인 행동을 입력…', description: '메모',
     checkinTodo: '체크인 할 일', checkinTodoHint: '매일 체크인으로 습관 만들기', checkinToday: '오늘의 체크인', checkinDone: '오늘 체크인 완료', checkinTodoYet: '아직 체크인하지 않음',
-    checkinStreak: '연속', checkinTotal: '누적', checkinDays: '일', checkinRecent: '최근 7일', checkinUndo: '체크인 취소', checkinMarkedToast: '체크인 완료! 계속 이어가요',
+    checkinStreak: '연속', checkinTotal: '누적', checkinDays: '일', checkinRecent: '최근 7일', checkinUndo: '체크인 취소', checkinMarkedToast: '체크인 완료! 계속 이어가요', checkinExpiredDone:'체크인 기간 종료', checkinDurationLabel:'유지', checkinDurationSetting:'체크인 기간', checkinDurationHint:'0 이면 기한 없음. 기한이 지나면 완료로 표시돼요',
     orderedTasks: '순서 있음', unorderedTasks: '순서 없음', taskOrderHint: '하위 작업을 순서대로 실행하며, 화살표로 순서를 바꿀 수 있어요',
     taskMoveUp: '위로 이동', taskMoveDown: '아래로 이동', taskDragHint: '드래그로 순서 변경',
     descriptionPlaceholder: '배경, 맥락 또는 기억할 내용을 적어보세요…', notePlaceholder: '아이디어로 시작해 보세요…', words: '단어', chars: '자',
@@ -273,7 +273,7 @@ const dictionaries = {
     created: 'Créé', updated: 'Mis à jour', dueDate: 'Échéance', priority: 'Priorité', tags: 'Étiquettes', high: 'Haute', medium: 'Moyenne', low: 'Basse',
     progress: 'Avancement', done: 'terminée', addTask: 'Ajouter une sous-tâche', taskPlaceholder: 'Saisir une action concrète…', description: 'Notes',
     checkinTodo: 'Tâche à pointage', checkinTodoHint: 'Pointer chaque jour pour prendre l’habitude', checkinToday: 'Pointage du jour', checkinDone: 'Pointé aujourd’hui', checkinTodoYet: 'Pas encore pointé',
-    checkinStreak: 'série', checkinTotal: 'total', checkinDays: 'jours', checkinRecent: '7 derniers jours', checkinUndo: 'Annuler le pointage', checkinMarkedToast: 'Pointé — continuez ainsi',
+    checkinStreak: 'série', checkinTotal: 'total', checkinDays: 'jours', checkinRecent: '7 derniers jours', checkinUndo: 'Annuler le pointage', checkinMarkedToast: 'Pointé — continuez ainsi', checkinExpiredDone:'Période de pointage terminée', checkinDurationLabel:'Tenu', checkinDurationSetting:'Durée du pointage', checkinDurationHint:'0 = sans fin ; passé la date limite, ce pointage compte comme terminé',
     orderedTasks: 'Dans l’ordre', unorderedTasks: 'Sans ordre', taskOrderHint: 'Les sous-tâches s’exécutent dans l’ordre ; réorganisez avec les flèches',
     taskMoveUp: 'Monter', taskMoveDown: 'Descendre', taskDragHint: 'Glisser pour réorganiser',
     descriptionPlaceholder: 'Ajoutez le contexte, le fond ou tout ce qu’il faut retenir…', notePlaceholder: 'Commencez par une idée…', words: 'mots', chars: 'caractères',
@@ -335,7 +335,7 @@ const dictionaries = {
     created: 'Erstellt', updated: 'Aktualisiert', dueDate: 'Fällig am', priority: 'Priorität', tags: 'Tags', high: 'Hoch', medium: 'Mittel', low: 'Niedrig',
     progress: 'Aufgabenfortschritt', done: 'erledigt', addTask: 'Unteraufgabe hinzufügen', taskPlaceholder: 'Konkrete Handlung eingeben…', description: 'Notizen',
     checkinTodo: 'Check-in-Aufgabe', checkinTodoHint: 'Täglich einchecken, Gewohnheit aufbauen', checkinToday: 'Heutiger Check-in', checkinDone: 'Heute eingecheckt', checkinTodoYet: 'Noch nicht eingecheckt',
-    checkinStreak: 'Serie', checkinTotal: 'gesamt', checkinDays: 'Tage', checkinRecent: 'Letzte 7 Tage', checkinUndo: 'Check-in zurücknehmen', checkinMarkedToast: 'Eingecheckt — mach so weiter',
+    checkinStreak: 'Serie', checkinTotal: 'gesamt', checkinDays: 'Tage', checkinRecent: 'Letzte 7 Tage', checkinUndo: 'Check-in zurücknehmen', checkinMarkedToast: 'Eingecheckt — mach so weiter', checkinExpiredDone:'Check-in-Zeitraum beendet', checkinDurationLabel:'Durchgehalten', checkinDurationSetting:'Check-in-Dauer', checkinDurationHint:'0 = ohne Ende; nach dem Enddatum gilt dieser Check-in als erledigt',
     orderedTasks: 'In Reihenfolge', unorderedTasks: 'Ohne Reihenfolge', taskOrderHint: 'Unteraufgaben laufen der Reihe nach; mit Pfeilen umordnen',
     taskMoveUp: 'Nach oben', taskMoveDown: 'Nach unten', taskDragHint: 'Zum Umordnen ziehen',
     descriptionPlaceholder: 'Hintergrund, Kontext oder alles Wichtige notieren…', notePlaceholder: 'Starte mit einer Idee…', words: 'Wörter', chars: 'Zeichen',
@@ -397,7 +397,7 @@ const dictionaries = {
     created: 'Creado', updated: 'Actualizado', dueDate: 'Fecha límite', priority: 'Prioridad', tags: 'Etiquetas', high: 'Alta', medium: 'Media', low: 'Baja',
     progress: 'Progreso de la tarea', done: 'completada', addTask: 'Añadir subtarea', taskPlaceholder: 'Escribe una acción concreta…', description: 'Notas',
     checkinTodo: 'Tarea de registro', checkinTodoHint: 'Regístrate a diario para crear el hábito', checkinToday: 'Registro de hoy', checkinDone: 'Registrado hoy', checkinTodoYet: 'Aún sin registrar',
-    checkinStreak: 'racha', checkinTotal: 'total', checkinDays: 'días', checkinRecent: 'Últimos 7 días', checkinUndo: 'Deshacer registro', checkinMarkedToast: '¡Registrado! Sigue así',
+    checkinStreak: 'racha', checkinTotal: 'total', checkinDays: 'días', checkinRecent: 'Últimos 7 días', checkinUndo: 'Deshacer registro', checkinMarkedToast: '¡Registrado! Sigue así', checkinExpiredDone:'Periodo de registro terminado', checkinDurationLabel:'Constante', checkinDurationSetting:'Duración del registro', checkinDurationHint:'0 = sin fecha de fin; pasado el límite, este registro cuenta como completado',
     orderedTasks: 'En orden', unorderedTasks: 'Sin orden', taskOrderHint: 'Las subtareas se ejecutan en orden; reordénalas con las flechas',
     taskMoveUp: 'Subir', taskMoveDown: 'Bajar', taskDragHint: 'Arrastra para reordenar',
     descriptionPlaceholder: 'Añade contexto, antecedentes o todo lo que valga la pena recordar…', notePlaceholder: 'Empieza con una idea…', words: 'palabras', chars: 'caracteres',
@@ -459,7 +459,7 @@ const dictionaries = {
     created: 'Создано', updated: 'Обновлено', dueDate: 'Срок', priority: 'Приоритет', tags: 'Метки', high: 'Высокий', medium: 'Средний', low: 'Низкий',
     progress: 'Прогресс задачи', done: 'выполнено', addTask: 'Добавить подзадачу', taskPlaceholder: 'Введите конкретное действие…', description: 'Заметки',
     checkinTodo: 'Задача с отметкой', checkinTodoHint: 'Отмечайтесь ежедневно, чтобы выработать привычку', checkinToday: 'Отметка за сегодня', checkinDone: 'Сегодня отмечено', checkinTodoYet: 'Ещё не отмечено',
-    checkinStreak: 'серия', checkinTotal: 'всего', checkinDays: 'дн.', checkinRecent: 'Последние 7 дней', checkinUndo: 'Отменить отметку', checkinMarkedToast: 'Отмечено — продолжайте в том же духе',
+    checkinStreak: 'серия', checkinTotal: 'всего', checkinDays: 'дн.', checkinRecent: 'Последние 7 дней', checkinUndo: 'Отменить отметку', checkinMarkedToast: 'Отмечено — продолжайте в том же духе', checkinExpiredDone:'Период отметок завершён', checkinDurationLabel:'Удержано', checkinDurationSetting:'Длительность отметок', checkinDurationHint:'0 — без срока; после даты окончания эта отметка считается завершённой',
     orderedTasks: 'По порядку', unorderedTasks: 'Без порядка', taskOrderHint: 'Подзадачи выполняются по порядку; меняйте стрелками',
     taskMoveUp: 'Вверх', taskMoveDown: 'Вниз', taskDragHint: 'Перетащите, чтобы изменить порядок',
     descriptionPlaceholder: 'Добавьте контекст, предысторию и всё, что стоит запомнить…', notePlaceholder: 'Начните с идеи…', words: 'слова', chars: 'символы',
@@ -1139,7 +1139,11 @@ const folderShortName = (folder) => {
   if (words.length > 1) return words.slice(0, 3).map(word => folderShortSegments(word)[0]).join('').toLocaleUpperCase();
   return folderShortSegments(name.replace(/\s+/g, '')).slice(0, 2).join('').toLocaleUpperCase();
 };
-const isTodoComplete = (item) => item?.type === 'todo' && (Boolean(item.completed) || ((item.tasks || []).length > 0 && item.tasks.every(task => task.done)));
+const isTodoComplete = (item) => item?.type === 'todo' && (Boolean(item.completed)
+  || ((item.tasks || []).length > 0 && item.tasks.every(task => task.done))
+  // 打卡持续结束：打卡待办超过截止日期即默认完成（completed 标记由
+  // 编辑器打开时落盘，这里先做即时判定让列表 / 收集箱同步呈现）。
+  || (Boolean(item.checkin) && Number(item.checkinDuration) > 0 && item.dueAt && todayISO() > item.dueAt.slice(0, 10)));
 const isTrashed = (item) => Boolean(item?.deletedAt);
 const activeItems = () => library.items.filter(item => !isTrashed(item));
 const trashedItems = () => library.items.filter(isTrashed).sort((a, b) => String(b.deletedAt).localeCompare(String(a.deletedAt)));
@@ -8275,6 +8279,14 @@ function bindLinkedItems(item) {
 }
 
 function renderAll() {
+  // 打卡持续结束：超过截止时间的打卡待办默认完成。isTodoComplete 已做
+  // 即时判定；这里把 completed 落盘一次（幂等），列表 / 收集箱随渲染同步。
+  library.items.forEach(item => {
+    if (item.type === 'todo' && item.checkin && !item.completed
+      && Number(item.checkinDuration) > 0 && item.dueAt && todayISO() > item.dueAt.slice(0, 10)) {
+      item.completed = true;
+    }
+  });
   translateStaticUI();
   renderSidebar();
   renderList();

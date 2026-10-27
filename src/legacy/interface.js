@@ -1542,8 +1542,9 @@
       ? { ...base, body: '<p><br></p>' }
       : type === 'checkin'
         // 打卡式待办：checkins 以本地日期（todayISO 同款 YYYY-MM-DD）为键
-        // 记录每天的打卡状态，不设开始/截止时间，也不参与子任务进度。
-        ? { ...base, priority:'medium', notes:'', tasks:[], completed:false, checkin:true, checkins:{} }
+        // 记录每天的打卡状态；checkinDuration 是打卡持续天数（0 = 不设期限），
+        // 设了持续即自动排出开始 / 截止时间——超过截止整卡视为已完成。
+        ? { ...base, priority:'medium', notes:'', tasks:[], completed:false, checkin:true, checkins:{}, checkinDuration: 21, startAt: now, dueAt: new Date(new Date(now).setDate(new Date(now).getDate() + 20)).toISOString() }
         : { ...base, startAt:now, dueAt:'', priority:'medium', notes:'', tasks:[{ id:uid(), text:'', done:false }], completed:false };
     library.items.unshift(item);
     selectedId = item.id;
@@ -1611,7 +1612,18 @@
     const metaCopy = todoMetaText();
     const startLabel = item.startAt ? formatDateTimeSeconds(item.startAt) : metaCopy.notSet;
     const dueLabel = item.dueAt ? formatDateTimeSeconds(item.dueAt) : metaCopy.notSet;
-    const scheduleIncomplete = !item.startAt || !item.dueAt;
+    // 打卡待办的持续天数决定开始 / 截止（startAt + 持续天数）；常规待办
+    // 才有「未排期不进日历」的提示。
+    const scheduleIncomplete = item.checkin ? false : (!item.startAt || !item.dueAt);
+    const checkinDurationField = item.checkin ? `
+      <div class="meta-field checkin-duration-field">
+        <label for="checkinDurationInput"><svg><use href="#i-clock"/></svg>${escapeHTML(t('checkinDurationSetting'))}</label>
+        <div class="checkin-duration-input">
+          <input id="checkinDurationInput" type="number" min="0" max="3650" step="1" value="${Math.max(0, Math.round(Number(item.checkinDuration) || 0))}"/>
+          <span>${escapeHTML(t('checkinDays'))}</span>
+        </div>
+        <small>${escapeHTML(t('checkinDurationHint'))}</small>
+      </div>` : '';
     return `<div class="item-meta-popover todo-meta-grid" id="itemMetaPopover" role="group" aria-label="${escapeHTML(copy.panel)}" hidden>
       <div class="meta-field schedule-field">
         <div class="meta-field-heading">
@@ -1636,6 +1648,7 @@
         <p class="schedule-warning" id="scheduleWarning" ${scheduleIncomplete ? '' : 'hidden'}>${escapeHTML(metaCopy.calendarHidden)}</p>
         <p class="meta-error" id="scheduleError" hidden>${escapeHTML(metaCopy.invalid)}</p>
       </div>
+      ${checkinDurationField}
       <div class="meta-field priority-field"><label><svg><use href="#i-spark"/></svg>${t('priority')}</label><div class="priority-options">
         ${['high','medium','low'].map(value => `<button type="button" data-priority="${value}" class="${item.priority === value ? 'active' : ''}">${t(value)}</button>`).join('')}
       </div></div>
@@ -1731,7 +1744,42 @@
       const key = localDateKey(day);
       week.push({ key, day, hit: Boolean(checkins[key]), today: index === 0 });
     }
-    return { todayKey, todayDone: Boolean(checkins[todayKey]), streak, total, week };
+    // 打卡持续：起始日 + 持续天数 = 结束日；持续为 0 表示不设期限。
+    const startKey = item.startAt ? localDateKey(new Date(item.startAt)) : (item.createdAt ? localDateKey(new Date(item.createdAt)) : '');
+    const duration = Math.max(0, Math.round(Number(item.checkinDuration) || 0));
+    const endKey = duration > 0 && startKey ? checkinAddDays(startKey, duration - 1) : '';
+    const expired = Boolean(endKey && todayKey > endKey);
+    return { todayKey, todayDone: Boolean(checkins[todayKey]), streak, total, week, startKey, duration, endKey, expired };
+  };
+
+  // 打卡月历：year/month 为本地月份（1–12），返回完整月网格（周一起始、
+  // 前后补位），每天带打卡状态 / 今天 / 起止范围标记。
+  const checkinMonthGrid = (item, year, month) => {
+    const checkins = item.checkins || {};
+    const todayKey = localDateKey(new Date());
+    const stats = checkinStats(item);
+    const first = new Date(year, month - 1, 1);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const startWeekday = (first.getDay() + 6) % 7; // 周一 = 0
+    const cells = [];
+    for (let index = 0; index < startWeekday; index += 1) cells.push({ blank: true });
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const key = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      cells.push({
+        key, day,
+        hit: Boolean(checkins[key]),
+        today: key === todayKey,
+        inRange: Boolean(stats.startKey && key >= stats.startKey && (!stats.endKey || key <= stats.endKey)),
+        out: Boolean(stats.startKey && (key < stats.startKey || (stats.endKey && key > stats.endKey)))
+      });
+    }
+    while (cells.length % 7) cells.push({ blank: true });
+    return cells;
+  };
+  const checkinAddDays = (key, days) => {
+    const date = new Date(`${key}T12:00:00`);
+    date.setDate(date.getDate() + days);
+    return localDateKey(date);
   };
 
   todoEditor = function enhancedTodoEditor(item) {
@@ -1777,14 +1825,23 @@
       ${linkedItemsSection(item)}
       <section class="checkin-section" aria-label="${escapeHTML(t('checkinTodo'))}">
         <div class="checkin-main">
-          <button class="checkin-button${stats.todayDone ? ' done' : ''}" id="checkinToggle" type="button" aria-pressed="${stats.todayDone}" title="${stats.todayDone ? escapeHTML(t('checkinUndo')) : escapeHTML(t('checkinToday'))}"><svg><use href="#i-check"/></svg></button>
+          <button class="checkin-button${stats.todayDone ? ' done' : ''}" id="checkinToggle" type="button" aria-pressed="${stats.todayDone}" ${stats.expired ? 'disabled' : ''} title="${stats.todayDone ? escapeHTML(t('checkinUndo')) : escapeHTML(t('checkinToday'))}"><svg><use href="#i-check"/></svg></button>
           <div class="checkin-summary">
-            <b>${escapeHTML(stats.todayDone ? t('checkinDone') : t('checkinTodoYet'))}</b>
-            <span>${escapeHTML(t('checkinStreak'))} <em>${stats.streak}</em> ${escapeHTML(t('checkinDays'))} · ${escapeHTML(t('checkinTotal'))} ${stats.total} ${escapeHTML(t('checkinDays'))}</span>
+            <b>${escapeHTML(stats.expired ? t('checkinExpiredDone') : (stats.todayDone ? t('checkinDone') : t('checkinTodoYet')))}</b>
+            <span>${escapeHTML(t('checkinStreak'))} <em>${stats.streak}</em> ${escapeHTML(t('checkinDays'))} · ${escapeHTML(t('checkinTotal'))} ${stats.total} ${escapeHTML(t('checkinDays'))}${stats.duration > 0 ? ` · ${escapeHTML(t('checkinDurationLabel', Math.min(stats.total, stats.duration)))} / ${stats.duration} ${escapeHTML(t('checkinDays'))}` : ''}</span>
           </div>
         </div>
         <div class="checkin-week" role="img" aria-label="${escapeHTML(t('checkinRecent'))}">
           ${stats.week.map(entry => `<i class="${entry.hit ? 'hit' : ''}${entry.today ? ' today' : ''}" title="${escapeHTML(entry.key)}">${entry.day.getDate()}</i>`).join('')}
+        </div>
+        <div class="checkin-calendar" id="checkinCalendar">
+          <div class="checkin-calendar-head">
+            <button type="button" id="checkinCalendarPrev" title="${escapeHTML(t('previousMonth'))}" aria-label="${escapeHTML(t('previousMonth'))}"><svg><use href="#i-chevron"/></svg></button>
+            <b id="checkinCalendarTitle"></b>
+            <button type="button" id="checkinCalendarNext" class="is-next" title="${escapeHTML(t('nextMonth'))}" aria-label="${escapeHTML(t('nextMonth'))}"><svg><use href="#i-chevron"/></svg></button>
+          </div>
+          <div class="checkin-calendar-weekdays" aria-hidden="true">${['一','二','三','四','五','六','日'].map(day => `<i>${day}</i>`).join('')}</div>
+          <div class="checkin-calendar-grid" id="checkinCalendarGrid"></div>
         </div>
       </section>
       <section class="note-block"><h2>${t('description')}</h2><div class="todo-notes" id="todoNotes" contenteditable="true" inputmode="text" spellcheck="true" autocapitalize="sentences" data-placeholder="${t('descriptionPlaceholder')}">${escapeHTML(item.notes || '').replace(/\n/g, '<br>')}</div></section>
@@ -1914,6 +1971,56 @@
     }));
 
     if (item.checkin) {
+      // 打卡持续天数：0 = 不设期限；改动即重排开始 / 截止（开始日保持
+      // 原值，截止 = 开始 + 持续 - 1），清零时清除排期。
+      const durationInput = byId('checkinDurationInput');
+      durationInput?.addEventListener('change', () => {
+        const value = Math.max(0, Math.min(3650, Math.round(Number(durationInput.value) || 0)));
+        durationInput.value = value;
+        item.checkinDuration = value;
+        if (value > 0) {
+          const start = item.startAt ? new Date(item.startAt) : new Date();
+          if (!item.startAt) item.startAt = start.toISOString();
+          const due = new Date(start);
+          due.setDate(due.getDate() + value - 1);
+          due.setHours(23, 59, 59, 0);
+          item.dueAt = due.toISOString();
+        } else {
+          delete item.startAt;
+          delete item.dueAt;
+        }
+        if (item.completed && !checkinStats(item).expired) delete item.completed;
+        touchItem(item);
+        renderEditor(); renderList();
+      });
+
+      // —— 打卡月历（完整日历）：默认当前月，可前后翻页 ——
+      let calendarCursor = new Date();
+      const renderCheckinCalendar = () => {
+        const grid = byId('checkinCalendarGrid');
+        const title = byId('checkinCalendarTitle');
+        if (!grid || !title) return;
+        const year = calendarCursor.getFullYear();
+        const month = calendarCursor.getMonth() + 1;
+        title.textContent = `${year}年${month}月`;
+        grid.innerHTML = checkinMonthGrid(item, year, month).map(cell => cell.blank
+          ? '<i class="is-blank"></i>'
+          : `<i class="${cell.hit ? 'hit' : ''}${cell.today ? ' today' : ''}${cell.inRange ? '' : ' out'}" title="${escapeHTML(cell.key)}">${cell.day}</i>`).join('');
+      };
+      byId('checkinCalendarPrev')?.addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() - 1); renderCheckinCalendar(); });
+      byId('checkinCalendarNext')?.addEventListener('click', () => { calendarCursor.setMonth(calendarCursor.getMonth() + 1); renderCheckinCalendar(); });
+      renderCheckinCalendar();
+
+      // 打卡持续结束：超过截止时间的打卡待办默认完成——首次打开编辑器
+      // 时把 completed 落盘（保留全部打卡记录，重开即撤销）。
+      const statsForExpiry = checkinStats(item);
+      if (statsForExpiry.expired && !item.completed) {
+        item.completed = true;
+        item.completedAt = new Date().toISOString();
+        touchItem(item);
+        renderList();
+      }
+
       byId('checkinScheduleEdit').addEventListener('click', event => {
         // 阻止本次点击继续冒泡：document 上的「面板外点击」监听会把
         // 刚由 metaButton.click() 打开的属性面板立即误判关闭。
