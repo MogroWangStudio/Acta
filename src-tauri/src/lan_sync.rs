@@ -179,6 +179,39 @@ pub struct LanServiceStatus {
     platform: String,
     trusted: bool,
     profiles: Vec<LanProfileMeta>,
+    // 本机局域网信息（仅状态页展示）：SSID 桌面端不采集，留空。
+    network_type: String,
+    network_ssid: String,
+    local_addresses: Vec<String>,
+}
+
+// 本机非回环 IPv4 地址：状态页展示「本机网络地址」用。
+fn local_lan_addresses() -> Vec<String> {
+    let mut addresses = Vec::new();
+    if let Ok(socket) = UdpSocket::bind("0.0.0.0:0") {
+        // 常见局域网网段的探测地址：connect 不发包，仅让系统选出默认路由的源地址。
+        for probe in ["192.168.0.1:1", "10.0.0.1:1", "172.16.0.1:1"] {
+            if socket.connect(probe).is_ok() {
+                if let Ok(address) = socket.local_addr() {
+                    let ip = address.ip().to_string();
+                    if !addresses.contains(&ip) {
+                        addresses.push(ip);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    addresses
+}
+
+fn network_type_of(addresses: &[String]) -> String {
+    if addresses.is_empty() {
+        String::new()
+    } else {
+        // std 无法区分 Wi-Fi 与以太网：桌面端统一显示为「本地网络」。
+        String::from("lan")
+    }
 }
 
 // std 没有随机数设施；session 与发现 token 都是局域网内的握手混淆值而非
@@ -441,28 +474,42 @@ pub fn lan_sync_service_status(state: &tauri::State<'_, LanState>) -> Result<Lan
 fn lan_sync_status_inner(state: &tauri::State<'_, LanState>) -> Result<LanServiceStatus, String> {
     let guard = state.service.lock().map_err(|error| error.to_string())?;
     Ok(match guard.as_ref() {
-        Some(service) => LanServiceStatus {
-            running: true,
-            discoverable: service.discovery_socket,
-            port: service.http_port,
-            session: service.session.clone(),
-            device: service_device(service),
-            icon: service_icon(service),
-            platform: service.platform.clone(),
-            trusted: service.trusted.load(Ordering::Relaxed),
-            profiles: service.profiles.lock().map_err(|error| error.to_string())?.clone(),
-        },
-        None => LanServiceStatus {
-            running: false,
-            discoverable: false,
-            port: 0,
-            session: String::new(),
-            device: device_host_name(),
-            icon: String::new(),
-            platform: std::env::consts::OS.to_string(),
-            trusted: false,
-            profiles: Vec::new(),
-        },
+        Some(service) => {
+            let addresses = local_lan_addresses();
+            let network_type = network_type_of(&addresses);
+            LanServiceStatus {
+                running: true,
+                discoverable: service.discovery_socket,
+                port: service.http_port,
+                session: service.session.clone(),
+                device: service_device(service),
+                icon: service_icon(service),
+                platform: service.platform.clone(),
+                trusted: service.trusted.load(Ordering::Relaxed),
+                profiles: service.profiles.lock().map_err(|error| error.to_string())?.clone(),
+                network_type,
+                network_ssid: String::new(),
+                local_addresses: addresses,
+            }
+        }
+        None => {
+            let addresses = local_lan_addresses();
+            let network_type = network_type_of(&addresses);
+            LanServiceStatus {
+                running: false,
+                discoverable: false,
+                port: 0,
+                session: String::new(),
+                device: device_host_name(),
+                icon: String::new(),
+                platform: std::env::consts::OS.to_string(),
+                trusted: false,
+                profiles: Vec::new(),
+                network_type,
+                network_ssid: String::new(),
+                local_addresses: addresses,
+            }
+        }
     })
 }
 

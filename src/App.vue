@@ -534,6 +534,7 @@
           <label class="settings-row"><span><b>允许被其他设备发现</b><small>出现在附近设备的列表中</small></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
         </div>
         <div class="settings-group">
+          <div class="settings-row" id="lanNetworkInfoRow"><span><b data-i18n="lanNetwork">本机网络</b><small id="lanNetworkInfo" data-i18n="lanNetworkUnknown">读取中…</small></span></div>
           <label class="settings-row"><span><b>设备名称</b><small>留空时使用主机名</small></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
           <label class="settings-row"><span><b>设备图标</b><small>雷达头像，留空用默认图标</small></span><input id="lanDeviceIcon" type="text" maxlength="8" placeholder="例：🌿" autocomplete="off"/></label>
           <label class="settings-row"><span><b>服务端口</b><small>TCP 端口，留空自动分配；修改后需重开发现</small></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>

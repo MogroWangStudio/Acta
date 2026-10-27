@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
@@ -364,6 +365,10 @@ public class ActaLanPlugin extends Plugin {
     }
 
     private static JSObject metaJson(LanService current) {
+        return metaJson(current, null);
+    }
+
+    private static JSObject metaJson(LanService current, Context context) {
         JSObject meta = new JSObject();
         // /info 与桌面端 lan_sync.rs 使用同一组字段：app 是对方校验身份的
         // 依据，name/icon 用于对端雷达与同步对话框展示。
@@ -379,6 +384,20 @@ public class ActaLanPlugin extends Plugin {
         meta.put("platform", current == null ? "android" : current.platform);
         meta.put("trusted", current != null && current.trusted);
         meta.put("profiles", current == null ? new JSONArray() : current.profiles);
+        // 本机局域网信息（网络名 / 类型 / 本机 IP）：仅展示用。
+        try {
+            if (context != null) {
+                JSObject network = lanNetworkInfo(context);
+                meta.put("networkType", network.getString("networkType"));
+                meta.put("networkSsid", network.getString("networkSsid"));
+                meta.put("localAddresses", network.getJSONArray("localAddresses"));
+            } else {
+                meta.put("networkType", "");
+                meta.put("networkSsid", "");
+                meta.put("localAddresses", new JSONArray());
+            }
+        } catch (Exception ignored) {
+        }
         return meta;
     }
 
@@ -409,6 +428,51 @@ public class ActaLanPlugin extends Plugin {
         return capabilities != null
             && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
                 || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET));
+    }
+
+    // —— 本机局域网信息（状态页展示用）——
+    // networkType：wifi / ethernet / other；SSID 与本机 IP 列表尽力收集，
+    // 权限不足或取不到时留空——这些只是展示信息，不参与协议。
+    static JSObject lanNetworkInfo(Context context) {
+        JSObject info = new JSObject();
+        info.put("networkType", "");
+        info.put("networkSsid", "");
+        info.put("localAddresses", new JSONArray());
+        try {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            Network lan = lanNetwork(context);
+            NetworkCapabilities capabilities = manager == null ? null : manager.getNetworkCapabilities(lan);
+            if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                info.put("networkType", "ethernet");
+            } else if (capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                info.put("networkType", "wifi");
+                // Android 9+：SSID 需要 ACCESS_FINE_LOCATION 且定位服务开启；
+                // 拿不到就留空，界面退化为只显示类型。
+                WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                if (wifi != null) {
+                    WifiInfo wifiInfo = wifi.getConnectionInfo();
+                    String rawSsid = wifiInfo == null ? "" : wifiInfo.getSSID();
+                    if (rawSsid != null && rawSsid.startsWith("\"") && rawSsid.endsWith("\"") && rawSsid.length() > 2) {
+                        rawSsid = rawSsid.substring(1, rawSsid.length() - 1);
+                    }
+                    if (rawSsid != null && !rawSsid.isEmpty() && !"<unknown ssid>".equals(rawSsid)) {
+                        info.put("networkSsid", rawSsid);
+                    }
+                }
+            }
+            JSONArray addresses = new JSONArray();
+            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (!networkInterface.isUp() || networkInterface.isLoopback()) continue;
+                for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
+                    InetAddress inet = address.getAddress();
+                    if (inet.isLoopbackAddress() || inet.isLinkLocalAddress()) continue;
+                    addresses.put(inet.getHostAddress());
+                }
+            }
+            info.put("localAddresses", addresses);
+        } catch (Exception ignored) {
+        }
+        return info;
     }
 
     private void bindToLanNetwork(DatagramSocket socket) {
@@ -484,7 +548,7 @@ public class ActaLanPlugin extends Plugin {
     @PluginMethod
     public void serviceStatus(PluginCall call) {
         synchronized (this) {
-            call.resolve(metaJson(service));
+            call.resolve(metaJson(service, getContext()));
         }
     }
 
