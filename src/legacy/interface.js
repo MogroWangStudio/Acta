@@ -6059,7 +6059,8 @@
 
   // —— 系统字体选择器：queryLocalFonts 读取本机字体，按脚本支持
   // （中文 / 日文 / 韩文 / 西里尔）分组，另有「全部字体」兜底分组；
-  // 环境不支持（macOS WKWebView、Android WebView）时保持手动输入。 ——
+  // 环境不支持（macOS WKWebView 等）时保持手动输入。安卓 WebView 的
+  // local-fonts 权限由 ActaWebChromeClient 自动授予（用户点击触发）。 ——
   let systemFontFamilies = null;   // 缓存：全量 family 名（字母序）
   let systemFontGroups = null;     // 缓存：按语言分组的 { key: [family] }
 

@@ -10,6 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.PermissionRequest;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -24,6 +25,15 @@ public final class ActaWebChromeClient extends BridgeWebChromeClient {
     public ActaWebChromeClient(Bridge bridge) {
         super(bridge);
         actaBridge = bridge;
+    }
+
+    // 页面发起的权限请求（自定义字体的「浏览系统字体」走 Local Font Access
+    // 的 local-fonts 权限）：WebView 里没有系统权限弹窗可用，不答复会被
+    // 自动拒绝。请求只可能来自应用自身的页面且由用户点击触发，这里全部
+    // 放行——「浏览系统字体」在安卓端因此可用。
+    @Override
+    public void onPermissionRequest(final PermissionRequest request) {
+        request.grant(request.getResources());
     }
 
     private boolean activityUnavailable() {
