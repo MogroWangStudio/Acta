@@ -611,7 +611,7 @@
     </dialog>
 
     <dialog class="relation-dialog quick-capture-dialog" id="quickCaptureDialog" aria-labelledby="quickCaptureTitle">
-      <header class="relation-dialog-head quick-capture-head"><span><svg><use href="#i-lightning"/></svg></span><div><h3 id="quickCaptureTitle">速记</h3><small id="quickCaptureSubtitle">快速创建后自动保存</small></div><button class="relation-dialog-close" id="closeQuickCapture" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button><div class="quick-capture-progress" id="quickCaptureProgress" role="progressbar" aria-label="步骤进度" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1"><i></i><i></i><i></i></div></header>
+      <header class="relation-dialog-head quick-capture-head"><span><svg><use href="#i-lightning"/></svg></span><div><h3 id="quickCaptureTitle">速记</h3></div><button class="relation-dialog-close" id="closeQuickCapture" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button><div class="quick-capture-progress" id="quickCaptureProgress" role="progressbar" aria-label="步骤进度" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1"><i></i><i></i><i></i></div></header>
       <form class="quick-capture-form" id="quickCaptureForm" novalidate>
         <div class="quick-capture-body">
           <p class="quick-capture-intro" id="quickCaptureIntro">选好类型，写下重点，Acta 会创建并自动保存。</p>
