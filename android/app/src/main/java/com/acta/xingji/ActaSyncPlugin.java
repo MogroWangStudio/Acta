@@ -2,6 +2,7 @@ package com.mws.acta;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,6 +25,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -64,6 +66,48 @@ public class ActaSyncPlugin extends Plugin {
 
     // 预见式返回开关（仅 Android 13+ 生效）：把常规设置的开关落到
     // MainActivity 的系统级 OnBackInvokedCallback 注册 / 反注册上。
+    // 数据档案统计（文件总大小与文件数）：行记数据设置页的数据统计块。
+    // SAF 遍历可能涉及网盘延迟，放后台线程执行后再回主线程 resolve。
+    @PluginMethod
+    public void dataFolderStats(PluginCall call) {
+        String folder = call.getString("folder");
+        if (folder == null || folder.isEmpty()) {
+            call.reject("folder is required");
+            return;
+        }
+        new Thread(() -> {
+            try {
+                Context context = getContext();
+                DocumentFile root = DocumentFile.fromTreeUri(context, Uri.parse(folder));
+                if (root == null || !root.canRead()) {
+                    call.reject("folder is not readable");
+                    return;
+                }
+                long totalBytes = 0;
+                long fileCount = 0;
+                ArrayDeque<DocumentFile> stack = new ArrayDeque<>();
+                stack.push(root);
+                while (!stack.isEmpty()) {
+                    DocumentFile dir = stack.pop();
+                    for (DocumentFile entry : dir.listFiles()) {
+                        if (entry.isDirectory()) {
+                            stack.push(entry);
+                        } else {
+                            totalBytes += entry.length();
+                            fileCount += 1;
+                        }
+                    }
+                }
+                JSObject data = new JSObject();
+                data.put("totalBytes", totalBytes);
+                data.put("fileCount", fileCount);
+                getActivity().runOnUiThread(() -> call.resolve(data));
+            } catch (Exception error) {
+                getActivity().runOnUiThread(() -> call.reject(String.valueOf(error.getMessage()), error));
+            }
+        }).start();
+    }
+
     @PluginMethod
     public void setPredictiveBack(PluginCall call) {
         Boolean enabled = call.getBoolean("enabled", true);

@@ -4319,6 +4319,13 @@
         if (adapter.kind === 'native' && window.actaDesktop?.dataFolderStats) {
           const stats = await window.actaDesktop.dataFolderStats(adapter.folder);
           size = { totalBytes: Number(stats.totalBytes) || 0, fileCount: Number(stats.fileCount) || 0 };
+        } else if (adapter.kind === 'native' && !window.actaDesktop) {
+          // 安卓：ActaSync 桥的 dataFolderStats（SAF 遍历文件总大小与文件数）。
+          const nativeStats = window.Capacitor?.Plugins?.ActaSync?.dataFolderStats;
+          if (nativeStats) {
+            const stats = await nativeStats({ folder: adapter.folder });
+            size = { totalBytes: Number(stats?.totalBytes) || 0, fileCount: Number(stats?.fileCount) || 0 };
+          }
         } else if (adapter.kind === 'web' && adapter.handle?.values) {
           size = await estimateFolderHandleSize(adapter.handle);
         }
