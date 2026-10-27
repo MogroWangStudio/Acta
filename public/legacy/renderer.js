@@ -2158,8 +2158,9 @@ function renderStats() {
   const selectedCount = items.filter(item => statsSelection.has(item.id)).length;
   if (!items.length) {
     // Keep the toolbar rendered so the period picker stays reachable on empty ranges.
-    return `<div class="stats-collection-wrap">
-      ${renderStatsToolbar(selectedCount)}
+    // 工具栏是滚动容器的直接子级（sticky 吸顶的前提），不放进 wrap 的网格里。
+    return `${renderStatsToolbar(selectedCount)}
+    <div class="stats-collection-wrap">
       <div class="stats-empty"><div><span><svg><use href="#i-chart"/></svg></span><h3>${escapeHTML(t('statsListTitle'))}</h3><p>${escapeHTML(t('statsEmptyRange'))}</p></div></div>
     </div>`;
   }
@@ -2176,8 +2177,8 @@ function renderStats() {
       <header class="stats-day-head"><b>${escapeHTML(statsGroupLabel(key))}</b><span>${escapeHTML(key)} ${groupItems.length} ${t('item')}</span></header>
       ${groupItems.map(item => statsItemRow(item, rowIndex++)).join('')}
     </section>`).join('');
-  return `<div class="stats-collection-wrap">
-    ${renderStatsToolbar(selectedCount)}
+  return `${renderStatsToolbar(selectedCount)}
+  <div class="stats-collection-wrap">
     <div class="stats-collection">${groupsMarkup}</div>
     <p class="stats-collection-hint">${escapeHTML(t('statsListHint'))}</p>
   </div>`;
