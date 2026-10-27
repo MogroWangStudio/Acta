@@ -38,6 +38,7 @@ const dictionaries = {
     linkedItems: '关联项目', linkTodo: '关联待办', linkNote: '关联笔记', chooseTodo: '选择一个待办…', chooseNote: '选择一则笔记…',
     noLinks: '还没有关联项目', unlink: '取消关联', linked: '已建立双向关联', unlinked: '已取消关联',
     importNote: '导入笔记', importNoteHint: '支持 Markdown 与纯文本', exportNote: '导出这则笔记', noteImported: '笔记已导入', noteExported: '笔记已导出',
+    importTodo: '导入待办', importTodoHint: '支持分行文字与任务清单', todoImported: '待办已导入', invalidTodoFile: '无法读取这份待办',
     importFailed: '导入失败', exportFailed: '导出失败', fileTooLarge: '文件不能超过 5 MB', invalidNoteFile: '无法读取这份笔记',
     calendar:'日历', yearView:'年', monthView:'月', weekView:'周', dayView:'日', previousPeriod:'上一时段', nextPeriod:'下一时段', previousYear:'上一年', nextYear:'下一年', previousMonth:'上一月', nextMonth:'下一月', previousWeek:'上一周', nextWeek:'下一周', previousDay:'上一日', nextDay:'下一日', backToToday:'今天', calendarNavigation:'日历导航', calendarViewOptions:'日历视图',
     noScheduledTodos:'这段时间没有待办', noScheduledTodosHint:'为待办设置截止日期后，它会显示在日历中。', scheduledTodos:'项待办',
@@ -100,6 +101,7 @@ const dictionaries = {
     linkedItems: 'Linked items', linkTodo: 'Link task', linkNote: 'Link note', chooseTodo: 'Choose a task…', chooseNote: 'Choose a note…',
     noLinks: 'No linked items yet', unlink: 'Unlink', linked: 'Linked in both directions', unlinked: 'Link removed',
     importNote: 'Import note', importNoteHint: 'Markdown and plain text', exportNote: 'Export this note', noteImported: 'Note imported', noteExported: 'Note exported',
+    importTodo: 'Import todo', importTodoHint: 'Plain lines or a task list', todoImported: 'Todo imported', invalidTodoFile: 'Cannot read this todo file',
     importFailed: 'Import failed', exportFailed: 'Export failed', fileTooLarge: 'Files must be under 5 MB', invalidNoteFile: 'This note could not be read',
     calendar:'Calendar', yearView:'Year', monthView:'Month', weekView:'Week', dayView:'Day', previousPeriod:'Previous period', nextPeriod:'Next period', previousYear:'Previous year', nextYear:'Next year', previousMonth:'Previous month', nextMonth:'Next month', previousWeek:'Previous week', nextWeek:'Next week', previousDay:'Previous day', nextDay:'Next day', backToToday:'Today', calendarNavigation:'Calendar navigation', calendarViewOptions:'Calendar views',
     noScheduledTodos:'No tasks in this period', noScheduledTodosHint:'Set a task deadline to place it on the calendar.', scheduledTodos:'tasks',
@@ -162,6 +164,7 @@ const dictionaries = {
     linkedItems: '関連項目', linkTodo: 'タスクを関連付け', linkNote: 'ノートを関連付け', chooseTodo: 'タスクを選択…', chooseNote: 'ノートを選択…',
     noLinks: '関連項目はまだありません', unlink: '関連付けを解除', linked: '双方向に関連付けました', unlinked: '関連付けを解除しました',
     importNote: 'ノートを読み込む', importNoteHint: 'Markdown とプレーンテキストに対応', exportNote: 'このノートを書き出す', noteImported: 'ノートを読み込みました', noteExported: 'ノートを書き出しました',
+    importTodo: 'タスクを読み込む', importTodoHint: '改行テキストとタスクリストに対応', todoImported: 'タスクを読み込みました', invalidTodoFile: 'このタスクファイルを読み取できません',
     importFailed: '読み込みに失敗しました', exportFailed: '書き出しに失敗しました', fileTooLarge: 'ファイルは 5 MB までです', invalidNoteFile: 'このノートを読み取れません',
     calendar:'カレンダー', yearView:'年', monthView:'月', weekView:'週', dayView:'日', previousPeriod:'前の期間', nextPeriod:'次の期間', previousYear:'前の年', nextYear:'次の年', previousMonth:'前の月', nextMonth:'次の月', previousWeek:'前の週', nextWeek:'次の週', previousDay:'前の日', nextDay:'次の日', backToToday:'今日', calendarNavigation:'カレンダー操作', calendarViewOptions:'カレンダー表示',
     noScheduledTodos:'この期間にタスクはありません', noScheduledTodosHint:'タスクに期限を設定するとカレンダーに表示されます。', scheduledTodos:'件のタスク',
@@ -224,6 +227,7 @@ const dictionaries = {
     linkedItems: '연결된 항목', linkTodo: '할 일 연결', linkNote: '노트 연결', chooseTodo: '할 일 선택…', chooseNote: '노트 선택…',
     noLinks: '아직 연결된 항목이 없어요', unlink: '연결 해제', linked: '양방향으로 연결되었어요', unlinked: '연결이 해제되었어요',
     importNote: '노트 가져오기', importNoteHint: 'Markdown과 일반 텍스트 지원', exportNote: '이 노트 내보내기', noteImported: '노트를 가져왔어요', noteExported: '노트를 내보냈어요',
+    importTodo: '할 일 가져오기', importTodoHint: '줄바꿈 텍스트와 작업 목록 지원', todoImported: '할 일을 가져왔어요', invalidTodoFile: '이 할 일 파일을 읽을 수 없어요',
     importFailed: '가져오기 실패', exportFailed: '내보내기 실패', fileTooLarge: '파일은 5 MB 이하여야 해요', invalidNoteFile: '이 노트를 읽을 수 없어요',
     calendar:'달력', yearView:'년', monthView:'월', weekView:'주', dayView:'일', previousPeriod:'이전 기간', nextPeriod:'다음 기간', previousYear:'이전 해', nextYear:'다음 해', previousMonth:'이전 달', nextMonth:'다음 달', previousWeek:'이전 주', nextWeek:'다음 주', previousDay:'이전 날', nextDay:'다음 날', backToToday:'오늘', calendarNavigation:'달력 탐색', calendarViewOptions:'달력 보기',
     noScheduledTodos:'이 기간에는 할 일이 없어요', noScheduledTodosHint:'할 일에 마감일을 지정하면 달력에 표시돼요.', scheduledTodos:'개의 할 일',
@@ -286,6 +290,7 @@ const dictionaries = {
     linkedItems: 'Éléments liés', linkTodo: 'Lier une tâche', linkNote: 'Lier une note', chooseTodo: 'Choisir une tâche…', chooseNote: 'Choisir une note…',
     noLinks: 'Aucun élément lié pour l’instant', unlink: 'Délier', linked: 'Lié dans les deux sens', unlinked: 'Lien supprimé',
     importNote: 'Importer une note', importNoteHint: 'Markdown et texte brut', exportNote: 'Exporter cette note', noteImported: 'Note importée', noteExported: 'Note exportée',
+    importTodo: 'Importer une tâche', importTodoHint: 'Lignes simples ou liste de tâches', todoImported: 'Tâche importée', invalidTodoFile: 'Impossible de lire ce fichier de tâche',
     importFailed: 'Échec de l’import', exportFailed: 'Échec de l’export', fileTooLarge: 'Les fichiers doivent faire moins de 5 Mo', invalidNoteFile: 'Impossible de lire cette note',
     calendar:'Calendrier', yearView:'Année', monthView:'Mois', weekView:'Semaine', dayView:'Jour', previousPeriod:'Période précédente', nextPeriod:'Période suivante', previousYear:'Année précédente', nextYear:'Année suivante', previousMonth:'Mois précédent', nextMonth:'Mois suivant', previousWeek:'Semaine précédente', nextWeek:'Semaine suivante', previousDay:'Jour précédent', nextDay:'Jour suivant', backToToday:'Aujourd’hui', calendarNavigation:'Navigation du calendrier', calendarViewOptions:'Vues du calendrier',
     noScheduledTodos:'Aucune tâche sur cette période', noScheduledTodosHint:'Fixez une échéance à une tâche pour la placer sur le calendrier.', scheduledTodos:'tâches',
@@ -348,6 +353,7 @@ const dictionaries = {
     linkedItems: 'Verknüpfte Einträge', linkTodo: 'Aufgabe verknüpfen', linkNote: 'Notiz verknüpfen', chooseTodo: 'Aufgabe wählen…', chooseNote: 'Notiz wählen…',
     noLinks: 'Noch keine Verknüpfungen', unlink: 'Verknüpfung lösen', linked: 'In beide Richtungen verknüpft', unlinked: 'Verknüpfung gelöst',
     importNote: 'Notiz importieren', importNoteHint: 'Markdown und Klartext', exportNote: 'Diese Notiz exportieren', noteImported: 'Notiz importiert', noteExported: 'Notiz exportiert',
+    importTodo: 'Aufgabe importieren', importTodoHint: 'Zeilen oder Aufgabenliste', todoImported: 'Aufgabe importiert', invalidTodoFile: 'Diese Aufgabendatei ist nicht lesbar',
     importFailed: 'Import fehlgeschlagen', exportFailed: 'Export fehlgeschlagen', fileTooLarge: 'Dateien müssen unter 5 MB liegen', invalidNoteFile: 'Diese Notiz konnte nicht gelesen werden',
     calendar:'Kalender', yearView:'Jahr', monthView:'Monat', weekView:'Woche', dayView:'Tag', previousPeriod:'Vorherige Zeitspanne', nextPeriod:'Nächste Zeitspanne', previousYear:'Vorheriges Jahr', nextYear:'Nächstes Jahr', previousMonth:'Voriger Monat', nextMonth:'Nächster Monat', previousWeek:'Vorige Woche', nextWeek:'Nächste Woche', previousDay:'Voriger Tag', nextDay:'Nächster Tag', backToToday:'Heute', calendarNavigation:'Kalendernavigation', calendarViewOptions:'Kalenderansichten',
     noScheduledTodos:'Keine Aufgaben in diesem Zeitraum', noScheduledTodosHint:'Lege eine Fälligkeit fest, damit die Aufgabe im Kalender erscheint.', scheduledTodos:'Aufgaben',
@@ -410,6 +416,7 @@ const dictionaries = {
     linkedItems: 'Elementos vinculados', linkTodo: 'Vincular tarea', linkNote: 'Vincular nota', chooseTodo: 'Elige una tarea…', chooseNote: 'Elige una nota…',
     noLinks: 'Aún no hay elementos vinculados', unlink: 'Desvincular', linked: 'Vinculado en ambos sentidos', unlinked: 'Vínculo eliminado',
     importNote: 'Importar nota', importNoteHint: 'Markdown y texto plano', exportNote: 'Exportar esta nota', noteImported: 'Nota importada', noteExported: 'Nota exportada',
+    importTodo: 'Importar tarea', importTodoHint: 'Líneas simples o lista de tareas', todoImported: 'Tarea importada', invalidTodoFile: 'No se puede leer este archivo de tarea',
     importFailed: 'Fallo al importar', exportFailed: 'Fallo al exportar', fileTooLarge: 'Los archivos deben pesar menos de 5 MB', invalidNoteFile: 'No se pudo leer esta nota',
     calendar:'Calendario', yearView:'Año', monthView:'Mes', weekView:'Semana', dayView:'Día', previousPeriod:'Periodo anterior', nextPeriod:'Periodo siguiente', previousYear:'Año anterior', nextYear:'Año siguiente', previousMonth:'Mes anterior', nextMonth:'Mes siguiente', previousWeek:'Semana anterior', nextWeek:'Semana siguiente', previousDay:'Día anterior', nextDay:'Día siguiente', backToToday:'Hoy', calendarNavigation:'Navegación del calendario', calendarViewOptions:'Vistas del calendario',
     noScheduledTodos:'Sin tareas en este periodo', noScheduledTodosHint:'Ponle fecha límite a una tarea para que aparezca en el calendario.', scheduledTodos:'tareas',
@@ -472,6 +479,7 @@ const dictionaries = {
     linkedItems: 'Связанные записи', linkTodo: 'Связать задачу', linkNote: 'Связать заметку', chooseTodo: 'Выберите задачу…', chooseNote: 'Выберите заметку…',
     noLinks: 'Связей пока нет', unlink: 'Разорвать связь', linked: 'Двусторонняя связь установлена', unlinked: 'Связь разорвана',
     importNote: 'Импорт заметки', importNoteHint: 'Markdown и обычный текст', exportNote: 'Экспортировать заметку', noteImported: 'Заметка импортирована', noteExported: 'Заметка экспортирована',
+    importTodo: 'Импорт задачи', importTodoHint: 'Строки или список задач', todoImported: 'Задача импортирована', invalidTodoFile: 'Не удалось прочитать этот файл задачи',
     importFailed: 'Не удалось импортировать', exportFailed: 'Не удалось экспортировать', fileTooLarge: 'Файлы не больше 5 МБ', invalidNoteFile: 'Не удалось прочитать эту заметку',
     calendar:'Календарь', yearView:'Год', monthView:'Месяц', weekView:'Неделя', dayView:'День', previousPeriod:'Предыдущий период', nextPeriod:'Следующий период', previousYear:'Прошлый год', nextYear:'Следующий год', previousMonth:'Прошлый месяц', nextMonth:'Следующий месяц', previousWeek:'Прошлая неделя', nextWeek:'Следующая неделя', previousDay:'Прошлый день', nextDay:'Следующий день', backToToday:'Сегодня', calendarNavigation:'Навигация по календарю', calendarViewOptions:'Виды календаря',
     noScheduledTodos:'Нет задач за этот период', noScheduledTodosHint:'Задайте задаче срок — она появится в календаре.', scheduledTodos:'задач',
@@ -1102,6 +1110,77 @@ function parseImportedNote(content, fileName = '') {
     createdAt: validDate(metadata.created) || new Date().toISOString(),
     body: markdownToNoteHTML(markdown)
   };
+}
+
+// 导入待办：把分行文字或 Markdown 任务清单（子任务导出的两种格式）解析为子任务。
+// 认得的行首标记：- * + 与有序号 1. / 1、 / (1)，勾选清单的 [x] 记为已完成。
+function parseImportedTaskLines(content) {
+  if (typeof content !== 'string') throw new Error(t('invalidTodoFile'));
+  if (new Blob([content]).size > 5 * 1024 * 1024) throw new Error(t('fileTooLarge'));
+  const lines = content.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').split('\n');
+  // 首行一级标题视为待办标题（与笔记导入的语义一致），不再落入子任务。
+  const heading = lines.find(line => line.trim())?.match(/^#\s+(.+?)\s*$/);
+  const title = heading?.[1]?.trim() || '';
+  const bodyLines = heading ? lines.slice(lines.indexOf(lines.find(line => line.trim())) + 1) : lines;
+  const tasks = [];
+  for (const rawLine of bodyLines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    const check = line.match(/^(?:[-*+]|\d+[.、)]|\(\d+\))\s+\[( |x|X)\]\s*(.+)$/);
+    if (check) { tasks.push({ text: check[2].trim(), done: check[1].toLowerCase() === 'x' }); continue; }
+    const plain = line.match(/^(?:[-*+]\s+|\d+[.、)]\s*|\(\d+\)\s*)(.+)$/);
+    const text = (plain ? plain[1] : line).trim();
+    if (text) tasks.push({ text, done: false });
+  }
+  if (!tasks.length) throw new Error(t('invalidTodoFile'));
+  return { title, tasks: tasks.slice(0, 500).map(task => ({ ...task, text: task.text.slice(0, 500) })) };
+}
+
+async function importTodoFromFile() {
+  try {
+    const file = await pickLocalTextFile(['.md', '.markdown', '.txt', 'text/markdown', 'text/plain']);
+    if (!file) return;
+    const { title: headingTitle, tasks } = parseImportedTaskLines(await file.text());
+    const now = new Date().toISOString();
+    const currentFolder = currentView.startsWith('folder:') ? currentView.split(':')[1] : 'ideas';
+    const item = {
+      id: uid(), type: 'todo', folderId: getFolder(currentFolder) ? currentFolder : '',
+      title: headingTitle || String(file.name).replace(/\.(md|markdown|txt)$/i, '') || t('untitledTodo'),
+      linkedIds: [], createdAt: now, updatedAt: now,
+      startAt: now, dueAt: '', priority: 'medium', notes: '',
+      tasks: tasks.map(task => ({ id: uid(), text: task.text, done: task.done })),
+      completed: false
+    };
+    library.items.unshift(item);
+    selectedId = item.id;
+    currentView = 'inbox';
+    mobileEditorOpen = true;
+    resetListFilters('todo');
+    currentFilter = 'all';
+    searchQuery = '';
+    $('#searchInput').value = '';
+    persist(); renderAll(); showToast(t('todoImported'));
+  } catch (error) {
+    showToast(`${t('importFailed')}: ${error?.message || t('invalidTodoFile')}`);
+  }
+}
+
+function pickLocalTextFile(accept) {
+  return new Promise(resolve => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = accept.join(',');
+    input.hidden = true;
+    const cleanup = () => input.remove();
+    input.addEventListener('cancel', () => { cleanup(); resolve(null); }, { once: true });
+    input.addEventListener('change', () => {
+      const file = input.files?.[0];
+      cleanup();
+      resolve(file || null);
+    }, { once: true });
+    document.body.appendChild(input);
+    input.click();
+  });
 }
 
 function portableFileName(title = '') {
@@ -8499,6 +8578,7 @@ function bindShell() {
   });
   $$('#createMenu [data-create]').forEach(button => button.addEventListener('click', () => createItem(button.dataset.create)));
   $('#importNoteButton').addEventListener('click', importNoteFromFile);
+  $('#importTodoButton')?.addEventListener('click', importTodoFromFile);
   document.addEventListener('click', event => {
     if (!event.target.closest('#createMenu')) $('#createMenu').classList.remove('open');
   });
