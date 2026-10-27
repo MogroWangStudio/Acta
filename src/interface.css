@@ -1890,23 +1890,15 @@ body.stats-view .list-footer { background: transparent; }
 }
 .stats-list { padding: 14px 16px 22px; }
 .stats-collection-wrap { display: grid; gap: 12px; }
-.stats-toolbar { position: sticky; z-index: 3; top: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(14px) saturate(1.2); box-shadow: 0 2px 8px rgba(52,50,44,.05); }
-/* 功能栏下方的渐变模糊遮罩：内容从工具栏下滚过时先被柔化再浮现，
-   替代生硬的边缘切断（Apple 式 scroll edge effect）。 */
-.stats-toolbar::after {
-  content: "";
-  position: absolute;
-  top: calc(100% + 7px);
-  left: -16px;
-  right: -16px;
-  height: 20px;
-  pointer-events: none;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--panel) 52%, transparent), color-mix(in srgb, var(--panel) 12%, transparent) 55%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, #000, transparent);
-  mask-image: linear-gradient(to bottom, #000, transparent);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
+/* 筛选菜单栏固定在内容上方且非悬浮：随页面滚走（不 sticky），实色背景、
+   不投影不做毛玻璃——它是页面结构的一部分，不是浮在内容上的层。 */
+.stats-toolbar {
+  position: static; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 12px 14px; margin: 0 -16px 2px; padding-left: 16px; padding-right: 16px;
+  border: 0; border-bottom: 1px solid var(--line); border-radius: 0;
+  background: var(--panel);
 }
+
 .stats-range-field { flex: 0 1 168px; min-width: 132px; }
 .stats-custom-range { display: flex; align-items: center; gap: 6px; color: var(--faint); }
 .stats-custom-range[hidden] { display: none; }
@@ -2604,7 +2596,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   /* 移动端底栏的网格与占位在 styles.css 定义（含中列圆形占位），此处不再重复，
      避免两份定义互相覆盖。 */
   .stats-list { padding: 10px 12px calc(20px + env(safe-area-inset-bottom)); }
-  .stats-toolbar { align-items: stretch; flex-direction: column; }
+  .stats-toolbar { align-items: stretch; flex-direction: column; margin: 0 -12px 2px; padding: 10px 12px; }
   .stats-range-field { flex: 0 0 auto; width: 100%; height: 38px; }
   .stats-range-field select { font-size: calc(11px * var(--acta-font-scale)); }
   .stats-toolbar-actions { margin-left: 0; justify-content: space-between; }
@@ -3014,8 +3006,6 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .sync-notice { background: var(--paper); backdrop-filter: none; }
   .relation-dialog::backdrop, .note-export-dialog::backdrop { backdrop-filter: none; }
   body.note-focus-mode .note-toolbar { background: var(--panel); backdrop-filter: none; }
-  .stats-toolbar { background: var(--paper); backdrop-filter: none; }
-  .stats-toolbar::after { display: none; }
 }
 
 
