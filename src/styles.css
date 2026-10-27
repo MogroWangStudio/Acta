@@ -211,7 +211,10 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .nav-section button > span { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .nav-icon { position: relative; display: inline-flex; flex: 0 0 auto; width: 16px; height: 16px; }
 /* 主图标不参与收缩：一旦被压扁，与绝对定位的描线层尺寸失配就会错位重影。 */
-.nav-icon > svg { flex: none; width: 100%; height: 100%; }
+.nav-icon > svg { flex: none; width: 100%; height: 100%; transition: color .26s ease, opacity .26s ease; }
+/* 主图标默认状态的明度随外观设置（--nav-icon-dim，30%–100%）；
+   描线层是选中态的强调层，不随明度变淡。 */
+.nav-icon > svg:not(.nav-icon-trace) { opacity: var(--nav-icon-dim, 1); }
 /* 主图标瞬时切换：亮起的过程感交给描线动画，不做颜色/透明度过渡。 */
 .nav-section button svg { width: 16px; height: 16px; color: #9a9e96; }
 /* 描线层是主图标的强调色副本：主图标始终可见，只有这层会随选中重绘。
@@ -224,12 +227,21 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
   0% { stroke-dasharray: 220; stroke-dashoffset: 220; }
   100% { stroke-dasharray: 220; stroke-dashoffset: 0; }
 }
-/* 选中态的强调完全由描线层承担：主图标的颜色与透明度保持常态，不亮起；
-   描线以 100% 不透明的强调色勾勒。 */
+/* 选中态效果随外观设置切换（html[data-nav-effect]）：
+   trace 线条勾勒（默认，描线层以强调色重绘）；
+   accent 强调色亮起（主图标着强调色、描线层不用）；
+   pop 缩放弹跳（主图标着强调色并弹性放大一拍）。 */
 .nav-section button.active .nav-icon-trace { color: var(--sage); }
-/* 只动画 dash，不碰 opacity：透明度交给 transition，选中与取消选中
-   都能平滑淡入淡出；旧描线改用 CSS 过渡退场，新描线同时重绘。 */
-.nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1.6s cubic-bezier(.4, 0, .2, 1) both; }
+html[data-nav-effect="trace"] .nav-section button.active .nav-icon-trace { opacity: 1; animation: navIconTrace 1.6s cubic-bezier(.4, 0, .2, 1) both; }
+html[data-nav-effect="accent"] .nav-section button.active .nav-icon > svg:not(.nav-icon-trace),
+html[data-nav-effect="pop"] .nav-section button.active .nav-icon > svg:not(.nav-icon-trace) { color: var(--sage); opacity: 1; }
+html[data-nav-effect="pop"] .nav-section button.active .nav-icon { animation: navIconPop .42s cubic-bezier(.34, 1.4, .64, 1); }
+@keyframes navIconPop {
+  0% { transform: scale(.72); }
+  60% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+body.acta-reduce-motion .nav-section button .nav-icon { animation: none !important; }
 /* 局域网雷达入口：可被发现（服务运行中）时播放循环扩散光效，与雷达的
    涟漪同语言；跟随「减少动态效果」关闭。 */
 @keyframes lanLivePulse {

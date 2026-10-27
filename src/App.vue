@@ -459,6 +459,8 @@
                 <label class="settings-row"><span><b>界面字体</b></span><select id="appFontSetting"><option value="system">系统默认</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
                 <label class="settings-row conditional-font" id="customFontRow"><span><b>字体家族</b></span><span class="font-input-wrap"><input id="customFontFamily" type="text" value="Inter" placeholder="Inter, Microsoft YaHei" maxlength="120"/><button type="button" class="font-browse-button" id="browseAppFonts" data-font-target="customFontFamily">浏览系统字体</button></span></label>
                 <label class="settings-row"><span><b>字体大小</b></span><span class="font-size-control"><input id="appFontSizeSetting" type="range" min="12" max="18" step="1"/><output id="appFontSizeValue">14 px</output></span></label>
+                <label class="settings-row"><span><b>导航图标明度</b></span><span class="font-size-control"><input id="navIconDimSetting" type="range" min="30" max="100" step="5"/><output id="navIconDimValue">100%</output></span></label>
+                <label class="settings-row"><span><b>选中图标效果</b></span><select id="navIconEffectSetting"><option value="trace">线条勾勒</option><option value="accent">强调色亮起</option><option value="pop">缩放弹跳</option></select></label>
               </div>
               <div class="font-preview"><p>记录，然后行动。Acta 让笔记与待办自然连接。</p></div>
             </section>

@@ -8,6 +8,7 @@
     appIconPreset: 'default', customAppIcon: '',
     splashAnimationEnabled: true, splashAnimationPreset: 'acta-lines', splashAnimationSpeed: 1, inputFocusAnimation: true, subtaskCompletedDates: true,
     completedTodoSink: true, completedTodoSinkDelay: 1, subtaskDoneSort: 'asc', backdropClose: 'double',
+    navIconDim: 100, navIconEffect: 'trace',
     backGestureScale: 45,
     navPages: { inbox: true, calendar: true, todos: false, notes: false, trash: true, stats: true, lan: true },
     mobileSlots: ['trash', 'stats'], mobileTitleActions: ['trash', 'stats', 'refresh'], mobileNavStyle: 'labeled',
@@ -5709,6 +5710,7 @@
     const statusColor = systemBarColorForChrome();
     document.querySelector('meta[name="theme-color"]').content = statusColor;
     syncNativeSystemBar(statusColor);
+    applyNavIconPrefs();
     // Persist the splash background color (the body's sidebar tone, which the
     // splash layer uses) so the desktop client can paint the native window
     // background with it before the webview loads on the next launch.
@@ -6011,6 +6013,40 @@
     appFontSizeSetting.setAttribute('aria-valuetext', `${uiSettings.appFontSize} px`);
     customFontRow.classList.toggle('show', uiSettings.appFont === 'custom');
   }
+
+  // —— 导航图标明度与选中效果（侧栏 / 移动底栏共用同一组按钮） ——
+  // 明度落在 --nav-icon-dim（0.3–1）控制默认状态的图标淡深；效果以
+  // data-nav-effect 切换：trace 描线勾勒（默认）、accent 强调色亮起、
+  // pop 缩放弹跳。applyTheme 每次都会重放，主题切换不丢设置。
+  function applyNavIconPrefs() {
+    const dim = Math.min(Math.max(Number(uiSettings.navIconDim), 30), 100) / 100;
+    document.documentElement.style.setProperty('--nav-icon-dim', String(Number.isFinite(dim) ? dim : 1));
+    document.documentElement.dataset.navEffect = ['trace', 'accent', 'pop'].includes(uiSettings.navIconEffect) ? uiSettings.navIconEffect : 'trace';
+  }
+  const navIconDimSetting = byId('navIconDimSetting');
+  const navIconDimValue = byId('navIconDimValue');
+  if (navIconDimSetting && navIconDimValue) {
+    navIconDimSetting.value = String(Math.min(Math.max(Math.round(Number(uiSettings.navIconDim)) || 100, 30), 100));
+    const syncNavIconDim = () => { navIconDimValue.textContent = `${navIconDimSetting.value}%`; };
+    syncNavIconDim();
+    navIconDimSetting.addEventListener('input', () => {
+      uiSettings.navIconDim = Number(navIconDimSetting.value);
+      syncNavIconDim();
+      applyNavIconPrefs();
+      saveUISettings();
+    });
+  }
+  const navIconEffectSetting = byId('navIconEffectSetting');
+  if (navIconEffectSetting) {
+    navIconEffectSetting.value = ['trace', 'accent', 'pop'].includes(uiSettings.navIconEffect) ? uiSettings.navIconEffect : 'trace';
+    navIconEffectSetting.addEventListener('change', () => {
+      uiSettings.navIconEffect = navIconEffectSetting.value;
+      applyNavIconPrefs();
+      saveUISettings();
+      setStatus(byId('generalStatus'), uiText('settingsStored'), 'success');
+    });
+  }
+  applyNavIconPrefs();
 
   appFontSetting.addEventListener('change', () => {
     uiSettings.appFont = appFontSetting.value; applyFontSettings(); saveUISettings();
