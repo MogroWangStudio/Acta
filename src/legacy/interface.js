@@ -8911,6 +8911,9 @@
         byId('editorPane').classList.remove('mobile-open');
         return;
       }
+      // 移动端日历：年/月/周/日 的切换可被侧滑逐级回退（有历史才消费，
+      // 没有则继续走收集箱 / 最小化层级）。
+      if (currentView === 'calendar' && window.__actaCalendarModeBack?.()) return;
       if (currentView !== 'inbox') {
         document.querySelector('[data-view="inbox"]')?.click();
         return;

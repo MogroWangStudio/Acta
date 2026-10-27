@@ -818,6 +818,8 @@ let trashFolderFilter = 'all';
 const listSortModes = ['updated', 'created', 'due', 'priority', 'title'];
 let listSortMode = listSortModes.includes(settings.sortMode) ? settings.sortMode : 'updated';
 let calendarViewMode = 'month';
+// 日历视图模式的切换历史：移动端侧滑返回逐级回退 年/月/周/日。
+let calendarModeHistory = [];
 let calendarCursor = new Date(`${todayISO()}T12:00:00`);
 let calendarMotion = '';
 let calendarMotionTimer = null;
@@ -8751,6 +8753,16 @@ function bindShell() {
   matchMedia('(max-width: 800px)').addEventListener?.('change', event => {
     if (!event.matches) closeMobileCreate();
   });
+  // —— 日历视图模式的侧滑返回 ——
+  // 有切换历史则回退到上一个模式（年/月/周/日），没有则交还统一返回
+  // 层级的下一层（interface.js 的 __actaHandleBackButton）。
+  window.__actaCalendarModeBack = () => {
+    if (currentView !== 'calendar' || !calendarModeHistory.length) return false;
+    calendarViewMode = calendarModeHistory.pop();
+    calendarMotion = 'backward';
+    renderList();
+    return true;
+  };
   $$('#createMenu [data-create]').forEach(button => button.addEventListener('click', () => createItem(button.dataset.create)));
   $('#importNoteButton').addEventListener('click', importNoteFromFile);
   $('#importTodoButton')?.addEventListener('click', importTodoFromFile);
@@ -8760,13 +8772,18 @@ function bindShell() {
   document.addEventListener('click', event => {
     const modeButton = event.target.closest('[data-calendar-mode]');
     if (modeButton) {
-      calendarViewMode = ['year', 'month', 'week', 'day'].includes(modeButton.dataset.calendarMode) ? modeButton.dataset.calendarMode : 'month';
+      const nextMode = ['year', 'month', 'week', 'day'].includes(modeButton.dataset.calendarMode) ? modeButton.dataset.calendarMode : 'month';
+      if (nextMode !== calendarViewMode) {
+        // 记录切换前的模式：侧滑返回按此逐级回退。
+        calendarModeHistory.push(calendarViewMode);
+        if (calendarModeHistory.length > 8) calendarModeHistory.shift();
+      }
+      calendarViewMode = nextMode;
       calendarMotion = 'zoom';
       renderList();
       return;
     }
-    const shiftButton = event.target.closest('[data-calendar-shift]');
-    if (shiftButton) {
+    const shiftButton = event.target.closest('[data-calendar-shift]');    if (shiftButton) {
       calendarMotion = Number(shiftButton.dataset.calendarShift) < 0 ? 'backward' : 'forward';
       shiftCalendarCursor(Number(shiftButton.dataset.calendarShift) < 0 ? -1 : 1);
       renderList();
@@ -8853,6 +8870,8 @@ function bindShell() {
     const navigation = event.target.closest('[data-view]');
     if (navigation) {
       currentView = navigation.dataset.view;
+      // 切换视图即重置日历模式历史：每次进入日历都是新的回退起点。
+      calendarModeHistory.length = 0;
       if (currentView === 'calendar') calendarMotion = 'enter';
       mobileEditorOpen = false;
       renderSidebar(); renderList();
