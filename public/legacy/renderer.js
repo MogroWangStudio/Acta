@@ -63,7 +63,7 @@ const dictionaries = {
     boardDeleteConfirm:'删除「{0}」后，这块板上的摆放、文本与标注会一并移除，待办与笔记本身不受影响。', boardSwitchLabel:'切换计划板',
     boardAddText:'文本', boardAddMarker:'标注', boardAddItems:'导入', boardImportTitle:'导入到计划板',
     boardImportHint:'勾选要展示在这块板上的待办与笔记；取消勾选已添加的条目会把它从板上移除。',
-    boardImportAdded:'已在板上', boardImportEmpty:'没有匹配的待办或笔记', boardImportApply:'应用', boardImportChange:'添加 {0} · 移除 {1}',
+    boardImportAdded:'已在板上', boardImportEmpty:'没有匹配的待办或笔记', boardImportApply:'应用', boardImportChange:'添加 {0} 移除 {1}',
     boardTextPlaceholder:'双击编辑文本…', boardFontSize:'字号', boardFontLabel:'字体', boardFontApp:'跟随界面', boardFontSerif:'衬线', boardFontRounded:'圆体', boardFontMono:'等宽',
     boardAlignLeft:'左对齐', boardAlignCenter:'居中', boardAlignRight:'右对齐', boardRemoveWidget:'从板上移除',
     boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'笔绘', boardMarkerEraser:'橡皮擦', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注', boardMarkerStroke:'线条粗细', boardMarkerFill:'填充颜色', boardFillOpacity:'填充不透明度', boardStrokeOpacity:'线条不透明度', boardArrowHead:'前端箭头', boardArrowTail:'末端箭头', boardArrowNone:'无', boardArrowArrow:'箭头', boardArrowDot:'圆点', boardArrowBar:'短杠', boardMarkerStyle:'标注样式',
@@ -125,7 +125,7 @@ const dictionaries = {
     boardDeleteConfirm:'Deleting “{0}” removes its layout, texts, and markers. The tasks and notes themselves are untouched.', boardSwitchLabel:'Switch board',
     boardAddText:'Text', boardAddMarker:'Marker', boardAddItems:'Import', boardImportTitle:'Import to plan board',
     boardImportHint:'Tick the tasks and notes to show on this board; unticking an added item removes it from the board.',
-    boardImportAdded:'On the board', boardImportEmpty:'No matching tasks or notes', boardImportApply:'Apply', boardImportChange:'Add {0} · remove {1}',
+    boardImportAdded:'On the board', boardImportEmpty:'No matching tasks or notes', boardImportApply:'Apply', boardImportChange:'Add {0} remove {1}',
     boardTextPlaceholder:'Double-click to edit…', boardFontSize:'Font size', boardFontLabel:'Font', boardFontApp:'Follow interface', boardFontSerif:'Serif', boardFontRounded:'Rounded', boardFontMono:'Monospace',
     boardAlignLeft:'Align left', boardAlignCenter:'Align center', boardAlignRight:'Align right', boardRemoveWidget:'Remove from board',
     boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Freehand', boardMarkerEraser:'Eraser', boardMarkerColor:'Marker color', boardMarkerDone:'Done', boardMarkerStroke:'Stroke width', boardMarkerFill:'Fill color', boardFillOpacity:'Fill opacity', boardStrokeOpacity:'Stroke opacity', boardArrowHead:'End arrowhead', boardArrowTail:'Start arrowhead', boardArrowNone:'None', boardArrowArrow:'Arrow', boardArrowDot:'Dot', boardArrowBar:'Bar', boardMarkerStyle:'Marker style',
@@ -187,7 +187,7 @@ const dictionaries = {
     boardDeleteConfirm:'「{0}」を削除すると、このボードのレイアウト・テキスト・マーカーも削除されます。タスクとノート自体は影響を受けません。', boardSwitchLabel:'ボードを切り替え',
     boardAddText:'テキスト', boardAddMarker:'マーカー', boardAddItems:'読み込む', boardImportTitle:'プランボードに読み込む',
     boardImportHint:'このボードに表示するタスクとノートにチェックしてください。追加済みの項目のチェックを外すとボードから削除されます。',
-    boardImportAdded:'ボード上', boardImportEmpty:'一致するタスクやノートがありません', boardImportApply:'適用', boardImportChange:'追加 {0} · 削除 {1}',
+    boardImportAdded:'ボード上', boardImportEmpty:'一致するタスクやノートがありません', boardImportApply:'適用', boardImportChange:'追加 {0} 削除 {1}',
     boardTextPlaceholder:'ダブルクリックで編集…', boardFontSize:'文字サイズ', boardFontLabel:'フォント', boardFontApp:'画面に合わせる', boardFontSerif:'明朝体', boardFontRounded:'丸ゴシック', boardFontMono:'等幅',
     boardAlignLeft:'左揃え', boardAlignCenter:'中央揃え', boardAlignRight:'右揃え', boardRemoveWidget:'ボードから削除',
     boardMarkerArrow:'矢印', boardMarkerRect:'矩形', boardMarkerEllipse:'楕円', boardMarkerLine:'直線', boardMarkerDraw:'フリーハンド', boardMarkerEraser:'消しゴム', boardMarkerColor:'マーカーの色', boardMarkerDone:'完了', boardMarkerStroke:'線の太さ', boardMarkerFill:'塗りつぶしの色', boardFillOpacity:'塗りの不透明度', boardStrokeOpacity:'線の不透明度', boardArrowHead:'終点の矢印', boardArrowTail:'始点の矢印', boardArrowNone:'なし', boardArrowArrow:'矢印', boardArrowDot:'点', boardArrowBar:'棒', boardMarkerStyle:'マーカー設定',
@@ -235,9 +235,9 @@ const dictionaries = {
     trashEmptyTitle:'휴지통이 비어 있어요', trashEmptyHint:'삭제한 노트와 할 일은 여기에 머물러요. 자동으로 비워지지 않으니 언제든 돌아와 둘러보세요.',
     trashFooterNote:'휴지통은 자동으로 비워지지 않아요', restore:'복원', destroy:'영구 삭제', restored:'원래 자리로 복원했어요', destroyed:'영구 삭제했어요',
     emptyTrash:'휴지통 비우기', emptyTrashConfirmTitle:'휴지통 비우기', emptyTrashConfirmMessage:'휴지통의 {0}개 항목이 영구 삭제되며 복구할 수 없어요.', trashEmptied:'휴지통을 비웠어요',
-    deletedAt:'삭제일', restoreHint:'원래 분류로 복원', trashOpenHint:'휴지통의 항목은 목록·달력·요약에 표시되지 않아요',
+    deletedAt:'삭제일', restoreHint:'원래 분류로 복원', trashOpenHint:'휴지통의 항목은 목록 달력 요약에 표시되지 않아요',
     deleteTitle:'항목 삭제', deleteSubtitle:'「{0}」을 어떻게 처리할까요', deleteTrashLabel:'휴지통으로 이동', deleteTrashHint:'휴지통에 보관되며 언제든 복원할 수 있어요', deleteDestroyLabel:'바로 삭제', deleteDestroyHint:'휴지통을 거치지 않고 영구 삭제해요', moveToTrash:'휴지통으로 이동', deletedToTrash:'휴지통으로 이동했어요',
-    statsListTitle:'노트·할 일 목록', statsListHint:'지정 기간에 만든 노트와 할 일을 모아 체크하고 이미지로 만들 수 있어요',
+    statsListTitle:'노트 할 일 목록', statsListHint:'지정 기간에 만든 노트와 할 일을 모아 체크하고 이미지로 만들 수 있어요',
     statsRangeAll:'전체 기간', statsRangeToday:'오늘', statsRange7:'최근 7일', statsRange30:'최근 30일', statsRange90:'최근 90일', statsRangeCustom:'직접 지정',
     statsCustomStart:'시작일', statsCustomEnd:'종료일', statsMakeImage:'이미지 만들기', statsSelectedCount:'{0}개 선택됨', statsSelectAll:'모두 선택', statsClearSelection:'선택 해제',
     statsNeedSelection:'이미지로 만들 항목을 먼저 체크하세요', statsImageDone:'목록 이미지를 만들었어요', statsImageFailed:'이미지 생성 실패', statsEmptyRange:'이 기간에 만든 내용이 없어요',
@@ -246,10 +246,10 @@ const dictionaries = {
     copied:'클립보드에 복사했어요', copyFailed:'복사 실패',
     board:'플랜 보드', boardDefaultName:'플랜 보드', boardOpenItem:'열기', boardFitView:'전체 보기', boardZoomIn:'확대', boardZoomOut:'축소',
     boardNewBoard:'새 플랜 보드', boardRenameBoard:'플랜 보드 이름 바꾸기', boardDeleteBoard:'플랜 보드 삭제', boardNamePrompt:'플랜 보드 이름',
-    boardDeleteConfirm:'「{0}」을 삭제하면 이 보드의 배치·텍스트·마커도 함께 사라져요. 할 일과 노트 자체는 영향받지 않아요.', boardSwitchLabel:'보드 전환',
+    boardDeleteConfirm:'「{0}」을 삭제하면 이 보드의 배치 텍스트 마커도 함께 사라져요. 할 일과 노트 자체는 영향받지 않아요.', boardSwitchLabel:'보드 전환',
     boardAddText:'텍스트', boardAddMarker:'마커', boardAddItems:'가져오기', boardImportTitle:'플랜 보드로 가져오기',
     boardImportHint:'이 보드에 표시할 할 일과 노트에 체크하세요. 추가된 항목의 체크를 해제하면 보드에서 사라져요.',
-    boardImportAdded:'보드에 있음', boardImportEmpty:'일치하는 할 일이나 노트가 없어요', boardImportApply:'적용', boardImportChange:'추가 {0} · 삭제 {1}',
+    boardImportAdded:'보드에 있음', boardImportEmpty:'일치하는 할 일이나 노트가 없어요', boardImportApply:'적용', boardImportChange:'추가 {0} 삭제 {1}',
     boardTextPlaceholder:'두 번 눌러 편집…', boardFontSize:'글자 크기', boardFontLabel:'글꼴', boardFontApp:'인터페이스 따르기', boardFontSerif:'명조', boardFontRounded:'둥근 글꼴', boardFontMono:'고정폭',
     boardAlignLeft:'왼쪽 정렬', boardAlignCenter:'가운데 정렬', boardAlignRight:'오른쪽 정렬', boardRemoveWidget:'보드에서 제거',
     boardMarkerArrow:'화살표', boardMarkerRect:'사각형', boardMarkerEllipse:'타원', boardMarkerLine:'직선', boardMarkerDraw:'자유 곡선', boardMarkerEraser:'지우개', boardMarkerColor:'마커 색', boardMarkerDone:'완료', boardMarkerStroke:'선 굵기', boardMarkerFill:'채우기 색', boardFillOpacity:'채우기 불투명도', boardStrokeOpacity:'선 불투명도', boardArrowHead:'끝 화살촉', boardArrowTail:'시작 화살촉', boardArrowNone:'없음', boardArrowArrow:'화살표', boardArrowDot:'점', boardArrowBar:'막대', boardMarkerStyle:'마커 스타일',
@@ -311,7 +311,7 @@ const dictionaries = {
     boardDeleteConfirm:'Supprimer « {0} » efface aussi sa disposition, ses textes et ses annotations. Les tâches et notes ne sont pas touchées.', boardSwitchLabel:'Changer de tableau',
     boardAddText:'Texte', boardAddMarker:'Annotation', boardAddItems:'Importer', boardImportTitle:'Importer vers le tableau',
     boardImportHint:'Cochez les tâches et notes à montrer sur ce tableau ; décocher un élément ajouté le retire du tableau.',
-    boardImportAdded:'Sur le tableau', boardImportEmpty:'Aucune tâche ou note correspondante', boardImportApply:'Appliquer', boardImportChange:'Ajouter {0} · retirer {1}',
+    boardImportAdded:'Sur le tableau', boardImportEmpty:'Aucune tâche ou note correspondante', boardImportApply:'Appliquer', boardImportChange:'Ajouter {0} retirer {1}',
     boardTextPlaceholder:'Double-cliquez pour modifier…', boardFontSize:'Taille de police', boardFontLabel:'Police', boardFontApp:'Suivre l’interface', boardFontSerif:'Avec empattement', boardFontRounded:'Arrondie', boardFontMono:'Chasse fixe',
     boardAlignLeft:'Aligner à gauche', boardAlignCenter:'Centrer', boardAlignRight:'Aligner à droite', boardRemoveWidget:'Retirer du tableau',
     boardMarkerArrow:'Flèche', boardMarkerRect:'Rectangle', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Ligne', boardMarkerDraw:'Dessin', boardMarkerEraser:'Gomme', boardMarkerColor:'Couleur d’annotation', boardMarkerDone:'Terminé', boardMarkerStroke:'Épaisseur du trait', boardMarkerFill:'Couleur de remplissage', boardFillOpacity:'Opacité du remplissage', boardStrokeOpacity:'Opacité du trait', boardArrowHead:'Pointe (fin)', boardArrowTail:'Pointe (début)', boardArrowNone:'Aucune', boardArrowArrow:'Flèche', boardArrowDot:'Point', boardArrowBar:'Barre', boardMarkerStyle:'Style du marquage',
@@ -373,7 +373,7 @@ const dictionaries = {
     boardDeleteConfirm:'Beim Löschen von „{0}“ werden Anordnung, Texte und Marker dieses Boards entfernt. Aufgaben und Notizen bleiben unberührt.', boardSwitchLabel:'Board wechseln',
     boardAddText:'Text', boardAddMarker:'Marker', boardAddItems:'Importieren', boardImportTitle:'Ins Planboard importieren',
     boardImportHint:'Hake Aufgaben und Notizen an, die auf dieses Board sollen; abgehakte Einträge werden vom Board entfernt.',
-    boardImportAdded:'Auf dem Board', boardImportEmpty:'Keine passenden Aufgaben oder Notizen', boardImportApply:'Anwenden', boardImportChange:'Hinzufügen {0} · Entfernen {1}',
+    boardImportAdded:'Auf dem Board', boardImportEmpty:'Keine passenden Aufgaben oder Notizen', boardImportApply:'Anwenden', boardImportChange:'Hinzufügen {0} Entfernen {1}',
     boardTextPlaceholder:'Doppelklicken zum Bearbeiten…', boardFontSize:'Schriftgröße', boardFontLabel:'Schrift', boardFontApp:'Wie Oberfläche', boardFontSerif:'Serif', boardFontRounded:'Gerundet', boardFontMono:'Monospace',
     boardAlignLeft:'Linksbündig', boardAlignCenter:'Zentriert', boardAlignRight:'Rechtsbündig', boardRemoveWidget:'Vom Board entfernen',
     boardMarkerArrow:'Pfeil', boardMarkerRect:'Kasten', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Linie', boardMarkerDraw:'Zeichnen', boardMarkerEraser:'Radierer', boardMarkerColor:'Markerfarbe', boardMarkerDone:'Fertig', boardMarkerStroke:'Linienbreite', boardMarkerFill:'Füllfarbe', boardFillOpacity:'Füll-Deckkraft', boardStrokeOpacity:'Linien-Deckkraft', boardArrowHead:'Spitze (Ende)', boardArrowTail:'Spitze (Anfang)', boardArrowNone:'Keine', boardArrowArrow:'Pfeil', boardArrowDot:'Punkt', boardArrowBar:'Strich', boardMarkerStyle:'Markierungsstil',
@@ -435,7 +435,7 @@ const dictionaries = {
     boardDeleteConfirm:'Al eliminar «{0}» se quitan su disposición, textos y anotaciones. Las tareas y notas no se tocan.', boardSwitchLabel:'Cambiar de tablero',
     boardAddText:'Texto', boardAddMarker:'Anotación', boardAddItems:'Importar', boardImportTitle:'Importar al tablero',
     boardImportHint:'Marca las tareas y notas que quieras mostrar en este tablero; desmarcar un elemento añadido lo quita del tablero.',
-    boardImportAdded:'En el tablero', boardImportEmpty:'Sin tareas o notas coincidentes', boardImportApply:'Aplicar', boardImportChange:'Añadir {0} · quitar {1}',
+    boardImportAdded:'En el tablero', boardImportEmpty:'Sin tareas o notas coincidentes', boardImportApply:'Aplicar', boardImportChange:'Añadir {0} quitar {1}',
     boardTextPlaceholder:'Doble clic para editar…', boardFontSize:'Tamaño de letra', boardFontLabel:'Fuente', boardFontApp:'Como la interfaz', boardFontSerif:'Con serifa', boardFontRounded:'Redondeada', boardFontMono:'Monoespaciada',
     boardAlignLeft:'Alinear a la izquierda', boardAlignCenter:'Centrar', boardAlignRight:'Alinear a la derecha', boardRemoveWidget:'Quitar del tablero',
     boardMarkerArrow:'Flecha', boardMarkerRect:'Caja', boardMarkerEllipse:'Elipse', boardMarkerLine:'Línea', boardMarkerDraw:'Dibujo', boardMarkerEraser:'Borrador', boardMarkerColor:'Color de anotación', boardMarkerDone:'Listo', boardMarkerStroke:'Grosor de línea', boardMarkerFill:'Color de relleno', boardFillOpacity:'Opacidad del relleno', boardStrokeOpacity:'Opacidad de la línea', boardArrowHead:'Punta final', boardArrowTail:'Punta inicial', boardArrowNone:'Ninguna', boardArrowArrow:'Flecha', boardArrowDot:'Punto', boardArrowBar:'Barra', boardMarkerStyle:'Estilo de anotación',
@@ -497,7 +497,7 @@ const dictionaries = {
     boardDeleteConfirm:'При удалении «{0}» исчезнут раскладка, тексты и пометки этого планшета. Сами задачи и заметки не пострадают.', boardSwitchLabel:'Сменить планшет',
     boardAddText:'Текст', boardAddMarker:'Пометка', boardAddItems:'Импорт', boardImportTitle:'Импорт на планшет',
     boardImportHint:'Отметьте задачи и заметки для показа на планшете; снятие отметки убирает запись с планшета.',
-    boardImportAdded:'На планшете', boardImportEmpty:'Нет подходящих задач или заметок', boardImportApply:'Применить', boardImportChange:'Добавить {0} · убрать {1}',
+    boardImportAdded:'На планшете', boardImportEmpty:'Нет подходящих задач или заметок', boardImportApply:'Применить', boardImportChange:'Добавить {0} убрать {1}',
     boardTextPlaceholder:'Двойное нажатие — редактировать…', boardFontSize:'Размер шрифта', boardFontLabel:'Шрифт', boardFontApp:'Как в интерфейсе', boardFontSerif:'С засечками', boardFontRounded:'Округлый', boardFontMono:'Моноширинный',
     boardAlignLeft:'По левому краю', boardAlignCenter:'По центру', boardAlignRight:'По правому краю', boardRemoveWidget:'Убрать с планшета',
     boardMarkerArrow:'Стрелка', boardMarkerRect:'Рамка', boardMarkerEllipse:'Овал', boardMarkerLine:'Линия', boardMarkerDraw:'Рисование', boardMarkerEraser:'Ластик', boardMarkerColor:'Цвет пометки', boardMarkerDone:'Готово', boardMarkerStroke:'Толщина линии', boardMarkerFill:'Цвет заливки', boardFillOpacity:'Непрозрачность заливки', boardStrokeOpacity:'Непрозрачность линии', boardArrowHead:'Наконечник (конец)', boardArrowTail:'Наконечник (начало)', boardArrowNone:'Нет', boardArrowArrow:'Стрелка', boardArrowDot:'Точка', boardArrowBar:'Черта', boardMarkerStyle:'Стиль пометки',
@@ -1388,7 +1388,7 @@ function calendarPeriodLabel() {
     const monthStart = calendarMonthStart(active);
     const gridStart = calendarStartOfWeek(monthStart);
     const monthLabel = new Intl.DateTimeFormat(locale, { year:'numeric', month:'long' }).format(active);
-    return `${monthLabel} · W${calendarWeekNumber(gridStart)}–W${calendarWeekNumber(calendarAddDays(gridStart, 35))}`;
+    return `${monthLabel} W${calendarWeekNumber(gridStart)}–W${calendarWeekNumber(calendarAddDays(gridStart, 35))}`;
   }
   if (calendarViewMode === 'week') {
     const start = calendarStartOfWeek(active);
@@ -1396,7 +1396,7 @@ function calendarPeriodLabel() {
     const sameYear = start.getFullYear() === end.getFullYear();
     const startLabel = new Intl.DateTimeFormat(locale, { ...(sameYear ? {} : { year:'numeric' }), month:'short', day:'numeric' }).format(start);
     const endLabel = new Intl.DateTimeFormat(locale, { year:'numeric', month:'short', day:'numeric' }).format(end);
-    return `W${calendarWeekNumber(start)} · ${startLabel} – ${endLabel}`;
+    return `W${calendarWeekNumber(start)} ${startLabel} – ${endLabel}`;
   }
   return new Intl.DateTimeFormat(locale, { year:'numeric', month:'long', day:'numeric', weekday:'long' }).format(active);
 }
@@ -1451,7 +1451,7 @@ function calendarMonthTodoMarkup(item) {
   const done = isTodoComplete(item);
   const linkedNotes = calendarLinkedNotes(item);
   const title = item.title || t('untitledTodo');
-  const relationTitle = linkedNotes.map(note => note.title || t('untitledNote')).join(' · ');
+  const relationTitle = linkedNotes.map(note => note.title || t('untitledNote')).join(' ');
   const linkedMarkup = linkedNotes.length ? `<button class="calendar-month-link" type="button" data-calendar-open-note="${escapeHTML(linkedNotes[0].id)}" title="${escapeHTML(relationTitle)}" aria-label="${escapeHTML(`${t('linkedNotes')}：${relationTitle}`)}"><svg><use href="#i-note"/></svg>${linkedNotes.length > 1 ? `<span>${linkedNotes.length}</span>` : ''}</button>` : '';
   return `<article class="calendar-month-todo priority-${escapeHTML(item.priority || 'medium')} ${done ? 'is-complete' : ''}" data-calendar-todo="${escapeHTML(item.id)}">
     <button class="calendar-month-todo-icon" type="button" data-calendar-open="${escapeHTML(item.id)}" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><svg><use href="#i-check"/></svg></button>
@@ -1594,7 +1594,7 @@ function renderCalendarYear() {
       const createdNotes = notesByDate.get(iso) || [];
       const itemCount = todos.length + createdNotes.length;
       const linkedCount = todos.filter(item => calendarLinkedNotes(item).length).length;
-      return `<button type="button" class="calendar-mini-day ${iso === today ? 'is-today' : ''} ${todos.length ? 'has-todos' : ''} ${createdNotes.length ? 'has-notes' : ''} ${linkedCount ? 'has-links' : ''}" data-calendar-date="${iso}" title="${escapeHTML(`${date.getDate()} · ${itemCount} ${t('calendarItems')}`)}"><span>${date.getDate()}</span>${itemCount ? `<i>${itemCount}</i>` : ''}</button>`;
+      return `<button type="button" class="calendar-mini-day ${iso === today ? 'is-today' : ''} ${todos.length ? 'has-todos' : ''} ${createdNotes.length ? 'has-notes' : ''} ${linkedCount ? 'has-links' : ''}" data-calendar-date="${iso}" title="${escapeHTML(`${date.getDate()} ${itemCount} ${t('calendarItems')}`)}"><span>${date.getDate()}</span>${itemCount ? `<i>${itemCount}</i>` : ''}</button>`;
     }).join('');
     return `<section class="calendar-year-month" data-calendar-year-month="${calendarDateISO(monthStart)}"><header><button type="button" data-calendar-month="${calendarDateISO(monthStart)}">${escapeHTML(monthLabel)}</button><span>${monthCounts[month] || ''}</span></header><div class="calendar-mini-weekdays">${weekdays.map(label => `<span>${escapeHTML(label)}</span>`).join('')}</div><div class="calendar-mini-grid">${days}</div></section>`;
   }).join('')}</div><div class="calendar-legend"><span><i class="has-todos"></i>${escapeHTML(t('scheduledTodos'))}</span><span><i class="has-notes"></i>${escapeHTML(t('createdNotes'))}</span><span><i class="has-links"></i>${escapeHTML(t('calendarLegendLinked'))}</span></div>`;
@@ -2039,7 +2039,7 @@ function statsItemRow(item, index) {
       <i aria-hidden="true"><svg><use href="#i-check"/></svg></i>
     </label>
     <button type="button" class="stats-item-open" data-stats-open="${escapeHTML(item.id)}">
-      <span class="stats-item-topline"><span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}${item.type === 'todo' ? ` · ${done ? t('done') : t('statOpen')}` : ''}</span><time datetime="${escapeHTML(item.createdAt)}">${escapeHTML(formatListDateTime(item.createdAt))}</time></span>
+      <span class="stats-item-topline"><span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}${item.type === 'todo' ? ` ${done ? t('done') : t('statOpen')}` : ''}</span><time datetime="${escapeHTML(item.createdAt)}">${escapeHTML(formatListDateTime(item.createdAt))}</time></span>
       <b>${escapeHTML(title)}</b>
       ${subtasks}
       ${preview || (tasks.length ? `<small><span class="mini-folder"><i class="folder-dot" style="background:${escapeHTML(folder?.color || '#999')}"></i>${escapeHTML(folderName(folder))}</span></small>` : '')}
@@ -2094,7 +2094,7 @@ function renderStats() {
   let rowIndex = 0;
   const groupsMarkup = [...groups.entries()].map(([key, groupItems]) => `
     <section class="stats-day-group">
-      <header class="stats-day-head"><b>${escapeHTML(statsGroupLabel(key))}</b><span>${escapeHTML(key)} · ${groupItems.length} ${t('item')}</span></header>
+      <header class="stats-day-head"><b>${escapeHTML(statsGroupLabel(key))}</b><span>${escapeHTML(key)} ${groupItems.length} ${t('item')}</span></header>
       ${groupItems.map(item => statsItemRow(item, rowIndex++)).join('')}
     </section>`).join('');
   return `<div class="stats-collection-wrap">
@@ -2218,7 +2218,7 @@ function renderStatsCanvas(items) {
       if (height >= limit) { omitted += 1; return; }
       const title = item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote'));
       const folder = getFolder(item.folderId);
-      const meta = [folderName(folder), formatListDateTime(item.createdAt)].filter(Boolean).join(' · ');
+      const meta = [folderName(folder), formatListDateTime(item.createdAt)].filter(Boolean).join(' ');
       const preview = stripHTML(item.type === 'note' ? item.body : item.notes || '') || '';
       measure.font = `650 30px ${fontFamily}`;
       const titleWidth = width - margin * 2 - 118 - 24;
@@ -2245,11 +2245,11 @@ function renderStatsCanvas(items) {
   let y = margin;
   ctx.fillStyle = colors.ink;
   ctx.font = `700 56px ${fontFamily}`;
-  ctx.fillText('Acta · 行记', margin, y + 56);
+  ctx.fillText('Acta 行记', margin, y + 56);
   ctx.fillStyle = colors.faint;
   ctx.font = `600 26px ${fontFamily}`;
   const todoCount = items.filter(item => item.type === 'todo').length;
-  const summary = `${statsRangeLabel()} · ${items.length} ${t('item')}（${todoCount} ${t('todo')} · ${items.length - todoCount} ${t('note')}）`;
+  const summary = `${statsRangeLabel()} ${items.length} ${t('item')}（${todoCount} ${t('todo')} ${items.length - todoCount} ${t('note')}）`;
   ctx.fillText(canvasTruncateText(ctx, summary, width - margin * 2), margin, y + 104);
   y += 140;
   ctx.strokeStyle = colors.line;
@@ -2264,7 +2264,7 @@ function renderStatsCanvas(items) {
     if (entry.type === 'group') {
       ctx.fillStyle = colors.faint;
       ctx.font = `700 26px ${fontFamily}`;
-      ctx.fillText(`${statsGroupLabel(entry.key)} · ${entry.key}`, margin, y + 34);
+      ctx.fillText(`${statsGroupLabel(entry.key)} ${entry.key}`, margin, y + 34);
       y += 52;
       return;
     }
@@ -2319,7 +2319,7 @@ function renderStatsCanvas(items) {
 
   ctx.fillStyle = colors.faint;
   ctx.font = `500 22px ${fontFamily}`;
-  ctx.fillText(`${formatDateTimeSeconds(new Date().toISOString())} · Acta 行记`, margin, canvas.height - margin / 1.6);
+  ctx.fillText(`${formatDateTimeSeconds(new Date().toISOString())} Acta 行记`, margin, canvas.height - margin / 1.6);
   return canvas;
 }
 
@@ -2411,7 +2411,7 @@ function bindTrashList() {
     const item = library.items.find(entry => entry.id === button.dataset.trashDestroy);
     if (!item) return;
     const title = item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote'));
-    if (!await askDestroyConfirm({ itemLabel: `${t(item.type)} · ${title}`, message: t('deleteDestroyHint') })) return;
+    if (!await askDestroyConfirm({ itemLabel: `${t(item.type)} ${title}`, message: t('deleteDestroyHint') })) return;
     logHistory('item-destroyed', title, item.id, JSON.parse(JSON.stringify(item)));
     logHistory('item-destroyed', item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')), item.id, JSON.parse(JSON.stringify(item)));
     destroyItems([item.id]);
@@ -5670,7 +5670,7 @@ function boardRenderLayerPop() {
     const allHidden = members.every(entry => entry.hidden);
     const childRows = members.map(entry => boardLayerRow(entry, true)).join('');
     return `<button type="button" class="board-layer-row is-group${selected ? ' is-selected' : ''}" data-layer-pick-group="${escapeHTML(widget.groupId)}">
-      <svg><use href="#i-layers"/></svg><span>${escapeHTML(t('boardLayerGroup'))} · ${members.length}</span>
+      <svg><use href="#i-layers"/></svg><span>${escapeHTML(t('boardLayerGroup'))} ${members.length}</span>
       <i class="board-layer-eye${allHidden ? ' is-off' : ''}" data-layer-toggle-group="${escapeHTML(widget.groupId)}" title="${escapeHTML(allHidden ? t('boardLayerShow') : t('boardLayerHide'))}"><svg><use href="#${allHidden ? 'i-eye-off' : 'i-eye'}"/></svg></i>
     </button>${childRows}`;
   }).join('');
@@ -7020,7 +7020,7 @@ function openDeleteConfirm({ itemLabel, message, mode }) {
 
 function askItemDelete(item) {
   const title = item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote'));
-  const label = `${t(item.type)} · ${title}`;
+  const label = `${t(item.type)} ${title}`;
   return openDeleteConfirm({
     itemLabel: label,
     message: t('deleteTrashHint'),
@@ -7270,7 +7270,7 @@ function linkedItemsSection(item) {
     <div class="link-picker">
       <select id="linkItemSelect" aria-label="${escapeHTML(pickerLabel)}">
         <option value="">${escapeHTML(pickerLabel)}</option>
-        ${availableItems.map(entry => `<option value="${escapeHTML(entry.id)}">${item.type === 'todo' ? `${escapeHTML(t(entry.type))} · ` : ''}${escapeHTML(entry.title || (entry.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</option>`).join('')}
+        ${availableItems.map(entry => `<option value="${escapeHTML(entry.id)}">${item.type === 'todo' ? `${escapeHTML(t(entry.type))} ` : ''}${escapeHTML(entry.title || (entry.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</option>`).join('')}
       </select>
       <button id="addItemLink" disabled><svg><use href="#i-plus"/></svg>${escapeHTML(addLabel)}</button>
     </div>
@@ -7466,7 +7466,7 @@ function bindNoteEditor(item) {
 
   const updateStats = html => {
     const text = stripHTML(html);
-    $('#noteStats').textContent = `${text.split(/\s+/).filter(Boolean).length} ${t('words')} · ${text.length} ${t('chars')}`;
+    $('#noteStats').textContent = `${text.split(/\s+/).filter(Boolean).length} ${t('words')} ${text.length} ${t('chars')}`;
   };
   const commitHTML = () => {
     item.body = body.innerHTML;

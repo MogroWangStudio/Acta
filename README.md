@@ -1,5 +1,5 @@
 <p align="right">
-  <strong>简体中文</strong> · <a href="./README_EN.md">English</a>
+  <strong>简体中文</strong> <a href="./README_EN.md">English</a>
 </p>
 
 <p align="center">
@@ -79,14 +79,14 @@ Acta 采用“共享 Web 核心 + 平台适配层”的结构。笔记、待办�
 
 ```mermaid
 flowchart TB
-    Core["共享 Web 核心<br/>Vue 3 + TypeScript · Vite 构建"]
-    Model["数据与界面逻辑<br/>笔记 · 待办 · 搜索 · 同步适配器"]
-    PWA["浏览器 / PWA<br/>Web APIs · Service Worker"]
-    Tauri["Tauri WebView<br/>Windows · macOS"]
+    Core["共享 Web 核心<br/>Vue 3 + TypeScript Vite 构建"]
+    Model["数据与界面逻辑<br/>笔记 待办 搜索 同步适配器"]
+    PWA["浏览器 / PWA<br/>Web APIs Service Worker"]
+    Tauri["Tauri WebView<br/>Windows macOS"]
     Bridge["tauri-bridge.js<br/>兼容桌面 API"]
-    Rust["Rust 命令层<br/>窗口 · 文件系统 · WebDAV · 缓存"]
+    Rust["Rust 命令层<br/>窗口 文件系统 WebDAV 缓存"]
     Android["Capacitor WebView"]
-    Native["Android 原生层<br/>ActaSyncPlugin · SAF · 通知"]
+    Native["Android 原生层<br/>ActaSyncPlugin SAF 通知"]
 
     Core --> Model
     Model --> PWA

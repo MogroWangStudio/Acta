@@ -1,5 +1,5 @@
 <p align="right">
-  <a href="./README.md">简体中文</a> · <strong>English</strong>
+  <a href="./README.md">简体中文</a> <strong>English</strong>
 </p>
 
 <p align="center">
@@ -79,14 +79,14 @@ Acta follows a “shared web core + platform adapters” design. Notes, tasks, v
 
 ```mermaid
 flowchart TB
-    Core["Shared web core<br/>Vue 3 + TypeScript · Built with Vite"]
-    Model["Data and UI logic<br/>Notes · Tasks · Search · Sync adapters"]
-    PWA["Browser / PWA<br/>Web APIs · Service Worker"]
-    Tauri["Tauri WebView<br/>Windows · macOS"]
+    Core["Shared web core<br/>Vue 3 + TypeScript Built with Vite"]
+    Model["Data and UI logic<br/>Notes Tasks Search Sync adapters"]
+    PWA["Browser / PWA<br/>Web APIs Service Worker"]
+    Tauri["Tauri WebView<br/>Windows macOS"]
     Bridge["tauri-bridge.js<br/>Compatible desktop API"]
-    Rust["Rust command layer<br/>Windows · Filesystem · WebDAV · Cache"]
+    Rust["Rust command layer<br/>Windows Filesystem WebDAV Cache"]
     Android["Capacitor WebView"]
-    Native["Android native layer<br/>ActaSyncPlugin · SAF · Notifications"]
+    Native["Android native layer<br/>ActaSyncPlugin SAF Notifications"]
 
     Core --> Model
     Model --> PWA

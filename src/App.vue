@@ -282,7 +282,7 @@
             <section class="settings-panel" data-settings-panel="plan-board">
               <header><h3>计划板</h3><p>渲染性能与关联显示偏好，只影响本机的计划板视图。</p></header>
               <div class="settings-group">
-                <label class="settings-row"><span><b>渲染余量</b><small>画布提前渲染视口外内容的距离，越大越顺滑、越耗性能</small></span><select id="planBoardRenderMargin"><option value="small">小 · 流畅优先</option><option value="medium" selected>中 · 均衡</option><option value="large">大 · 预览优先</option></select></label>
+                <label class="settings-row"><span><b>渲染余量</b><small>画布提前渲染视口外内容的距离，越大越顺滑、越耗性能</small></span><select id="planBoardRenderMargin"><option value="small">小 流畅优先</option><option value="medium" selected>中 均衡</option><option value="large">大 预览优先</option></select></label>
                 <label class="settings-row"><span><b>关联曲线</b><small>在同板互相关联的待办与笔记之间显示连接曲线</small></span><input id="planBoardLinkCurves" type="checkbox" checked/></label>
               </div>
               <p class="settings-status" id="planBoardStatus">设置即时生效，保存在本机。</p>
@@ -439,8 +439,8 @@
                 <header><b>应用图标</b><small>仅用于 Android 桌面图标。</small></header>
                 <div class="app-icon-options">
                   <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="default"/><span><img data-app-icon-preview="default" src="/icons/icon-512-square.png" alt=""/><b>默认书页</b></span></label>
-                  <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="positive"/><span><img data-app-icon-preview="positive" src="/icons/app-icon-positive-page.png" alt=""/><b>正·书页</b></span></label>
-                  <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="outline"/><span><img data-app-icon-preview="outline" src="/icons/app-icon-outlined-page.png" alt=""/><b>勾勒·书页</b></span></label>
+                  <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="positive"/><span><img data-app-icon-preview="positive" src="/icons/app-icon-positive-page.png" alt=""/><b>正 书页</b></span></label>
+                  <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="outline"/><span><img data-app-icon-preview="outline" src="/icons/app-icon-outlined-page.png" alt=""/><b>勾勒 书页</b></span></label>
                   <label class="app-icon-option"><input type="radio" name="actaAppIcon" value="original"/><span><img data-app-icon-preview="original" src="/icons/app-icon-original-simple.png" alt=""/><b>初版简洁</b></span></label>
                 </div>
                 <div class="settings-actions">
@@ -493,7 +493,7 @@
               <header><h3>关于 Acta</h3><p>让笔记与行动在一个安静、可掌控的本地空间中自然连接。</p></header>
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta 行记" /></div>
               <div class="about-meta">
-                <div><small>产品</small><b>Acta · 行记</b></div>
+                <div><small>产品</small><b>Acta 行记</b></div>
                 <div><small>版本</small><b id="aboutVersion">4.1.0</b></div>
                 <div><small>本版更新日期</small><b>2026-10-23</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
@@ -552,7 +552,7 @@
                 <small id="lanRadarSelfName">本机</small>
               </div>
             </div>
-            <p class="settings-status lan-radar-status" id="lanRadarStatus" role="status"><span id="lanRadarCount"></span><span class="lan-radar-divider" aria-hidden="true">·</span><span id="lanRadarPhase"></span></p>
+            <p class="settings-status lan-radar-status" id="lanRadarStatus" role="status"><span id="lanRadarCount"></span><span class="lan-radar-divider" aria-hidden="true"> </span><span id="lanRadarPhase"></span></p>
           </div>
         </div>
         <div class="settings-group">
@@ -740,7 +740,7 @@
               <div class="note-export-grid">
                 <label><span>纸张大小</span><select id="noteExportPdfPaper"><option value="a4">A4</option><option value="a5">A5</option><option value="letter">Letter</option><option value="legal">Legal</option></select></label>
                 <label><span>方向</span><select id="noteExportPdfOrientation"><option value="portrait">纵向</option><option value="landscape">横向</option></select></label>
-                <label><span>页边距</span><select id="noteExportPdfMarginPreset"><option value="12">窄 · 12 mm</option><option value="20" selected>标准 · 20 mm</option><option value="28">宽 · 28 mm</option><option value="custom">自定义</option></select></label>
+                <label><span>页边距</span><select id="noteExportPdfMarginPreset"><option value="12">窄 12 mm</option><option value="20" selected>标准 20 mm</option><option value="28">宽 28 mm</option><option value="custom">自定义</option></select></label>
                 <label id="noteExportPdfCustomMarginField" hidden><span>自定义页边距（mm）</span><input id="noteExportPdfMargin" type="number" min="5" max="50" step="1" value="20"/></label>
                 <label><span>正文字号</span><input id="noteExportPdfFontSize" type="number" min="10" max="24" step="1" value="14"/></label>
               </div>
@@ -768,7 +768,7 @@
             <div class="note-export-group">
               <p class="note-export-group-title">格式</p>
               <div class="note-export-grid">
-                <label><span>图片格式</span><select id="noteExportImageFormat"><option value="png" selected>PNG · 无损</option><option value="jpg">JPG · 体积小</option></select></label>
+                <label><span>图片格式</span><select id="noteExportImageFormat"><option value="png" selected>PNG 无损</option><option value="jpg">JPG 体积小</option></select></label>
                 <label id="noteExportImageJpgQualityField" hidden><span>JPG 画质</span><input id="noteExportImageJpgQuality" type="range" min="10" max="100" step="5" value="85"/><output id="noteExportImageJpgQualityValue">85%</output></label>
               </div>
             </div>
@@ -776,7 +776,7 @@
               <p class="note-export-group-title">排版</p>
               <div class="note-export-grid">
                 <label><span>图片排版</span><select id="noteExportImageLayout"><option value="long">长图片</option><option value="pages">固定比例多张图片</option></select></label>
-                <label><span>分辨率预设</span><select id="noteExportImageResolution"><option value="720p">720P · 1280px</option><option value="1080p">1080P · 1920px</option><option value="2k">2K · 2560px</option><option value="4k">4K · 3840px</option><option value="custom" selected>自定义</option></select></label>
+                <label><span>分辨率预设</span><select id="noteExportImageResolution"><option value="720p">720P 1280px</option><option value="1080p">1080P 1920px</option><option value="2k">2K 2560px</option><option value="4k">4K 3840px</option><option value="custom" selected>自定义</option></select></label>
                 <label id="noteExportImageRatioField" hidden><span>图片比例</span><select id="noteExportImageRatio"><option value="3:4">3 : 4</option><option value="4:5">4 : 5</option><option value="9:16">9 : 16</option><option value="a4">A4</option><option value="custom">自定义</option></select></label>
                 <label id="noteExportImageWidthField"><span>图片宽度（px）</span><input id="noteExportImageWidth" type="number" min="640" max="3840" step="20" value="1080"/></label>
                 <label id="noteExportImageHeightField" hidden><span>自定义高度（px）</span><input id="noteExportImageHeight" type="number" min="640" max="6000" step="20" value="1440"/></label>

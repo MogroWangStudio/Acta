@@ -1467,7 +1467,7 @@ async function main() {
       const appearancePanel = document.querySelector('[data-settings-panel="appearance"]');
       const appearanceSettingsComplete = document.querySelectorAll('input[name="actaTheme"]').length === 12
         && document.querySelectorAll('input[name="actaAppIcon"]').length === 4
-        && [...document.querySelectorAll('.app-icon-option b')].slice(0, 4).map(node => node.textContent).join('|') === '默认书页|正·书页|勾勒·书页|初版简洁'
+        && [...document.querySelectorAll('.app-icon-option b')].slice(0, 4).map(node => node.textContent).join('|') === '默认书页|正 书页|勾勒 书页|初版简洁'
         && Object.keys(detailedColorInputs).every(id => document.querySelector('#' + id));
       const appearanceLayoutFits = appearancePanel.scrollWidth <= document.querySelector('.settings-content').clientWidth;
       document.querySelector('[data-settings-page="workspace"]').click();
