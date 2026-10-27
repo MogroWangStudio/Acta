@@ -60,9 +60,15 @@ public class MainActivity extends BridgeActivity {
             predictiveBackCallback = null;
         }
         if (!enabled) return;
-        predictiveBackCallback = OnBackInvokedCallback.forOnBackInvoked(() ->
-            runOnUiThread(() -> getBridge().getWebView().evaluateJavascript(
-                "window.__actaHandleBackButton && window.__actaHandleBackButton();", null)));
+        // forOnBackInvoked 静态工厂是 API 34 新增：为兼容 compileSdk 下
+        // API 33 的运行时，这里用接口的匿名实现（onBackInvoked 在提交时触发）。
+        predictiveBackCallback = new OnBackInvokedCallback() {
+            @Override
+            public void onBackInvoked() {
+                runOnUiThread(() -> getBridge().getWebView().evaluateJavascript(
+                    "window.__actaHandleBackButton && window.__actaHandleBackButton();", null));
+            }
+        };
         dispatcher.registerOnBackInvokedCallback(
             OnBackInvokedDispatcher.PRIORITY_DEFAULT, predictiveBackCallback);
     }
