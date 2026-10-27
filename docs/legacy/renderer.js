@@ -5593,6 +5593,19 @@ function boardCancelWidgetSelection() {
 
 // 板选择器胶囊挂在视图标题右侧（离开计划板时摘下）。
 let boardPillEl = null;
+// 顶部操作容器：板选择器、图层、个性化归入同一容器，靠标题行右侧，
+// 与「计划板」大标题平齐（容器由 margin-left:auto 推到右侧）。
+let boardTitleActionsEl = null;
+function boardEnsureTitleActions() {
+  const titleRow = $('.item-title-row');
+  if (!titleRow) return null;
+  if (boardTitleActionsEl && document.contains(boardTitleActionsEl)) return boardTitleActionsEl;
+  boardTitleActionsEl = document.createElement('div');
+  boardTitleActionsEl.className = 'board-title-actions';
+  titleRow.appendChild(boardTitleActionsEl);
+  return boardTitleActionsEl;
+}
+
 function boardEnsurePill() {
   const titleRow = $('.item-title-row');
   if (!titleRow) return null;
@@ -5603,7 +5616,7 @@ function boardEnsurePill() {
   boardPillEl.innerHTML = `
     <button type="button" class="board-pill-button" id="boardPillButton" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-board"/></svg><b id="boardPillName"></b><svg class="board-pill-chevron"><use href="#i-chevron"/></svg></button>
     <div class="board-pill-menu" id="boardPillMenu" role="menu" hidden></div>`;
-  titleRow.appendChild(boardPillEl);
+  boardEnsureTitleActions()?.appendChild(boardPillEl);
   // 绑定跟随元素创建（title-row 不随 renderList 重建，绑定放这里只发生一次；
   // 放在 bindBoardScene 会随每次重建叠加监听器，一次点击触发多次导出）。
   $('#boardPillButton', boardPillEl).addEventListener('click', () => boardToggleMenu());
@@ -5650,7 +5663,7 @@ function boardEnsureStyleTrigger() {
   boardStyleTriggerEl.setAttribute('aria-label', t('boardPersonalize'));
   boardStyleTriggerEl.setAttribute('aria-haspopup', 'dialog');
   boardStyleTriggerEl.innerHTML = '<svg><use href="#i-palette"/></svg>';
-  titleRow.appendChild(boardStyleTriggerEl);
+  boardEnsureTitleActions()?.appendChild(boardStyleTriggerEl);
   // 绑定跟随元素创建（同板选择器：避免随 renderList 叠加导致浮层开即关）。
   boardStyleTriggerEl.addEventListener('click', () => {
     const pop = $('#boardStylePop', boardEls?.canvas || document);
@@ -5683,12 +5696,8 @@ function boardEnsureLayerTrigger() {
   boardLayerTriggerEl.setAttribute('aria-label', t('boardLayers'));
   boardLayerTriggerEl.setAttribute('aria-haspopup', 'dialog');
   boardLayerTriggerEl.innerHTML = '<svg><use href="#i-layers"/></svg>';
-  // 图层按钮在个性化按钮左侧（同一行、同一材质）。右推的 auto 边距移到
-  // 图层按钮上，两钮相邻成组；卸载时还原个性化按钮的推法。
-  titleRow.insertBefore(boardLayerTriggerEl, boardStyleTriggerEl);
-  boardStyleTriggerEl.style.marginLeft = 'auto';
-  boardLayerTriggerEl.style.marginLeft = 'auto';
-  boardStyleTriggerEl.style.marginLeft = '0';
+  // 图层按钮在个性化按钮左侧（同一容器、同一材质），容器整体靠右。
+  boardEnsureTitleActions()?.insertBefore(boardLayerTriggerEl, boardStyleTriggerEl);
   boardLayerTriggerEl.addEventListener('click', () => {
     const pop = $('#boardLayerPop', boardEls?.canvas || document);
     if (pop && !pop.hidden) { pop.hidden = true; return; }

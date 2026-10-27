@@ -2210,6 +2210,9 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 
 /* 板胶囊：挂在视图标题右侧（与 24px 大标题留出明显间距，避免视觉相贴）。 */
 .board-pill { position: relative; margin-left: 32px; flex: 0 0 auto; }
+/* 顶部操作容器：板选择器、图层、个性化成组靠右，与「计划板」大标题平齐。 */
+.board-title-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 0 0 auto; min-width: 0; }
+.board-title-actions .board-pill { margin-left: 0; }
 /* 计划板：标题行横贯画布顶栏——item-header 默认按内容收缩标题行，
    个性化按钮的 margin-left:auto 会失效并与板选择器相贴，也到不了画布右上。 */
 body.board-view .item-title-row { flex: 1 1 auto; gap: 8px; }
@@ -2582,9 +2585,10 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .board-chrome::-webkit-scrollbar { display: none; }
   .board-tool span { display: none; }
   .board-zoom-level { min-width: 34px; }
-  .board-pill { margin-left: 14px; }
+  .board-title-actions { gap: 6px; margin-right: 10px; }
+  .board-title-actions .board-pill { margin-left: 0; }
   .board-pill-button { max-width: 148px; }
-  .board-style-trigger { margin-right: 10px; }
+  .board-style-trigger { margin-right: 0; }
   .board-style-pop-lg { right: 10px; top: 56px; bottom: auto; }
   .board-widget-toolbar { max-width: calc(100% - 16px); flex-wrap: wrap; justify-content: center; }
   /* 320px 档再收紧间距：标注菜单已移出滚动容器，工具条本身不必横向滚动，
