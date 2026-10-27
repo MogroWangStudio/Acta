@@ -1200,6 +1200,22 @@ public class ActaLanPlugin extends Plugin {
                 respond(socket, 400, "Bad Request", "{\"error\":\"bad request\"}");
                 return;
             }
+            // 浏览器网页版客户端的 CORS 预检：不含会话参数，先于会话校验应答。
+            if ("OPTIONS".equals(head.method)) {
+                try (OutputStream output = socket.getOutputStream()) {
+                    String header = "HTTP/1.1 204 No Content\r\n"
+                        + "Access-Control-Allow-Origin: *\r\n"
+                        + "Access-Control-Allow-Methods: GET, PUT, OPTIONS\r\n"
+                        + "Access-Control-Allow-Headers: Content-Type\r\n"
+                        + "Access-Control-Allow-Private-Network: true\r\n"
+                        + "Access-Control-Max-Age: 600\r\n"
+                        + "Content-Length: 0\r\nConnection: close\r\n\r\n";
+                    output.write(header.getBytes(StandardCharsets.UTF_8));
+                    output.flush();
+                } catch (Exception ignored) {
+                }
+                return;
+            }
             LanService current = service;
             if (current == null) {
                 respond(socket, 503, "Service Unavailable", "{\"error\":\"unavailable\"}");
@@ -1597,7 +1613,8 @@ public class ActaLanPlugin extends Plugin {
             byte[] payload = body.getBytes(StandardCharsets.UTF_8);
             String header = "HTTP/1.1 " + status + " " + reason
                 + "\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: "
-                + payload.length + "\r\nConnection: close\r\n\r\n";
+                + payload.length + "\r\nConnection: close\r\n"
+                + "Access-Control-Allow-Origin: *\r\nAccess-Control-Allow-Private-Network: true\r\n\r\n";
             OutputStream output = socket.getOutputStream();
             output.write(header.getBytes(StandardCharsets.UTF_8));
             output.write(payload);

@@ -3433,3 +3433,11 @@ html[data-acta-theme="mono-dark"] .about-studio:hover { background: color-mix(in
 .custom-mode-seg button { height: 28px; padding: 0 14px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font: 650 calc(10px * var(--acta-font-scale)) inherit; cursor: pointer; transition: background .15s ease, color .15s ease; }
 .custom-mode-seg button.active { color: var(--paper); background: var(--ink); }
 html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in srgb, #ffffff 7%, transparent); }
+
+/* 网页版 LAN 扫描行 */
+.lan-web-scan-row { display: flex; align-items: center; gap: 7px; }
+.lan-web-scan-row input { min-width: 0; height: 34px; padding: 0 9px; border: 1px solid var(--line); border-radius: 9px; outline: 0; background: var(--white); color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+.lan-web-scan-row input:focus { border-color: color-mix(in srgb, var(--sage) 40%, var(--line)); }
+.lan-web-scan-row #webLanScanPrefix { flex: 1 1 auto; }
+.lan-web-scan-row #webLanScanPort { flex: 0 0 88px; }
+.lan-web-scan-row i { color: var(--faint); font-style: normal; }

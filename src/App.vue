@@ -67,6 +67,7 @@
             <button data-create="todo"><span class="menu-icon todo"><svg><use href="#i-check"/></svg></span><span><b data-i18n="newTodo">新建待办</b><small data-i18n="newTodoHint">拆解目标与行动</small></span></button>
             <button data-create="checkin"><span class="menu-icon checkin"><svg><use href="#i-task-list"/></svg></span><span><b data-i18n="checkinTodo">打卡待办</b><small data-i18n="checkinTodoHint">每天打卡，养成习惯</small></span></button>
             <button id="importNoteButton"><span class="menu-icon import"><svg><use href="#i-download"/></svg></span><span><b data-i18n="importNote">导入笔记</b><small data-i18n="importNoteHint">支持 Markdown 与纯文本</small></span></button>
+            <button id="importTodoButton"><span class="menu-icon import"><svg><use href="#i-download"/></svg></span><span><b data-i18n="importTodo">导入待办</b><small data-i18n="importTodoHint">支持分行文字与任务清单</small></span></button>
           </div>
 
           <nav class="nav-section smart-nav" id="smartNav">
@@ -533,15 +534,24 @@
         <button class="relation-dialog-close" id="closeLanSyncPage" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button>
       </header>
       <div class="relation-dialog-body lan-page-body">
-        <div class="settings-group lan-page-discovery">
+        <div class="settings-group lan-page-discovery" data-server-lan-only>
           <label class="settings-row"><span><b>允许被其他设备发现</b></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
+        </div>
+        <div class="settings-group" data-web-lan-only hidden>
+          <div class="settings-row"><span><b>搜索设备</b><small id="webLanScanHint">网页版通过 IP 直连设备；对端需设固定端口并开启「允许被其他设备发现」</small></span></div>
+          <div class="lan-web-scan-row">
+            <input id="webLanScanPrefix" type="text" placeholder="192.168.1" autocomplete="off" aria-label="网段前缀"/>
+            <i aria-hidden="true">·</i>
+            <input id="webLanScanPort" type="number" min="1024" max="65535" placeholder="端口" autocomplete="off" aria-label="端口"/>
+            <button type="button" class="settings-button secondary" id="webLanScanButton">扫描设备</button>
+          </div>
         </div>
         <div class="settings-group">
           <div class="settings-row" id="lanNetworkInfoRow"><span><b data-i18n="lanNetwork">本机网络</b><small id="lanNetworkInfo" data-i18n="lanNetworkUnknown">读取中…</small></span></div>
           <label class="settings-row"><span><b>设备名称</b></span><input id="lanDeviceName" type="text" maxlength="40" placeholder="本机主机名" autocomplete="off"/></label>
           <label class="settings-row"><span><b>设备图标</b></span><input id="lanDeviceIcon" type="text" maxlength="8" placeholder="例：🌿" autocomplete="off"/></label>
-          <label class="settings-row"><span><b>服务端口</b></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>
-          <label class="settings-row"><span><b>信任此局域网（自动确认）</b></span><input id="lanTrustSetting" type="checkbox"/></label>
+          <label class="settings-row" data-server-lan-only><span><b>服务端口</b></span><input id="lanPortSetting" type="number" min="1024" max="65535" step="1" placeholder="自动分配" autocomplete="off"/></label>
+          <label class="settings-row" data-server-lan-only><span><b>信任此局域网（自动确认）</b></span><input id="lanTrustSetting" type="checkbox"/></label>
         </div>
         <div class="settings-group">
           <div class="settings-row"><span><b>附近的设备</b><small id="lanPeersHint"></small></span></div>

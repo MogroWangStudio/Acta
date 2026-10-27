@@ -6664,7 +6664,118 @@
     }
   };
   const lanText = (key, ...values) => values.reduce((message, value, index) => message.replace(`{${index}}`, value), (lanMessages[uiSettings.language] || lanMessages.zh)[key] || '');
-  const lanBridge = window.actaDesktop?.lanSync || window.actaMobileLan?.lanSync || null;
+  // —— 网页版局域网桥 ——浏览器无法 UDP 广播、也无法监听端口：实现的是
+  // 协议的客户端侧——对端地址（IP:端口）手动指定或网段扫描发现，获取
+  // （bundle 拉取）与发送（plan 两段式推送）走对端的 HTTP 服务端。
+  // 网页自身无法被发现 / 接收推送（无服务端），相关服务端操作为空实现。
+  // 混合内容：HTTPS 页面访问局域网 HTTP 目标在 Chrome 需在站点设置允许
+  // 「不安全内容」，失败时状态行会提示。
+  window.actaWebLan = (() => {
+    const LAN_PROTOCOL = 2;
+    const SCAN_CONCURRENCY = 8;
+    const webMeta = () => ({
+      app: 'acta', protocol: LAN_PROTOCOL, running: false, discoverable: false,
+      port: 0, session: '', device: String(uiSettings.lanDeviceName || '').trim() || 'Acta',
+      icon: String(uiSettings.lanDeviceIcon || '').trim(), platform: 'web', trusted: false,
+      profiles: [], networkType: '', networkSsid: '', localAddresses: []
+    });
+    const peerUrl = (ip, port, path, session) => `http://${ip}:${port}/acta-lan/v${LAN_PROTOCOL}/${path}?session=${session}`;
+    const sessionOf = session => ({ session });
+    const scanConfig = { prefix: '', port: 0 };
+    const httpError = status => status === 403
+      ? '对方拒绝了这次同步；若对方近期重启过 Acta 或重新开过「允许被发现」，请重新搜索设备后再试。'
+      : status === 404 ? '对方不是有效的 Acta 设备。'
+      : `对方返回了 ${status}。`;
+    const peerFetch = async (ip, port, path, session, options = {}) => {
+      const extraQuery = options.extraQuery ? `&${options.extraQuery}` : '';
+      const response = await fetch(`${peerUrl(ip, port, path, session)}${extraQuery}`, {
+        method: options.method || 'GET',
+        headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
+        body: options.body,
+        signal: AbortSignal.timeout(options.timeout || 6000)
+      }).catch(error => {
+        if (location.protocol === 'https:') throw new Error('浏览器拦截了局域网请求：请在站点设置中允许「不安全内容」后重试。');
+        throw new Error(`无法连接该设备：${error.message || error}`);
+      });
+      const body = await response.text();
+      let payload = null;
+      try { payload = JSON.parse(body); } catch { /* 非 JSON 响应按状态处理 */ }
+      if (!response.ok) throw new Error(payload?.error ? httpError(response.status) : httpError(response.status));
+      return payload;
+    };
+    const scanPrefix = async (prefix, port, timeoutMs) => {
+      const peers = [];
+      const found = new Set();
+      const deadline = Date.now() + Math.max(1000, timeoutMs || 6000);
+      const probe = async lastOctet => {
+        if (Date.now() > deadline) return;
+        try {
+          window.__scanProgress = { done: (window.__scanProgress?.done || 0) + 1, last: `${prefix}.${lastOctet}`, at: Date.now() };
+          const response = await fetch(`http://${prefix}.${lastOctet}:${port}/acta-lan/v2/info?session=`, { signal: AbortSignal.timeout(1200) });
+          if (!response.ok) return;
+          const info = await response.json();
+          if (info?.app !== 'acta') return;
+          const key = `${prefix}.${lastOctet}`;
+          if (found.has(key)) return;
+          found.add(key);
+          peers.push({
+            name: info.name || 'Acta', icon: info.icon || '', platform: info.platform || '',
+            ip: key, port: Number(port), session: info.session || '', trusted: Boolean(info.trusted),
+            profiles: Array.isArray(info.profiles) ? info.profiles : []
+          });
+        } catch (error) {
+          window.__scanProgress = { done: (window.__scanProgress?.done || 0) + 1, last: `${prefix}.${lastOctet}`, err: String(error?.message || error).slice(0, 60), at: Date.now() };
+        }
+      };
+      for (let batch = 1; batch <= 254 && Date.now() < deadline; batch += SCAN_CONCURRENCY) {
+        const tasks = [];
+        for (let offset = 0; offset < SCAN_CONCURRENCY && batch + offset <= 254; offset += 1) tasks.push(probe(batch + offset));
+        await Promise.all(tasks);
+      }
+      return peers;
+    };
+    const lanSync = {
+      startService: async () => webMeta(),
+      updateMeta: async () => webMeta(),
+      stopService: async () => webMeta(),
+      serviceStatus: async () => webMeta(),
+      discover: async (timeoutMs = 6000) => {
+        if (!scanConfig.prefix || !scanConfig.port) return [];
+        // /24 全网段扫描需要远超桌面 UDP 发现的时长：忽略传入的短超时。
+        return scanPrefix(scanConfig.prefix, scanConfig.port, Math.max(timeoutMs, 40000));
+      },
+      fetchInfo: async (ip, port, session) => {
+        const info = await peerFetch(ip, port, 'info', session);
+        if (info?.app !== 'acta') throw new Error('对方不是有效的 Acta 设备。');
+        return info;
+      },
+      pushPlan: async (ip, port, session, plan) => {
+        const payload = await peerFetch(ip, port, 'plan', session, { method: 'PUT', body: JSON.stringify(plan), timeout: 120000 });
+        const token = payload?.token;
+        if (!token) throw new Error('对方接受了请求但未返回有效凭据。');
+        return token;
+      },
+      pushData: async (ip, port, session, token, bundle) => {
+        const payload = await peerFetch(ip, port, 'data', session, { method: 'PUT', body: JSON.stringify(bundle), timeout: 180000, extraQuery: `plan=${token}` });
+        if (payload?.status !== 'applied') throw new Error('对方写入数据失败。');
+        return true;
+      },
+      fetchProfileBundle: async (ip, port, session, profileId) => {
+        const payload = await peerFetch(ip, port, 'bundle', session, { timeout: 180000, extraQuery: `profile=${encodeURIComponent(profileId)}` });
+        return payload;
+      },
+      // 服务端操作：网页无法监听端口，永远不会被触发——空实现保接口完整。
+      decideIncoming: async () => {},
+      provideBundle: async () => {},
+      readBundleChunk: async () => ({ chunk: '', done: true }),
+      acceptIncoming: async () => { throw new Error('网页版无法接收局域网数据。'); },
+      confirmIncoming: async () => {},
+      rejectIncoming: async () => {},
+      backupLocal: async () => ({ path: '' })
+    };
+    return { lanSync, scanConfig };
+  })();
+  const lanBridge = window.actaDesktop?.lanSync || window.actaMobileLan?.lanSync || window.actaWebLan?.lanSync || null;
   // 事件监听入口：桌面在 actaDesktop，Android 在 renderer.js 注入的 actaMobileLan。
   const lanEvents = window.actaDesktop?.onLanIncoming ? window.actaDesktop : (window.actaMobileLan || {});
   const lanDialog = byId('lanSyncDialog');
@@ -7667,6 +7778,30 @@
     function closeLanSyncPage() {
       lanRadarVisibilityHook?.(false);
       closeAnimatedDialog(lanPage);
+    }
+    // 网页桥：隐藏服务端专属的发现 / 端口 / 信任行，展示网页扫描入口。
+    const webLanBridge = lanBridge === window.actaWebLan?.lanSync;
+    lanPage.querySelectorAll('[data-server-lan-only]').forEach(el => { el.hidden = webLanBridge; });
+    lanPage.querySelectorAll('[data-web-lan-only]').forEach(el => { el.hidden = !webLanBridge; });
+    if (webLanBridge) {
+      const storedScan = uiSettings.webLanScan || {};
+      const prefixInput = byId('webLanScanPrefix');
+      const portInput = byId('webLanScanPort');
+      if (storedScan.prefix) prefixInput.value = storedScan.prefix;
+      if (storedScan.port) portInput.value = String(storedScan.port);
+      byId('webLanScanButton')?.addEventListener('click', async () => {
+        const prefix = prefixInput.value.trim().replace(/\.$/, '');
+        const port = Number(portInput.value);
+        if (!/^\d{1,3}(\.\d{1,3}){2}$/.test(prefix) || !(port >= 1024 && port <= 65535)) {
+          setLanStatus('请输入有效的网段前缀（如 192.168.1）与端口（1024–65535）。', 'error');
+          return;
+        }
+        uiSettings.webLanScan = { prefix, port };
+        saveUISettings();
+        window.actaWebLan.scanConfig.prefix = prefix;
+        window.actaWebLan.scanConfig.port = port;
+        await scanLanPeers();
+      });
     }
     lanPageOpen = openLanSyncPage;
     byId('openLanSyncPage')?.addEventListener('click', () => openLanSyncPage());

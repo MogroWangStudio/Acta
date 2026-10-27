@@ -822,6 +822,12 @@ fn handle_connection(mut stream: TcpStream, service: Arc<LanService>) {
     let Some((method, target, content_length)) = read_request_head(&mut stream) else {
         return;
     };
+    // 浏览器网页版客户端的 CORS 预检：不含会话参数，必须在会话校验之前应答。
+    if method == "OPTIONS" {
+        let response = "HTTP/1.1 204 No Content\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, PUT, OPTIONS\r\nAccess-Control-Allow-Headers: Content-Type\r\nAccess-Control-Allow-Private-Network: true\r\nAccess-Control-Max-Age: 600\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+        let _ = stream.write_all(response.as_bytes());
+        return;
+    }
     let Some((path, query)) = target.split_once('?') else {
         let _ = write_http_response(&mut stream, 400, "Bad Request", r#"{"error":"bad request"}"#);
         return;
@@ -1166,7 +1172,7 @@ fn handle_push_data(stream: &mut TcpStream, service: &Arc<LanService>, length: u
 
 fn write_http_response(stream: &mut TcpStream, status: u16, reason: &str, body: &str) -> std::io::Result<()> {
     let response = format!(
-        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Private-Network: true\r\n\r\n{body}",
         body.len()
     );
     stream.write_all(response.as_bytes())
