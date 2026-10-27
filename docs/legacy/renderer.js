@@ -2605,6 +2605,8 @@ let boardEnterAnimated = false;
 let boardWasActive = false;
 let boardPersistTimer = 0;
 const boardSelection = new Set();  // 选中的组件集合（框选可多选；条目组件的选中即编辑器）
+// 移动端计划板：单击只选中（工具条固定底部），双击条目组件才开编辑面板。
+const boardMobileQuery = matchMedia('(max-width: 800px)');
 let boardSelectedHandle = null;   // 拖动中的端点句柄样式标记
 let boardEditingText = null;      // 正在编辑的文本组件 id
 let boardPendingMarker = null;    // 待绘制的标注形状（点击画布拖出）
@@ -3876,8 +3878,9 @@ function boardRefreshCardNode(widget) {
 function boardSyncToolbar() {
   const bar = boardEls?.toolbar;
   if (!bar) return;
-  // 多选工具条固定在画布底部居中（添加工具条上一行），不跟随组件。
-  if (boardSelection.size > 1) {
+  // 多选与移动端：工具条固定在画布底部居中（底部工具条上一行），不跟随
+  // 组件——移动端组件被手指挡住、跟随工具条也够不着，固定底部更好按。
+  if (boardSelection.size > 1 || boardMobileQuery.matches) {
     bar.classList.add('is-multi');
     bar.style.left = '';
     bar.style.top = '';
@@ -6504,7 +6507,9 @@ function bindBoardScene() {
         lastBoardTap = { id: gesture.widget.id, at: now };
         if (gesture.widget.type === 'note' || gesture.widget.type === 'todo') {
           boardSetSelection([gesture.widget.id]);
-          boardSelect(gesture.pressItem);
+          // 移动端：单击只选中（工具条见画布底部），双击才弹出编辑面板；
+          // 桌面保持单击直开编辑器。
+          if (!boardMobileQuery.matches || isDoubleTap) boardSelect(gesture.pressItem);
         } else if (gesture.widget.type === 'text' && isDoubleTap) {
           boardSetSelection([gesture.widget.id]);
           boardEditText(gesture.widget.id);
