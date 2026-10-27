@@ -500,6 +500,10 @@
                 <p class="settings-status about-update-status" id="aboutUpdateStatus" hidden></p>
               </div>
               <p class="settings-status about-copy">作者：<a href="https://www.mogrowangstudio.top/" target="_blank" rel="noopener">MogroWang Studio</a>。项目开源、免费，欢迎学习、使用与共同改进。</p>
+              <a class="about-studio" id="aboutStudioLink" href="https://www.mogrowangstudio.top" target="_blank" rel="noopener" draggable="false">
+                <img src="/icons/studio-logo.svg" alt="MogroWang Studio" draggable="false"/>
+                <span class="about-studio-hint">点击前往 MogroWang Studio 官方网站</span>
+              </a>
               <p class="settings-status">笔记、待办和设置默认保存在当前设备；只有在你主动操作时才会导入、导出或同步。</p>
             </section>
           </div>

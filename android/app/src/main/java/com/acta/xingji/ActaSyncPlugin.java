@@ -64,6 +64,27 @@ public class ActaSyncPlugin extends Plugin {
         });
     }
 
+    // 外部链接（关于页工作室字标等）：WebView 不处理 target="_blank"，
+    // 用系统浏览器打开。仅放行 https，避免任意 scheme 注入。
+    @PluginMethod
+    public void openExternal(PluginCall call) {
+        String url = call.getString("url");
+        if (url == null || !url.startsWith("https://")) {
+            call.reject("https url required");
+            return;
+        }
+        getActivity().runOnUiThread(() -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getActivity().startActivity(intent);
+                call.resolve();
+            } catch (Exception error) {
+                call.reject("no handler for url", error);
+            }
+        });
+    }
+
     // 预见式返回开关（仅 Android 13+ 生效）：把常规设置的开关落到
     // MainActivity 的系统级 OnBackInvokedCallback 注册 / 反注册上。
     // 数据档案统计（文件总大小与文件数）：行记数据设置页的数据统计块。

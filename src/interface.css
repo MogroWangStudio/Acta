@@ -3327,3 +3327,35 @@ body.acta-reduce-motion .nav-preview-cell, body.acta-reduce-motion .nav-preview-
 @media (prefers-reduced-transparency: reduce) {
   .checkin-calendar { background: var(--paper); }
 }
+
+/* ===== 关于页 · 工作室字标（参考 Plainstruct 关于页的工作室署名设计）=====
+   居中的工作室 logo 可点击跳转官网；悬停 / 聚焦时 logo 模糊变淡，
+   「点击前往官网」提示在原位浮现，为点击意图留出确认。 */
+.about-studio {
+  position: relative; display: block; width: fit-content;
+  margin: 14px auto 0; padding: 9px 18px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: color-mix(in srgb, var(--white) 55%, transparent);
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease;
+}
+.about-studio:hover { background: var(--white); border-color: color-mix(in srgb, var(--faint) 40%, var(--line)); }
+.about-studio img {
+  display: block; height: 20px; width: auto; user-select: none;
+  transition: opacity .2s ease, filter .2s ease;
+}
+.about-studio:hover img, .about-studio:focus-visible img { opacity: .62; filter: blur(2.5px); }
+.about-studio-hint {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--ink); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650;
+  white-space: nowrap; opacity: 0; pointer-events: none;
+  transition: opacity .2s ease;
+}
+.about-studio:hover .about-studio-hint, .about-studio:focus-visible .about-studio-hint { opacity: 1; }
+.about-studio:focus-visible { outline: 2px solid color-mix(in srgb, var(--sage) 55%, transparent); outline-offset: 2px; }
+html[data-acta-theme="mono-dark"] .about-studio { background: color-mix(in srgb, #ffffff 6%, transparent); }
+html[data-acta-theme="mono-dark"] .about-studio:hover { background: color-mix(in srgb, #ffffff 12%, transparent); }
+@media (prefers-reduced-transparency: reduce) {
+  .about-studio { background: var(--paper); }
+  .about-studio:hover img { filter: none; opacity: .5; }
+}
