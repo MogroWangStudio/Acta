@@ -4937,7 +4937,18 @@
   prepareNavIconTraces();
   const NAV_PAGE_IDS = ['inbox', 'calendar', 'board', 'todos', 'notes', 'trash', 'stats'];
   // 移动底栏左右两端固定为收集箱与日历，中间两个槽位才由用户替换。
-  const MOBILE_FIXED_PAGES = ['inbox', 'calendar'];
+  const normalizeMobileSlots = () => {
+    // 底栏四个位置统一为一份 4 槽结论：前两槽默认收集箱 / 日历，但可被
+    // 「遇到重复即对换」挪动；旧的两槽存档迁移为前两槽回落默认。
+    const stored = Array.isArray(uiSettings.mobileSlots) ? uiSettings.mobileSlots : [];
+    const base = stored.length >= 4 ? stored.slice(0, 4) : ['inbox', 'calendar', ...stored];
+    const slots = [];
+    base.forEach(id => { if (NAV_PAGE_IDS.includes(id) && !slots.includes(id) && slots.length < 4) slots.push(id); });
+    ['inbox', 'calendar', 'trash', 'stats', 'board', 'todos', 'notes'].forEach(id => {
+      if (slots.length < 4 && NAV_PAGE_IDS.includes(id) && !slots.includes(id)) slots.push(id);
+    });
+    return slots;
+  };
   // 「局域网雷达」是打开设置页的动作入口而不是视图：可显隐，但不参与
   // 移动底栏槽位，也不进入视图切换逻辑。
   const NAV_ACTION_PAGES = ['lan'];
@@ -4946,15 +4957,6 @@
     const pages = {};
     [...NAV_PAGE_IDS, ...NAV_ACTION_PAGES].forEach(id => { pages[id] = !(stored && stored[id] === false); });
     return pages;
-  };
-  const normalizeMobileSlots = () => {
-    const pool = NAV_PAGE_IDS.filter(id => !MOBILE_FIXED_PAGES.includes(id));
-    const stored = Array.isArray(uiSettings.mobileSlots) ? uiSettings.mobileSlots : [];
-    const slots = [];
-    // 固定页与重复页都不能占位，否则底栏会空出一格。
-    stored.forEach(id => { if (pool.includes(id) && !slots.includes(id) && slots.length < 2) slots.push(id); });
-    ['trash', 'stats', ...pool].forEach(id => { if (slots.length < 2 && pool.includes(id) && !slots.includes(id)) slots.push(id); });
-    return slots;
   };
   // 移动端顶栏右上角的自定义按钮区：三个槽位 + 固定的设置按钮。
   const MOBILE_TITLE_POOL = ['todos', 'notes', 'board', 'trash', 'stats', 'refresh', 'history', 'lan'];
@@ -5022,14 +5024,14 @@
     const slots = normalizeMobileSlots();
     const cell = (id, extra, attrs) => `<span class="nav-preview-cell ${extra}" ${attrs || ''}><svg><use href="#${NAV_PREVIEW_ICON[id] || 'i-plus'}"/></svg><em>${escapeHTML(id ? t(NAV_PREVIEW_LABEL[id] || id) : t('new'))}</em></span>`;
     bar.innerHTML = [
-      cell('inbox', 'is-fixed'),
-      cell('calendar', 'is-fixed'),
-      `<span class="nav-preview-cell is-new"><svg><use href="#i-plus"/></svg><em>${escapeHTML(t('new'))}</em></span>`,
       cell(slots[0], 'is-slot', 'data-preview-slot="0"'),
-      cell(slots[1], 'is-slot', 'data-preview-slot="1"')
+      cell(slots[1], 'is-slot', 'data-preview-slot="1"'),
+      `<span class="nav-preview-cell is-new"><svg><use href="#i-plus"/></svg><em>${escapeHTML(t('new'))}</em></span>`,
+      cell(slots[2], 'is-slot', 'data-preview-slot="2"'),
+      cell(slots[3], 'is-slot', 'data-preview-slot="3"')
     ].join('');
-    pool.innerHTML = NAV_PAGE_IDS.filter(id => !MOBILE_FIXED_PAGES.includes(id))
-      .map(id => navPreviewChip(id, slots.includes(id) ? 'is-used' : '')).join('');
+    pool.innerHTML = NAV_PAGE_IDS.filter(id => !slots.includes(id))
+      .map(id => navPreviewChip(id)).join('');
   };
 
   function renderNavPreviewTop() {
@@ -5058,14 +5060,12 @@
     uiSettings.mobileSlots = slots;
     saveUISettings();
     syncMobileSlotControls();
-    syncMobileSlotOptions();
     applyNavSettings();
   }
   function saveTitleActions(slots) {
     uiSettings.mobileTitleActions = slots;
     saveUISettings();
     syncMobileTitleControls();
-    syncMobileTitleOptions();
     applyNavSettings();
   }
 
@@ -5174,18 +5174,30 @@
     chip.classList.add('is-picked');
   });
 
-  // 两个槽位互斥：固定占位的收集箱/日历、以及另一槽位已选中的页面都不可再选，
-  // 否则选了也不生效——底栏只会留出一格空位。
-  const syncMobileSlotOptions = () => {
-    const selects = mobileSlotSelects();
-    selects.forEach((select, index) => {
-      const other = selects[1 - index]?.value;
-      [...select.options].forEach(option => {
-        option.disabled = MOBILE_FIXED_PAGES.includes(option.value)
-          || (option.value === other && option.value !== select.value);
-      });
-    });
+  // 两个下拉对应底栏「新建」右侧的两个槽位（第 4 / 5 位）。所有选项
+  // 全部常亮可选：选中的页已在其他位（含前两槽）时，与其对换；不在
+  // 栏内则直接落位（原位页面移出底栏）。
+  const [mobileSlotOne, mobileSlotTwo] = mobileSlotSelects();
+  const syncMobileSlotControls = () => {
+    const slots = normalizeMobileSlots();
+    mobileSlotOne.value = slots[2];
+    mobileSlotTwo.value = slots[3];
   };
+  syncMobileSlotControls();
+  const saveBottomSlot = index => {
+    const slots = normalizeMobileSlots();
+    const position = index + 2;
+    const value = mobileSlotSelects()[index].value;
+    const at = slots.indexOf(value);
+    if (at >= 0 && at !== position) slots[at] = slots[position];
+    slots[position] = value;
+    uiSettings.mobileSlots = slots;
+    saveUISettings();
+    applyNavSettings();
+  };
+  mobileSlotOne.addEventListener('change', () => saveBottomSlot(0));
+  mobileSlotTwo.addEventListener('change', () => saveBottomSlot(1));
+
   function applyNavSettings() {
     const buttons = navButtons();
     const pages = normalizeNavPages();
@@ -5195,7 +5207,8 @@
     buttons.forEach((button, id) => { if (button) button.classList.toggle('nav-page-hidden', pages[id] === false); });
     // 先清空全部槽位标记再按设置重新分配，避免旧类残留。
     buttons.forEach(button => button && button.classList.remove('mobile-slot-1', 'mobile-slot-2', 'mobile-slot-3', 'mobile-slot-4'));
-    [...MOBILE_FIXED_PAGES, ...normalizeMobileSlots()].forEach((id, index) => {
+    // 底栏四个位置（前两槽默认收集箱 / 日历，可被对换挪动）按序占四个列位。
+    normalizeMobileSlots().forEach((id, index) => {
       buttons.get(id)?.classList.add(`mobile-slot-${index + 1}`);
     });
     // 移动顶栏：三个槽位由 mobile-title-slot-N 决定，设置按钮固定在末尾。
@@ -5204,8 +5217,7 @@
     normalizeMobileTitleActions().forEach((id, index) => {
       titleButtons.get(id)?.classList.add(`mobile-title-slot-${index + 1}`);
     });
-    syncMobileSlotOptions();
-    syncMobileTitleOptions();
+    syncMobileTitleControls();
     renderNavPreviews();
   }
   const navPageGrid = byId('navPageGrid');
@@ -5220,42 +5232,25 @@
       applyNavSettings();
     });
   });
-  const [mobileSlotOne, mobileSlotTwo] = mobileSlotSelects();
-  const syncMobileSlotControls = () => {
-    const slots = normalizeMobileSlots();
-    mobileSlotOne.value = slots[0];
-    mobileSlotTwo.value = slots[1];
-  };
-  syncMobileSlotControls();
-  const saveMobileSlots = () => {
-    uiSettings.mobileSlots = [mobileSlotOne.value, mobileSlotTwo.value];
-    saveUISettings();
-    applyNavSettings();
-  }
-  mobileSlotOne.addEventListener('change', saveMobileSlots);
-  mobileSlotTwo.addEventListener('change', saveMobileSlots);
-  // 顶栏三个槽位同样互斥：其余槽位与固定设置按钮不提供重复选项。
+  // 顶栏三个槽位的下拉同样全部常亮可选：选中的页已在其他槽位时，与其对换。
   const mobileTitleSelects = () => [byId('mobileTitleOne'), byId('mobileTitleTwo'), byId('mobileTitleThree')].filter(Boolean);
   const syncMobileTitleControls = () => {
     const slots = normalizeMobileTitleActions();
     mobileTitleSelects().forEach((select, index) => { select.value = slots[index] || ''; });
   };
   syncMobileTitleControls();
-  function syncMobileTitleOptions() {
-    const selects = mobileTitleSelects();
-    selects.forEach((select, index) => {
-      const others = selects.filter((_, other) => other !== index).map(other => other.value);
-      [...select.options].forEach(option => {
-        option.disabled = others.includes(option.value) && option.value !== select.value;
-      });
-    });
-  }
-  const saveMobileTitleActions = () => {
-    uiSettings.mobileTitleActions = mobileTitleSelects().map(select => select.value);
+  const saveMobileTitleSlot = index => {
+    const slots = normalizeMobileTitleActions();
+    const value = mobileTitleSelects()[index].value;
+    const at = slots.indexOf(value);
+    // 选中的页已在其他槽位：与其对换；不在栏内：直接落位。
+    if (at >= 0 && at !== index) slots[at] = slots[index];
+    slots[index] = value;
+    uiSettings.mobileTitleActions = slots;
     saveUISettings();
     applyNavSettings();
-  }
-  mobileTitleSelects().forEach(select => select.addEventListener('change', saveMobileTitleActions));
+  };
+  mobileTitleSelects().forEach((select, index) => select.addEventListener('change', () => saveMobileTitleSlot(index)));
   applyNavSettings();
 
   // —— 计划板设置：渲染余量与关联曲线（存于 acta.board.v2 的 prefs，renderer 直读）。 ——
