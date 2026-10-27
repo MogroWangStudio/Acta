@@ -6286,7 +6286,33 @@
     bytes: 0
   });
   // 本机全部档案的元数据（不含数据本体）：供发现列表与本机服务展示。
-  const lanProfilesMeta = () => dataProfiles.map(profile => ({ id: profile.id, name: profile.name, notes: profileStats(profile).notes, todos: profileStats(profile).todos }));
+  // LAN 展示用的档案统计：profile.noteCount/todoCount 只在创建 / 激活 /
+  // 保存时刷新——非活动档案长期陈旧，直接拿来展示就是错的。
+  // 本地档案即本机 localStorage，实时读取重算成本可忽略；活动档案用内存
+  // library；文件夹档案无法低成本读取，退回缓存计数（活动档案在每次保存
+  // 时已经校准）。
+  const lanProfileStats = profile => {
+    if (!profile) return { notes: 0, todos: 0 };
+    if (profile.id === activeDataProfile()?.id) {
+      return {
+        notes: library.items.filter(item => item.type === 'note' && !isTrashed(item)).length,
+        todos: library.items.filter(item => item.type === 'todo' && !isTrashed(item)).length
+      };
+    }
+    if (profile.storage === 'local') {
+      try {
+        const raw = localStorage.getItem(profileLibraryStorageKey(profile.id));
+        const snapshot = raw ? JSON.parse(raw) : null;
+        const items = Array.isArray(snapshot?.items) ? snapshot.items : [];
+        return {
+          notes: items.filter(item => item.type === 'note' && !isTrashed(item)).length,
+          todos: items.filter(item => item.type === 'todo' && !isTrashed(item)).length
+        };
+      } catch { /* 快照读不出来时退回缓存计数 */ }
+    }
+    return { notes: Number(profile.noteCount) || 0, todos: Number(profile.todoCount) || 0 };
+  };
+  const lanProfilesMeta = () => dataProfiles.map(profile => ({ id: profile.id, name: profile.name, ...lanProfileStats(profile) }));
   const lanPeerTotals = peer => {
     const profiles = Array.isArray(peer?.profiles) ? peer.profiles : [];
     if (!profiles.length) return { notes: Number(peer?.notes) || 0, todos: Number(peer?.todos) || 0 };
@@ -6681,7 +6707,7 @@
     if (!plan || plan.direction === 'incoming') return;
     if (plan.direction === 'push') {
       const sendProfile = dataProfileById(byId('lanSyncSendProfile').value) || activeDataProfile();
-      const sendStats = sendProfile ? profileStats(sendProfile) : { notes: 0, todos: 0 };
+      const sendStats = sendProfile ? lanProfileStats(sendProfile) : { notes: 0, todos: 0 };
       const replace = lanSendMode === 'replace';
       byId('lanSyncTargetProfileRow').hidden = !replace;
       const targetEntry = (plan.peer.profiles || []).find(entry => entry.id === byId('lanSyncTargetProfile').value);
@@ -6700,7 +6726,7 @@
       const replace = lanConfirmMode === 'replace';
       byId('lanSyncLocalTargetRow').hidden = !replace;
       const localTarget = dataProfileById(byId('lanSyncLocalTarget').value) || activeDataProfile();
-      const localStats = localTarget ? profileStats(localTarget) : { notes: 0, todos: 0 };
+      const localStats = localTarget ? lanProfileStats(localTarget) : { notes: 0, todos: 0 };
       const sourceStats = peerEntry
         ? { profile: peerEntry.name, notes: peerEntry.notes || 0, todos: peerEntry.todos || 0 }
         : { profile: plan.peer.name, notes: 0, todos: 0 };
@@ -6799,7 +6825,7 @@
       const sourceStats = { profile: payload.profile || lanText('unknownDevice'), notes: payload.notes || 0, todos: payload.todos || 0, classifications: payload.classifications || 0, platform: payload.from?.platform || '' };
       const targetProfile = replace ? dataProfileById(payload.targetProfileId) : null;
       const targetStats = replace
-        ? { profile: payload.targetProfileName || lanText('unknownDevice'), notes: targetProfile ? profileStats(targetProfile).notes : null, todos: targetProfile ? profileStats(targetProfile).todos : null, platform: lanText('thisDevice') }
+        ? { profile: payload.targetProfileName || lanText('unknownDevice'), notes: targetProfile ? lanProfileStats(targetProfile).notes : null, todos: targetProfile ? lanProfileStats(targetProfile).todos : null, platform: lanText('thisDevice') }
         : { profile: lanText('copyNewProfile'), notes: payload.notes || 0, todos: payload.todos || 0 };
       byId('lanSyncSourceSide').innerHTML = lanSideCardHTML(sourceStats, peerName);
       byId('lanSyncTargetSide').innerHTML = lanSideCardHTML(targetStats, lanText('thisDevice'));
