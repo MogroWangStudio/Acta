@@ -4591,9 +4591,13 @@ function boardDrawTextWidget(ctx, widget, X, Y, theme) {
     wrapped.push(current);
   });
   const textHeight = wrapped.length * lineHeight + pad * 2;
+  // 文字块高度以画布上的 DOM 实测为准（boardTextHeights）：导出自算的
+  // 行数模型会因尾部换行、行高取整与画布不一致——标题预留的空白部分
+  // 在导出里与画布同高同位，不长不短。
+  const blockHeight = boardTextHeights.get(widget.id) || textHeight;
   if (widget.bg && widget.bg !== 'none') {
     ctx.fillStyle = boardHexToRgba(widget.bg, Math.min(1, (widget.bgOpacity ?? 100) / 100));
-    boardRoundRect(ctx, X(widget.x), Y(widget.y), widget.w, textHeight, widget.radius || 0);
+    boardRoundRect(ctx, X(widget.x), Y(widget.y), widget.w, blockHeight, widget.radius || 0);
     ctx.fill();
   }
   ctx.fillStyle = widget.color ? boardHexToRgba(widget.color) : theme.ink;
