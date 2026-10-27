@@ -2183,17 +2183,25 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 }
 .board-widget.selected .board-handle, .board-node.selected .board-handle, .board-handle.is-active, .board-node:hover .board-handle, .board-text:hover .board-handle { opacity: 1; pointer-events: auto; transition-delay: 0s; }
 .board-handle:hover { transform: scale(1.25); }
-/* 条目卡片：四角与四边中点共八个调节点（文本组件只有右下这一个）。 */
+/* 调节点：条目卡片八个；文字组件六个（高度随内容，纵向不设）；
+   矩形 / 椭圆标注八个；线 / 箭头保留两端端点柄。 */
 .board-handle.is-resize { margin: -5.5px 0 0 -5.5px; width: 11px; height: 11px; border-radius: 3px; cursor: nwse-resize; }
-.board-text .board-handle.is-resize { left: 100% !important; top: 100% !important; }
-.board-node .board-handle.is-resize[data-dir="nw"] { left: 0 !important; top: 0 !important; cursor: nwse-resize; }
-.board-node .board-handle.is-resize[data-dir="n"] { left: 50% !important; top: 0 !important; cursor: ns-resize; }
-.board-node .board-handle.is-resize[data-dir="ne"] { left: 100% !important; top: 0 !important; cursor: nesw-resize; }
-.board-node .board-handle.is-resize[data-dir="e"] { left: 100% !important; top: 50% !important; cursor: ew-resize; }
-.board-node .board-handle.is-resize[data-dir="se"] { left: 100% !important; top: 100% !important; cursor: nwse-resize; }
-.board-node .board-handle.is-resize[data-dir="s"] { left: 50% !important; top: 100% !important; cursor: ns-resize; }
-.board-node .board-handle.is-resize[data-dir="sw"] { left: 0 !important; top: 100% !important; cursor: nesw-resize; }
-.board-node .board-handle.is-resize[data-dir="w"] { left: 0 !important; top: 50% !important; cursor: ew-resize; }
+.board-node .board-handle.is-resize[data-dir="nw"],
+.board-widget .board-handle.is-resize[data-dir="nw"] { left: 0 !important; top: 0 !important; cursor: nwse-resize; }
+.board-node .board-handle.is-resize[data-dir="n"],
+.board-widget .board-handle.is-resize[data-dir="n"] { left: 50% !important; top: 0 !important; cursor: ns-resize; }
+.board-node .board-handle.is-resize[data-dir="ne"],
+.board-widget .board-handle.is-resize[data-dir="ne"] { left: 100% !important; top: 0 !important; cursor: nesw-resize; }
+.board-node .board-handle.is-resize[data-dir="e"],
+.board-widget .board-handle.is-resize[data-dir="e"] { left: 100% !important; top: 50% !important; cursor: ew-resize; }
+.board-node .board-handle.is-resize[data-dir="se"],
+.board-widget .board-handle.is-resize[data-dir="se"] { left: 100% !important; top: 100% !important; cursor: nwse-resize; }
+.board-node .board-handle.is-resize[data-dir="s"],
+.board-widget .board-handle.is-resize[data-dir="s"] { left: 50% !important; top: 100% !important; cursor: ns-resize; }
+.board-node .board-handle.is-resize[data-dir="sw"],
+.board-widget .board-handle.is-resize[data-dir="sw"] { left: 0 !important; top: 100% !important; cursor: nesw-resize; }
+.board-node .board-handle.is-resize[data-dir="w"],
+.board-widget .board-handle.is-resize[data-dir="w"] { left: 0 !important; top: 50% !important; cursor: ew-resize; }
 
 .board-empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--muted); pointer-events: none; }
 .board-empty span { width: 46px; height: 46px; margin: 0 auto 12px; border-radius: 14px; display: grid; place-items: center; color: var(--sage); background: var(--sage-2); }

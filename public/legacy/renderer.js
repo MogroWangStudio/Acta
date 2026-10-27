@@ -3230,7 +3230,7 @@ function boardStaticHTML(widget) {
     const background = widget.bg !== 'none'
       ? `background:color-mix(in srgb, ${widget.bg} ${widget.bgOpacity}%, transparent);`
       : '';
-    return `<div class="board-widget board-text${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static spellcheck="false" style="left:${widget.x}px;top:${widget.y}px;width:${widget.w}px;font-size:${widget.size}px;${family ? `font-family:${family};` : ''}${widget.bold ? 'font-weight:700;' : ''}${widget.italic ? 'font-style:italic;' : ''}text-align:${widget.align};${widget.color ? `color:${widget.color};` : ''}${background}border-radius:${widget.radius}px;padding:${widget.pad}px;">${body}<i class="board-handle is-resize" data-widget-handle="resize" aria-hidden="true"></i></div>`;
+    return `<div class="board-widget board-text${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static spellcheck="false" style="left:${widget.x}px;top:${widget.y}px;width:${widget.w}px;font-size:${widget.size}px;${family ? `font-family:${family};` : ''}${widget.bold ? 'font-weight:700;' : ''}${widget.italic ? 'font-style:italic;' : ''}text-align:${widget.align};${widget.color ? `color:${widget.color};` : ''}${background}border-radius:${widget.radius}px;padding:${widget.pad}px;">${body}${['nw', 'ne', 'e', 'se', 'sw', 'w'].map(dir => `<i class="board-handle is-resize" data-widget-handle="${dir}" data-dir="${dir}" aria-hidden="true"></i>`).join('')}</div>`;
   }
   // 画笔：容器取点集包络，笔迹按包络原点平移绘制。
   if (widget.kind === 'draw') {
@@ -3258,10 +3258,15 @@ function boardStaticHTML(widget) {
   const startY = ((widget.y - top) / height) * 100;
   const endX = ((widget.x + widget.w - left) / width) * 100;
   const endY = ((widget.y + widget.h - top) / height) * 100;
+  // 线 / 箭头保留两端端点柄（端点语义）；矩形 / 椭圆换八向调节点——
+  // 旧的两角柄拖「起点」会平移整个标注而不是缩放，正是位移的来源。
+  const endpointHandles = `<i class="board-handle" data-widget-handle="start" style="left:${startX}%;top:${startY}%;" aria-hidden="true"></i>
+    <i class="board-handle" data-widget-handle="end" style="left:${endX}%;top:${endY}%;" aria-hidden="true"></i>`;
+  const dirHandles = BOARD_RESIZE_DIRS.map(dir => `<i class="board-handle is-resize" data-widget-handle="${dir}" data-dir="${dir}" aria-hidden="true"></i>`).join('');
+  const handles = widget.kind === 'line' || widget.kind === 'arrow' ? endpointHandles : dirHandles;
   return `<div class="board-widget board-marker kind-${widget.kind}${selected}" data-widget-id="${escapeHTML(widget.id)}" data-board-static style="left:${left}px;top:${top}px;width:${width}px;height:${height}px;--board-marker-color:${widget.color};">
     ${boardMarkerSVG(widget, left, top)}
-    <i class="board-handle" data-widget-handle="start" style="left:${startX}%;top:${startY}%;" aria-hidden="true"></i>
-    <i class="board-handle" data-widget-handle="end" style="left:${endX}%;top:${endY}%;" aria-hidden="true"></i>
+    ${handles}
   </div>`;
 }
 
@@ -6120,6 +6125,12 @@ function bindBoardScene() {
         // 过程中以 undefined 起算（对边固定、夹取都会失效）。
         if (widget.w == null) widget.w = widget.type === 'text' ? 240 : BOARD_CARD_W;
         if (widget.h == null) widget.h = widget.type === 'note' || widget.type === 'todo' ? BOARD_CARD_H : 114;
+        // 矩形 / 椭圆可能以负宽高存储（沿反向绘制）：八向调节前归一化到
+        // 正尺寸（left / top 不变，视觉零位移），八向数学按正方向成立。
+        if (widget.type === 'marker' && widget.kind !== 'line' && widget.kind !== 'arrow' && widget.kind !== 'draw') {
+          if (widget.w < 0) { widget.x += widget.w; widget.w = -widget.w; }
+          if (widget.h < 0) { widget.y += widget.h; widget.h = -widget.h; }
+        }
         boardGesture = {
           mode: 'handle', widget, handle: handle.dataset.widgetHandle,
           node: event.target.closest('[data-widget-id]'),
@@ -6208,22 +6219,30 @@ function bindBoardScene() {
       } else if (BOARD_RESIZE_DIRS.includes(boardGesture.handle)) {
         // 八向调节：按方向改尺寸，左侧 / 上方同时移动原点，对边保持不动。
         const dir = boardGesture.handle;
+        const isText = widget.type === 'text';
+        // 文字高度随内容实测：纵向分量不参与——y 永不因纵向拖拽变化，
+        // 也不会因卡片尺寸下限误夹而跳位（文字夹取走自己的 120–720）。
+        const vdy = isText ? 0 : dy;
         let x = boardGesture.baseX;
         let y = boardGesture.baseY;
         let w = boardGesture.baseW;
         let h = boardGesture.baseH;
         if (dir.includes('e')) w = w + dx;
         if (dir.includes('w')) w = w - dx;
-        if (dir.includes('s')) h = h + dy;
-        if (dir.includes('n')) h = h - dy;
-        w = Math.min(BOARD_CARD_MAX_W, Math.max(BOARD_CARD_MIN_W, Math.round(w)));
-        h = Math.min(BOARD_CARD_MAX_H, Math.max(BOARD_CARD_MIN_H, Math.round(h)));
+        if (dir.includes('s')) h = h + vdy;
+        if (dir.includes('n')) h = h - vdy;
+        if (isText) {
+          w = Math.min(720, Math.max(120, Math.round(w)));
+        } else {
+          w = Math.min(BOARD_CARD_MAX_W, Math.max(24, Math.round(w)));
+          h = Math.min(BOARD_CARD_MAX_H, Math.max(24, Math.round(h)));
+        }
         if (dir.includes('w')) x = boardGesture.baseX + boardGesture.baseW - w;
-        if (dir.includes('n')) y = boardGesture.baseY + boardGesture.baseH - h;
+        if (dir.includes('n') && !isText) y = boardGesture.baseY + boardGesture.baseH - h;
         widget.x = x;
         widget.y = y;
         widget.w = w;
-        widget.h = h;
+        if (!isText) widget.h = h;
       } else if (boardGesture.handle === 'end') {
         widget.w = boardSnap(boardGesture.baseW + dx);
         widget.h = boardSnap(boardGesture.baseH + dy);
