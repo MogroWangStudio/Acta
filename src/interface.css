@@ -2510,9 +2510,9 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
   /* 画布底缘已经在底栏之上（item-pane 留白），工具条只需贴近画布底缘：
      原先再叠一层 84px，工具栏会停在底栏上方约 100px，离手指太远。
      画笔条与多选条依次排在主工具条上方，保持 8px 净空。 */
-  .board-pen-bar { top: auto; bottom: 62px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .board-pen-bar { top: auto; bottom: 76px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
   .board-pen-bar::-webkit-scrollbar { display: none; }
-  .board-widget-toolbar.is-multi { bottom: 62px; }
+  .board-widget-toolbar.is-multi { bottom: 76px; }
 }
 
 /* 面板关闭按钮：浮动在面板左上角内侧。常驻渲染，与面板同曲线同时长滑入滑出；
@@ -2581,7 +2581,9 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 /* 移动端：板胶囊与工具条让出画布顶部，工具条筛选部分横向滚动；
    卡片点击进入全屏编辑器；导入对话框占满宽度。 */
 @media (max-width: 800px) {
-  .board-chrome { bottom: 10px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
+  /* 底部工具条上移到 22px：其投影向下延伸约 36px，画布底缘与底部导航
+     栏之间只有 ~14px 空隙，贴底时投影大部被导航栏盖住（视觉上被截断）。 */
+  .board-chrome { bottom: 22px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
   .board-chrome::-webkit-scrollbar { display: none; }
   .board-tool span { display: none; }
   .board-zoom-level { min-width: 34px; }
