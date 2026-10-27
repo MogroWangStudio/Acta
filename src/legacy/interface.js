@@ -4425,17 +4425,22 @@
       || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const BOTTOM_ENGAGE = 5;  // 确认上滑意图的死区
     let bottomEngaged = false, bottomStartY = 0, bottomEngageY = 0, bottomShift = 0, bottomFrame = 0;
+    // 位移作用在内容层（.list-body）而不是滚动容器：容器不动，滚动口
+    // 裁剪始终有效，内容不会越出列表区域盖住顶部固定栏。板视图没有
+    // 包装层，回落到容器本身（其弹性已被守卫跳过）。
+    const bottomBody = () => pullList.querySelector('.list-body') || pullList;
     const bottomPaint = () => {
       bottomFrame = 0;
-      pullList.style.transform = `translateY(${(-bottomShift).toFixed(1)}px)`;
+      bottomBody().style.transform = `translateY(${(-bottomShift).toFixed(1)}px)`;
     };
     const bottomRelease = () => {
       if (!bottomEngaged) return;
       bottomEngaged = false;
       bottomShift = 0;
-      pullList.style.transition = 'transform .55s cubic-bezier(.22, 1.2, .36, 1)';
+      const body = bottomBody();
+      body.style.transition = 'transform .55s cubic-bezier(.22, 1.2, .36, 1)';
       bottomPaint();
-      setTimeout(() => { pullList.style.transition = ''; }, 560);
+      setTimeout(() => { body.style.transition = ''; }, 560);
     };
     pullList.addEventListener('touchstart', event => {
       if (!pullMobileQuery.matches || isIosDevice || pullBusy) return;

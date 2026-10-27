@@ -7236,7 +7236,9 @@ function renderList() {
     $('#viewTitle').textContent = calendarPeriodLabel();
     $('#itemCountLabel').textContent = `${periodItems.length} ${t('calendarItems')}`;
     list.className = `item-list calendar-list calendar-${calendarViewMode}`;
-    list.innerHTML = renderCalendar();
+    // 周模式不包内容层：移动端周视图的列表是两行 grid 模板且本身不滚动
+    // （反弹不会触发），保持直接子级结构；其余模式包装以纳入弹性的裁剪。
+    list.innerHTML = calendarViewMode === 'week' ? renderCalendar() : `<div class="list-body">${renderCalendar()}</div>`;
     playCalendarTransition(list);
     alignMobileWeek(list);
     return;
@@ -7246,7 +7248,7 @@ function renderList() {
     $('#viewTitle').textContent = viewTitle();
     $('#itemCountLabel').textContent = `${total} ${t('item')}`;
     list.className = 'item-list stats-list';
-    list.innerHTML = renderStats();
+    list.innerHTML = `<div class="list-body">${renderStats()}</div>`;
     bindStatsView();
     return;
   }
@@ -7256,8 +7258,8 @@ function renderList() {
     $('#itemCountLabel').textContent = `${items.length} ${t('trashItems')}`;
     list.className = 'item-list trash-list';
     list.innerHTML = items.length
-      ? renderTrashList(items)
-      : `<div class="empty-list trash-empty"><div><span><svg><use href="#i-trash"/></svg></span><h3>${escapeHTML(t('trashEmptyTitle'))}</h3><p>${escapeHTML(t('trashEmptyHint'))}</p></div></div>`;
+      ? `<div class="list-body">${renderTrashList(items)}</div>`
+      : `<div class="list-body is-empty"><div class="empty-list trash-empty"><div><span><svg><use href="#i-trash"/></svg></span><h3>${escapeHTML(t('trashEmptyTitle'))}</h3><p>${escapeHTML(t('trashEmptyHint'))}</p></div></div></div>`;
     bindTrashList();
     return;
   }
@@ -7276,11 +7278,11 @@ function renderList() {
   $('#itemCountLabel').textContent = `${items.length} ${t('item')}`;
   list.className = 'item-list';
   if (!items.length) {
-    list.innerHTML = `<div class="empty-list"><div><span><svg><use href="#i-spark"/></svg></span><h3>${t('noItems')}</h3><p>${t('noItemsHint')}</p></div></div>`;
+    list.innerHTML = `<div class="list-body is-empty"><div class="empty-list"><div><span><svg><use href="#i-spark"/></svg></span><h3>${t('noItems')}</h3><p>${t('noItemsHint')}</p></div></div></div>`;
     return;
   }
 
-  list.innerHTML = items.map((item, index) => {
+  list.innerHTML = `<div class="list-body">${items.map((item, index) => {
     const folder = getFolder(item.folderId);
     const linkedCount = getLinkedItems(item).length;
     const completed = item.type === 'todo' && (item.tasks || []).filter(task => task.done).length;
@@ -7314,7 +7316,7 @@ function renderList() {
           })()
         : `<span>${completed}/${total}</span><span class="mini-progress"><i style="width:${progress}%"></i></span>`) : ''}</div>
     </button>`;
-  }).join('');
+  }).join('')}</div>`;
   if (sinking && sinkPreviousRects) {
     // 置底落位：抑制入场级联重放，只播移位卡片的位置动效。
     document.body.classList.add('acta-steady');

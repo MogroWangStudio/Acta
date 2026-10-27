@@ -301,9 +301,14 @@ body.lan-radar-live .smart-nav [data-nav-action="lan"] { animation: lanLivePulse
 .clear-list-filters svg { width: 12px; height: 12px; }
 
 .item-list { flex: 1; overflow: hidden auto; padding: 10px; }
+/* 列表内容统一包一层 .list-body：底部弹性的位移作用在它身上——
+   位移发生在滚动容器的内部，滚动口裁剪始终有效，触底回弹时内容
+   不会再越过顶部固定栏（此前直接平移容器本身，容器上缘会滑出
+   列表区域盖住顶栏）。 */
+.item-list > .list-body.is-empty { height: 100%; }
 /* 底部惯性触底回弹：快速上滑松手后惯性滚到底时，列表过冲再弹回
    （幅度由 JS 按滚动速度写入 --bottom-bounce）。 */
-.item-list.bottom-bounce { animation: itemBottomBounce .46s cubic-bezier(.3,.68,.36,1); }
+.item-list.bottom-bounce .list-body { animation: itemBottomBounce .46s cubic-bezier(.3,.68,.36,1); }
 @keyframes itemBottomBounce {
   0% { transform: translateY(0); }
   36% { transform: translateY(var(--bottom-bounce, -18px)); }

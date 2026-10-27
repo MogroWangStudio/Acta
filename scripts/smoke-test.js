@@ -308,7 +308,7 @@ async function main() {
       document.querySelector('[data-calendar-mode="year"]').click();
       const calendarYearVisible = Boolean(document.querySelector('.calendar-year-view')) && document.querySelectorAll('.calendar-year-month').length === 12;
       const calendarYearShiftLabels = [...document.querySelectorAll('[data-calendar-shift-label]')].map(node => node.textContent).join('|') === '上一年|下一年';
-      const calendarNonlinearMotion = getComputedStyle(document.querySelector('.calendar-year-view')).animationName === 'calendarViewEnter' && getComputedStyle(document.querySelector('.calendar-year-view')).animationTimingFunction.includes('cubic-bezier');
+      const calendarNonlinearMotion = getComputedStyle(document.querySelector('.calendar-list > .list-body')).animationName === 'calendarViewEnter' && getComputedStyle(document.querySelector('.calendar-list > .list-body')).animationTimingFunction.includes('cubic-bezier');
       document.querySelector('[data-calendar-mode="week"]').click();
       const calendarWeekVisible = Boolean(document.querySelector('.calendar-week-view')) && document.querySelectorAll('.calendar-week-day').length === 7;
       const desktopWeekEvents = document.querySelector('[data-calendar-todo="launch-plan"]')?.closest('.calendar-week-events');
