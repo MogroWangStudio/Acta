@@ -826,9 +826,10 @@
     const now = performance.now();
     if (backdropClickState.surface === surface && now - backdropClickState.at < 450) {
       backdropClickState.surface = null;
-      // 第二击立即关闭：刚才那条「点击两次关闭窗口」的提示同步收起。
+      // 第二击立即关闭：刚才那条「点击两次关闭窗口」的提示同步收起
+      // （含顶层 popover 槽位，交给 hideToast 统一处理）。
       const hintToast = document.querySelector('#toast');
-      if (hintToast?.classList.contains('show') && hintToast.querySelector('p')?.textContent === t('点击两次关闭窗口')) hintToast.classList.remove('show');
+      if (hintToast?.classList.contains('show') && hintToast.querySelector('p')?.textContent === t('点击两次关闭窗口')) hideToast();
       dismiss();
     } else {
       backdropClickState.surface = surface;

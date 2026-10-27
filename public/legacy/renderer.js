@@ -1250,8 +1250,22 @@ function showToast(message, hold = 2400, busy = false) {
   toast.querySelector('use').setAttribute('href', busy ? '#i-refresh' : '#i-check');
   toast.classList.toggle('is-busy', busy);
   toast.classList.add('show');
+  // 顶层弹窗（dialog.showModal 的模糊遮罩在 top layer）会盖住普通 toast：
+  // toast 以 manual popover 进入 top layer，提示不被遮罩盖住；不支持
+  // popover 的旧内核捕获后保持原行为。已在顶层时重复调用会抛错，吞掉即可。
+  try {
+    if (!toast.matches(':popover-open')) toast.showPopover();
+  } catch { /* 已在顶层或不支持 popover */ }
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), hold);
+  toastTimer = setTimeout(hideToast, hold);
+}
+
+function hideToast() {
+  const toast = $('#toast');
+  toast.classList.remove('show');
+  try {
+    if (toast.matches(':popover-open')) toast.hidePopover();
+  } catch { /* 未在顶层或不支持 */ }
 }
 
 // 收起进行中提示：仅在当前 toast 仍是 busy 变体时生效——
@@ -1260,8 +1274,7 @@ function hideBusyToast() {
   const toast = $('#toast');
   if (toast.classList.contains('is-busy')) {
     clearTimeout(toastTimer);
-    toast.classList.remove('show');
-    toast.classList.remove('is-busy');
+    hideToast();
   }
 }
 

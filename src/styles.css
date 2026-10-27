@@ -570,6 +570,11 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 
 .toast { position: fixed; z-index: 120; left: 50%; bottom: calc(27px + env(safe-area-inset-bottom)); min-width: 210px; max-width: 380px; min-height: 46px; padding: 7px 14px 7px 8px; border-radius: 13px; background: rgba(37,42,36,.95); color: white; display: flex; align-items: center; gap: 9px; box-shadow: 0 4px 10px -2px rgba(31,35,29,.18), 0 14px 32px -10px rgba(31,35,29,.2); opacity: 0; transform: translate(-50%, 14px); pointer-events: none; transition: opacity .2s ease, transform .34s var(--ease-out); }
 .toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+/* toast 以 manual popover 进入 top layer（弹窗模糊遮罩之上显示提示）：
+   还原 popover 的 UA 默认注入——作者样式没设置的 top/right 会被 UA 的
+   inset:0 拉伸成满屏高，这里定向还原（:where 零优先级，left/bottom 仍由
+   .toast 决定）；边框与溢出同样还原。 */
+:where(#toast[popover]) { top: auto; right: auto; border: 0; overflow: visible; }
 .toast > span { width: 31px; height: 31px; border-radius: 9px; display: grid; place-items: center; background: rgba(255,255,255,.1); color: #b8c9b5; }
 .toast svg { width: 14px; }
 .toast p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); }

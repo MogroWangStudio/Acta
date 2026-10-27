@@ -917,7 +917,7 @@
     </div>
 
     <div class="sync-notice" id="syncNotice" role="status" aria-live="polite"><i></i><span></span></div>
-    <div class="toast" id="toast"><span><svg><use href="#i-check"/></svg></span><p></p></div>
+    <div class="toast" id="toast" popover="manual"><span><svg><use href="#i-check"/></svg></span><p></p></div>
     <div class="context-menu" id="contextMenu" role="menu" aria-hidden="true"></div>
 
     <!-- 安卓端放射式新建菜单：五枚圆钮从中央新建按钮沿弧线弹出，
