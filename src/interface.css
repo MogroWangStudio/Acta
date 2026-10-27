@@ -3425,3 +3425,11 @@ html[data-acta-theme="mono-dark"] .about-studio:hover { background: color-mix(in
 @media (prefers-reduced-transparency: reduce) {
   .color-picker-slider { border-color: var(--line); }
 }
+
+/* 自定义主题浅色 / 深色切换 */
+.custom-mode-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.custom-mode-row b { font-size: calc(11px * var(--acta-font-scale)); }
+.custom-mode-seg { display: flex; padding: 2px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 55%, transparent); }
+.custom-mode-seg button { height: 28px; padding: 0 14px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font: 650 calc(10px * var(--acta-font-scale)) inherit; cursor: pointer; transition: background .15s ease, color .15s ease; }
+.custom-mode-seg button.active { color: var(--paper); background: var(--ink); }
+html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in srgb, #ffffff 7%, transparent); }

@@ -417,6 +417,7 @@
                 <label class="theme-option"><input type="radio" name="actaTheme" value="custom"/><span><span class="theme-swatch"><i id="customSwatchPaper" style="background:#fbfaf6"></i><i id="customSwatchSidebar" style="background:#ebe7dc"></i><i id="customSwatchAccent" style="background:#526b55"></i></span><b>自定义</b></span></label>
               </div>
               <div class="custom-colors" id="customColorSettings">
+                <div class="settings-row custom-mode-row"><span><b>自定义模式</b></span><div class="custom-mode-seg" id="customModeToggle" role="group" aria-label="自定义主题明暗模式"><button type="button" data-custom-mode="light">浅色</button><button type="button" data-custom-mode="dark">深色</button></div></div>
                 <strong class="custom-color-heading">基础界面</strong>
                 <label class="color-field">纸张颜色<input id="customPaperColor" type="color" value="#fbfaf6"/></label>
                 <label class="color-field">侧栏颜色<input id="customSidebarColor" type="color" value="#ebe7dc"/></label>
