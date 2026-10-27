@@ -8843,7 +8843,11 @@
         return;
       }
       if (settingsModal.classList.contains('open')) { closeSettings(); return; }
-      if (window.__actaCloseMobileCreate) { window.__actaCloseMobileCreate(); return; }
+      // 只在放射菜单真的开着时才消费返回：这个分支若按「函数是否存在」
+      // 判断会无条件 return，后面的编辑器 / 收集箱层级永远不可达——
+      // 打开待办或笔记后返回操作就会失灵。
+      const mobileCreateLayer = byId('mobileCreateLayer');
+      if (mobileCreateLayer && !mobileCreateLayer.hidden) { window.__actaCloseMobileCreate(); return; }
       if (byId('createMenu').classList.contains('open')) { byId('createMenu').classList.remove('open'); return; }
       if (byId('editorPane').classList.contains('mobile-open')) {
         mobileEditorOpen = false;

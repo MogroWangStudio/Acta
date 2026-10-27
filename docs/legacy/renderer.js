@@ -8515,8 +8515,10 @@ function bindShell() {
   // 底部渐入遮罩保证文字对比度；桌面端保持侧栏的纵向功能列表。
   const MOBILE_CREATE_RADIUS = 112;
   // 弧上角度（屏幕角：0°=右，逆时针；90°=正上）。速记居正上（最常用），
-  // 笔记 / 待办在两侧上位，打卡 / 导入在两侧下位，对称展开。
-  const mobileCreateAngles = { quick: 90, note: 54, todo: 126, checkin: 18, import: 162 };
+  // 笔记 / 待办在两侧上位，打卡 / 导入在两侧下位，对称展开。弧收到
+  // 40°–140°：文字沿径向排在按钮外沿，收窄弧度才能让最外侧文字留在
+  // 360px 屏幕内、且不与相邻按钮相碰。
+  const mobileCreateAngles = { quick: 90, note: 65, todo: 115, checkin: 40, import: 140 };
   let mobileCreateHideTimer = 0;
   const syncMobileCreatePositions = () => {
     $$('#mobileCreateActions .mobile-create-item').forEach(item => {
@@ -8524,6 +8526,15 @@ function bindShell() {
       // 屏幕坐标：y 向下为正，向上弹出取负。
       item.style.setProperty('--dx', `${Math.round(Math.cos(angle) * MOBILE_CREATE_RADIUS)}px`);
       item.style.setProperty('--dy', `${Math.round(-Math.sin(angle) * MOBILE_CREATE_RADIUS)}px`);
+      // 文字沿按钮的径向再外移一段（相对按钮中心，item 已带按钮位移，
+      // 这里只补差量）：外移量按角度反比补偿（sinθ 越小越远），与相邻
+      // 按钮保持一致的垂直空隙，文字不再压到自己的或旁边的按钮。
+      const label = item.querySelector('.mobile-create-label');
+      if (label) {
+        const labelOffset = 43 / Math.sin(angle);
+        label.style.setProperty('--lx', `${Math.round(Math.cos(angle) * labelOffset)}px`);
+        label.style.setProperty('--ly', `${Math.round(-Math.sin(angle) * labelOffset)}px`);
+      }
     });
   };
   const openMobileCreate = () => {
@@ -8548,7 +8559,12 @@ function bindShell() {
     if (layer && !layer.hidden) closeMobileCreate(); else openMobileCreate();
   };
   // 返回键统一入口（interface.js 的 __actaHandleBackButton）会调用：放射菜单是返回层级之一。
-  window.__actaCloseMobileCreate = () => { if (!layer.hidden) closeMobileCreate(); };
+  // layer 在各函数内自查，这里也要自查——闭包里没有 layer，引用它会直接 ReferenceError，
+  // 把整个返回层级炸掉（编辑器 / 弹窗的返回全部失灵就是它）。
+  window.__actaCloseMobileCreate = () => {
+    const layer = $('#mobileCreateLayer');
+    if (layer && !layer.hidden) closeMobileCreate();
+  };
   $('#newButton').addEventListener('click', event => {
     event.stopPropagation();
     if (matchMedia('(max-width: 800px)').matches) {

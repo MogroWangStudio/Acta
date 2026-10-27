@@ -3273,7 +3273,10 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .mobile-create-button.is-checkin { background: #987329; }
   .mobile-create-button.is-import { background: #6d7168; }
   .mobile-create-label {
-    position: absolute; left: 0; top: -40px; transform: translateX(-50%);
+    /* 文字沿按钮的径向外移（--lx/--ly 由 JS 按角度计算）：不再固定悬在
+       按钮正上方，避免压住自己的按钮或邻位的按钮。 */
+    position: absolute; left: 0; top: 0;
+    transform: translate(calc(var(--lx, 0px) - 50%), calc(var(--ly, -66px) - 50%));
     white-space: nowrap; padding: 4px 11px; border-radius: 999px;
     background: color-mix(in srgb, var(--white) 90%, transparent);
     -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
@@ -3282,6 +3285,29 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   }
   html[data-acta-theme="mono-dark"] .mobile-create-button { background: #e6e6e6; color: #111; }
   html[data-acta-theme="mono-dark"] .mobile-create-label { background: rgba(41,41,41,.9); color: #e6e6e6; }
+  /* 默认纸色 / 黑白浅色 / 黑白深色主题的五钮功能配色：速记红 / 待办蓝 /
+     笔记黄 / 打卡青 / 导入灰。其余主题（品牌色、彩色、辉光、自定义）
+     是例外，保持上方基础配色与黑白处理。 */
+  html[data-acta-palette="eye-yellow"] .mobile-create-button.is-quick,
+  html[data-acta-palette="mono-light"] .mobile-create-button.is-quick,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-quick { background: #b96051; }
+  html[data-acta-palette="eye-yellow"] .mobile-create-button.is-todo,
+  html[data-acta-palette="mono-light"] .mobile-create-button.is-todo,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-todo { background: #4f86a8; }
+  html[data-acta-palette="eye-yellow"] .mobile-create-button.is-note,
+  html[data-acta-palette="mono-light"] .mobile-create-button.is-note,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-note { background: #b08c2e; }
+  html[data-acta-palette="eye-yellow"] .mobile-create-button.is-checkin,
+  html[data-acta-palette="mono-light"] .mobile-create-button.is-checkin,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-checkin { background: #3f8a82; }
+  html[data-acta-palette="eye-yellow"] .mobile-create-button.is-import,
+  html[data-acta-palette="mono-light"] .mobile-create-button.is-import,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-import { background: #6d7168; }
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-quick,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-todo,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-note,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-checkin,
+  html[data-acta-palette="mono-dark"] .mobile-create-button.is-import { color: #f6f4ec; }
   /* 打开时新建按钮浮于遮罩之上（可再次点击收起），图标 + 旋转为 ×。 */
   .new-button.is-open { z-index: 222; }
   .new-button.is-open svg { transform: rotate(45deg); }
