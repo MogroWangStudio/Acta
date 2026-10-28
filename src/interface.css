@@ -112,6 +112,13 @@ html[data-acta-splash-off] .splash-screen ~ .app-shell { opacity: 1; transition:
 /* 主滚动容器预留滚动条空间：页面过渡与内容增减时滚动条不再突然出现、
    把布局挤压得左右横跳。 */
 .item-list, .editor-pane, .settings-content { scrollbar-gutter: stable; }
+/* 安卓端：触摸滚动不需要占位滚动条——自定义滚动条（11px）与上面的
+   gutter 预留会让列表区右侧常驻一条空隙带（顶栏下方尤其明显）。
+   隐藏滚动条并取消 gutter 预留，内容吃满整个宽度。 */
+html.acta-native-mobile ::-webkit-scrollbar { width: 0; height: 0; }
+html.acta-native-mobile .item-list,
+html.acta-native-mobile .editor-pane,
+html.acta-native-mobile .settings-content { scrollbar-gutter: auto; }
 /* 列表/编辑器正在播放入场动画（acta-steady 尚未恢复）时，把拇指暂时透明化，
    动画结束自动恢复 — 滚动条不再在每次切页时闪现常驻。 */
 body:not(.acta-steady) .item-list::-webkit-scrollbar-thumb,
