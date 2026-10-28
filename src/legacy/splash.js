@@ -118,7 +118,13 @@
         }
       }
       instance.classList.add('is-leaving');
-      document.documentElement.classList.add('acta-app-reveal');
+      // 工作区揭示推迟一帧：leave 首帧已经要做 logo 动画切换与四条界线
+      // 的启动重绘，把「html 类变更 → 全文档样式重算 + app-shell 过渡
+      // 启动」挪到下一帧，两波重活拆开，避免编排衔接处掉帧发顿。
+      // 后台标签的 rAF 会被节流，再挂一个 setTimeout 兜底（幂等）。
+      const revealApp = () => document.documentElement.classList.add('acta-app-reveal');
+      requestAnimationFrame(revealApp);
+      setTimeout(revealApp, 250);
       instance.addEventListener('transitionend', event => { if (event.target === instance) instance.remove(); }, { once: true });
       setTimeout(() => instance.remove(), Math.round(2100 * splashSpeed));
     };
@@ -128,6 +134,8 @@
     else addEventListener('load', markLoaded, { once: true });
     setTimeout(markLoaded, 5000);
     logo.addEventListener('animationend', () => { shown = true; maybeLeave(); }, { once: true });
-    setTimeout(() => { shown = true; maybeLeave(); }, Math.round(1200 * splashSpeed));
+    // 入场兜底只防 animationend 丢失，必须晚于最长的入场动画（breathe
+    // 1.7s）：兜底先到会把呼吸的第二拍拦腰截断、突然切进离场，节奏突变。
+    setTimeout(() => { shown = true; maybeLeave(); }, Math.round(2000 * splashSpeed));
   }
 })();

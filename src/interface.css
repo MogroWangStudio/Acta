@@ -44,10 +44,15 @@ html.acta-app-reveal .splash-screen ~ .app-shell { opacity: 1; }
 :root[data-acta-splash-preset="calm-fade"] .splash-logo { animation: actaSplashCalmIn calc(1s * var(--splash-speed, 1)) cubic-bezier(.22, .61, .36, 1) both; }
 :root[data-acta-splash-preset="calm-fade"] .splash-screen.is-leaving .splash-logo { animation: actaSplashCalmOut calc(.6s * var(--splash-speed, 1)) ease both; }
 /* 聚焦缩放 (focus-zoom): the wordmark sharpens from a blur as it settles, and
-   on reveal the workspace zooms the last bit into place beneath it. */
+   on reveal the workspace zooms the last bit into place beneath it. The shell's
+   transform transition MUST share the 1s delay of the opacity fade — without
+   it the zoom finishes invisibly behind the splash layer, leaving a dead gap
+   before the fade-in and dumping the shell's compositing layer (full-page
+   re-rasterization) right at the tail of the choreography, which read as a
+   hitch after the entrance. */
 :root[data-acta-splash-preset="focus-zoom"] .splash-logo { animation: actaSplashFocusIn calc(1s * var(--splash-speed, 1)) var(--ease-out) both; }
 :root[data-acta-splash-preset="focus-zoom"] .splash-screen.is-leaving .splash-logo { animation: actaSplashFocusOut calc(.6s * var(--splash-speed, 1)) cubic-bezier(.6, .05, .3, 1) forwards; }
-:root[data-acta-splash-preset="focus-zoom"] .splash-screen ~ .app-shell { transform: scale(.988); transform-origin: 50% 50%; transition: opacity calc(.4s * var(--splash-speed, 1)) ease calc(1s * var(--splash-speed, 1)), transform calc(.7s * var(--splash-speed, 1)) var(--ease-out); animation: actaAppShellFailsafe 0s linear calc(5.5s * var(--splash-speed, 1)) forwards; }
+:root[data-acta-splash-preset="focus-zoom"] .splash-screen ~ .app-shell { transform: scale(.988); transform-origin: 50% 50%; transition: opacity calc(.4s * var(--splash-speed, 1)) ease calc(1s * var(--splash-speed, 1)), transform calc(.7s * var(--splash-speed, 1)) var(--ease-out) calc(1s * var(--splash-speed, 1)); animation: actaAppShellFailsafe 0s linear calc(5.5s * var(--splash-speed, 1)) forwards; }
 :root[data-acta-splash-preset="focus-zoom"] html.acta-app-reveal .splash-screen ~ .app-shell { opacity: 1; transform: none; }
 /* —— 墨迹书写：字标像落笔一样自左向右写出（clip-path 扫掠），
    离场顺着同一方向继续写出画面外。 —— */
@@ -84,7 +89,10 @@ html.acta-app-reveal[data-acta-splash-preset="curtain-up"] .splash-screen.is-lea
 @keyframes actaSplashBreatheOut { to { opacity: 0; transform: scale(.985); } }
 @keyframes actaSplashFocusOut { to { opacity: 0; transform: translate(var(--splash-fly-x, 0px), var(--splash-fly-y, 0px)) scale(var(--splash-fly-scale, 1.14)); filter: blur(4px); } }
 @keyframes actaSplashFailsafe { to { opacity: 0; visibility: hidden; } }
-@keyframes actaAppShellFailsafe { to { opacity: 1; } }
+/* failsafe 也要还原 transform：focus-zoom 的工作区带着 scale(.988) 起步，
+   若 splash.js 没跑（这里是唯一兜底），缺了 transform 分量工作区会永远
+   缩小 1.2%。其余预设基础规则本无 transform，none 即默认值，无副作用。 */
+@keyframes actaAppShellFailsafe { to { opacity: 1; transform: none; } }
 body.acta-reduce-motion .splash-screen { display: none; }
 body.acta-reduce-motion .splash-screen ~ .app-shell { opacity: 1; transition: none; animation: none; }
 /* 启动动画开关关闭 (splashAnimationEnabled = false): hide the layer outright
