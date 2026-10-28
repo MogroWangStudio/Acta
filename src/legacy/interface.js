@@ -5423,7 +5423,7 @@
       backGestureScaleRow.hidden = false;
       const scaleValue = byId('backGestureScaleValue');
       const syncScaleLabel = () => { scaleValue.textContent = `${backGestureScaleSetting.value}%`; };
-      backGestureScaleSetting.value = String(Math.min(Math.max(Math.round(Number(uiSettings.backGestureScale)) || 45, 0), 100));
+      backGestureScaleSetting.value = String(Math.min(Math.max(Math.round(Number(uiSettings.backGestureScale)) || 45, 0), 200));
       syncScaleLabel();
       backGestureScaleSetting.addEventListener('input', () => {
         uiSettings.backGestureScale = Number(backGestureScaleSetting.value);
@@ -9107,10 +9107,11 @@
         }
         const gestureProgress = phase === 'progress' ? value : 0;
         const v = Math.min(Math.max(Number(gestureProgress) || 0, 0), 1);
-        // 缩放幅度随常规设置的「返回缩放幅度」滑杆（0–100）调整：
-        // 整页最大收缩 18%、弹层 10%，默认 45 对应此前的视觉强度。
+        // 缩放幅度随常规设置的「返回缩放幅度」滑杆（0–200）调整：
+        // 100% 时整页最大收缩 18%、弹层 10%（默认 45 的视觉强度不变），
+        // 200% 可缩到整页 64% / 弹层 80%——缩得更多，方便大屏看清层级。
         const scaleSetting = Number(uiSettings.backGestureScale);
-        const scaleRatio = Number.isFinite(scaleSetting) ? Math.min(Math.max(scaleSetting, 0), 100) / 100 : .45;
+        const scaleRatio = Number.isFinite(scaleSetting) ? Math.min(Math.max(scaleSetting, 0), 200) / 100 : .45;
         const scale = 1 - (target ? .10 : .18) * scaleRatio * v;
         // 哪边侧滑就往哪偏移：随进度线性增加，最多 20px。
         const offsetX = backGestureEdge * 20 * v;
@@ -9147,7 +9148,9 @@
       // 没有可关闭的表面，维持原状：清样式后由层级动作直接接管。
       if (hasLayerToClose) {
         backGestureGate = true;
-        const endScale = Math.max(backGestureLastScale - .045, .84);
+        // 末态在进度值基础上继续收拢，绝不放大回弹（0.5 只是极端输入的
+        // 兜底下限，正常档位触不到——100% 整页收至 0.775、200% 至 0.595）。
+        const endScale = Math.max(backGestureLastScale - .045, .5);
         const endOffsetX = backGestureLastOffsetX * 1.35;
         el.style.transition = 'transform .22s cubic-bezier(.5,0,.8,.4), border-radius .22s cubic-bezier(.5,0,.8,.4), opacity .2s cubic-bezier(.3,0,.7,.3)';
         el.style.setProperty('transform', `translateX(${endOffsetX.toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important');
