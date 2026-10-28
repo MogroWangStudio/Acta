@@ -3010,6 +3010,14 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .settings-row:has(> input[type="url"]),
   .settings-row:has(> input[type="password"]),
   .settings-row:has(> input[type="number"]) { align-items: stretch; flex-direction: column; gap: 9px; }
+  /* 自定义字体行的输入框包在 .font-input-wrap 里（还带「浏览系统字体」
+     按钮），不是直接子级，上面的 :has(> input[...]) 匹配不到——窄屏上
+     退回单行 flex 后输入框被压成一条缝、按钮溢出被 overflow 裁掉
+     （安卓端表现为「只剩输入框」）。这里单独堆叠，并允许按钮在极窄时
+     换到输入框下方，两者都保持完整可用。 */
+  .settings-row:has(> .font-input-wrap) { align-items: stretch; flex-direction: column; gap: 9px; }
+  .settings-row:has(> .font-input-wrap) .font-input-wrap { width: 100%; flex-wrap: wrap; }
+  .settings-row:has(> .font-input-wrap) .font-input-wrap input { flex: 1 1 132px; }
   .settings-row:has(> .font-size-control) .font-size-control { width: 100%; }
   .settings-row:has(> .font-size-control) .font-size-control input { flex: 1; width: auto; }
   .settings-row:has(> .settings-button) .settings-button { width: 100%; justify-content: center; }
