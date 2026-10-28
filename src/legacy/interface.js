@@ -8995,10 +8995,10 @@
   const nativeApp = window.Capacitor?.Plugins?.App;
   if (nativeApp?.addListener) {
     nativeApp.addListener('resume', () => syncNativeSystemBar());
-    // 返回事件的统一入口（window.__actaHandleBackButton）：物理返回键
+    // 返回层级（window.__actaHandleBackButton 的主体）：物理返回键
     // （App 插件 backButton 事件）与预见式系统回调（MainActivity 桥接，
-    // 见常规设置的「预见式返回」开关）共用同一套层级逻辑。
-    window.__actaHandleBackButton = async () => {
+    // 见常规设置的「预见式返回」开关）共用这一套层级逻辑。
+    const runBackHierarchy = async () => {
       if (document.body.classList.contains('note-focus-mode')) {
         byId('exitFocusNoteEditor')?.click();
         return;
@@ -9029,18 +9029,33 @@
       }
       if (nativeApp.minimizeApp) await nativeApp.minimizeApp();
     };
+    // 预见式返回提交时，层级动作等「沿手势进度继续退出」的动画播完再
+    // 执行：原生侧在同一次 JS 求值里先 commit 再调这里，gate 负责把这里
+    // 挂起到动画结束，避免「缩小态 → 跳回全尺寸 → 默认关闭动画」的闪跳。
+    let backGestureGate = false;
+    let backGateQueued = false;
+    window.__actaHandleBackButton = async () => {
+      if (backGestureGate) { backGateQueued = true; return; }
+      await runBackHierarchy();
+    };
     nativeApp.addListener('backButton', () => window.__actaHandleBackButton());
 
     // —— 预见式返回的手势进度（Android 14+，MainActivity 桥接）——
     // 进度实时作用在「下一次返回会关闭的那一层」上，目标选择与
-    // __actaHandleBackButton 的层级完全一致；页面随进度缩小（幅度由
-    // 常规设置的「返回缩放幅度」滑杆控制）、收圆角（页面级表面），
-    // 并按侧滑边缘偏移——哪边侧滑就往哪偏移。提交时先复位样式再执行
-    // 返回动作（原生侧把它们放进同一次 JS 求值，同一帧内完成），
+    // runBackHierarchy 的层级完全一致。页面级表面随进度缩小（幅度由
+    // 常规设置的「返回缩放幅度」滑杆控制）、收圆角并按侧滑边缘偏移；
+    // 小浮层（居中弹窗、桌面下拉）自带圆角，只跟随缩放。设置页的缩放
+    // 与圆角落在实心的 .settings-window 上（backdrop 只是全屏容器）。
+    // 提交时沿手势进度继续收拢退出（缩放偏移延续、页面级表面圆角收满
+    // 并淡出），动画结束才复位样式并执行层级返回——层级动作在提交帧
+    // 由 gate 挂起（见 __actaHandleBackButton），与退出动画无缝衔接；
     // 取消时带回弹回到原位。变换用 !important 内联样式——弹层的
     // 打开动画（fill both）最终帧会盖过普通内联样式。
     let backGestureEl = null;
     let backGestureEdge = 1;
+    let backGesturePageSurface = false;
+    let backGestureLastScale = 1;
+    let backGestureLastOffsetX = 0;
     let backGestureTransitionTimer = 0;
     const backGestureTarget = () => {
       if (document.body.classList.contains('note-focus-mode')) return byId('editorPane');
@@ -9054,10 +9069,21 @@
       if (byId('editorPane').classList.contains('mobile-open')) return byId('editorPane');
       return null;
     };
+    // 视觉表面：手势变换要落在用户看到的实心表面上，而不是包裹容器。
+    const backGestureSurfaceOf = page => (page === settingsModal ? page.querySelector('.settings-window') || page : page);
+    // 页面级表面：铺满视口的层（工作区、全屏编辑器、安卓端全屏呈现的
+    // 设置页与弹窗、放射菜单层）——手势中随进度收圆角，模拟系统级
+    // 「应用窗口收角」；其余是小浮层，保持自带圆角。
+    const backGestureIsPageSurface = page => {
+      if (!page) return true;
+      const rect = page.getBoundingClientRect();
+      return rect.width >= window.innerWidth - 8 && rect.height >= window.innerHeight - 8;
+    };
     const clearBackGestureStyles = el => {
       el.style.removeProperty('transform');
       el.style.removeProperty('border-radius');
       el.style.removeProperty('overflow');
+      el.style.removeProperty('opacity');
       el.style.removeProperty('transition');
     };
     // phase：'start' / 'progress' / 'cancel' / 'commit'。'start' 的第二参是
@@ -9071,11 +9097,13 @@
         const target = backGestureTarget();
         const page = target || document.querySelector('.app-shell');
         if (!page) return;
-        if (backGestureEl && backGestureEl !== page) clearBackGestureStyles(backGestureEl);
-        backGestureEl = page;
+        const surface = backGestureSurfaceOf(page);
+        if (backGestureEl && backGestureEl !== surface) clearBackGestureStyles(backGestureEl);
+        backGestureEl = surface;
+        backGesturePageSurface = backGestureIsPageSurface(page);
         if (phase === 'start') {
           clearTimeout(backGestureTransitionTimer);
-          page.style.transition = 'none';
+          surface.style.transition = 'none';
         }
         const gestureProgress = phase === 'progress' ? value : 0;
         const v = Math.min(Math.max(Number(gestureProgress) || 0, 0), 1);
@@ -9086,16 +9114,21 @@
         const scale = 1 - (target ? .10 : .18) * scaleRatio * v;
         // 哪边侧滑就往哪偏移：随进度线性增加，最多 20px。
         const offsetX = backGestureEdge * 20 * v;
-        page.style.setProperty('transform', `translateX(${offsetX.toFixed(1)}px) scale(${scale.toFixed(4)})`, 'important');
-        // 页面级表面（根层与全屏编辑器）随进度收圆角；小浮层自带圆角，保持原样。
-        if (!target || target === byId('editorPane')) {
-          page.style.setProperty('border-radius', `${(v * 26).toFixed(1)}px`, 'important');
-          page.style.setProperty('overflow', 'hidden', 'important');
+        backGestureLastScale = scale;
+        backGestureLastOffsetX = offsetX;
+        surface.style.setProperty('transform', `translateX(${offsetX.toFixed(1)}px) scale(${scale.toFixed(4)})`, 'important');
+        // 页面级表面随进度收圆角并裁切（系统「应用窗口收角」的同语言）；
+        // 小浮层自带圆角，保持原样。
+        if (backGesturePageSurface) {
+          surface.style.setProperty('border-radius', `${(v * 26).toFixed(1)}px`, 'important');
+          surface.style.setProperty('overflow', 'hidden', 'important');
         }
         return;
       }
       if (!backGestureEl) return;
       const el = backGestureEl;
+      const pageSurface = backGesturePageSurface;
+      const hasLayerToClose = backGestureTarget() != null;
       backGestureEl = null;
       if (phase === 'cancel') {
         // 先落过渡再清变换：过渡声明在层叠里高于动画填充与普通内联，
@@ -9108,7 +9141,29 @@
         backGestureTransitionTimer = setTimeout(() => { el.style.removeProperty('transition'); }, 220);
         return;
       }
-      // commit：同步清除内联样式（无过渡、当帧生效），层级自身的关闭动画接手。
+      // commit：有层要关时沿手势进度继续收拢退出——缩放与偏移顺着末态
+      // 延续、页面级表面圆角收满并整体淡出，动画结束才复位样式并执行
+      // 层级返回（gate 已把提交帧到达的层级动作挂起）。无层（工作区）
+      // 没有可关闭的表面，维持原状：清样式后由层级动作直接接管。
+      if (hasLayerToClose) {
+        backGestureGate = true;
+        const endScale = Math.max(backGestureLastScale - .045, .84);
+        const endOffsetX = backGestureLastOffsetX * 1.35;
+        el.style.transition = 'transform .22s cubic-bezier(.5,0,.8,.4), border-radius .22s cubic-bezier(.5,0,.8,.4), opacity .2s cubic-bezier(.3,0,.7,.3)';
+        el.style.setProperty('transform', `translateX(${endOffsetX.toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important');
+        el.style.setProperty('opacity', '0', 'important');
+        if (pageSurface) {
+          el.style.setProperty('border-radius', '26px', 'important');
+          el.style.setProperty('overflow', 'hidden', 'important');
+        }
+        clearTimeout(backGestureTransitionTimer);
+        backGestureTransitionTimer = setTimeout(() => {
+          clearBackGestureStyles(el);
+          backGestureGate = false;
+          if (backGateQueued) { backGateQueued = false; void window.__actaHandleBackButton(); }
+        }, 250);
+        return;
+      }
       clearBackGestureStyles(el);
     };
   }
