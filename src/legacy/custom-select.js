@@ -14,9 +14,14 @@
   let closeTimer = 0;
 
   const CHEVRON = 'url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23989b94\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'m6 9 6 6 6-6\'/%3E%3C/svg%3E")';
+  // 深色主题箭头：applyTheme 把所有深色主题（内置深色 / 自定义深色 /
+  // 跟随系统深色）归一到 html[data-acta-theme="mono-dark"]，覆盖这一条
+  // 即可——箭头色对齐深色调色板的弱化文字（--faint 与 --muted 之间）。
+  const CHEVRON_DARK = 'url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%238b8b8b\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'m6 9 6 6 6-6\'/%3E%3C/svg%3E")';
   const style = document.createElement('style');
   style.textContent = `
 select[${ENHANCED_FLAG}] { appearance: none; -webkit-appearance: none; background-image: ${CHEVRON}; background-repeat: no-repeat; background-position: right 8px center; background-size: 10px; }
+html[data-acta-theme="mono-dark"] select[${ENHANCED_FLAG}] { background-image: ${CHEVRON_DARK}; }
 select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); }
 .acx-menu { position: fixed; z-index: 2147483000; min-width: 128px; max-height: 264px; margin: 0; padding: 5px; border: 1px solid color-mix(in srgb, var(--line) 78%, var(--faint)); border-radius: 12px; background: var(--paper); color: var(--ink); box-shadow: 0 3px 9px -2px rgba(31,35,30,.14), 0 14px 32px -10px rgba(31,35,30,.22); overflow: hidden auto; overscroll-behavior: contain; opacity: 0; transform: scale(.955) translateY(-5px); transform-origin: 50% 0; pointer-events: none; transition: opacity .16s ease, transform .26s cubic-bezier(.16,1,.3,1); }
 .acx-menu.acx-flip { transform-origin: 50% 100%; transform: scale(.955) translateY(5px); }
