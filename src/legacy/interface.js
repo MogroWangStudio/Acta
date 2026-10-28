@@ -9117,6 +9117,22 @@
   const nativeApp = window.Capacitor?.Plugins?.App;
   if (nativeApp?.addListener) {
     nativeApp.addListener('resume', () => syncNativeSystemBar());
+    // —— 安卓：键盘弹起时底栏保持原位 ——
+    // adjustResize 会压缩视口，把 fixed 底栏顶到键盘上沿（跟着弹起）。
+    // 这里记录键盘收起态的视口高度，键盘弹起期间把底栏平移回原位
+    // （被键盘覆盖，静止不跳），输入结束视口恢复时自动归零。
+    let baseViewportHeight = window.innerHeight;
+    const sidebarForKeyboard = document.querySelector('.sidebar');
+    const syncSidebarKeyboardOffset = () => {
+      const height = window.innerHeight;
+      if (height > baseViewportHeight) baseViewportHeight = height;
+      const keyboard = Math.max(0, baseViewportHeight - height);
+      if (sidebarForKeyboard) {
+        if (keyboard > 0) sidebarForKeyboard.style.setProperty('transform', `translateY(${keyboard}px)`);
+        else sidebarForKeyboard.style.removeProperty('transform');
+      }
+    };
+    addEventListener('resize', syncSidebarKeyboardOffset, { passive: true });
     // 返回层级（window.__actaHandleBackButton 的主体）：物理返回键
     // （App 插件 backButton 事件）与预见式系统回调（MainActivity 桥接，
     // 见常规设置的「预见式返回」开关）共用这一套层级逻辑。
