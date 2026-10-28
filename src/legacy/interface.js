@@ -2460,7 +2460,15 @@
       submit.disabled = count === 0;
       submit.querySelector('span').textContent = count ? uiText('bulkAddConfirm', count) : t('bulkAddTask');
     };
-    const finish = () => { if (dialog.open) dialog.close(); dialog.remove(); };
+    let bulkFinished = false;
+    // 关闭走与静态弹窗同一套 is-closing 动画（250ms）后再移除节点；
+    // 减少动态效果时 closeAnimatedDialog 直接关闭。
+    const finish = () => {
+      if (bulkFinished) return;
+      bulkFinished = true;
+      closeAnimatedDialog(dialog);
+      setTimeout(() => dialog.remove(), 270);
+    };
     dialog.querySelector('[data-bulk-cancel]').addEventListener('click', finish);
     dialog.querySelector('.relation-dialog-close').addEventListener('click', finish);
     dialog.addEventListener('cancel', event => { event.preventDefault(); finish(); });
@@ -2586,7 +2594,14 @@
       includeDone: Boolean(dialog.querySelector('input[name="taskExportIncludeDone"]')?.checked),
       numbering: dialog.querySelector('select[name="taskExportNumbering"]')?.value || 'none'
     });
-    const finish = () => { if (dialog.open) dialog.close(); dialog.remove(); };
+    let exportFinished = false;
+    // 关闭动画与批量添加弹窗同款：is-closing 250ms 后再移除节点。
+    const finish = () => {
+      if (exportFinished) return;
+      exportFinished = true;
+      closeAnimatedDialog(dialog);
+      setTimeout(() => dialog.remove(), 270);
+    };
     dialog.querySelector('.relation-dialog-close').addEventListener('click', finish);
     dialog.addEventListener('cancel', event => { event.preventDefault(); finish(); });
     dialog.querySelector('[data-export-copy]').addEventListener('click', async () => {
