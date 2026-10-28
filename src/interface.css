@@ -206,12 +206,47 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .theme-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
 .theme-option > span { min-height: 92px; padding: 11px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.4); display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
 .theme-option input:checked + span { border-color: color-mix(in srgb, var(--sage) 48%, var(--line)); background: var(--white); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 7%, transparent); }
-.theme-swatch { height: 42px; border-radius: 8px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr 1fr; }
-.theme-swatch i { display: block; }
+/* 主题预览：迷你界面 mockup——侧栏条 + 内容区（标题条、待办卡、笔记卡），
+   配色由各主题的真实调色板直出，比三个色块直观得多。结构全部由
+   --tm-* 变量驱动，每个主题一段作用域赋值。 */
+.theme-mini {
+  --tm-line: rgba(0,0,0,.08);
+  height: 58px; border-radius: 9px; overflow: hidden; display: flex;
+  background: var(--tm-paper); border: 1px solid var(--tm-line);
+}
+.theme-mini .tm-side { flex: 0 0 26%; background: var(--tm-sidebar); display: flex; flex-direction: column; gap: 5px; padding: 8px 6px; }
+.theme-mini .tm-side i { height: 3px; border-radius: 2px; background: var(--tm-ink); opacity: .3; }
+.theme-mini .tm-side i:first-child { background: var(--tm-sage); opacity: .95; width: 72%; }
+.theme-mini .tm-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; padding: 7px 8px; }
+.theme-mini .tm-bar { height: 4px; width: 44%; border-radius: 2px; background: var(--tm-ink); opacity: .5; flex: none; }
+.theme-mini .tm-card { display: flex; align-items: center; gap: 5px; padding: 5px 6px; border-radius: 6px; background: var(--tm-white); box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+.theme-mini .tm-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tm-sage); flex: none; }
+.theme-mini .tm-dot.alt { background: var(--tm-violet); }
+.theme-mini .tm-line { height: 3px; flex: 1; border-radius: 2px; background: var(--tm-ink); opacity: .34; }
+.theme-mini .tm-line.short { flex: .55; }
+/* 跟随系统：左右两半分别为黑白浅色 / 黑白深色的微缩。 */
+.theme-mini.is-split { padding: 0; gap: 0; }
+.theme-mini.is-split .tm-half { flex: 1; display: flex; min-width: 0; }
+.theme-mini.is-split .tm-half.dark .tm-side i { opacity: .4; }
+.theme-mini[data-t="eye-yellow"] { --tm-paper:#faf7ee; --tm-sidebar:#ece6d4; --tm-white:#fefdf7; --tm-ink:#3b3526; --tm-sage:#6f6748; --tm-violet:#8a7c5c; --tm-line:rgba(107,94,58,.13); }
+.theme-mini[data-t="mono-light"] { --tm-paper:#fbfbfb; --tm-sidebar:#e6e6e6; --tm-white:#ffffff; --tm-ink:#1b1b1b; --tm-sage:#515151; --tm-violet:#8a8a8a; --tm-line:rgba(0,0,0,.1); }
+.theme-mini[data-t="mono-dark"] { --tm-paper:#181818; --tm-sidebar:#111111; --tm-white:#292929; --tm-ink:#f0f0f0; --tm-sage:#c4c4c4; --tm-violet:#9b9b9b; --tm-line:rgba(255,255,255,.1); }
+.theme-mini[data-t="mws-light"] { --tm-paper:#fffbfa; --tm-sidebar:#ff6666; --tm-white:#ffffff; --tm-ink:#33272a; --tm-sage:#ff6666; --tm-violet:#3fa765; --tm-line:rgba(150,62,70,.13); }
+.theme-mini[data-t="mws-light"] .tm-side i:first-child { background: #ffffff; opacity: .9; }
+.theme-mini[data-t="mws-dark"] { --tm-paper:#181113; --tm-sidebar:#0f0a0b; --tm-white:#2c1f21; --tm-ink:#f4eaea; --tm-sage:#ff8080; --tm-violet:#7fd894; --tm-line:rgba(255,140,140,.13); }
+.theme-mini[data-t="blue-yellow"] { --tm-paper:#f7fafc; --tm-sidebar:#e9cd5e; --tm-white:#ffffff; --tm-ink:#1c2c40; --tm-sage:#2d6487; --tm-violet:#8a6a1e; --tm-line:rgba(28,44,64,.11); }
+.theme-mini[data-t="forest-mist"] { --tm-paper:#f6fbf7; --tm-sidebar:#cbe4d6; --tm-white:#ffffff; --tm-ink:#16302b; --tm-sage:#28755e; --tm-violet:#8c5c72; --tm-line:rgba(22,74,58,.12); }
+.theme-mini[data-t="sunset-coral"] { --tm-paper:#fff9f6; --tm-sidebar:#f5c6b6; --tm-white:#ffffff; --tm-ink:#402a44; --tm-sage:#8d5c7e; --tm-violet:#b25a76; --tm-line:rgba(110,58,86,.12); }
+.theme-mini[data-t="candy-pop"] { --tm-paper:#fff9f7; --tm-sidebar:#f8d7e0; --tm-white:#ffffff; --tm-ink:#422c36; --tm-sage:#c04f74; --tm-violet:#3f8f7a; --tm-line:rgba(125,60,80,.12); }
+.theme-mini[data-t="neon-ocean"] { --tm-paper:#090817; --tm-sidebar:#060510; --tm-white:#1b1840; --tm-ink:#f2efff; --tm-sage:#a78bfa; --tm-violet:#4fe3f5; --tm-line:rgba(167,139,250,.16); }
+.theme-mini[data-t="aurora-night"] { --tm-paper:#0a1413; --tm-sidebar:#060e0d; --tm-white:#182c29; --tm-ink:#eefaf4; --tm-sage:#54d6a4; --tm-violet:#8fc5e8; --tm-line:rgba(126,220,182,.14); }
+.theme-mini[data-t="follow-system"] .tm-half.light { --tm-paper:#fbfbfb; --tm-sidebar:#e6e6e6; --tm-white:#ffffff; --tm-ink:#1b1b1b; --tm-sage:#515151; --tm-line:rgba(0,0,0,.1); }
+.theme-mini[data-t="follow-system"] .tm-half.dark { --tm-paper:#181818; --tm-sidebar:#111111; --tm-white:#292929; --tm-ink:#f0f0f0; --tm-sage:#c4c4c4; --tm-line:rgba(255,255,255,.1); }
+.theme-mini[data-t="custom"] { --tm-paper: var(--pv-paper, #fbfaf6); --tm-sidebar: var(--pv-sidebar, #ebe7dc); --tm-white: var(--pv-white, #ffffff); --tm-ink: var(--pv-ink, #3b3526); --tm-sage: var(--pv-sage, #526b55); --tm-violet: var(--pv-sage, #526b55); --tm-line: rgba(0,0,0,.08); }
 .theme-option b { font-size: calc(9px * var(--acta-font-scale)); }
 .theme-option small { margin-top: -6px; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
-.theme-option:has(input[value="neon-ocean"]) .theme-swatch { box-shadow: 0 0 16px rgba(167,139,250,.32), 0 0 22px rgba(55,224,242,.2); }
-.theme-option:has(input[value="aurora-night"]) .theme-swatch { box-shadow: 0 0 16px rgba(63,214,187,.24), 0 0 22px rgba(143,197,232,.16); }
+.theme-option:has(input[value="neon-ocean"]) .theme-mini { box-shadow: 0 0 16px rgba(167,139,250,.32), 0 0 22px rgba(55,224,242,.2); }
+.theme-option:has(input[value="aurora-night"]) .theme-mini { box-shadow: 0 0 16px rgba(63,214,187,.24), 0 0 22px rgba(143,197,232,.16); }
 .custom-colors { margin-top: 12px; padding: 14px; border: 1px dashed var(--line); border-radius: 13px; display: none; grid-template-columns: repeat(3,1fr); gap: 10px; }
 .custom-colors.show { display: grid; }
 .custom-color-heading { grid-column: 1 / -1; padding: 3px 0 0; color: var(--ink); font-size: calc(9px * var(--acta-font-scale)); }

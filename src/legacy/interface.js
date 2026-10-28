@@ -5699,9 +5699,18 @@
     byId('customColorSettings').classList.toggle('show', isCustom);
     document.querySelectorAll('input[name="actaTheme"]').forEach(option => option.checked = option.value === uiSettings.theme);
     syncCustomModeToggle();
-    byId('customSwatchPaper').style.background = uiSettings.customPaper;
-    byId('customSwatchSidebar').style.background = uiSettings.customSidebar;
-    byId('customSwatchAccent').style.background = uiSettings.customAccent;
+    // 主题预览：迷你界面 mockup 的配色由各主题的调色板直出；自定义主题
+    // 的预览颜色跟随当前变体（浅色 / 深色）的输入值实时更新。
+    const customMini = byId('themeMiniCustom');
+    if (customMini) {
+      const variant = isDark ? (uiSettings.customVariants?.dark || {}) : {};
+      const pick = (field, fallback) => (isDark ? variant[field] : uiSettings[field]) || fallback;
+      customMini.style.setProperty('--tm-paper', pick('customPaper', '#fbfaf6'));
+      customMini.style.setProperty('--tm-sidebar', pick('customSidebar', '#ebe7dc'));
+      customMini.style.setProperty('--tm-sage', pick('customAccent', '#526b55'));
+      customMini.style.setProperty('--tm-white', isDark ? '#2c1f21' : '#ffffff');
+      customMini.style.setProperty('--tm-ink', isDark ? '#f4eaea' : '#3b3526');
+    }
     document.querySelector('meta[name="color-scheme"]').content = isDark ? 'dark' : 'light';
     const statusColor = systemBarColorForChrome();
     document.querySelector('meta[name="theme-color"]').content = statusColor;
