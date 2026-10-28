@@ -973,6 +973,12 @@ body { font-size: calc(14px * var(--acta-font-scale)); }
 .note-body h3 { font-size: calc(19px * var(--acta-font-scale)); }
 body.acta-compact .item-card { min-height: 82px; padding-top: 9px; padding-bottom: 8px; }
 body.acta-compact .item-card > p { height: auto; min-height: 1.45em; max-height: 1.45em; -webkit-line-clamp: 1; line-clamp: 1; }
+/* 极致排版（紧凑之上）：不显示卡片摘要行（待办的首条子待办 / 补充说明
+   都在此行），并再度压低卡片高度——标题与底行间距、上下内边距同步收紧。 */
+body.acta-compact-min .item-card { min-height: 0; padding-top: 6px; padding-bottom: 5px; }
+body.acta-compact-min .item-card h3 { margin: 4px 0 2px; }
+body.acta-compact-min .item-card > p { display: none; }
+body.acta-compact-min .card-bottom { margin-top: 5px; }
 body.acta-reduce-motion *, body.acta-reduce-motion *::before, body.acta-reduce-motion *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 /* 勾选子任务改为就地更新后编辑器不再重建，suppress 只需要抑制列表
    卡片的重放；编辑器内的过渡（勾选平移、日期淡入）必须保留，才能在

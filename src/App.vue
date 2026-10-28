@@ -352,7 +352,7 @@
               <header><h3>常规设置</h3></header>
               <div class="settings-group">
                 <label class="settings-row"><span><b>默认启动页面</b></span><select id="defaultViewSetting"><option value="inbox">收集箱</option><option value="calendar" data-i18n="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="stats">总结</option></select></label>
-                <label class="settings-row"><span><b>紧凑列表</b></span><input id="compactModeSetting" type="checkbox"/></label>
+                <label class="settings-row"><span><b>列表排版</b></span><select id="todoDensitySetting"><option value="standard">标准</option><option value="compact">紧凑</option><option value="extreme">极致</option></select></label>
                 <label class="settings-row"><span><b>减少动态效果</b></span><input id="reduceMotionSetting" type="checkbox"/></label>
                 <label class="settings-row" id="backgroundRunRow" hidden><span><b>关闭窗口时转入后台</b></span><input id="backgroundRunSetting" type="checkbox"/></label>
                 <label class="settings-row" id="predictiveBackRow" hidden><span><b>预见式返回</b></span><input id="predictiveBackSetting" type="checkbox"/></label>
