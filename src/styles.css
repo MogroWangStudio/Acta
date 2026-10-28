@@ -317,7 +317,19 @@ body.lan-radar-live .smart-nav [data-nav-action="lan"] { animation: lanLivePulse
    位移发生在滚动容器的内部，滚动口裁剪始终有效，触底回弹时内容
    不会再越过顶部固定栏（此前直接平移容器本身，容器上缘会滑出
    列表区域盖住顶栏）。 */
-.item-list > .list-body.is-empty { height: 100%; }
+/* 内容层默认至少撑满滚动容器：移动端列表区上方的头部（标题/搜索/筛选）
+   是滚动容器之外的独立行，容器自身高度吃满剩余空间，但内容层若只按
+   内容收缩，短列表（尤其空态）与容器底缘之间会露出一段未渲染的空隙。
+   min-height:100% 让内容层至少铺满容器（padding 由容器自身承担）。 */
+.item-list { display: flex; flex-direction: column; }
+/* 回收站 / 总结等视图有自己的 grid 布局：包裹内容层后 grid 应作用于
+   内容层本身，列表容器保持 flex 以让内容层吃满剩余高度。 */
+.item-list.trash-list { display: flex; }
+.item-list.trash-list > .list-body { display: grid; gap: 10px; align-content: start; }
+.item-list > .list-body { flex: 1 0 auto; }
+/* 空态的内容块吃满内容层并垂直居中（原 is-empty 的 height:100% 语义）。 */
+.item-list > .list-body.is-empty { display: flex; }
+.item-list > .list-body.is-empty .empty-list { flex: 1; }
 /* 底部惯性触底回弹：快速上滑松手后惯性滚到底时，列表过冲再弹回
    （幅度由 JS 按滚动速度写入 --bottom-bounce）。 */
 .item-list.bottom-bounce .list-body { animation: itemBottomBounce .46s cubic-bezier(.3,.68,.36,1); }
