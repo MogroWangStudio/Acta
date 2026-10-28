@@ -640,6 +640,17 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     height: calc(100vh - 48px - env(safe-area-inset-top));
     display: block;
   }
+  /* 安卓端：WebView 上报的安全区上缘略宽于状态栏的视觉高度，顶栏内容
+     与状态栏之间多出一段空隙。这里整体上移 5px 收紧（max 防 env 为 0
+     时出现负 padding），工作区高度同步补偿；编辑器全屏面板在下方
+     定义处同样补偿。 */
+  html.acta-native-mobile .titlebar {
+    height: calc(43px + max(0px, env(safe-area-inset-top) - 5px));
+    padding-top: max(0px, env(safe-area-inset-top) - 5px);
+  }
+  html.acta-native-mobile .workspace {
+    height: calc(100vh - 43px - max(0px, env(safe-area-inset-top) - 5px));
+  }
   .sidebar {
     position: fixed; z-index: 45; left: 0; right: 0; bottom: 0;
     height: calc(70px + env(safe-area-inset-bottom));
@@ -731,6 +742,10 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     box-shadow: -12px 0 32px -12px rgba(38,42,36,.14);
   }
   .editor-pane.mobile-open { transform: translateX(0); opacity: 1; }
+  /* 安卓端：顶栏上移 5px 后编辑器全屏面板同步补偿，不露缝。 */
+  html.acta-native-mobile .editor-pane {
+    inset: calc(43px + max(0px, env(safe-area-inset-top) - 5px)) 0 0;
+  }
   .editor-wrap { width: 100%; padding: 18px 18px 40px; }
   .mobile-back {
     width: 32px; height: 32px; margin-right: 1px; padding: 0;
