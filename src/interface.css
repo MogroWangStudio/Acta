@@ -3102,6 +3102,10 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
      版本信息在「关于」页仍可查看，这里让出位置给操作按钮。 */
   @media (max-width: 360px) { .brand-version { display: none; } }
   .editor-topline { position: sticky; top: 0; z-index: 12; min-height: 47px; margin: -18px -18px 0; padding: 8px 18px; background: rgba(251,250,246,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  /* 移动端查找栏：编辑器顶栏（返回栏）sticky 在顶，查找栏悬浮其下、
+     层级在其上——prepend 到面板顶部时不再被顶栏遮住；宽度留 12px
+     屏缘（顶栏左右各 18px 的对齐感由居中保持）。 */
+  .editor-find { top: 55px; z-index: 13; max-width: calc(100% - 24px); }
   .note-toolbar { top: auto; bottom: 8px; }
   html[data-note-toolbar-position="bottom"] body:not(.note-focus-mode) .note-editor .note-toolbar { bottom: calc(78px + env(safe-area-inset-bottom)); }
   html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 55px; bottom: auto; }
