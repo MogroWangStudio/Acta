@@ -3114,6 +3114,12 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 .lan-page-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; }
 .lan-page-head .lan-page-mark { background: var(--sage-2); color: var(--sage); }
 .lan-page-head .lan-sync-state { align-self: center; }
+/* 页内常驻状态行：移动端头部空间不足导致「可被发现」显示不完全（且被
+   隐藏规则整体拿掉），这里常驻完整显示；桌面端头部徽标照旧，此行隐藏。 */
+.lan-state-line { display: none; align-items: center; margin: 0; }
+.lan-state-line .lan-sync-state { font-size: calc(10px * var(--acta-font-scale)); padding: 5px 12px; }
+@media (max-width: 800px) { .lan-state-line { display: flex; } }
+.acta-native-mobile .lan-state-line { display: flex; }
 .lan-page-body { min-height: 0; overflow: hidden auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding: 16px; }
 .lan-page-body > * { flex: 0 0 auto; }
 .lan-page-body .settings-group { margin: 0; }

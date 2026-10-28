@@ -8687,12 +8687,12 @@ function bindShell() {
   // —— 安卓放射式新建菜单 ——
   // 五枚圆钮从中央新建按钮沿弧线弹出（等角围绕、依次入场），
   // 底部渐入遮罩保证文字对比度；桌面端保持侧栏的纵向功能列表。
-  const MOBILE_CREATE_RADIUS = 112;
+  // 半径 132 + 弧展 36°–144°：在 360px 屏内把五钮尽量拉开——按钮间距
+  // 由弦长决定（2R·sin(Δθ/2)），半径加大与弧展放宽共同贡献间距。
+  const MOBILE_CREATE_RADIUS = 132;
   // 弧上角度（屏幕角：0°=右，逆时针；90°=正上）。速记居正上（最常用），
-  // 笔记 / 待办在两侧上位，打卡 / 导入在两侧下位，对称展开。弧收到
-  // 40°–140°：文字沿径向排在按钮外沿，收窄弧度才能让最外侧文字留在
-  // 360px 屏幕内、且不与相邻按钮相碰。
-  const mobileCreateAngles = { quick: 90, note: 65, todo: 115, checkin: 40, import: 140 };
+  // 笔记 / 待办在两侧上位，打卡 / 导入在两侧下位，对称展开。
+  const mobileCreateAngles = { quick: 90, note: 63, todo: 117, checkin: 36, import: 144 };
   let mobileCreateHideTimer = 0;
   const syncMobileCreatePositions = () => {
     $$('#mobileCreateActions .mobile-create-item').forEach(item => {

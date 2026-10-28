@@ -533,10 +533,10 @@
       <header class="relation-dialog-head lan-page-head">
         <span class="lan-page-mark"><svg><use href="#i-radar"/></svg></span>
         <div><h3 id="lanPageTitle">Acta 局域网同步</h3></div>
-        <span class="lan-sync-state" id="lanSyncState" data-state="off"></span>
         <button class="relation-dialog-close" id="closeLanSyncPage" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button>
       </header>
       <div class="relation-dialog-body lan-page-body">
+        <p class="settings-status lan-state-line" id="lanStateLine" role="status"><span class="lan-sync-state" id="lanSyncState" data-state="off"></span></p>
         <div class="settings-group lan-page-discovery" data-server-lan-only>
           <label class="settings-row"><span><b>允许被其他设备发现</b></span><input id="lanDiscoverableSetting" type="checkbox"/></label>
         </div>
