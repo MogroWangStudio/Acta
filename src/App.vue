@@ -34,7 +34,7 @@
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
-        <span class="brand-version" aria-label="当前版本 4.1.0">4.1.0</span>
+        <span class="brand-version" aria-label="当前版本 4.2.0">4.2.0</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
@@ -66,8 +66,7 @@
             <button data-create="note"><span class="menu-icon note"><svg><use href="#i-note"/></svg></span><span><b data-i18n="newNote">新建笔记</b><small data-i18n="newNoteHint">记录想法与灵感</small></span></button>
             <button data-create="todo"><span class="menu-icon todo"><svg><use href="#i-check"/></svg></span><span><b data-i18n="newTodo">新建待办</b><small data-i18n="newTodoHint">拆解目标与行动</small></span></button>
             <button data-create="checkin"><span class="menu-icon checkin"><svg><use href="#i-task-list"/></svg></span><span><b data-i18n="checkinTodo">打卡待办</b><small data-i18n="checkinTodoHint">每天打卡，养成习惯</small></span></button>
-            <button id="importNoteButton"><span class="menu-icon import"><svg><use href="#i-download"/></svg></span><span><b data-i18n="importNote">导入笔记</b><small data-i18n="importNoteHint">支持 Markdown 与纯文本</small></span></button>
-            <button id="importTodoButton"><span class="menu-icon import"><svg><use href="#i-download"/></svg></span><span><b data-i18n="importTodo">导入待办</b><small data-i18n="importTodoHint">支持分行文字与任务清单</small></span></button>
+            <button id="importDataButton"><span class="menu-icon import"><svg><use href="#i-download"/></svg></span><span><b data-i18n="importData">导入数据</b><small data-i18n="importDataHint">导入笔记或待办</small></span></button>
           </div>
 
           <nav class="nav-section smart-nav" id="smartNav">
@@ -118,6 +117,37 @@
             <div class="item-title-row">
               <h1 id="viewTitle">收集箱</h1>
               <button class="view-title-menu" id="viewTitleMenu" type="button" aria-label="查看归类" aria-haspopup="true" aria-expanded="false"><svg class="view-title-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+              <button class="icon-button list-filter-toggle" id="listFilterToggle" type="button" aria-label="筛选" aria-haspopup="true" aria-expanded="false" hidden><svg aria-hidden="true"><use href="#i-filter"/></svg></button>
+              <div class="list-filter-panel" id="listFilterPanel" hidden>
+                <div class="list-filter-panel-head">
+                  <b data-i18n="filterPanelTitle">筛选</b>
+                  <button type="button" class="list-filter-panel-clear" id="listFilterPanelClear" hidden><svg><use href="#i-close"/></svg><span data-i18n="clearFilters">清除</span></button>
+                </div>
+                <label class="filter-select"><svg><use href="#i-spark"/></svg><select id="panelPriorityFilter">
+                  <option value="all" data-i18n="allPriorities">全部优先级</option>
+                  <option value="high" data-i18n="high">优先处理</option>
+                  <option value="medium" data-i18n="medium">稍后处理</option>
+                  <option value="low" data-i18n="low">延缓处理</option>
+                </select></label>
+                <label class="filter-select"><svg><use href="#i-calendar"/></svg><select id="panelDueFilter">
+                  <option value="all" data-i18n="allDeadlines">全部截止时间</option>
+                  <option value="overdue" data-i18n="overdue">已逾期</option>
+                  <option value="today" data-i18n="dueToday">今天截止</option>
+                  <option value="upcoming" data-i18n="nextSevenDays">未来 7 天</option>
+                  <option value="none" data-i18n="withoutDeadline">无截止时间</option>
+                </select></label>
+                <label class="filter-select"><svg><use href="#i-folder"/></svg><select id="panelFolderFilter"></select></label>
+                <label class="filter-select"><svg><use href="#i-clock"/></svg><select id="panelUpdatedFilter">
+                  <option value="all" data-i18n="anyUpdatedTime">全部更新时间</option>
+                  <option value="7" data-i18n="lastSevenDays">最近 7 天</option>
+                  <option value="30" data-i18n="lastThirtyDays">最近 30 天</option>
+                </select></label>
+                <label class="filter-select todo-completed-toggle" id="panelCompletedToggle">
+                  <input id="panelShowCompleted" type="checkbox"/>
+                  <svg><use href="#i-check"/></svg>
+                  <span data-i18n="showCompletedTodos">显示已完成</span>
+                </label>
+              </div>
             </div>
             <label class="filter-select todo-completed-toggle" id="todoCompletedToggle" hidden>
               <input id="todoShowCompleted" type="checkbox"/>
@@ -255,11 +285,11 @@
           <nav class="settings-nav" aria-label="设置页面">
             <button class="active" type="button" data-settings-page="general"><svg><use href="#i-sliders"/></svg><span>常规设置</span></button>
             <button type="button" data-settings-page="language"><svg><use href="#i-globe"/></svg><span>语言</span></button>
-            <button type="button" data-settings-page="nav"><svg><use href="#i-more"/></svg><span>页面跳转栏</span></button>
+            <button type="button" data-settings-page="nav"><svg><use href="#i-more"/></svg><span>工具栏</span></button>
             <button type="button" data-settings-page="plan-board"><svg><use href="#i-board"/></svg><span>计划板</span></button>
             <button type="button" data-settings-page="workspace"><svg><use href="#i-folder"/></svg><span>行记数据</span></button>
             <button type="button" data-settings-page="cloud"><svg><use href="#i-cloud"/></svg><span>数据同步</span></button>
-            <button type="button" data-settings-page="note-editor"><svg><use href="#i-note"/></svg><span>笔记编辑器</span></button>
+            <button type="button" data-settings-page="note-editor"><svg><use href="#i-note"/></svg><span>编辑器</span></button>
             <button type="button" data-settings-page="todo"><svg><use href="#i-check"/></svg><span>待办设置</span></button>
             <button type="button" data-settings-page="appearance"><svg><use href="#i-palette"/></svg><span>外观设置</span></button>
             <button type="button" data-settings-page="about"><svg><use href="#i-info"/></svg><span>关于</span></button>
@@ -290,7 +320,7 @@
             </section>
 
             <section class="settings-panel" data-settings-panel="workspace">
-              <header class="data-profile-header"><div><h3>行记数据</h3></div><div class="data-profile-header-actions"><button class="settings-button" id="newDataProfile" type="button"><svg><use href="#i-plus"/></svg><span>新建空白档案</span></button><button class="settings-button secondary" id="readDataProfile" type="button"><svg><use href="#i-folder"/></svg><span>读取现有档案</span></button><button class="settings-button secondary" id="refreshDataProfile" type="button"><svg><use href="#i-refresh"/></svg><span>刷新行记数据</span></button></div></header>
+              <header class="data-profile-header"><div><h3>行记数据</h3></div><div class="data-profile-header-actions"><button class="settings-button" id="newDataProfile" type="button"><svg><use href="#i-plus"/></svg><span>新建空白档案</span></button><button class="settings-button secondary" id="readDataProfile" type="button"><svg><use href="#i-folder"/></svg><span>读取现有档案</span></button><button class="settings-button secondary" id="backupManagerButton" type="button"><svg><use href="#i-clock"/></svg><span>备份管理</span></button><button class="settings-button secondary" id="refreshDataProfile" type="button"><svg><use href="#i-refresh"/></svg><span>刷新行记数据</span></button></div></header>
               <div class="appearance-subsection data-stats-subsection">
                 <header><b>数据统计</b></header>
                 <div class="data-stats-grid">
@@ -340,27 +370,31 @@
             </section>
 
             <section class="settings-panel" data-settings-panel="nav">
-              <header><h3>页面跳转栏</h3></header>
+              <header><h3>工具栏</h3></header>
               <div class="settings-group nav-desktop-settings-only">
                 <div class="settings-row"><span><b>桌面端侧边栏</b></span></div>
-                <div class="nav-page-grid" id="navPageGrid">
-                  <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
-                  <label><input type="checkbox" data-nav-page="calendar"/><span>日历</span></label>
-                  <label><input type="checkbox" data-nav-page="board"/><span data-i18n="board">计划板</span></label>
-                  <label><input type="checkbox" data-nav-page="todos"/><span>所有待办</span></label>
-                  <label><input type="checkbox" data-nav-page="notes"/><span>所有笔记</span></label>
-                  <label><input type="checkbox" data-nav-page="trash"/><span>回收站</span></label>
-                  <label><input type="checkbox" data-nav-page="stats"/><span>总结</span></label>
-                  <label><input type="checkbox" data-nav-page="lan"/><span>局域网雷达</span></label>
+                <div class="nav-desktop-layout">
+                  <div class="nav-desktop-preview">
+                    <div class="nav-preview-sidebar" id="navPreviewSidebar"></div>
+                    <small class="nav-preview-hint">预览：点击入口切换显示与隐藏</small>
+                  </div>
+                  <div class="nav-page-grid" id="navPageGrid">
+                    <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
+                    <label><input type="checkbox" data-nav-page="calendar"/><span>日历</span></label>
+                    <label><input type="checkbox" data-nav-page="board"/><span data-i18n="board">计划板</span></label>
+                    <label><input type="checkbox" data-nav-page="todos"/><span>所有待办</span></label>
+                    <label><input type="checkbox" data-nav-page="notes"/><span>所有笔记</span></label>
+                    <label><input type="checkbox" data-nav-page="trash"/><span>回收站</span></label>
+                    <label><input type="checkbox" data-nav-page="stats"/><span>总结</span></label>
+                    <label><input type="checkbox" data-nav-page="lan"/><span>局域网雷达</span></label>
+                  </div>
                 </div>
-                <div class="nav-preview-sidebar" id="navPreviewSidebar"></div>
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端底栏</b></span></div>
                 <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
                 <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
                 <div class="nav-preview-bar" id="navPreviewBottom"></div>
-                <div class="nav-preview-pool" id="navPreviewBottomPool"></div>
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端顶栏</b></span></div>
@@ -368,13 +402,12 @@
                 <label class="settings-row"><span><b>顶栏槽位二</b></span><select id="mobileTitleTwo"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
                 <label class="settings-row"><span><b>顶栏槽位三</b></span><select id="mobileTitleThree"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
                 <div class="nav-preview-bar" id="navPreviewTop"></div>
-                <div class="nav-preview-pool" id="navPreviewTopPool"></div>
               </div>
               <p class="settings-status" id="navSettingsStatus">设置会自动保存在当前设备。</p>
             </section>
 
             <section class="settings-panel" data-settings-panel="note-editor">
-              <header><h3>笔记编辑器</h3></header>
+              <header><h3>编辑器</h3></header>
               <div class="settings-group">
                 <label class="settings-row"><span><b>基准字号</b></span><span class="font-size-control"><input id="noteBaseSize" type="range" min="13" max="22" step="1"/><output id="noteBaseSizeValue">17 px</output></span></label>
                 <label class="settings-row"><span><b>一级标题字号</b></span><select id="noteHeadingH1Size"><option value="26">26 px</option><option value="28">28 px</option><option value="30">30 px</option><option value="32">32 px</option><option value="36">36 px</option><option value="40">40 px</option></select></label>
@@ -497,8 +530,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta 行记" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta 行记</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.1.0</b></div>
-                <div><small>本版更新日期</small><b>2026-10-23</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.2.0</b></div>
+                <div><small>本版更新日期</small><b>2026-10-29</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <div class="about-update">
@@ -666,6 +699,22 @@
         </div>
         <footer class="quick-capture-actions"><span id="quickCaptureShortcut">Ctrl/⌘ + Enter 快速创建</span><span class="quick-capture-step-label" id="quickCaptureStepLabel" hidden></span><button class="settings-button secondary" id="quickCaptureBack" type="button" hidden>上一步</button><button class="settings-button secondary" id="cancelQuickCapture" type="button">取消</button><button class="settings-button" id="quickCaptureNext" type="button" hidden>下一步</button><button class="settings-button quick-capture-submit" type="submit"><svg><use href="#i-lightning"/></svg><span id="quickCaptureSubmitLabel">创建待办</span></button></footer>
       </form>
+    </dialog>
+
+    <dialog class="relation-dialog backup-manager-dialog" id="backupManagerDialog" aria-labelledby="backupManagerTitle">
+      <header class="relation-dialog-head"><span><svg><use href="#i-clock"/></svg></span><div><h3 id="backupManagerTitle">备份管理</h3><small id="backupManagerSubtitle">同步覆盖前的自动备份都保存在软件数据文件夹中，可随时恢复</small></div><button class="relation-dialog-close" id="closeBackupManager" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
+      <div class="relation-dialog-body backup-manager-body">
+        <div class="backup-list" id="backupList" role="list"></div>
+        <p class="settings-status" id="backupManagerStatus" role="status"></p>
+      </div>
+    </dialog>
+
+    <dialog class="relation-dialog import-data-dialog" id="importDataDialog" aria-labelledby="importDataTitle">
+      <header class="relation-dialog-head"><span><svg><use href="#i-download"/></svg></span><div><h3 id="importDataTitle" data-i18n="importData">导入数据</h3><small id="importDataSubtitle" data-i18n="importDataSubtitle">选择要导入的内容类型</small></div><button class="relation-dialog-close" id="closeImportData" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
+      <div class="relation-dialog-body import-data-body">
+        <button type="button" class="import-data-choice" id="importDataNote"><span><svg><use href="#i-note"/></svg></span><span class="import-data-copy"><b data-i18n="importNote">导入笔记</b><small data-i18n="importNoteHint">支持 Markdown 与纯文本</small></span><svg class="import-data-go" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+        <button type="button" class="import-data-choice" id="importDataTodo"><span><svg><use href="#i-check"/></svg></span><span class="import-data-copy"><b data-i18n="importTodo">导入待办</b><small data-i18n="importTodoHint">支持分行文字与任务清单</small></span><svg class="import-data-go" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+      </div>
     </dialog>
 
     <dialog class="relation-dialog history-dialog" id="historyDialog" aria-labelledby="historyTitle">
@@ -942,8 +991,8 @@
           <button class="mobile-create-button is-checkin" type="button" aria-label="打卡待办"><svg><use href="#i-task-list"/></svg></button>
         </div>
         <div class="mobile-create-item" data-create="import" data-import="1">
-          <span class="mobile-create-label" data-i18n="importNote">导入笔记</span>
-          <button class="mobile-create-button is-import" type="button" aria-label="导入笔记"><svg><use href="#i-download"/></svg></button>
+          <span class="mobile-create-label" data-i18n="importData">导入数据</span>
+          <button class="mobile-create-button is-import" type="button" aria-label="导入数据"><svg><use href="#i-download"/></svg></button>
         </div>
       </div>
     </div>

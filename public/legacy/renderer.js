@@ -38,6 +38,10 @@ const dictionaries = {
     linkedItems: '关联项目', linkTodo: '关联待办', linkNote: '关联笔记', chooseTodo: '选择一个待办…', chooseNote: '选择一则笔记…',
     noLinks: '还没有关联项目', unlink: '取消关联', linked: '已建立双向关联', unlinked: '已取消关联',
     importNote: '导入笔记', importNoteHint: '支持 Markdown 与纯文本', exportNote: '导出这则笔记', noteImported: '笔记已导入', noteExported: '笔记已导出',
+    importData: '导入数据', importDataHint: '导入笔记或待办', importDataSubtitle: '选择要导入的内容类型',
+    filterPanelTitle: '筛选',
+    exportScale: '分辨率', exportFormat: '图片格式', exportQuality: 'JPG 质量', exportConfirm: '导出',
+    statsExportTitle: '导出清单图片', statsExportHint: '选择分辨率与图片格式；JPG 可调节压缩程度',
     importTodo: '导入待办', importTodoHint: '支持分行文字与任务清单', todoImported: '待办已导入', invalidTodoFile: '无法读取这份待办',
     importFailed: '导入失败', exportFailed: '导出失败', fileTooLarge: '文件不能超过 5 MB', invalidNoteFile: '无法读取这份笔记',
     calendar:'日历', yearView:'年', monthView:'月', weekView:'周', dayView:'日', previousPeriod:'上一时段', nextPeriod:'下一时段', previousYear:'上一年', nextYear:'下一年', previousMonth:'上一月', nextMonth:'下一月', previousWeek:'上一周', nextWeek:'下一周', previousDay:'上一日', nextDay:'下一日', backToToday:'今天', calendarNavigation:'日历导航', calendarViewOptions:'日历视图',
@@ -101,6 +105,10 @@ const dictionaries = {
     linkedItems: 'Linked items', linkTodo: 'Link task', linkNote: 'Link note', chooseTodo: 'Choose a task…', chooseNote: 'Choose a note…',
     noLinks: 'No linked items yet', unlink: 'Unlink', linked: 'Linked in both directions', unlinked: 'Link removed',
     importNote: 'Import note', importNoteHint: 'Markdown and plain text', exportNote: 'Export this note', noteImported: 'Note imported', noteExported: 'Note exported',
+    importData: 'Import data', importDataHint: 'Import a note or a todo', importDataSubtitle: 'Choose what to import',
+    filterPanelTitle: 'Filter',
+    exportScale: 'Resolution', exportFormat: 'Image format', exportQuality: 'JPG quality', exportConfirm: 'Export',
+    statsExportTitle: 'Export list image', statsExportHint: 'Pick resolution and image format; JPG compression is adjustable',
     importTodo: 'Import todo', importTodoHint: 'Plain lines or a task list', todoImported: 'Todo imported', invalidTodoFile: 'Cannot read this todo file',
     importFailed: 'Import failed', exportFailed: 'Export failed', fileTooLarge: 'Files must be under 5 MB', invalidNoteFile: 'This note could not be read',
     calendar:'Calendar', yearView:'Year', monthView:'Month', weekView:'Week', dayView:'Day', previousPeriod:'Previous period', nextPeriod:'Next period', previousYear:'Previous year', nextYear:'Next year', previousMonth:'Previous month', nextMonth:'Next month', previousWeek:'Previous week', nextWeek:'Next week', previousDay:'Previous day', nextDay:'Next day', backToToday:'Today', calendarNavigation:'Calendar navigation', calendarViewOptions:'Calendar views',
@@ -164,6 +172,10 @@ const dictionaries = {
     linkedItems: '関連項目', linkTodo: 'タスクを関連付け', linkNote: 'ノートを関連付け', chooseTodo: 'タスクを選択…', chooseNote: 'ノートを選択…',
     noLinks: '関連項目はまだありません', unlink: '関連付けを解除', linked: '双方向に関連付けました', unlinked: '関連付けを解除しました',
     importNote: 'ノートを読み込む', importNoteHint: 'Markdown とプレーンテキストに対応', exportNote: 'このノートを書き出す', noteImported: 'ノートを読み込みました', noteExported: 'ノートを書き出しました',
+    importData: 'データを読み込む', importDataHint: 'ノートまたはタスクを読み込む', importDataSubtitle: '読み込む種類を選択',
+    filterPanelTitle: '絞り込み',
+    exportScale: '解像度', exportFormat: '画像形式', exportQuality: 'JPG 画質', exportConfirm: '書き出す',
+    statsExportTitle: 'リスト画像を書き出す', statsExportHint: '解像度と画像形式を選択。JPG は圧縮率を調整できます',
     importTodo: 'タスクを読み込む', importTodoHint: '改行テキストとタスクリストに対応', todoImported: 'タスクを読み込みました', invalidTodoFile: 'このタスクファイルを読み取できません',
     importFailed: '読み込みに失敗しました', exportFailed: '書き出しに失敗しました', fileTooLarge: 'ファイルは 5 MB までです', invalidNoteFile: 'このノートを読み取れません',
     calendar:'カレンダー', yearView:'年', monthView:'月', weekView:'週', dayView:'日', previousPeriod:'前の期間', nextPeriod:'次の期間', previousYear:'前の年', nextYear:'次の年', previousMonth:'前の月', nextMonth:'次の月', previousWeek:'前の週', nextWeek:'次の週', previousDay:'前の日', nextDay:'次の日', backToToday:'今日', calendarNavigation:'カレンダー操作', calendarViewOptions:'カレンダー表示',
@@ -227,6 +239,10 @@ const dictionaries = {
     linkedItems: '연결된 항목', linkTodo: '할 일 연결', linkNote: '노트 연결', chooseTodo: '할 일 선택…', chooseNote: '노트 선택…',
     noLinks: '아직 연결된 항목이 없어요', unlink: '연결 해제', linked: '양방향으로 연결되었어요', unlinked: '연결이 해제되었어요',
     importNote: '노트 가져오기', importNoteHint: 'Markdown과 일반 텍스트 지원', exportNote: '이 노트 내보내기', noteImported: '노트를 가져왔어요', noteExported: '노트를 내보냈어요',
+    importData: '데이터 가져오기', importDataHint: '노트 또는 할 일 가져오기', importDataSubtitle: '가져올 종류를 선택하세요',
+    filterPanelTitle: '필터',
+    exportScale: '해상도', exportFormat: '이미지 형식', exportQuality: 'JPG 품질', exportConfirm: '내보내기',
+    statsExportTitle: '목록 이미지 내보내기', statsExportHint: '해상도와 이미지 형식을 선택하세요. JPG는 압축 수준을 조절할 수 있어요',
     importTodo: '할 일 가져오기', importTodoHint: '줄바꿈 텍스트와 작업 목록 지원', todoImported: '할 일을 가져왔어요', invalidTodoFile: '이 할 일 파일을 읽을 수 없어요',
     importFailed: '가져오기 실패', exportFailed: '내보내기 실패', fileTooLarge: '파일은 5 MB 이하여야 해요', invalidNoteFile: '이 노트를 읽을 수 없어요',
     calendar:'달력', yearView:'년', monthView:'월', weekView:'주', dayView:'일', previousPeriod:'이전 기간', nextPeriod:'다음 기간', previousYear:'이전 해', nextYear:'다음 해', previousMonth:'이전 달', nextMonth:'다음 달', previousWeek:'이전 주', nextWeek:'다음 주', previousDay:'이전 날', nextDay:'다음 날', backToToday:'오늘', calendarNavigation:'달력 탐색', calendarViewOptions:'달력 보기',
@@ -290,6 +306,10 @@ const dictionaries = {
     linkedItems: 'Éléments liés', linkTodo: 'Lier une tâche', linkNote: 'Lier une note', chooseTodo: 'Choisir une tâche…', chooseNote: 'Choisir une note…',
     noLinks: 'Aucun élément lié pour l’instant', unlink: 'Délier', linked: 'Lié dans les deux sens', unlinked: 'Lien supprimé',
     importNote: 'Importer une note', importNoteHint: 'Markdown et texte brut', exportNote: 'Exporter cette note', noteImported: 'Note importée', noteExported: 'Note exportée',
+    importData: 'Importer des données', importDataHint: 'Importer une note ou une tâche', importDataSubtitle: 'Choisissez ce qu’il faut importer',
+    filterPanelTitle: 'Filtrer',
+    exportScale: 'Résolution', exportFormat: 'Format d’image', exportQuality: 'Qualité JPG', exportConfirm: 'Exporter',
+    statsExportTitle: 'Exporter l’image de la liste', statsExportHint: 'Choisissez la résolution et le format ; la compression JPG est réglable',
     importTodo: 'Importer une tâche', importTodoHint: 'Lignes simples ou liste de tâches', todoImported: 'Tâche importée', invalidTodoFile: 'Impossible de lire ce fichier de tâche',
     importFailed: 'Échec de l’import', exportFailed: 'Échec de l’export', fileTooLarge: 'Les fichiers doivent faire moins de 5 Mo', invalidNoteFile: 'Impossible de lire cette note',
     calendar:'Calendrier', yearView:'Année', monthView:'Mois', weekView:'Semaine', dayView:'Jour', previousPeriod:'Période précédente', nextPeriod:'Période suivante', previousYear:'Année précédente', nextYear:'Année suivante', previousMonth:'Mois précédent', nextMonth:'Mois suivant', previousWeek:'Semaine précédente', nextWeek:'Semaine suivante', previousDay:'Jour précédent', nextDay:'Jour suivant', backToToday:'Aujourd’hui', calendarNavigation:'Navigation du calendrier', calendarViewOptions:'Vues du calendrier',
@@ -353,6 +373,10 @@ const dictionaries = {
     linkedItems: 'Verknüpfte Einträge', linkTodo: 'Aufgabe verknüpfen', linkNote: 'Notiz verknüpfen', chooseTodo: 'Aufgabe wählen…', chooseNote: 'Notiz wählen…',
     noLinks: 'Noch keine Verknüpfungen', unlink: 'Verknüpfung lösen', linked: 'In beide Richtungen verknüpft', unlinked: 'Verknüpfung gelöst',
     importNote: 'Notiz importieren', importNoteHint: 'Markdown und Klartext', exportNote: 'Diese Notiz exportieren', noteImported: 'Notiz importiert', noteExported: 'Notiz exportiert',
+    importData: 'Daten importieren', importDataHint: 'Notiz oder Aufgabe importieren', importDataSubtitle: 'Wählen Sie aus, was importiert werden soll',
+    filterPanelTitle: 'Filtern',
+    exportScale: 'Auflösung', exportFormat: 'Bildformat', exportQuality: 'JPG-Qualität', exportConfirm: 'Exportieren',
+    statsExportTitle: 'Listenbild exportieren', statsExportHint: 'Auflösung und Bildformat wählen; JPG-Komprimierung ist einstellbar',
     importTodo: 'Aufgabe importieren', importTodoHint: 'Zeilen oder Aufgabenliste', todoImported: 'Aufgabe importiert', invalidTodoFile: 'Diese Aufgabendatei ist nicht lesbar',
     importFailed: 'Import fehlgeschlagen', exportFailed: 'Export fehlgeschlagen', fileTooLarge: 'Dateien müssen unter 5 MB liegen', invalidNoteFile: 'Diese Notiz konnte nicht gelesen werden',
     calendar:'Kalender', yearView:'Jahr', monthView:'Monat', weekView:'Woche', dayView:'Tag', previousPeriod:'Vorherige Zeitspanne', nextPeriod:'Nächste Zeitspanne', previousYear:'Vorheriges Jahr', nextYear:'Nächstes Jahr', previousMonth:'Voriger Monat', nextMonth:'Nächster Monat', previousWeek:'Vorige Woche', nextWeek:'Nächste Woche', previousDay:'Voriger Tag', nextDay:'Nächster Tag', backToToday:'Heute', calendarNavigation:'Kalendernavigation', calendarViewOptions:'Kalenderansichten',
@@ -416,6 +440,10 @@ const dictionaries = {
     linkedItems: 'Elementos vinculados', linkTodo: 'Vincular tarea', linkNote: 'Vincular nota', chooseTodo: 'Elige una tarea…', chooseNote: 'Elige una nota…',
     noLinks: 'Aún no hay elementos vinculados', unlink: 'Desvincular', linked: 'Vinculado en ambos sentidos', unlinked: 'Vínculo eliminado',
     importNote: 'Importar nota', importNoteHint: 'Markdown y texto plano', exportNote: 'Exportar esta nota', noteImported: 'Nota importada', noteExported: 'Nota exportada',
+    importData: 'Importar datos', importDataHint: 'Importar una nota o una tarea', importDataSubtitle: 'Elige qué importar',
+    filterPanelTitle: 'Filtrar',
+    exportScale: 'Resolución', exportFormat: 'Formato de imagen', exportQuality: 'Calidad JPG', exportConfirm: 'Exportar',
+    statsExportTitle: 'Exportar imagen de la lista', statsExportHint: 'Elige resolución y formato de imagen; la compresión JPG es ajustable',
     importTodo: 'Importar tarea', importTodoHint: 'Líneas simples o lista de tareas', todoImported: 'Tarea importada', invalidTodoFile: 'No se puede leer este archivo de tarea',
     importFailed: 'Fallo al importar', exportFailed: 'Fallo al exportar', fileTooLarge: 'Los archivos deben pesar menos de 5 MB', invalidNoteFile: 'No se pudo leer esta nota',
     calendar:'Calendario', yearView:'Año', monthView:'Mes', weekView:'Semana', dayView:'Día', previousPeriod:'Periodo anterior', nextPeriod:'Periodo siguiente', previousYear:'Año anterior', nextYear:'Año siguiente', previousMonth:'Mes anterior', nextMonth:'Mes siguiente', previousWeek:'Semana anterior', nextWeek:'Semana siguiente', previousDay:'Día anterior', nextDay:'Día siguiente', backToToday:'Hoy', calendarNavigation:'Navegación del calendario', calendarViewOptions:'Vistas del calendario',
@@ -479,6 +507,10 @@ const dictionaries = {
     linkedItems: 'Связанные записи', linkTodo: 'Связать задачу', linkNote: 'Связать заметку', chooseTodo: 'Выберите задачу…', chooseNote: 'Выберите заметку…',
     noLinks: 'Связей пока нет', unlink: 'Разорвать связь', linked: 'Двусторонняя связь установлена', unlinked: 'Связь разорвана',
     importNote: 'Импорт заметки', importNoteHint: 'Markdown и обычный текст', exportNote: 'Экспортировать заметку', noteImported: 'Заметка импортирована', noteExported: 'Заметка экспортирована',
+    importData: 'Импорт данных', importDataHint: 'Импортировать заметку или задачу', importDataSubtitle: 'Выберите, что импортировать',
+    filterPanelTitle: 'Фильтр',
+    exportScale: 'Разрешение', exportFormat: 'Формат изображения', exportQuality: 'Качество JPG', exportConfirm: 'Экспортировать',
+    statsExportTitle: 'Экспортировать изображение списка', statsExportHint: 'Выберите разрешение и формат; сжатие JPG настраивается',
     importTodo: 'Импорт задачи', importTodoHint: 'Строки или список задач', todoImported: 'Задача импортирована', invalidTodoFile: 'Не удалось прочитать этот файл задачи',
     importFailed: 'Не удалось импортировать', exportFailed: 'Не удалось экспортировать', fileTooLarge: 'Файлы не больше 5 МБ', invalidNoteFile: 'Не удалось прочитать эту заметку',
     calendar:'Календарь', yearView:'Год', monthView:'Месяц', weekView:'Неделя', dayView:'День', previousPeriod:'Предыдущий период', nextPeriod:'Следующий период', previousYear:'Прошлый год', nextYear:'Следующий год', previousMonth:'Прошлый месяц', nextMonth:'Следующий месяц', previousWeek:'Прошлая неделя', nextWeek:'Следующая неделя', previousDay:'Прошлый день', nextDay:'Следующий день', backToToday:'Сегодня', calendarNavigation:'Навигация по календарю', calendarViewOptions:'Виды календаря',
@@ -1809,7 +1841,16 @@ function resetListFilters(context = 'all') {
     trashTypeFilter = 'all';
     trashFolderFilter = 'all';
   }
-  if (context === 'all' || context === 'mixed') currentFilter = 'all';
+  // 收集箱 / 归类页的筛选面板与类型筛选共用 mixed 上下文：清除时把面板
+  // 驱动的四个筛选一并归位（归类筛选同时作用于待办与笔记两个变量）。
+  if (context === 'all' || context === 'mixed') {
+    currentFilter = 'all';
+    todoPriorityFilter = 'all';
+    todoDueFilter = 'all';
+    todoFolderFilter = 'all';
+    noteFolderFilter = 'all';
+    noteUpdatedFilter = 'all';
+  }
   if (context === 'all' || context === 'todo') {
     todoPriorityFilter = 'all';
     todoDueFilter = 'all';
@@ -1825,7 +1866,8 @@ function resetListFilters(context = 'all') {
 function hasActiveListFilters(context = listFilterContext()) {
   if (context === 'trash') return trashTypeFilter !== 'all' || trashFolderFilter !== 'all';
   if (['calendar', 'stats', 'board'].includes(context)) return false;
-  if (context === 'mixed') return currentFilter !== 'all';
+  if (context === 'mixed') return currentFilter !== 'all'
+    || [todoPriorityFilter, todoDueFilter, todoFolderFilter, noteUpdatedFilter].some(value => value !== 'all');
   if (context === 'todo') return [todoPriorityFilter, todoDueFilter, todoFolderFilter].some(value => value !== 'all');
   return [noteFolderFilter, noteRelationFilter, noteUpdatedFilter].some(value => value !== 'all');
 }
@@ -1903,7 +1945,8 @@ function syncListFilterUI() {
 
   const completedToggle = $('#todoCompletedToggle');
   if (completedToggle) {
-    completedToggle.hidden = currentView !== 'todos' && !currentView.startsWith('folder:');
+    // 归类页的「显示已完成」由筛选面板承担，标题行开关只保留在所有待办。
+    completedToggle.hidden = currentView !== 'todos';
     completedToggle.classList.toggle('is-active', settings.showCompletedTodos);
     const box = $('#todoShowCompleted');
     if (box) box.checked = settings.showCompletedTodos;
@@ -1915,6 +1958,77 @@ function syncListFilterUI() {
     clearButton.title = t('clearFilters');
     clearButton.setAttribute('aria-label', t('clearFilters'));
   }
+
+  syncListFilterPanel(viewContext);
+}
+
+// —— 筛选面板（收集箱 / 归类页标题行的漏斗入口）——
+// 面板集成四个筛选（按优先级、按截止时间、按归类、按更新时间）与
+// 「显示已完成待办」开关；视图切换时自动收起。
+let listFilterPanelOpen = false;
+let listFilterPanelView = '';
+
+function syncListFilterPanel(viewContext = listViewContext()) {
+  const panel = $('#listFilterPanel');
+  const toggle = $('#listFilterToggle');
+  if (!panel || !toggle) return;
+  const showToggle = currentView === 'inbox' || currentView.startsWith('folder:');
+  if (viewContext !== listFilterPanelView) { listFilterPanelView = viewContext; listFilterPanelOpen = false; }
+  toggle.hidden = !showToggle;
+  toggle.setAttribute('aria-expanded', String(listFilterPanelOpen));
+  panel.hidden = !listFilterPanelOpen;
+  if (!listFilterPanelOpen) return;
+  const values = {
+    panelPriorityFilter: todoPriorityFilter,
+    panelDueFilter: todoDueFilter,
+    panelFolderFilter: todoFolderFilter,
+    panelUpdatedFilter: noteUpdatedFilter
+  };
+  syncFolderFilter($('#panelFolderFilter'), todoFolderFilter);
+  Object.entries(values).forEach(([id, value]) => {
+    const select = $(`#${id}`);
+    if (!select) return;
+    select.value = value;
+    select.closest('.filter-select')?.classList.toggle('is-active', value !== 'all');
+  });
+  const completedBox = $('#panelShowCompleted');
+  if (completedBox) completedBox.checked = settings.showCompletedTodos;
+  const clearButton = $('#listFilterPanelClear');
+  if (clearButton) {
+    clearButton.hidden = !hasActiveListFilters('mixed');
+    clearButton.title = t('clearFilters');
+    clearButton.setAttribute('aria-label', t('clearFilters'));
+  }
+  ['panelPriorityFilter', 'panelDueFilter', 'panelFolderFilter', 'panelUpdatedFilter'].forEach((id, index) => {
+    const select = $(`#${id}`);
+    select?.setAttribute('aria-label', t(['filterByPriority', 'filterByDeadline', 'filterByFolder', 'filterByUpdated'][index]));
+  });
+  const toggleTitle = $('#listFilterToggle');
+  toggleTitle?.setAttribute('aria-label', t('filterPanelTitle'));
+  toggleTitle?.setAttribute('title', t('filterPanelTitle'));
+}
+
+// 截止时间窗口筛选：待办列表与收集箱 / 归类页的筛选面板共用同一套窗口。
+function applyTodoDueWindow(items, window) {
+  const today = todayISO();
+  const upcoming = daysFromToday(7);
+  return items.filter(item => {
+    const dueDate = todoDueDateISO(item);
+    if (window === 'none') return !dueDate;
+    if (!dueDate) return false;
+    if (window === 'overdue') return dueDate < today;
+    if (window === 'today') return dueDate === today;
+    return dueDate > today && dueDate <= upcoming;
+  });
+}
+
+// 更新时间窗口筛选：笔记列表与筛选面板共用；无有效更新时间的条目不通过。
+function applyNoteUpdatedWindow(items, window) {
+  const cutoff = Date.now() - Number(window) * 86400000;
+  return items.filter(item => {
+    const updatedAt = Date.parse(item.updatedAt);
+    return Number.isFinite(updatedAt) && updatedAt >= cutoff;
+  });
 }
 
 function getVisibleItems() {
@@ -1929,7 +2043,8 @@ function getVisibleItems() {
     }
   }
   if (currentView === 'calendar') items = items.filter(item => (item.type === 'todo' && todoIsScheduled(item)) || item.type === 'note');
-  if (currentView === 'inbox') items = items.filter(item => !isTodoComplete(item) || pendingSink.has(item.id));
+  // 收集箱隐藏已完成；筛选面板的「显示已完成」打开后放行（与归类页一致）。
+  if (currentView === 'inbox') items = items.filter(item => settings.showCompletedTodos || !isTodoComplete(item) || pendingSink.has(item.id));
   if (currentView === 'today') items = items.filter(item => item.type === 'todo' && todoScheduleDate(item) === todayISO() && (!isTodoComplete(item) || pendingSink.has(item.id)));
   if (currentView === 'todos') items = items.filter(item => item.type === 'todo' && (settings.showCompletedTodos || !isTodoComplete(item) || pendingSink.has(item.id)));
   if (currentView === 'notes') items = items.filter(item => item.type === 'note');
@@ -1938,34 +2053,25 @@ function getVisibleItems() {
   const viewContext = listViewContext();
   const filterContext = listFilterContext();
   if (viewContext === 'mixed' && currentFilter !== 'all') items = items.filter(item => item.type === currentFilter);
+  if (filterContext === 'mixed') {
+    // 收集箱 / 归类页的筛选面板：优先级与截止时间只约束待办，归类与
+    // 更新时间约束全部条目。
+    if (todoPriorityFilter !== 'all') items = items.filter(item => item.type !== 'todo' || item.priority === todoPriorityFilter);
+    if (todoDueFilter !== 'all') items = applyTodoDueWindow(items, todoDueFilter);
+    if (todoFolderFilter !== 'all') items = items.filter(item => item.folderId === todoFolderFilter);
+    if (noteUpdatedFilter !== 'all') items = applyNoteUpdatedWindow(items, noteUpdatedFilter);
+  }
   if (filterContext === 'todo') {
     if (todoPriorityFilter !== 'all') items = items.filter(item => item.priority === todoPriorityFilter);
     if (todoFolderFilter !== 'all') items = items.filter(item => item.folderId === todoFolderFilter);
-    if (todoDueFilter !== 'all') {
-      const today = todayISO();
-      const upcoming = daysFromToday(7);
-      items = items.filter(item => {
-        const dueDate = todoDueDateISO(item);
-        if (todoDueFilter === 'none') return !dueDate;
-        if (!dueDate) return false;
-        if (todoDueFilter === 'overdue') return dueDate < today;
-        if (todoDueFilter === 'today') return dueDate === today;
-        return dueDate > today && dueDate <= upcoming;
-      });
-    }
+    if (todoDueFilter !== 'all') items = applyTodoDueWindow(items, todoDueFilter);
   }
   if (filterContext === 'note') {
     if (noteFolderFilter !== 'all') items = items.filter(item => item.folderId === noteFolderFilter);
     if (noteRelationFilter !== 'all') {
       items = items.filter(item => noteRelationFilter === 'linked' ? getLinkedItems(item).length > 0 : getLinkedItems(item).length === 0);
     }
-    if (noteUpdatedFilter !== 'all') {
-      const cutoff = Date.now() - Number(noteUpdatedFilter) * 86400000;
-      items = items.filter(item => {
-        const updatedAt = Date.parse(item.updatedAt);
-        return Number.isFinite(updatedAt) && updatedAt >= cutoff;
-      });
-    }
+    if (noteUpdatedFilter !== 'all') items = applyNoteUpdatedWindow(items, noteUpdatedFilter);
   }
   if (searchQuery && currentView !== 'calendar') {
     const query = searchQuery.toLocaleLowerCase();
@@ -2263,8 +2369,6 @@ function themeCanvasColors() {
   };
 }
 
-const STATS_CANVAS_MAX_HEIGHT = 14000;
-
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     const radius = Math.min(r, w / 2, h / 2);
@@ -2285,13 +2389,41 @@ function canvasTruncateText(ctx, text, maxWidth) {
   return `${truncated}…`;
 }
 
-function renderStatsCanvas(items) {
+// 画布正文换行：整词放不下时换行；整词自身超出行宽（连续中文、长链接）
+// 则逐字断。空行保留为段落间隔。返回行数组，不做省略号截断——导出图要
+// 完整呈现正文。
+function canvasWrapLines(ctx, text, maxWidth) {
+  const lines = [];
+  String(text || '').replace(/\r/g, '').split('\n').forEach(paragraph => {
+    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { lines.push(''); return; }
+    let line = '';
+    words.forEach(word => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (ctx.measureText(candidate).width <= maxWidth) { line = candidate; return; }
+      if (line) { lines.push(line); line = ''; }
+      if (ctx.measureText(word).width > maxWidth) {
+        for (const char of Array.from(word)) {
+          if (line && ctx.measureText(line + char).width > maxWidth) { lines.push(line); line = char; }
+          else line += char;
+        }
+      } else line = word;
+    });
+    lines.push(line);
+  });
+  return lines;
+}
+
+// 总结导出画布：按日分组的清单长图。待办逐条列出子待办与补充说明、
+// 笔记渲染完整正文，均不截断；scale 为导出分辨率倍率（1×/2×/3×），
+// 画布以 1080 逻辑宽度排版后整体放大绘制。
+function renderStatsCanvas(items, scale = 1) {
   const colors = themeCanvasColors();
   const width = 1080;
   const margin = 84;
   const fontFamily = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif';
   const measure = document.createElement('canvas').getContext('2d');
-  measure.font = `650 30px ${fontFamily}`;
+  const textWidth = width - margin * 2 - 118 - 24;
 
   const groups = new Map();
   items.forEach(item => {
@@ -2303,38 +2435,40 @@ function renderStatsCanvas(items) {
 
   const layout = [];
   let height = margin + 96 + 44 + 36;
-  const limit = STATS_CANVAS_MAX_HEIGHT - margin - 120;
-  let omitted = 0;
   groups.forEach((groupItems, key) => {
-    if (height >= limit) { omitted += groupItems.length; return; }
     height += 30 + 52;
     layout.push({ type:'group', key, count:groupItems.length });
     groupItems.forEach(item => {
-      if (height >= limit) { omitted += 1; return; }
-      const title = item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote'));
+      const isTodo = item.type === 'todo';
+      const done = isTodo && isTodoComplete(item);
+      const title = item.title || (isTodo ? t('untitledTodo') : t('untitledNote'));
       const folder = getFolder(item.folderId);
       const meta = [folderName(folder), formatListDateTime(item.createdAt)].filter(Boolean).join(' ');
-      const preview = stripHTML(item.type === 'note' ? item.body : item.notes || '') || '';
       measure.font = `650 30px ${fontFamily}`;
-      const titleWidth = width - margin * 2 - 118 - 24;
-      const titleLines = canvasTruncateText(measure, title, titleWidth);
+      const titleLine = canvasTruncateText(measure, title, textWidth);
       measure.font = `400 22px ${fontFamily}`;
-      const metaWidth = width - margin * 2 - 118 - 24;
-      const metaLines = meta ? [canvasTruncateText(measure, meta, metaWidth)] : [];
-      const previewLines = preview ? [canvasTruncateText(measure, preview.replace(/\s+/g, ' ').trim(), metaWidth)] : [];
-      const rowHeight = 34 + (titleLines ? 42 : 0) + (metaLines.length ? 32 : 0) + (previewLines.length ? 30 : 0) + 26;
+      const metaLine = meta ? canvasTruncateText(measure, meta, textWidth) : '';
+      const bodyLines = canvasWrapLines(measure, stripHTML(isTodo ? item.notes || '' : item.body || ''), textWidth);
+      const tasks = isTodo ? (item.tasks || []).filter(task => String(task.text || '').trim()) : [];
+      const taskEntries = tasks.map(task => ({ done: Boolean(task.done), lines: canvasWrapLines(measure, String(task.text || '').trim(), textWidth - 34) }));
+      const taskBlock = taskEntries.length
+        ? 12 + taskEntries.reduce((sum, entry) => sum + entry.lines.length * 30, 0)
+        : 0;
+      const rowHeight = 34 + (titleLine ? 42 : 0) + (metaLine ? 32 : 0)
+        + (bodyLines.length ? bodyLines.length * 30 + 10 : 0) + taskBlock + 26;
       height += rowHeight;
-      layout.push({ type:'item', item, title:titleLines, meta, metaLines, previewLines, height:rowHeight });
+      layout.push({ type:'item', item, isTodo, done, title:titleLine, meta:metaLine, bodyLines, taskEntries, height:rowHeight });
     });
   });
-  height = Math.min(height + 150, STATS_CANVAS_MAX_HEIGHT);
+  height += 150;
 
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = Math.round(height);
+  canvas.width = width * scale;
+  canvas.height = Math.round(height) * scale;
   const ctx = canvas.getContext('2d');
+  ctx.scale(scale, scale);
   ctx.fillStyle = colors.paper;
-  ctx.fillRect(0, 0, width, canvas.height);
+  ctx.fillRect(0, 0, width, Math.round(height));
   ctx.textBaseline = 'alphabetic';
 
   let y = margin;
@@ -2363,25 +2497,22 @@ function renderStatsCanvas(items) {
       y += 52;
       return;
     }
-    const item = entry.item;
-    const isTodo = item.type === 'todo';
-    const done = isTodo && isTodoComplete(item);
     const badge = { x:margin, y:y + 6, w:118, h:40 };
-    ctx.fillStyle = isTodo ? colors.todoSoft : colors.noteSoft;
+    ctx.fillStyle = entry.isTodo ? colors.todoSoft : colors.noteSoft;
     ctx.beginPath();
     ctx.roundRect(badge.x, badge.y, badge.w, badge.h, 12);
     ctx.fill();
-    ctx.fillStyle = isTodo ? colors.todoAccent : colors.noteAccent;
+    ctx.fillStyle = entry.isTodo ? colors.todoAccent : colors.noteAccent;
     ctx.font = `700 21px ${fontFamily}`;
-    const badgeText = isTodo ? (done ? `✓ ${t('done')}` : t('todo')) : t('note');
+    const badgeText = entry.isTodo ? (entry.done ? `✓ ${t('done')}` : t('todo')) : t('note');
     const badgeWidth = ctx.measureText(badgeText).width;
     ctx.fillText(badgeText, badge.x + (badge.w - badgeWidth) / 2, badge.y + 27);
     const textX = margin + 118 + 24;
     let textY = y + 30;
-    ctx.fillStyle = done ? colors.faint : colors.ink;
+    ctx.fillStyle = entry.done ? colors.faint : colors.ink;
     ctx.font = `650 30px ${fontFamily}`;
     ctx.fillText(entry.title, textX, textY);
-    if (done) {
+    if (entry.done) {
       const titleWidth = ctx.measureText(entry.title).width;
       ctx.strokeStyle = colors.faint;
       ctx.lineWidth = 2;
@@ -2391,30 +2522,55 @@ function renderStatsCanvas(items) {
       ctx.stroke();
     }
     textY += 42;
-    ctx.font = `400 22px ${fontFamily}`;
-    ctx.fillStyle = colors.muted;
-    if (entry.metaLines.length) {
-      ctx.fillText(entry.metaLines[0], textX, textY);
+    if (entry.meta) {
+      ctx.font = `400 22px ${fontFamily}`;
+      ctx.fillStyle = colors.muted;
+      ctx.fillText(entry.meta, textX, textY);
       textY += 32;
     }
-    if (entry.previewLines.length) {
-      ctx.fillStyle = colors.faint;
-      ctx.fillText(entry.previewLines[0], textX, textY);
-      textY += 30;
+    if (entry.bodyLines.length) {
+      ctx.font = `400 22px ${fontFamily}`;
+      ctx.fillStyle = colors.ink;
+      entry.bodyLines.forEach(line => {
+        if (line) ctx.fillText(line, textX, textY);
+        textY += 30;
+      });
+      textY += 10;
+    }
+    if (entry.taskEntries.length) {
+      textY += 2;
+      ctx.font = `400 21px ${fontFamily}`;
+      entry.taskEntries.forEach(task => {
+        task.lines.forEach((line, lineIndex) => {
+          if (lineIndex === 0) {
+            ctx.fillStyle = task.done ? colors.faint : colors.todoAccent;
+            ctx.fillText(task.done ? '✓' : '○', textX, textY);
+          }
+          const indent = textX + 34;
+          if (task.done) {
+            ctx.fillStyle = colors.faint;
+            ctx.fillText(line, indent, textY);
+            const lineWidth = ctx.measureText(line).width;
+            ctx.strokeStyle = colors.faint;
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(indent, textY - 7);
+            ctx.lineTo(indent + lineWidth, textY - 7);
+            ctx.stroke();
+          } else {
+            ctx.fillStyle = colors.ink;
+            ctx.fillText(line, indent, textY);
+          }
+          textY += 30;
+        });
+      });
     }
     y += entry.height;
   });
 
-  if (omitted > 0) {
-    ctx.fillStyle = colors.faint;
-    ctx.font = `600 22px ${fontFamily}`;
-    ctx.fillText(t('moreTodos').replace('{0}', omitted), margin, y + 30);
-    y += 46;
-  }
-
   ctx.fillStyle = colors.faint;
   ctx.font = `500 22px ${fontFamily}`;
-  ctx.fillText(`${formatDateTimeSeconds(new Date().toISOString())} Acta 行记`, margin, canvas.height - margin / 1.6);
+  ctx.fillText(`${formatDateTimeSeconds(new Date().toISOString())} Acta 行记`, margin, Math.round(height) - margin / 1.6);
   return canvas;
 }
 
@@ -2447,16 +2603,89 @@ async function saveExportAssets(assets) {
   return assets;
 }
 
+// 导出选项：分辨率倍率、图片格式（PNG / JPG）与 JPG 压缩质量。与计划板
+// 导出共用同一套选项控件；确认后才进入存储位置选择。
+function askStatsExportOptions() {
+  return new Promise(resolve => {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'relation-dialog board-export-dialog';
+    const state = { scale: 1, format: 'png', quality: 0.9 };
+    dialog.innerHTML = `
+      <header class="relation-dialog-head"><span><svg><use href="#i-image"/></svg></span><div><h3>${escapeHTML(t('statsExportTitle'))}</h3><small>${escapeHTML(t('statsExportHint'))}</small></div><button class="relation-dialog-close" type="button" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></header>
+      <div class="relation-dialog-body board-export-options">
+        <div class="board-style-row"><span>${escapeHTML(t('exportScale'))}</span><div class="board-import-seg" role="group">${[1, 2, 3].map(scale => `<button type="button" data-export-scale="${scale}"${scale === state.scale ? ' class="active"' : ''}>${scale}×</button>`).join('')}</div></div>
+        <div class="board-style-row"><span>${escapeHTML(t('exportFormat'))}</span><div class="board-import-seg" role="group"><button type="button" data-export-format="png" class="active">PNG</button><button type="button" data-export-format="jpg">JPG</button></div></div>
+        <div class="board-style-row"><span>${escapeHTML(t('exportQuality'))}</span><input type="range" min="50" max="100" step="5" value="${state.quality * 100}" data-export-quality disabled aria-label="${escapeHTML(t('exportQuality'))}"/><output>90%</output></div>
+      </div>
+      <footer class="settings-actions board-import-actions">
+        <button type="button" class="settings-button secondary" data-export-cancel>${escapeHTML(t('cancel'))}</button>
+        <button type="button" class="settings-button" data-export-confirm><svg><use href="#i-check"/></svg><span>${escapeHTML(t('exportConfirm'))}</span></button>
+      </footer>`;
+    let settled = false;
+    const finish = value => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+      if (dialog.open) dialog.close();
+      dialog.remove();
+    };
+    const syncQuality = () => {
+      const input = dialog.querySelector('[data-export-quality]');
+      input.disabled = state.format !== 'jpg';
+      input.value = String(Math.round(state.quality * 100));
+      const output = input.parentElement?.querySelector('output');
+      if (output) output.textContent = `${Math.round(state.quality * 100)}%`;
+    };
+    dialog.addEventListener('click', event => {
+      const scaleButton = event.target.closest('[data-export-scale]');
+      if (scaleButton) {
+        state.scale = Number(scaleButton.dataset.exportScale);
+        $$('[data-export-scale]', dialog).forEach(button => button.classList.toggle('active', button === scaleButton));
+        return;
+      }
+      const formatButton = event.target.closest('[data-export-format]');
+      if (formatButton) {
+        state.format = formatButton.dataset.exportFormat;
+        $$('[data-export-format]', dialog).forEach(button => button.classList.toggle('active', button === formatButton));
+        syncQuality();
+        return;
+      }
+      if (event.target.closest('[data-export-cancel]')) { finish(null); return; }
+      if (event.target.closest('[data-export-confirm]')) { finish({ ...state }); }
+    });
+    dialog.addEventListener('input', event => {
+      const slider = event.target.closest('[data-export-quality]');
+      if (!slider) return;
+      state.quality = Number(slider.value) / 100;
+      const output = slider.parentElement?.querySelector('output');
+      if (output) output.textContent = `${slider.value}%`;
+    });
+    dialog.querySelector('.relation-dialog-close').addEventListener('click', () => finish(null));
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); });
+    dialog.addEventListener('close', () => finish(null));
+    syncQuality();
+    document.body.appendChild(dialog);
+    dialog.showModal();
+  });
+}
+
 async function exportStatsImage() {
   const items = statsCollectionItems().filter(item => statsSelection.has(item.id));
   if (!items.length) {
     showToast(t('statsNeedSelection'));
     return;
   }
+  const options = await askStatsExportOptions();
+  if (!options) return;
   try {
-    const canvas = renderStatsCanvas(items);
+    const canvas = renderStatsCanvas(items, options.scale);
     const stamp = todayISO();
-    const asset = { fileName:`Acta ${t('statsListTitle')} ${stamp}.png`, mimeType:'image/png', dataUrl:canvas.toDataURL('image/png') };
+    const jpg = options.format === 'jpg';
+    const asset = {
+      fileName: `Acta ${t('statsListTitle')} ${stamp}.${jpg ? 'jpg' : 'png'}`,
+      mimeType: jpg ? 'image/jpeg' : 'image/png',
+      dataUrl: canvas.toDataURL(jpg ? 'image/jpeg' : 'image/png', jpg ? options.quality : undefined)
+    };
     const saved = await saveExportAssets([asset]);
     if (saved) showToast(t('statsImageDone'));
   } catch (error) {
@@ -8750,10 +8979,10 @@ function bindShell() {
   const mobileLayer = $('#mobileCreateLayer');
   mobileLayer?.addEventListener('click', event => {
     if (event.target.closest('[data-mobile-create-close]')) { closeMobileCreate(); return; }
-    // 导入是既有文件选择流程，先于通用 createItem 分派（它也带 data-create 以取弧位）。
+    // 导入先弹类型选择窗（笔记 / 待办），再进入各自的文件选择流程。
     if (event.target.closest('[data-import]')) {
       closeMobileCreate();
-      importNoteFromFile();
+      openImportDataDialog();
       return;
     }
     const action = event.target.closest('[data-create]');
@@ -8777,8 +9006,12 @@ function bindShell() {
     return true;
   };
   $$('#createMenu [data-create]').forEach(button => button.addEventListener('click', () => createItem(button.dataset.create)));
-  $('#importNoteButton').addEventListener('click', importNoteFromFile);
-  $('#importTodoButton')?.addEventListener('click', importTodoFromFile);
+  // 导入数据：先选类型（笔记 / 待办），选择后立刻进入对应的文件选择流程。
+  const openImportDataDialog = () => $('#importDataDialog')?.showModal();
+  $('#importDataButton')?.addEventListener('click', openImportDataDialog);
+  $('#closeImportData')?.addEventListener('click', () => $('#importDataDialog')?.close());
+  $('#importDataNote')?.addEventListener('click', () => { $('#importDataDialog')?.close(); importNoteFromFile(); });
+  $('#importDataTodo')?.addEventListener('click', () => { $('#importDataDialog')?.close(); importTodoFromFile(); });
   document.addEventListener('click', event => {
     if (!event.target.closest('#createMenu')) $('#createMenu').classList.remove('open');
   });
@@ -8957,6 +9190,41 @@ function bindShell() {
     if (settingBox) settingBox.checked = settings.showCompletedTodos;
   };
   $('#todoCompletedToggle')?.addEventListener('click', () => setTimeout(showCompletedSettingSync, 0));
+  // —— 筛选面板（收集箱 / 归类页）：开关、四个筛选、显示已完成与清除 ——
+  $('#listFilterToggle')?.addEventListener('click', event => {
+    event.stopPropagation();
+    listFilterPanelOpen = !listFilterPanelOpen;
+    syncListFilterPanel();
+  });
+  $('#listFilterPanel')?.addEventListener('click', event => {
+    if (!event.target.closest('#listFilterPanelClear')) return;
+    resetListFilters('mixed');
+    renderAll();
+  });
+  const panelFilterBindings = {
+    panelPriorityFilter: value => { todoPriorityFilter = value; },
+    panelDueFilter: value => { todoDueFilter = value; },
+    panelFolderFilter: value => { todoFolderFilter = value; noteFolderFilter = value; },
+    panelUpdatedFilter: value => { noteUpdatedFilter = value; }
+  };
+  Object.entries(panelFilterBindings).forEach(([id, apply]) => {
+    $(`#${id}`)?.addEventListener('change', event => {
+      apply(event.target.value);
+      renderAll();
+    });
+  });
+  $('#panelShowCompleted')?.addEventListener('change', event => {
+    settings.showCompletedTodos = event.target.checked;
+    persist();
+    showCompletedSettingSync();
+    renderAll();
+  });
+  document.addEventListener('click', event => {
+    if (!listFilterPanelOpen) return;
+    if (event.target.closest('#listFilterPanel') || event.target.closest('#listFilterToggle')) return;
+    listFilterPanelOpen = false;
+    syncListFilterPanel();
+  });
   $('#searchInput').addEventListener('input', event => {
     searchQuery = event.target.value.trim(); renderList();
     const visible = getVisibleItems();
@@ -9049,7 +9317,10 @@ function getSyncBridge() {
     },
     uploadLibrary: (folder, library) => nativeSync.uploadLibrary({ folder, library }),
     downloadLibrary: (folder) => nativeSync.downloadLibrary({ folder }),
-    inspectFolder: (folder) => nativeSync.inspectFolder({ folder })
+    inspectFolder: (folder) => nativeSync.inspectFolder({ folder }),
+    // 备份管理：原生实现位于 ActaLanPlugin（备份由 LAN 同步写入同一目录）。
+    listBackups: () => window.Capacitor?.Plugins?.ActaLan?.listBackups?.() || Promise.reject(new Error('备份管理不可用')),
+    readBackup: (path) => window.Capacitor?.Plugins?.ActaLan?.readBackup?.({ path }) || Promise.reject(new Error('备份管理不可用'))
   };
 }
 

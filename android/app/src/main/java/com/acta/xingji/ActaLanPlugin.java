@@ -1190,6 +1190,174 @@ public class ActaLanPlugin extends Plugin {
         worker.start();
     }
 
+    // ---------- 备份管理 ----------
+
+    private File backupsBaseDir() {
+        File base = getContext().getApplicationContext().getExternalFilesDir(null);
+        if (base == null) base = getContext().getApplicationContext().getFilesDir();
+        return base == null ? null : new File(base, "backups");
+    }
+
+    // 备份目录名：lan-<时间戳>-<档案名>（LAN 同步覆盖前的自动备份）或
+    // <时间戳>-<档案名>（恢复前的安全备份）。两种都认；用户随手放进来的
+    // 文件夹不当作备份。
+    private static boolean looksLikeBackupDirectory(File directory) {
+        String name = directory.getName();
+        return name.startsWith("lan-") || name.matches("^\\d{8}-\\d{6}.*");
+    }
+
+    private static int countBoardFiles(File directory, JSONObject manifest) {
+        JSONArray boardFiles = manifest == null ? null : manifest.optJSONArray("boardFiles");
+        if (boardFiles != null) return boardFiles.length();
+        File legacy = new File(directory, "boards.json");
+        if (legacy.isFile()) {
+            try {
+                JSONArray boards = new JSONObject(readBackupFileText(legacy)).optJSONArray("boards");
+                if (boards != null) return boards.length();
+            } catch (Exception ignored) { }
+        }
+        return 0;
+    }
+
+    @PluginMethod
+    public void listBackups(final PluginCall call) {
+        Thread worker = new Thread(() -> {
+            try {
+                File backupsRoot = backupsBaseDir();
+                JSONArray entries = new JSONArray();
+                if (backupsRoot != null && backupsRoot.isDirectory()) {
+                    File[] roots = { new File(backupsRoot, "lan-sync"), backupsRoot };
+                    java.util.Set<String> seen = new java.util.HashSet<>();
+                    for (File root : roots) {
+                        File[] children = root.listFiles();
+                        if (children == null) continue;
+                        for (File directory : children) {
+                            if (!directory.isDirectory() || !looksLikeBackupDirectory(directory)) continue;
+                            if (!seen.add(directory.getAbsolutePath())) continue;
+                            JSONObject manifest = null;
+                            File manifestFile = new File(directory, DATA_MANIFEST_FILE);
+                            if (manifestFile.isFile()) {
+                                try { manifest = new JSONObject(readBackupFileText(manifestFile)); } catch (Exception ignored) { }
+                            }
+                            JSONArray noteEntries = manifest == null ? null : manifest.optJSONArray("notes");
+                            JSONArray todoEntries = manifest == null ? null : manifest.optJSONArray("todos");
+                            JSObject entry = new JSObject();
+                            entry.put("name", directory.getName());
+                            entry.put("path", directory.getAbsolutePath());
+                            entry.put("notes", noteEntries == null ? 0 : noteEntries.length());
+                            entry.put("todos", todoEntries == null ? 0 : todoEntries.length());
+                            entry.put("boards", countBoardFiles(directory, manifest));
+                            entry.put("bytes", directorySize(directory));
+                            entry.put("createdAt", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT).format(new Date(directory.lastModified())));
+                            entries.put(entry);
+                        }
+                    }
+                }
+                JSObject response = new JSObject();
+                response.put("backups", entries);
+                call.resolve(response);
+            } catch (Exception error) {
+                call.reject("读取备份列表失败：" + error.getMessage());
+            }
+        }, "acta-backup-list");
+        worker.setDaemon(true);
+        worker.start();
+    }
+
+    @PluginMethod
+    public void readBackup(final PluginCall call) {
+        String path = call.getString("path");
+        if (path == null || path.isEmpty()) {
+            call.reject("未指定要恢复的备份");
+            return;
+        }
+        Thread worker = new Thread(() -> {
+            try {
+                File backupsRoot = backupsBaseDir();
+                if (backupsRoot == null) throw new Exception("备份文件夹不可用");
+                File directory = new File(path).getCanonicalFile();
+                if (!directory.getPath().startsWith(backupsRoot.getCanonicalFile().getPath())) {
+                    throw new Exception("只能恢复软件数据文件夹内的备份");
+                }
+                if (!directory.isDirectory()) throw new Exception("备份不存在或已被删除");
+                call.resolve(JSObject.fromJSONObject(readBackupBundle(directory)));
+            } catch (Exception error) {
+                call.reject("读取备份失败：" + error.getMessage());
+            }
+        }, "acta-backup-read");
+        worker.setDaemon(true);
+        worker.start();
+    }
+
+    // 把备份文件夹组装回标准数据档案包（与读取现有档案同一格式）：
+    // v5 备份按 manifest.boardFiles 清单读 boards/ 目录，v4 及更早读
+    // 单一 boards.json。
+    private static JSONObject readBackupBundle(File directory) throws Exception {
+        File manifestFile = new File(directory, DATA_MANIFEST_FILE);
+        if (!manifestFile.isFile()) throw new Exception("这不是有效的 Acta 备份");
+        JSONObject manifest = new JSONObject(readBackupFileText(manifestFile));
+        JSONObject files = new JSONObject();
+        files.put(DATA_MANIFEST_FILE, manifest);
+        files.put(CLASSIFICATIONS_FILE, new JSONObject(readBackupFileText(new File(directory, CLASSIFICATIONS_FILE))));
+        File notesDirectory = new File(directory, "notes");
+        File todosDirectory = new File(directory, "todos");
+        JSONObject noteFiles = new JSONObject();
+        JSONArray noteEntries = manifest.optJSONArray("notes");
+        if (noteEntries != null) {
+            for (int index = 0; index < noteEntries.length(); index++) {
+                JSONObject entry = noteEntries.getJSONObject(index);
+                if (entry.has("config") && entry.has("markdown")) {
+                    noteFiles.put(entry.getString("config"), new JSONObject(readBackupFileText(new File(notesDirectory, entry.getString("config")))));
+                    noteFiles.put(entry.getString("markdown"), readBackupFileText(new File(notesDirectory, entry.getString("markdown"))));
+                } else {
+                    String name = entry.getString("file");
+                    noteFiles.put(name, new JSONObject(readBackupFileText(new File(notesDirectory, name))));
+                }
+            }
+        }
+        JSONObject todoFiles = new JSONObject();
+        JSONArray todoEntries = manifest.optJSONArray("todos");
+        if (todoEntries != null) {
+            for (int index = 0; index < todoEntries.length(); index++) {
+                String name = todoEntries.getJSONObject(index).getString("file");
+                todoFiles.put(name, new JSONObject(readBackupFileText(new File(todosDirectory, name))));
+            }
+        }
+        int manifestVersion = manifest.optInt("version", 2);
+        if (manifestVersion >= 5) {
+            JSONObject boardFiles = new JSONObject();
+            JSONArray boardEntries = manifest.optJSONArray("boardFiles");
+            File boardsDirectory = new File(directory, "boards");
+            if (boardEntries != null) {
+                for (int index = 0; index < boardEntries.length(); index++) {
+                    String name = boardEntries.getJSONObject(index).getString("file");
+                    boardFiles.put(name, new JSONObject(readBackupFileText(new File(boardsDirectory, name))));
+                }
+            }
+            files.put("boards", boardFiles);
+        } else {
+            File legacy = new File(directory, "boards.json");
+            if (legacy.isFile()) files.put("boards.json", new JSONObject(readBackupFileText(legacy)));
+        }
+        files.put("notes", noteFiles);
+        files.put("todos", todoFiles);
+        JSONObject bundle = new JSONObject();
+        bundle.put("format", "acta-data-folder-bundle");
+        bundle.put("version", manifestVersion);
+        bundle.put("files", files);
+        return bundle;
+    }
+
+    private static String readBackupFileText(File file) throws Exception {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (InputStream input = new java.io.FileInputStream(file)) {
+            byte[] buffer = new byte[8192];
+            int count;
+            while ((count = input.read(buffer)) != -1) bytes.write(buffer, 0, count);
+        }
+        return bytes.toString(StandardCharsets.UTF_8.name());
+    }
+
     // ---------- HTTP 服务内部 ----------
 
     private void handleConnection(Socket socket) {

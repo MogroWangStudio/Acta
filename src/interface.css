@@ -272,7 +272,7 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 /* 底栏图标样式只影响移动端布局，桌面设置页不展示。 */
 .mobile-nav-settings { display: none; }
 @media (max-width: 800px) { .mobile-nav-settings { display: block; } }
-/* 页面跳转栏设置按当前端显示：桌面只看侧边栏分组，移动只看底栏与顶栏分组。 */
+/* 工具栏设置按当前端显示：桌面只看侧边栏分组，移动只看底栏与顶栏分组。 */
 .nav-mobile-settings-only { display: none; }
 @media (max-width: 800px) {
   .nav-mobile-settings-only { display: block; }
@@ -1067,6 +1067,34 @@ html[data-acta-theme="mono-dark"] .classification-emoji-picker > header button {
 .item-header .todo-completed-toggle svg { width: 12px; height: 12px; color: var(--todo-accent); }
 .item-header .todo-completed-toggle:hover { border-color: color-mix(in srgb, var(--todo-accent) 30%, var(--line)); color: var(--todo-accent); background: color-mix(in srgb, var(--todo-soft) 50%, var(--white)); }
 .item-header .todo-completed-toggle.is-active { border-color: color-mix(in srgb, var(--todo-accent) 34%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 62%, var(--white)); color: var(--todo-accent); }
+/* —— 筛选面板（收集箱 / 归类页）：标题行漏斗按钮弹出的筛选集成面板 ——
+   面板收纳四个筛选（按优先级、按截止时间、按归类、按更新时间）与
+   「显示已完成待办」开关；弹出与条目元数据浮层同一动画语言。 */
+.item-title-row { position: relative; }
+.list-filter-toggle { display: grid; place-items: center; width: 28px; height: 28px; margin-left: 2px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--faint); cursor: pointer; transition: color .18s ease, background-color .18s ease, transform .16s var(--ease-out); }
+.list-filter-toggle svg { width: 14px; height: 14px; }
+.list-filter-toggle:hover { color: var(--ink); background: var(--panel); transform: scale(1.05); }
+.list-filter-toggle[aria-expanded="true"] { color: var(--ink); background: var(--panel); }
+.list-filter-panel {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 40; width: min(268px, calc(100vw - 40px));
+  padding: 12px; display: grid; gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 14px;
+  background: var(--paper);
+  box-shadow: 0 3px 9px -2px rgba(31,35,30,.12), 0 14px 32px -10px rgba(31,35,30,.2);
+  transform-origin: top right;
+  animation: itemMetaPopoverIn .22s var(--ease-out) both;
+}
+.list-filter-panel[hidden] { display: none; }
+.list-filter-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.list-filter-panel-head b { font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; color: var(--ink); }
+.list-filter-panel-clear { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: color .16s ease, border-color .16s ease; }
+.list-filter-panel-clear svg { width: 10px; height: 10px; }
+.list-filter-panel-clear:hover { color: var(--ink); border-color: color-mix(in srgb, var(--faint) 40%, var(--line)); }
+.list-filter-panel .filter-select { width: 100%; }
+.list-filter-panel .todo-completed-toggle { justify-content: flex-start; gap: 7px; }
+@media (prefers-reduced-motion: reduce) {
+  .list-filter-panel { animation: none; }
+}
 .folder-name-dialog { width: min(400px, calc(100vw - 32px)); }
 .folder-name-form { display: grid; gap: 12px; }
 .folder-name-input { width: 100%; height: 40px; box-sizing: border-box; padding: 0 11px; border: 1px solid var(--line); border-radius: 10px; outline: 0; background: var(--white); color: var(--ink); font-size: calc(12px * var(--acta-font-scale)); transition: border-color .2s, box-shadow .2s; }
@@ -2669,6 +2697,42 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 .delete-choice.is-destroy:hover .delete-choice-go { color: var(--danger-accent); }
 .delete-confirm-actions { margin: 13px 20px 18px; justify-content: flex-end; }
 
+/* --- 导入数据弹窗：先选类型（笔记 / 待办）再进入文件选择 --- */
+.import-data-dialog { width: min(430px, calc(100vw - 28px)); }
+.import-data-body { padding: 18px 20px 20px; display: grid; gap: 9px; }
+.import-data-choice { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 72%, transparent); color: var(--ink); text-align: left; cursor: pointer; transition: border-color .2s ease, background .2s ease, transform .18s var(--ease-out), box-shadow .2s var(--ease-out); }
+.import-data-choice:hover { transform: scale(1.01); box-shadow: 0 5px 12px -4px rgba(55,53,45,.08); }
+.import-data-choice > span:first-child { width: 32px; height: 32px; flex: 0 0 auto; border-radius: 9px; display: grid; place-items: center; }
+.import-data-choice > span:first-child svg { width: 15px; height: 15px; }
+.import-data-choice.is-note { border-color: color-mix(in srgb, var(--note-accent) 24%, var(--line)); }
+.import-data-choice.is-note > span:first-child { color: var(--note-accent); background: var(--note-soft); }
+.import-data-choice.is-note:hover { border-color: color-mix(in srgb, var(--note-accent) 48%, var(--line)); background: color-mix(in srgb, var(--note-soft) 26%, var(--white)); }
+.import-data-choice.is-todo { border-color: color-mix(in srgb, var(--todo-accent) 24%, var(--line)); }
+.import-data-choice.is-todo > span:first-child { color: var(--todo-accent); background: var(--todo-soft); }
+.import-data-choice.is-todo:hover { border-color: color-mix(in srgb, var(--todo-accent) 48%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 26%, var(--white)); }
+.import-data-copy { min-width: 0; flex: 1; display: grid; gap: 2px; }
+.import-data-copy b { font-size: calc(12px * var(--acta-font-scale)); font-weight: 700; }
+.import-data-copy small { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.5; }
+.import-data-go { width: 13px; height: 13px; flex: 0 0 auto; color: var(--faint); }
+.import-data-choice:hover .import-data-go { color: var(--ink); }
+
+/* --- 备份管理：备份列表与恢复（行记数据设置页入口） --- */
+.backup-manager-dialog { width: min(560px, calc(100vw - 28px)); }
+.backup-manager-body { padding: 16px 20px 18px; display: grid; gap: 12px; max-height: min(60vh, 520px); overflow: hidden auto; overscroll-behavior: contain; }
+.backup-list { display: grid; gap: 8px; }
+.backup-empty { margin: 0; color: var(--muted); font-size: calc(11px * var(--acta-font-scale)); line-height: 1.7; padding: 14px 4px; }
+.backup-entry { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 72%, transparent); animation: backupEntryIn .26s var(--ease-out) both; animation-delay: var(--backup-delay, 0ms); }
+@keyframes backupEntryIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.backup-entry-icon { width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9px; display: grid; place-items: center; color: var(--muted); background: color-mix(in srgb, var(--panel) 80%, transparent); }
+.backup-entry-icon svg { width: 14px; height: 14px; }
+.backup-entry-copy { min-width: 0; flex: 1; display: grid; gap: 2px; }
+.backup-entry-copy b { font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.backup-entry-copy small { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.backup-manager-body .settings-status { margin: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .backup-entry { animation: none; }
+}
+
 /* --- Quick actions in the item meta popover --- */
 .todo-meta-grid .quick-actions-field { grid-column: 1 / -1; }
 .meta-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px; }
@@ -3289,7 +3353,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   html[data-desktop-platform="darwin"] .titlebar-center { grid-column: 1; justify-content: flex-end; padding: 0 70px 0 16px; border-left: 0; }
 }
 
-/* —— 页面跳转栏设置 —— */
+/* —— 工具栏设置 —— */
 .nav-page-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 2px 15px 13px; }
 .nav-page-grid label { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 45%, transparent); cursor: pointer; transition: border-color .15s ease, background .15s ease; }
 .nav-page-grid label:hover { border-color: color-mix(in srgb, var(--sage) 32%, var(--line)); }
@@ -3391,12 +3455,18 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 }
 @media (min-width: 801px) { .mobile-create-layer { display: none !important; } }
 
-/* ===== 页面跳转栏的可视化预览 =====
-   三块预览（桌面侧栏 / 移动底栏 / 移动顶栏）实时呈现当前设置的样子，
-   所有候选入口全部亮起可点；点击两个入口即互换位置。 */
-.nav-preview-hint { margin: 2px 0 8px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
-.nav-preview-sidebar { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--sidebar) 40%, var(--panel)); }
-.nav-preview-sidebar .nav-preview-chip { background: var(--white); border-color: var(--line); color: var(--ink); }
+/* ===== 工具栏的可视化预览 =====
+   桌面端左栏竖排按钮预览（与实际侧栏同构），右栏是各入口的显示开关；
+   移动端底栏 / 顶栏预览呈现槽位组合，槽位顺序由下拉调整，点击两个
+   槽位即互换位置。 */
+.nav-preview-hint { margin: 6px 2px 0; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.5; }
+/* 桌面工具栏设置：左侧竖排预览、右侧开关，空间够时并排呈现。 */
+.nav-desktop-layout { display: grid; grid-template-columns: minmax(168px, 216px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.nav-desktop-preview { display: grid; gap: 4px; }
+/* 竖排预览与实际侧栏同构：图标 + 文字的整行按钮，点击切换显隐。 */
+.nav-preview-sidebar { display: flex; flex-direction: column; gap: 3px; padding: 9px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--sidebar) 40%, var(--panel)); }
+.nav-preview-sidebar .nav-preview-chip { justify-content: flex-start; width: 100%; padding: 7px 11px; border-color: transparent; border-radius: 9px; background: transparent; }
+.nav-preview-sidebar .nav-preview-chip:hover { background: color-mix(in srgb, var(--white) 62%, transparent); transform: none; }
 .nav-preview-sidebar .nav-preview-chip.is-off { opacity: .38; }
 .nav-preview-bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--panel) 74%, transparent); }
 .nav-preview-cell {
@@ -3411,20 +3481,20 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 .nav-preview-cell.is-slot { cursor: pointer; transition: background .15s ease, box-shadow .15s ease, transform .15s var(--ease-out); }
 .nav-preview-cell.is-slot:hover { background: var(--white); }
 .nav-preview-cell.is-picked { box-shadow: 0 0 0 2px var(--sage); transform: scale(1.04); color: var(--ink); }
-.nav-preview-pool { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
 .nav-preview-chip {
-  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+  display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px;
   border: 1px solid var(--line); border-radius: 999px;
   background: color-mix(in srgb, var(--white) 72%, transparent); color: var(--ink);
   font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer;
   transition: background .15s ease, box-shadow .15s ease, transform .15s var(--ease-out), opacity .15s ease;
 }
-.nav-preview-chip svg { width: 14px; height: 14px; }
+.nav-preview-chip svg { width: 14px; height: 14px; flex: 0 0 auto; }
 .nav-preview-chip:hover { background: var(--white); transform: translateY(-1px); }
-.nav-preview-chip.is-used { border-color: color-mix(in srgb, var(--sage) 42%, var(--line)); background: color-mix(in srgb, var(--sage-2) 34%, transparent); }
-.nav-preview-chip.is-used::after { content: "●"; font-size: calc(7px * var(--acta-font-scale)); color: var(--sage); margin-left: -2px; }
 .nav-preview-chip.is-picked { box-shadow: 0 0 0 2px var(--sage); border-color: transparent; }
 .nav-preview-cell.is-picked, .nav-preview-chip.is-picked { cursor: pointer; }
+@media (max-width: 1120px) {
+  .nav-desktop-layout { grid-template-columns: 1fr; }
+}
 body.acta-reduce-motion .nav-preview-cell, body.acta-reduce-motion .nav-preview-chip { transition: none; }
 
 /* ===== 打卡待办：持续天数与完整月历 ===== */
@@ -3440,7 +3510,8 @@ body.acta-reduce-motion .nav-preview-cell, body.acta-reduce-motion .nav-preview-
 .checkin-calendar-head button { width: 26px; height: 26px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: color .14s ease, border-color .14s ease; }
 .checkin-calendar-head button:hover { color: var(--ink); border-color: color-mix(in srgb, var(--faint) 40%, var(--line)); }
 .checkin-calendar-head button svg { width: 12px; height: 12px; }
-.checkin-calendar-head button.is-next svg { transform: rotate(180deg); }
+/* #i-chevron 默认指向右：上一月需要左箭头，旋转放在 prev 上（与主日历一致）。 */
+.checkin-calendar-head button.is-prev svg { transform: rotate(180deg); }
 .checkin-calendar-weekdays, .checkin-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 9px; }
 .checkin-calendar-weekdays i { text-align: center; color: var(--faint); font-style: normal; font-size: calc(8px * var(--acta-font-scale)); font-weight: 650; }
 .checkin-calendar-grid i { display: grid; place-items: center; aspect-ratio: 1; min-height: 30px; border-radius: 8px; background: transparent; color: var(--muted); font-style: normal; font-size: calc(10px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }

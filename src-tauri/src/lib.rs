@@ -241,12 +241,124 @@ async fn lan_sync_backup_local(
     lan_sync::lan_sync_backup_local(app, bundle, profile_name).await
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct DataBackupEntry {
+    name: String,
+    path: String,
+    created_at: String,
+    notes: u64,
+    todos: u64,
+    boards: u64,
+    bytes: u64,
+}
+
+fn resolve_backups_root(app: &AppHandle) -> Result<PathBuf, String> {
+    let base = match resolve_app_data_path(app)? {
+        Some(path) => path,
+        None => app.path().app_data_dir().map_err(|error| error.to_string())?,
+    };
+    Ok(base.join("backups"))
+}
+
+// 备份管理：列出软件数据文件夹 backups/ 下的全部备份（LAN 同步覆盖前的
+// 自动备份、恢复前的安全备份都落在其中）。每个备份本身是一份标准数据
+// 档案文件夹，条目统计读自各自的 manifest。
+#[tauri::command]
+async fn list_data_backups(app: AppHandle) -> Result<Vec<DataBackupEntry>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let backups_root = resolve_backups_root(&app)?;
+        let mut entries = Vec::new();
+        let mut seen = HashSet::new();
+        let roots = [backups_root.join("lan-sync"), backups_root.clone()];
+        for root in roots {
+            let Ok(read) = fs::read_dir(&root) else { continue };
+            for entry in read.flatten() {
+                let path = entry.path();
+                if !path.is_dir() || !seen.insert(path.clone()) {
+                    continue;
+                }
+                let name = entry.file_name().to_string_lossy().into_owned();
+                // 备份目录名：lan-<时间戳>-<档案名> 或 <时间戳>-<档案名>。
+                // 其他文件夹（用户自己的东西）不当作备份列出。
+                if !(name.starts_with("lan-") || name.split('-').next().is_some_and(|head| head.len() == 8 && head.chars().all(|character| character.is_ascii_digit()))) {
+                    continue;
+                }
+                let mut notes = 0;
+                let mut todos = 0;
+                let mut boards = 0;
+                if let Ok(manifest) = read_json(&path.join(DATA_MANIFEST_FILE)) {
+                    notes = manifest.get("notes").and_then(Value::as_array).map(Vec::len).unwrap_or(0) as u64;
+                    todos = manifest.get("todos").and_then(Value::as_array).map(Vec::len).unwrap_or(0) as u64;
+                    boards = manifest
+                        .get("boardFiles")
+                        .and_then(Value::as_array)
+                        .map(Vec::len)
+                        .unwrap_or(0) as u64;
+                }
+                if boards == 0 {
+                    if let Ok(legacy) = read_json(&path.join(BOARDS_FILE)) {
+                        boards = legacy.get("boards").and_then(Value::as_array).map(Vec::len).unwrap_or(0) as u64;
+                    }
+                }
+                let created_at = entry
+                    .metadata()
+                    .ok()
+                    .and_then(|metadata| metadata.modified().ok())
+                    .map(|modified| {
+                        let seconds: chrono::DateTime<Utc> = modified.into();
+                        seconds.to_rfc3339_opts(SecondsFormat::Millis, true)
+                    })
+                    .unwrap_or_default();
+                entries.push(DataBackupEntry {
+                    name,
+                    path: path.to_string_lossy().into_owned(),
+                    created_at,
+                    notes,
+                    todos,
+                    boards,
+                    bytes: lan_sync::directory_size(&path),
+                });
+            }
+        }
+        entries.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+        Ok(entries)
+    })
+    .await
+    .map_err(|error| error.to_string())?
+}
+
+// 读取一份备份为标准数据档案包：只允许读软件数据文件夹 backups/ 下的
+// 目录，防止把任意路径的文件夹当作备份写入。
+#[tauri::command]
+async fn read_data_backup(app: AppHandle, path: String) -> Result<Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let backups_root = resolve_backups_root(&app)?;
+        let requested = PathBuf::from(&path);
+        let canonical_root = backups_root
+            .canonicalize()
+            .map_err(|_| "备份文件夹不存在".to_string())?;
+        let canonical_requested = requested
+            .canonicalize()
+            .map_err(|_| "备份不存在或已被删除".to_string())?;
+        if !canonical_requested.starts_with(&canonical_root) {
+            return Err("只能恢复软件数据文件夹内的备份".into());
+        }
+        read_portable_data_folder(&canonical_requested).map_err(|error| error.to_string())
+    })
+    .await
+    .map_err(|error| error.to_string())?
+}
+
 const SYNC_FILE: &str = "acta-library.json";
 const DATA_MANIFEST_FILE: &str = "acta-manifest.json";
 const CLASSIFICATIONS_FILE: &str = "classifications.json";
-// 计划板文件：v4 数据档案的一部分，与笔记 / 待办一起读写与备份。
+// 计划板：v4 起随档案读写与备份；v5 起每个计划板单独一个文件存放在
+// boards/ 目录下（board-<id>.json）。boards.json 是 v4 及更早档案的旧
+// 位置，读取时仍兼容，由随后的保存自动迁移到目录。
 const BOARDS_FILE: &str = "boards.json";
-const DATA_FOLDER_VERSION: u64 = 4;
+const BOARDS_DIRECTORY: &str = "boards";
+const DATA_FOLDER_VERSION: u64 = 5;
 const NOTES_DIRECTORY: &str = "notes";
 const TODOS_DIRECTORY: &str = "todos";
 const NOTE_SIZE_LIMIT: u64 = 5 * 1024 * 1024;
@@ -306,6 +418,34 @@ fn safe_data_item_file_name(value: &str, allowed_extensions: &[&str]) -> Result<
     Ok(value.to_owned())
 }
 
+// 计划板文件名：board-<id>.json，id 由前端生成（base36 时间戳 + 随机段，
+// 允许连字符）。与条目文件一样拒绝路径分隔与扩展名之外的形态。
+fn safe_board_file_name(value: &str) -> Result<String, String> {
+    let path = Path::new(value);
+    if value.is_empty() || path.file_name().and_then(|name| name.to_str()) != Some(value) {
+        return Err("数据档案包含无效的计划板文件名".into());
+    }
+    let extension = path
+        .extension()
+        .and_then(|value| value.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    let stem = path
+        .file_stem()
+        .and_then(|value| value.to_str())
+        .unwrap_or_default();
+    let board_id = stem.strip_prefix("board-").unwrap_or_default();
+    if board_id.is_empty()
+        || !board_id
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || character == '-')
+        || extension != "json"
+    {
+        return Err("数据档案包含无效的计划板文件名".into());
+    }
+    Ok(value.to_owned())
+}
+
 fn write_data_file(path: &Path, value: &Value) -> Result<(), String> {
     if let Some(content) = value.as_str() {
         fs::write(path, content).map_err(|error| error.to_string())
@@ -314,7 +454,11 @@ fn write_data_file(path: &Path, value: &Value) -> Result<(), String> {
     }
 }
 
-fn remove_stale_item_files(directory: &Path, expected_files: &HashSet<String>) -> Result<(), String> {
+fn remove_stale_item_files(
+    directory: &Path,
+    is_recognized: &dyn Fn(&str) -> bool,
+    expected_files: &HashSet<String>,
+) -> Result<(), String> {
     for entry in fs::read_dir(directory).map_err(|error| error.to_string())? {
         let entry = entry.map_err(|error| error.to_string())?;
         if !entry
@@ -325,8 +469,7 @@ fn remove_stale_item_files(directory: &Path, expected_files: &HashSet<String>) -
             continue;
         }
         let name = entry.file_name().to_string_lossy().into_owned();
-        let recognized = safe_data_item_file_name(&name, &["json", "md"]).is_ok();
-        if recognized && !expected_files.contains(&name) {
+        if is_recognized(&name) && !expected_files.contains(&name) {
             fs::remove_file(entry.path()).map_err(|error| error.to_string())?;
         }
     }
@@ -355,6 +498,7 @@ fn write_portable_data_folder(folder: &Path, bundle: &Value) -> Result<(), Strin
         && manifest.get("format").and_then(Value::as_str) == Some("acta-data-folder")
         && (3..=DATA_FOLDER_VERSION).contains(&manifest_version)
         && manifest.get("classifications").and_then(Value::as_str) == Some(CLASSIFICATIONS_FILE)
+        && (bundle_version < 5 || manifest.get("boards").and_then(Value::as_str) == Some(BOARDS_DIRECTORY))
         && classifications.get("format").and_then(Value::as_str) == Some("acta-classifications")
         && classifications.get("version").and_then(Value::as_u64) == Some(1)
         && classifications.get("folders").and_then(Value::as_array).is_some();
@@ -391,14 +535,48 @@ fn write_portable_data_folder(folder: &Path, bundle: &Value) -> Result<(), Strin
     }
 
     write_json(&folder.join(CLASSIFICATIONS_FILE), classifications)?;
-    // 计划板紧跟归类落盘：清单最后写，读的一方不会看到「清单已升到 v4、板还没写」。
+    // 计划板：v5 档案按 board-<id>.json 逐板写入 boards/ 目录；v3/v4 档案
+    // 仍是单一 boards.json，原样落盘（读取端随后升格）。清单最后写，
+    // 读的一方不会看到「清单已升格、板还没写」。
+    if let Some(board_files) = files.get(BOARDS_DIRECTORY).and_then(Value::as_object) {
+        let boards_path = folder.join(BOARDS_DIRECTORY);
+        fs::create_dir_all(&boards_path).map_err(|error| error.to_string())?;
+        let mut expected_boards = HashSet::new();
+        for (name, document) in board_files {
+            let name = safe_board_file_name(name)?;
+            write_json(&boards_path.join(&name), document)?;
+            expected_boards.insert(name);
+        }
+        remove_stale_item_files(
+            &boards_path,
+            &|name| safe_board_file_name(name).is_ok(),
+            &expected_boards,
+        )?;
+    }
     if let Some(boards) = files.get(BOARDS_FILE) {
         write_json(&folder.join(BOARDS_FILE), boards)?;
     }
     // The manifest is written last so readers never observe a partially written bundle.
     write_json(&folder.join(DATA_MANIFEST_FILE), manifest)?;
-    remove_stale_item_files(&notes_path, &note_files)?;
-    remove_stale_item_files(&todos_path, &todo_files)?;
+    remove_stale_item_files(
+        &notes_path,
+        &|name| safe_data_item_file_name(name, &["json", "md"]).is_ok(),
+        &note_files,
+    )?;
+    remove_stale_item_files(
+        &todos_path,
+        &|name| safe_data_item_file_name(name, &["json"]).is_ok(),
+        &todo_files,
+    )?;
+    // v5 档案的计划板已迁入 boards/ 目录：清掉旧位置的 boards.json，
+    // 避免同一档案里出现两份计划板数据。
+    if files.contains_key(BOARDS_DIRECTORY) {
+        match fs::remove_file(folder.join(BOARDS_FILE)) {
+            Ok(()) => {}
+            Err(error) if error.kind() == ErrorKind::NotFound => {}
+            Err(error) => return Err(error.to_string()),
+        }
+    }
     match fs::remove_file(folder.join(SYNC_FILE)) {
         Ok(()) => {}
         Err(error) if error.kind() == ErrorKind::NotFound => {}
@@ -480,26 +658,37 @@ fn read_portable_data_folder(folder: &Path) -> io::Result<Value> {
         todos.insert(name, value);
     }
 
-    // 计划板文件是 v4 才有的：缺失时不下发空板，让前端沿用本机已有的板，
-    // 由随后的保存把 boards.json 补进档案。
-    let boards = read_json(&folder.join(BOARDS_FILE)).ok();
-
-    let version = {
-        let manifest_version = manifest.get("version").and_then(Value::as_u64).unwrap_or(2);
-        if manifest_version >= DATA_FOLDER_VERSION {
-            DATA_FOLDER_VERSION
-        } else if manifest_version >= 3 {
-            3
-        } else {
-            2
-        }
-    };
+    // 计划板：v5 起按 manifest.boardFiles 清单从 boards/ 目录逐板读取；
+    // v3/v4 是单一 boards.json。缺失时不下发空板，让前端沿用本机已有的板，
+    // 由随后的保存把计划板补进档案。
     let mut files = Map::new();
+    let manifest_version = manifest.get("version").and_then(Value::as_u64).unwrap_or(2);
+    if manifest_version >= 5 {
+        let mut boards = Map::new();
+        let board_entries = manifest
+            .get("boardFiles")
+            .and_then(Value::as_array)
+            .cloned()
+            .unwrap_or_default();
+        for entry in board_entries {
+            if let Some(file) = entry.get("file").and_then(Value::as_str) {
+                let name = safe_board_file_name(file).map_err(io_invalid)?;
+                boards.insert(
+                    name.clone(),
+                    read_json(&folder.join(BOARDS_DIRECTORY).join(&name))?,
+                );
+            }
+        }
+        if !boards.is_empty() {
+            files.insert(BOARDS_DIRECTORY.into(), Value::Object(boards));
+        }
+    } else if let Ok(value) = read_json(&folder.join(BOARDS_FILE)) {
+        files.insert(BOARDS_FILE.into(), value);
+    }
+
+    let version = manifest_version.clamp(2, DATA_FOLDER_VERSION);
     files.insert(DATA_MANIFEST_FILE.into(), manifest);
     files.insert(CLASSIFICATIONS_FILE.into(), classifications);
-    if let Some(boards) = boards {
-        files.insert(BOARDS_FILE.into(), boards);
-    }
     files.insert(NOTES_DIRECTORY.into(), Value::Object(notes));
     files.insert(TODOS_DIRECTORY.into(), Value::Object(todos));
     Ok(json!({
@@ -2009,6 +2198,8 @@ pub fn run() {
             lan_sync_confirm_incoming,
             lan_sync_reject_incoming,
             lan_sync_backup_local,
+            list_data_backups,
+            read_data_backup,
             import_note,
             export_note,
             export_assets,

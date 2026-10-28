@@ -1498,8 +1498,8 @@ async function main() {
       // 面板功能描述行已移除：语言切换改由标题 h3 的英文文案验证。
       await waitFor(() => document.querySelector('[data-settings-panel="cloud"] h3').textContent === 'Data sync');
       const dataSyncLabelEn = document.querySelector('[data-settings-page="cloud"] span').textContent === 'Data sync' && document.querySelector('[data-settings-panel="cloud"] h3').textContent === 'Data sync';
-      const noteEditorLabelEn = document.querySelector('[data-settings-page="note-editor"] span').textContent === 'Note editor'
-        && document.querySelector('[data-settings-panel="note-editor"] h3').textContent === 'Note editor';
+      const noteEditorLabelEn = document.querySelector('[data-settings-page="note-editor"] span').textContent === 'Editor'
+        && document.querySelector('[data-settings-panel="note-editor"] h3').textContent === 'Editor';
       const calendarDefaultOptionEn = document.querySelector('#defaultViewSetting option[value="calendar"]')?.textContent === 'Calendar';
       document.querySelector('#settingsBack').click();
       const settingsCloseAnimation = document.querySelector('#settingsModal').classList.contains('is-closing') && getComputedStyle(document.querySelector('.settings-window')).animationName === 'actaWindowClose';

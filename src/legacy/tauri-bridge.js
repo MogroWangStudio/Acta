@@ -167,6 +167,14 @@
     clearAppCache() {
       return invoke('clear_app_cache');
     },
+    // 备份管理：列出软件数据文件夹 backups/ 下的备份，并把指定备份读为
+    // 标准数据档案包（恢复时写回当前档案的存储位置）。
+    listBackups() {
+      return invoke('list_data_backups');
+    },
+    readBackup(path) {
+      return invoke('read_data_backup', { path });
+    },
     // 后台运行：关闭窗口转入系统托盘（Rust 侧拦截 CloseRequested 并隐藏窗口）。
     setRunInBackground(enabled) {
       return invoke('set_background_run', { enabled: Boolean(enabled) });

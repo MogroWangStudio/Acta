@@ -1286,7 +1286,7 @@ pub struct LanBackupResult {
     created_at: String,
 }
 
-fn directory_size(directory: &Path) -> u64 {
+pub fn directory_size(directory: &Path) -> u64 {
     let mut total = 0;
     if let Ok(entries) = fs::read_dir(directory) {
         for entry in entries.flatten() {

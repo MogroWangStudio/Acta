@@ -39,9 +39,12 @@ public class ActaSyncPlugin extends Plugin {
     private static final String SYNC_FILE = "acta-library.json";
     private static final String DATA_MANIFEST_FILE = "acta-manifest.json";
     private static final String CLASSIFICATIONS_FILE = "classifications.json";
-    // 计划板文件：v4 数据档案的一部分（与桌面端、WebDAV 共用同一份格式）。
+    // 计划板：v5 起每个计划板单独一个文件（board-<id>.json）存放在
+    // boards/ 目录，与桌面端、WebDAV 共用同一份格式；boards.json 是 v4
+    // 及更早档案的旧位置，读取时仍兼容，由随后的保存自动迁移到目录。
     private static final String BOARDS_FILE = "boards.json";
-    private static final int DATA_FOLDER_VERSION = 4;
+    private static final String BOARDS_DIRECTORY = "boards";
+    private static final int DATA_FOLDER_VERSION = 5;
     private static final String NOTES_DIRECTORY = "notes";
     private static final String TODOS_DIRECTORY = "todos";
     private static final int MAX_NOTE_BYTES = 5 * 1024 * 1024;
@@ -308,9 +311,19 @@ public class ActaSyncPlugin extends Plugin {
             writeDocument(directory, CLASSIFICATIONS_FILE, "application/json", classifications.toString(2));
             Set<String> noteFiles = writeCollection(notesDirectory, files.optJSONObject(NOTES_DIRECTORY), true);
             Set<String> todoFiles = writeCollection(todosDirectory, files.optJSONObject(TODOS_DIRECTORY), false);
-            // 计划板先落盘，清单最后写：读的一方不会看到「清单已升到 v4、板还没写」。
-            JSONObject boards = files.optJSONObject(BOARDS_FILE);
-            if (boards != null) writeDocument(directory, BOARDS_FILE, "application/json", boards.toString(2));
+            // 计划板先落盘（v5 每板一个文件进 boards/ 目录；v3/v4 仍是单一
+            // boards.json），清单最后写：读的一方不会看到「清单已升格、板还没写」。
+            boolean hasBoardsDirectory = files.has(BOARDS_DIRECTORY);
+            if (hasBoardsDirectory) {
+                DocumentFile boardsDirectory = getOrCreateDirectory(directory, BOARDS_DIRECTORY);
+                Set<String> boardFiles = writeBoardCollection(boardsDirectory, files.optJSONObject(BOARDS_DIRECTORY));
+                cleanCollection(boardsDirectory, boardFiles);
+                DocumentFile legacyBoards = directory.findFile(BOARDS_FILE);
+                if (legacyBoards != null && legacyBoards.isFile()) legacyBoards.delete();
+            } else {
+                JSONObject boards = files.optJSONObject(BOARDS_FILE);
+                if (boards != null) writeDocument(directory, BOARDS_FILE, "application/json", boards.toString(2));
+            }
             writeDocument(directory, DATA_MANIFEST_FILE, "application/json", manifest.toString(2));
             cleanCollection(notesDirectory, noteFiles);
             cleanCollection(todosDirectory, todoFiles);
@@ -389,18 +402,25 @@ public class ActaSyncPlugin extends Plugin {
             DocumentFile todosDirectory = requireChildDirectory(directory, TODOS_DIRECTORY);
             JSONObject noteFiles = readNoteFiles(notesDirectory, manifest.optJSONArray("notes"));
             JSONObject todoFiles = readJsonCollection(todosDirectory, manifest.optJSONArray("todos"));
+            int manifestVersion = manifest.optInt("version", 2);
 
             JSONObject files = new JSONObject();
             files.put(DATA_MANIFEST_FILE, manifest);
             files.put(CLASSIFICATIONS_FILE, readJsonDocument(classificationsFile));
-            // 计划板文件缺失（v3 档案）时不下发空板，让前端沿用本机已有的板。
-            DocumentFile boardsFile = directory.findFile(BOARDS_FILE);
-            if (boardsFile != null && boardsFile.isFile()) files.put(BOARDS_FILE, readJsonDocument(boardsFile));
+            // 计划板：v5 按 manifest.boardFiles 清单从 boards/ 目录逐板读取；
+            // v3/v4 仍是单一 boards.json，缺失（v3 档案）时不下发空板，让前端
+            // 沿用本机已有的板。
+            if (manifestVersion >= DATA_FOLDER_VERSION) {
+                JSONObject boardFiles = readBoardCollection(requireChildDirectory(directory, BOARDS_DIRECTORY), manifest.optJSONArray("boardFiles"));
+                files.put(BOARDS_DIRECTORY, boardFiles);
+            } else {
+                DocumentFile boardsFile = directory.findFile(BOARDS_FILE);
+                if (boardsFile != null && boardsFile.isFile()) files.put(BOARDS_FILE, readJsonDocument(boardsFile));
+            }
             files.put(NOTES_DIRECTORY, noteFiles);
             files.put(TODOS_DIRECTORY, todoFiles);
             JSONObject bundle = new JSONObject();
             bundle.put("format", "acta-data-folder-bundle");
-            int manifestVersion = manifest.optInt("version", 2);
             bundle.put("version", manifestVersion >= DATA_FOLDER_VERSION ? DATA_FOLDER_VERSION : (manifestVersion >= 3 ? 3 : 2));
             bundle.put("files", files);
 
@@ -678,6 +698,10 @@ public class ActaSyncPlugin extends Plugin {
         return name != null && name.matches("(?i)^item-[a-f0-9]+\\.(json|md)$");
     }
 
+    private boolean isGeneratedBoardFileName(String name) {
+        return name != null && name.matches("(?i)^board-[A-Za-z0-9-]+\\.json$");
+    }
+
     private boolean isSafeItemFileName(String name, boolean allowMarkdown) {
         return isGeneratedItemFileName(name) && (allowMarkdown || name.toLowerCase(Locale.US).endsWith(".json"));
     }
@@ -712,10 +736,27 @@ public class ActaSyncPlugin extends Plugin {
         return expectedFiles;
     }
 
+    // 计划板集合：boards/ 目录下每板一个 board-<id>.json，与条目文件同一
+    // 写入路径，仅文件名校验不同。
+    private Set<String> writeBoardCollection(DocumentFile directory, JSONObject files) throws Exception {
+        JSONObject collection = files == null ? new JSONObject() : files;
+        Set<String> expectedFiles = new HashSet<>();
+        Iterator<String> names = collection.keys();
+        while (names.hasNext()) {
+            String name = names.next();
+            if (!isGeneratedBoardFileName(name)) throw new IllegalStateException("Invalid board file name: " + name);
+            Object value = collection.get(name);
+            if (!(value instanceof JSONObject)) throw new IllegalStateException("Invalid data folder file contents: " + name);
+            writeDocument(directory, name, "application/json", ((JSONObject) value).toString(2));
+            expectedFiles.add(name);
+        }
+        return expectedFiles;
+    }
+
     private void cleanCollection(DocumentFile directory, Set<String> expectedFiles) {
         for (DocumentFile existing : directory.listFiles()) {
             String name = existing.getName();
-            if (existing.isFile() && isGeneratedItemFileName(name) && !expectedFiles.contains(name)) existing.delete();
+            if (existing.isFile() && (isGeneratedItemFileName(name) || isGeneratedBoardFileName(name)) && !expectedFiles.contains(name)) existing.delete();
         }
     }
 
@@ -765,6 +806,18 @@ public class ActaSyncPlugin extends Plugin {
         for (int index = 0; index < collection.length(); index++) {
             String name = collection.getJSONObject(index).getString("file");
             if (!isSafeItemFileName(name, false)) throw new IllegalStateException("Invalid item file name: " + name);
+            files.put(name, readJsonDocument(requireItemFile(directory, name)));
+        }
+        return files;
+    }
+
+    // 计划板集合读取：按 manifest.boardFiles 清单逐板读取 boards/ 目录文件。
+    private JSONObject readBoardCollection(DocumentFile directory, JSONArray entries) throws Exception {
+        JSONObject files = new JSONObject();
+        JSONArray collection = entries == null ? new JSONArray() : entries;
+        for (int index = 0; index < collection.length(); index++) {
+            String name = collection.getJSONObject(index).getString("file");
+            if (!isGeneratedBoardFileName(name)) throw new IllegalStateException("Invalid board file name: " + name);
             files.put(name, readJsonDocument(requireItemFile(directory, name)));
         }
         return files;
