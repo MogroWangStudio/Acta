@@ -446,6 +446,11 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .data-profile-action.current { color: var(--sage); border-color: color-mix(in srgb, var(--sage) 28%, var(--line)); background: transparent; cursor: default; }
 .data-profile-action svg { width: 13px; height: 13px; }
 .data-profile-action[disabled] { opacity: .68; transform: none; }
+/* 切换档案的加载态：图标旋转（复用刷新动画），与状态行「加载中」同现。 */
+.data-profile-action.is-loading svg { animation: dataRefreshSpin .82s cubic-bezier(.45,.05,.55,.95) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .data-profile-action.is-loading svg { animation: none; }
+}
 .data-profile-editor { display: grid; grid-template-rows: 0fr; border-top: 0 solid transparent; opacity: 0; transition: grid-template-rows .48s cubic-bezier(.2,.82,.2,1), opacity .24s ease, border-top-width .32s ease; }
 .data-profile-card.editing .data-profile-editor { grid-template-rows: 1fr; border-top-width: 1px; border-top-color: var(--line); opacity: 1; }
 .data-profile-editor-inner { min-height: 0; overflow: hidden; }
