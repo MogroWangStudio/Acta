@@ -4338,11 +4338,23 @@
       logoMotionTimer = window.setTimeout(() => brandButton.classList.remove('logo-pulse'), 620);
     });
   };
-  // —— 彩蛋：2.5 秒内连点左上角 logo 五次 —— 印章式回弹 + 纸屑飘落 +
-  // 一句致意。减少动态效果（设置或系统偏好）时只留一句 toast，不动效。
+  // —— 彩蛋：2.5 秒内连点左上角 logo 的阶梯解锁 ——
+  // 5 次：印章式回弹 + 纸屑飘落 + 一句致意（入门档）；
+  // 12 次：侧栏导航自上而下跳一遍「波浪」；
+  // 20 次：全屏砸下「已阅」大印章（带当日日期）。
+  // 同一轮连点内逐级推进（stage 记录已触发到的档位），2.5 秒无点击
+  // 整轮重置、从头解锁；减少动态效果（设置或系统偏好）时各档只留
+  // toast，不动效。
   let brandTapCount = 0;
   let brandTapLast = 0;
-  let brandEggPlaying = false;
+  let brandEggStage = 0;
+  const brandEggReduced = () => document.body.classList.contains('acta-reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const brandEggCopy = {
+    zh: { wave:'侧栏也会跳舞。', final:'最高彩蛋解锁！', sealWord:'已阅', sealDate:'记于' },
+    en: { wave:'The sidebar dances too.', final:'Top easter egg unlocked!', sealWord:'NOTED', sealDate:'on' },
+    'zh-Hant': { wave:'側欄也會跳舞。', final:'最高彩蛋解鎖！', sealWord:'已閱', sealDate:'記於' }
+  };
+  const brandEggText = key => (brandEggCopy[uiSettings.language] || brandEggCopy.en || brandEggCopy.zh)[key];
   const brandEggConfetti = origin => {
     const layer = document.createElement('div');
     layer.className = 'brand-egg-confetti';
@@ -4362,9 +4374,7 @@
     setTimeout(() => layer.remove(), 3800);
   };
   const playBrandEgg = () => {
-    brandEggPlaying = true;
-    const reduced = document.body.classList.contains('acta-reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduced) {
+    if (!brandEggReduced()) {
       brandButton.classList.remove('logo-pulse');
       brandButton.classList.add('brand-stamp');
       setTimeout(() => brandButton.classList.remove('brand-stamp'), 950);
@@ -4372,18 +4382,48 @@
       brandEggConfetti({ x: rect.left + rect.width / 2, y: rect.top + rect.height * 0.4 });
     }
     showToast(t('brandEgg'), 3600);
-    setTimeout(() => { brandEggPlaying = false; }, 1500);
   };
+  // 12 次：侧栏波浪——可见的导航入口自上而下依次弹跳一拍。
+  const playNavWave = () => {
+    showToast(brandEggText('wave'), 2400);
+    if (brandEggReduced()) return;
+    [...document.querySelectorAll('#smartNav button')]
+      .filter(button => !button.classList.contains('nav-page-hidden'))
+      .forEach((button, index) => {
+        setTimeout(() => {
+          button.classList.add('brand-egg-wave');
+          setTimeout(() => button.classList.remove('brand-egg-wave'), 560);
+        }, index * 72);
+      });
+  };
+  // 20 次：全屏「已阅」大印章——旋转砸下、轻震、停留后淡去。
+  const playGrandSeal = () => {
+    showToast(brandEggText('final'), 2800);
+    if (brandEggReduced()) return;
+    const now = new Date();
+    const stamp = document.createElement('div');
+    stamp.className = 'brand-egg-seal';
+    stamp.innerHTML = `<i aria-hidden="true"></i><b>${brandEggText('sealWord')}</b><small>${brandEggText('sealDate')} ${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}</small>`;
+    document.body.appendChild(stamp);
+    setTimeout(() => stamp.classList.add('is-fading'), 1600);
+    setTimeout(() => stamp.remove(), 2200);
+  };
+  const brandEggSteps = [
+    { count: 5, play: playBrandEgg },
+    { count: 12, play: playNavWave },
+    { count: 20, play: playGrandSeal }
+  ];
   brandButton.addEventListener('click', () => {
     playLogoMotion();
     const now = Date.now();
-    if (now - brandTapLast > 2500) brandTapCount = 0;
+    if (now - brandTapLast > 2500) { brandTapCount = 0; brandEggStage = 0; }
     brandTapLast = now;
     brandTapCount += 1;
-    if (brandTapCount >= 5 && !brandEggPlaying) {
-      brandTapCount = 0;
-      playBrandEgg();
-    }
+    if (brandEggStage >= brandEggSteps.length) return;
+    const step = brandEggSteps[brandEggStage];
+    if (brandTapCount < step.count) return;
+    brandEggStage += 1;
+    step.play();
   });
   brandButton.addEventListener('keydown', event => {
     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); playLogoMotion(); }
