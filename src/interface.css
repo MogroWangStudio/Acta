@@ -2701,11 +2701,16 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .board-chrome::-webkit-scrollbar { display: none; }
   .board-tool span { display: none; }
   .board-zoom-level { min-width: 34px; }
-  .board-title-actions { gap: 6px; margin-right: 10px; }
+  /* 右上角按钮区：尽量吃满屏宽，只留 4px 屏缘间距（板视图标题行的
+     右内边距同步收窄）；按钮之间的空隙统一交给容器的 6px gap——
+     个性化按钮沿用旧布局的 margin-left:auto 会吃掉剩余空间，让它与
+     前面按钮的间隙随屏宽浮动，这里清零。 */
+  body.board-view .item-header { padding-right: 4px; }
+  .board-title-actions { gap: 6px; margin-right: 0; }
   .board-title-actions .board-pill { margin-left: 0; }
+  .board-style-trigger { margin-left: 0; margin-right: 0; }
   .board-pill-button { max-width: 148px; }
-  .board-style-trigger { margin-right: 0; }
-  .board-style-pop-lg { right: 10px; top: 56px; bottom: auto; }
+  .board-style-pop-lg { right: 4px; top: 56px; bottom: auto; }
   .board-widget-toolbar { max-width: calc(100% - 16px); flex-wrap: wrap; justify-content: center; }
   /* 320px 档再收紧间距：标注菜单已移出滚动容器，工具条本身不必横向滚动，
      缩小间隙后全部控件（含适配视图）都能落在可视区里。 */
