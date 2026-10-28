@@ -5416,7 +5416,7 @@
     predictiveBackRow.hidden = false;
     const predictiveBackSetting = byId('predictiveBackSetting');
     predictiveBackSetting.checked = uiSettings.predictiveBack !== false;
-    // 缩放幅度滑杆（0–100）：控制预见式手势里页面收缩的最大比例。
+    // 缩放幅度滑杆（0–200）：控制预见式手势里页面收缩的最大比例。
     const backGestureScaleRow = byId('backGestureScaleRow');
     const backGestureScaleSetting = byId('backGestureScaleSetting');
     if (backGestureScaleRow && backGestureScaleSetting) {
@@ -9169,6 +9169,46 @@
       }
       clearBackGestureStyles(el);
     };
+
+    // —— 根层级同步：收集箱且无任何浮层 / 编辑器时，返回交给系统 ——
+    // targetSdk 36 起系统对根层级返回执行自己的收起动画与两段式退出
+    // 提示；应用回调若仍拦截根层级并执行最小化，会与系统行为叠加出
+    // 混乱的「返回两次退出」提示。这里在层级状态变化时通知原生注销
+    // / 恢复应用侧回调（MainActivity.applyPredictiveBack 的 atRoot 参数），
+    // 根层级由系统全权处理，应用内层级照常走预见式手势。
+    const backHierarchyAtRoot = () =>
+      !document.body.classList.contains('note-focus-mode')
+      && !document.querySelector('.relation-dialog[open]')
+      && !settingsModal.classList.contains('open')
+      && byId('mobileCreateLayer')?.hidden !== false
+      && !byId('createMenu').classList.contains('open')
+      && !byId('editorPane').classList.contains('mobile-open')
+      && currentView === 'inbox';
+    let backRootState = null;
+    let backRootSyncTimer = 0;
+    const syncBackRootState = () => {
+      if (!predictiveNative?.setPredictiveBack || window.actaDesktop) return;
+      clearTimeout(backRootSyncTimer);
+      backRootSyncTimer = setTimeout(() => {
+        const atRoot = backHierarchyAtRoot();
+        if (backRootState === atRoot) return;
+        backRootState = atRoot;
+        try { predictiveNative.setPredictiveBack({ enabled: uiSettings.predictiveBack !== false, atRoot }); } catch { /* 桥不可用时不打断页面 */ }
+      }, 120);
+    };
+    // 层级状态的 DOM 锚点：弹层开关（class / hidden）、沉浸编辑（body
+    // class）与视图切换（标题文本）。去抖 120ms 合并同帧的多次变更，
+    // 状态无变化时不触发原生调用。
+    const backRootObserver = new MutationObserver(syncBackRootState);
+    [document.body, settingsModal, byId('editorPane'), byId('mobileCreateLayer'), byId('createMenu')]
+      .filter(Boolean)
+      .forEach(el => backRootObserver.observe(el, { attributes: true, attributeFilter: ['class', 'hidden'] }));
+    // dialog 的开关用独立的子树观察：动态创建的弹窗不在上面的静态列表里，
+    // 而 open 属性只有 dialog 会变，子树监听开销可忽略。
+    backRootObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
+    const backRootTitle = byId('viewTitle');
+    if (backRootTitle) backRootObserver.observe(backRootTitle, { childList: true, characterData: true, subtree: true });
+    syncBackRootState();
   }
 
   if ('serviceWorker' in navigator && location.protocol.startsWith('http') && location.hostname !== 'tauri.localhost') {

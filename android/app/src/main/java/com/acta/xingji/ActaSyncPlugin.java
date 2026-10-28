@@ -135,10 +135,14 @@ public class ActaSyncPlugin extends Plugin {
     @PluginMethod
     public void setPredictiveBack(PluginCall call) {
         Boolean enabled = call.getBoolean("enabled", true);
+        // atRoot：页面处于根层级（收集箱且无浮层）时注销应用侧回调，
+        // 根层级返回交给系统（收起动画 + 两段式退出提示），旧 JS 不传
+        // 时保持 false（全拦截，与既有行为兼容）。
+        Boolean atRoot = call.getBoolean("atRoot", false);
         getActivity().runOnUiThread(() -> {
             Activity activity = getActivity();
             if (activity instanceof com.mws.acta.MainActivity) {
-                ((com.mws.acta.MainActivity) activity).applyPredictiveBack(enabled);
+                ((com.mws.acta.MainActivity) activity).applyPredictiveBack(enabled, atRoot);
             }
             call.resolve();
         });

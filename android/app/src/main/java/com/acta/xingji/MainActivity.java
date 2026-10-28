@@ -19,6 +19,10 @@ public class MainActivity extends BridgeActivity {
     public static final String SYSTEM_BAR_PREFERENCES = "acta.system.bar.preferences";
     public static final String SYSTEM_BAR_COLOR = "color";
     public static final String PREDICTIVE_BACK = "predictive_back";
+    // 根层级标记：页面退回收集箱（主菜单）且无任何浮层时，返回交给系统
+    // 处理（back-to-home 收起动画 + 系统的两段式退出提示）；应用侧回调
+    // 此时注销，避免与系统动画叠加出「返回两次退出」的混乱提示。
+    public static final String PREDICTIVE_BACK_AT_ROOT = "predictive_back_at_root";
 
     private OnBackInvokedCallback predictiveBackCallback;
     private float lastBackProgress = -1f;
@@ -52,21 +56,32 @@ public class MainActivity extends BridgeActivity {
     // App 插件的 Jetpack 桥接注册，系统在同优先级内按注册逆序分派，
     // 不会双触发；关闭时反注册，返回事件回到 App 插件的 backButton
     // 通道，行为与适配前一致。
-    public void applyPredictiveBack(Boolean enabledOverride) {
+    // 根层级（atRoot）：页面已在收集箱且无任何浮层时注销本回调——
+    // targetSdk 36 起系统对根层级返回执行自己的收起动画与两段式退出
+    // 提示，应用回调若仍拦截并执行最小化，会和系统行为叠加出混乱的
+    // 「返回两次退出」提示。此时让系统全权处理，WebView 内的手势反馈
+    // 自然停用；Capacitor 桥的 backButton 通道在旧系统上照常兜底。
+    public void applyPredictiveBack(Boolean enabledOverride, Boolean atRootOverride) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
         SharedPreferences preferences = getSharedPreferences(SYSTEM_BAR_PREFERENCES, 0);
         boolean enabled = enabledOverride != null
             ? enabledOverride
             : preferences.getBoolean(PREDICTIVE_BACK, true);
+        boolean atRoot = atRootOverride != null
+            ? atRootOverride
+            : preferences.getBoolean(PREDICTIVE_BACK_AT_ROOT, false);
         if (enabledOverride != null) {
             preferences.edit().putBoolean(PREDICTIVE_BACK, enabledOverride).apply();
+        }
+        if (atRootOverride != null) {
+            preferences.edit().putBoolean(PREDICTIVE_BACK_AT_ROOT, atRootOverride).apply();
         }
         OnBackInvokedDispatcher dispatcher = getOnBackInvokedDispatcher();
         if (predictiveBackCallback != null) {
             dispatcher.unregisterOnBackInvokedCallback(predictiveBackCallback);
             predictiveBackCallback = null;
         }
-        if (!enabled) return;
+        if (!enabled || atRoot) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             // OnBackAnimationCallback 是 API 34 新增接口：匿名实现只在
             // API 34+ 分支创建，API 33 的运行时不会加载这个类。
