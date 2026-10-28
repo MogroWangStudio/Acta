@@ -5667,11 +5667,11 @@
 
   function applyTheme() {
     const root = document.documentElement;
-    // 跟随系统：以系统 prefers-color-scheme 解析为默认浅色（纸色护眼）或
-    // 默认深色（黑白深色）；系统明暗变化时由下方监听即时重新应用。
+    // 跟随系统：以系统 prefers-color-scheme 解析为黑白浅色或黑白深色
+    // （与预览的双半一致）；系统明暗变化时由下方监听即时重新应用。
     const systemDark = matchMedia('(prefers-color-scheme: dark)').matches;
     const resolvedTheme = uiSettings.theme === 'follow-system'
-      ? (systemDark ? 'mono-dark' : 'eye-yellow')
+      ? (systemDark ? 'mono-dark' : 'mono-light')
       : uiSettings.theme;
     const customDark = resolvedTheme === 'custom' && uiSettings.customMode === 'dark';
     const isDark = darkThemes.has(resolvedTheme) || customDark;

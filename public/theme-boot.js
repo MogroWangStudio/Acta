@@ -25,6 +25,11 @@
   // 移动端底栏「仅图标」也在首帧前生效，避免文字先闪一下再消失。
   if (String(stored.mobileNavStyle) === 'icon') root.dataset.mobileNav = 'icon';
   if (!theme) return;
+  // 跟随系统：首帧按系统明暗解析（浅色 → 黑白浅色，与 applyTheme 一致），
+  // 避免先闪默认调色板再切换。
+  if (theme === 'follow-system') {
+    theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'mono-dark' : 'mono-light';
+  }
   const darkThemes = new Set(['mono-dark', 'neon-ocean', 'aurora-night', 'mws-dark']);
   const glowThemes = new Set(['neon-ocean', 'aurora-night']);
   const isDark = darkThemes.has(theme);
