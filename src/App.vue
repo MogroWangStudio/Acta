@@ -18,6 +18,7 @@
         <i class="splash-line splash-line-sidebar"></i>
         <i class="splash-line splash-line-list"></i>
         <i class="splash-line splash-line-bottom"></i>
+        <svg class="splash-line-button" viewBox="0 0 68 68"><circle cx="34" cy="34" r="32.5" pathLength="100"/></svg>
       </div>
     </div>
 
