@@ -6473,7 +6473,7 @@
       trustOff:'已关闭「信任此局域网」：其他设备的读取与写入需要逐次确认。',
       pullAction:'导入到本机', pushAction:'发送到对方',
       radarTitle:'设备雷达', radarSubtitle:'同一网络中的 Acta 设备会以气泡出现在本机周围',
-      radarHint:'点击设备气泡，提取或发送行记数据', radarSelfName:'本机', 'lanNetwork':'本机网络', 'lanNetworkUnknown':'未连接局域网', 'lanNetworkWifi':'Wi-Fi', 'lanNetworkEthernet':'以太网', 'lanNetworkLan':'本地网络',
+      radarHint:'点击设备气泡，提取或发送行记数据', radarSelfName:'本机', 'lanNetwork':'本机网络', 'lanNetworkUnknown':'未连接局域网', 'lanNetworkWifi':'Wi-Fi', 'lanNetworkEthernet':'以太网', 'lanNetworkLan':'本地网络', 'lanPortLabel':'端口 {0}',
       pullTitle:'导入到本机', pushTitle:'发送到对方', incomingTitle:'收到同步请求',
       pullSubtitle:'从 {0} 获取行记数据到本机（需要对方开启「信任此局域网」）',
       pushSubtitle:'把选定的行记数据发送给 {0}；对方开启「信任此局域网」时自动接收，否则需对方确认',
@@ -6561,7 +6561,7 @@
       trustOff:'“Trust this network” is off: reads and writes from other devices require confirmation each time.',
       pullAction:'Import here', pushAction:'Send over',
       radarTitle:'Device radar', radarSubtitle:'Acta devices on the same network appear as bubbles around this device',
-      radarHint:'Tap a device bubble to import or send Acta data', radarSelfName:'This device', 'lanNetwork':'This network', 'lanNetworkUnknown':'Not on a LAN', 'lanNetworkWifi':'Wi-Fi', 'lanNetworkEthernet':'Ethernet', 'lanNetworkLan':'Local network',
+      radarHint:'Tap a device bubble to import or send Acta data', radarSelfName:'This device', 'lanNetwork':'This network', 'lanNetworkUnknown':'Not on a LAN', 'lanNetworkWifi':'Wi-Fi', 'lanNetworkEthernet':'Ethernet', 'lanNetworkLan':'Local network', 'lanPortLabel':'Port {0}',
       pullTitle:'Import to this device', pushTitle:'Send to the other device', incomingTitle:'Sync request received',
       pullSubtitle:'Fetch Acta data from {0} (requires “Trust this network” on the other device)',
       pushSubtitle:'Send the selected Acta data to {0}; trusted networks receive automatically, otherwise the other side confirms',
@@ -6649,7 +6649,7 @@
       trustOff:'已關閉「信任此區域網路」：其他裝置的讀取與寫入需要逐次確認。',
       pullAction:'匯入到本機', pushAction:'傳送到對方',
       radarTitle:'裝置雷達', radarSubtitle:'同一網路中的 Acta 裝置會以氣泡出現在本機周圍',
-      radarHint:'點擊裝置氣泡，提取或傳送行記資料', radarSelfName:'本機', 'lanNetwork':'本機網路', 'lanNetworkUnknown':'未連接區域網路', 'lanNetworkWifi':'Wi-Fi', 'lanNetworkEthernet':'乙太網路', 'lanNetworkLan':'本地網路',
+      radarHint:'點擊裝置氣泡，提取或傳送行記資料', radarSelfName:'本機', 'lanNetwork':'本機網路', 'lanNetworkUnknown':'未連接區域網路', 'lanNetworkWifi':'Wi-Fi', 'lanNetworkEthernet':'乙太網路', 'lanNetworkLan':'本地網路', 'lanPortLabel':'連接埠 {0}',
       pullTitle:'匯入到本機', pushTitle:'傳送到對方', incomingTitle:'收到同步請求',
       pullSubtitle:'從 {0} 取得行記資料到本機（需要對方開啟「信任此區域網路」）',
       pushSubtitle:'把選定的行記資料傳送給 {0}；對方開啟「信任此區域網路」時自動接收，否則需對方確認',
@@ -6974,19 +6974,21 @@
   }
 
   // 本机网络信息行：连接的局域网名称（Wi-Fi SSID，桌面无此信息则省略）、
-  // 网络类型与本机地址。数据来自 serviceStatus 的附加字段（安卓原生采集）。
+  // 网络类型、本机地址与服务端口。数据来自 serviceStatus 的附加字段
+  // （安卓原生采集；端口在服务运行时才有意义）。
   function lanRenderNetworkInfo(status) {
     const infoEl = byId('lanNetworkInfo');
     if (!infoEl) return;
     const type = status?.networkType || '';
     const ssid = String(status?.networkSsid || '').trim();
     const addresses = Array.isArray(status?.localAddresses) ? status.localAddresses.filter(address => typeof address === 'string' && address).slice(0, 3) : [];
+    const port = Number(status?.port) || 0;
     const typeLabel = type === 'wifi' ? lanText('lanNetworkWifi') : type === 'ethernet' ? lanText('lanNetworkEthernet') : type === 'lan' ? lanText('lanNetworkLan') : '';
     const parts = [];
     if (ssid) parts.push(`«${ssid}»`);
     if (typeLabel) parts.push(typeLabel);
     infoEl.textContent = parts.length || addresses.length
-      ? [parts.join(' '), addresses.join(' / ')].filter(Boolean).join('  —  ')
+      ? [parts.join(' '), addresses.join(' / '), port ? lanText('lanPortLabel', port) : ''].filter(Boolean).join('  —  ')
       : lanText('lanNetworkUnknown');
   }
 
