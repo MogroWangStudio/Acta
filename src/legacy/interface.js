@@ -4737,7 +4737,17 @@
         }
       } else if (profile?.storage === 'local') {
         const raw = localStorage.getItem(profileLibraryStorageKey(profile.id)) || '';
-        size = { totalBytes: new Blob([raw]).size, fileCount: NaN };
+        // 本地档案没有磁盘文件：按数据档案的标准格式折算等效文件数
+        //（清单 + 归类清单 + 每则笔记的 md/json 两份 + 每个待办一份 +
+        // 每块计划板一份，含回收站中的条目），与文件夹档案的磁盘计数
+        // 口径一致，不再显示「—」。
+        size = {
+          totalBytes: new Blob([raw]).size,
+          fileCount: 2
+            + library.items.filter(item => item.type === 'note').length * 2
+            + library.items.filter(item => item.type === 'todo').length
+            + (Array.isArray(library.boards) ? library.boards.length : 0)
+        };
         statusEl.textContent = copy.localHint;
       }
       fillCounts();
