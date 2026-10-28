@@ -358,6 +358,9 @@ const CLASSIFICATIONS_FILE: &str = "classifications.json";
 // 位置，读取时仍兼容，由随后的保存自动迁移到目录。
 const BOARDS_FILE: &str = "boards.json";
 const BOARDS_DIRECTORY: &str = "boards";
+// 历史记录：跟随档案的可选附加文件（manifest.history 指向）。不参与
+// 版本校验——旧版应用读取时忽略它、写回时不删除它，历史不丢。
+const HISTORY_FILE: &str = "history.json";
 const DATA_FOLDER_VERSION: u64 = 5;
 const NOTES_DIRECTORY: &str = "notes";
 const TODOS_DIRECTORY: &str = "todos";
@@ -556,6 +559,10 @@ fn write_portable_data_folder(folder: &Path, bundle: &Value) -> Result<(), Strin
     if let Some(boards) = files.get(BOARDS_FILE) {
         write_json(&folder.join(BOARDS_FILE), boards)?;
     }
+    // 历史记录（可选）：bundle 带了才写，缺失不建空文件。
+    if let Some(history) = files.get(HISTORY_FILE) {
+        write_json(&folder.join(HISTORY_FILE), history)?;
+    }
     // The manifest is written last so readers never observe a partially written bundle.
     write_json(&folder.join(DATA_MANIFEST_FILE), manifest)?;
     remove_stale_item_files(
@@ -684,6 +691,11 @@ fn read_portable_data_folder(folder: &Path) -> io::Result<Value> {
         }
     } else if let Ok(value) = read_json(&folder.join(BOARDS_FILE)) {
         files.insert(BOARDS_FILE.into(), value);
+    }
+    // 历史记录（可选）：旧档案没有 history.json 时不注入空文件，让
+    // 前端沿用运行时历史，由随后的保存把它补进档案。
+    if let Ok(value) = read_json(&folder.join(HISTORY_FILE)) {
+        files.insert(HISTORY_FILE.into(), value);
     }
 
     let version = manifest_version.clamp(2, DATA_FOLDER_VERSION);

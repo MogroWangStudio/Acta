@@ -44,6 +44,8 @@ public class ActaSyncPlugin extends Plugin {
     // 及更早档案的旧位置，读取时仍兼容，由随后的保存自动迁移到目录。
     private static final String BOARDS_FILE = "boards.json";
     private static final String BOARDS_DIRECTORY = "boards";
+    // 历史记录（可选附加文件）：旧档案没有它时读写都跳过，历史不丢。
+    private static final String HISTORY_FILE = "history.json";
     private static final int DATA_FOLDER_VERSION = 5;
     private static final String NOTES_DIRECTORY = "notes";
     private static final String TODOS_DIRECTORY = "todos";
@@ -328,6 +330,9 @@ public class ActaSyncPlugin extends Plugin {
                 JSONObject boards = files.optJSONObject(BOARDS_FILE);
                 if (boards != null) writeDocument(directory, BOARDS_FILE, "application/json", boards.toString(2));
             }
+            // 历史记录（可选）：bundle 带了才写，缺失不建空文件。
+            JSONObject history = files.optJSONObject(HISTORY_FILE);
+            if (history != null) writeDocument(directory, HISTORY_FILE, "application/json", history.toString(2));
             writeDocument(directory, DATA_MANIFEST_FILE, "application/json", manifest.toString(2));
             cleanCollection(notesDirectory, noteFiles);
             cleanCollection(todosDirectory, todoFiles);
@@ -423,6 +428,9 @@ public class ActaSyncPlugin extends Plugin {
             }
             files.put(NOTES_DIRECTORY, noteFiles);
             files.put(TODOS_DIRECTORY, todoFiles);
+            // 历史记录（可选）：旧档案没有 history.json 时不注入空文件。
+            DocumentFile historyFile = directory.findFile(HISTORY_FILE);
+            if (historyFile != null && historyFile.isFile()) files.put(HISTORY_FILE, readJsonDocument(historyFile));
             JSONObject bundle = new JSONObject();
             bundle.put("format", "acta-data-folder-bundle");
             bundle.put("version", manifestVersion >= DATA_FOLDER_VERSION ? DATA_FOLDER_VERSION : (manifestVersion >= 3 ? 3 : 2));

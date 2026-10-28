@@ -529,9 +529,13 @@
   const boardsDirectoryName = 'boards';
   const notesDirectoryName = 'notes';
   const todosDirectoryName = 'todos';
+  // 历史记录跟随行记数据：每份档案带一个 history.json（可选附加文件，
+  // 不参与版本号——旧版应用读取时忽略它、写回时不删除它，历史不丢）。
+  const historyFile = 'history.json';
+  const legacyHistoryFile = 'acta.history.v1';
   const legacyLibraryFile = 'acta-library.json';
   const dataFolderVersion = 5;
-  const workspaceFileName = `${dataManifestFile} ${classificationsFile} ${boardsDirectoryName}/ ${notesDirectoryName}/ ${todosDirectoryName}/`;
+  const workspaceFileName = `${dataManifestFile} ${classificationsFile} ${boardsDirectoryName}/ ${notesDirectoryName}/ ${todosDirectoryName}/ ${historyFile}`;
   const savedNativeWorkspace = settings.syncFolder || '';
   let workspaceAdapter = null;
   let dataProfiles = [];
@@ -2860,6 +2864,7 @@
         classifications:classificationsFile,
         boards:boardsDirectoryName,
         boardFiles:boardFiles.map(({ id, file, updatedAt }) => ({ id, file, updatedAt })),
+        history:historyFile,
         notes:notes.map(({ id, markdownFile, configFile, updatedAt }) => ({ id, markdown:markdownFile, config:configFile, updatedAt })),
         todos:todos.map(({ id, file, updatedAt }) => ({ id, file, updatedAt })),
         itemOrder:snapshot.items.map(item => item.id)
@@ -2867,9 +2872,33 @@
       classifications: { format:'acta-classifications', version:1, folders:snapshot.folders || [] },
       boardFiles,
       notes,
-      todos
+      todos,
+      history: { format:'acta-history', version:1, entries: currentProfileHistory() }
     };
   }
+
+  // —— 历史记录与档案层的桥 ——
+  // 运行时数组由 renderer 持有（logHistory 的高频写入路径），档案层在
+  // 生成文档 / 保存时取快照、加载后灌回运行时。桥缺失（极端启动顺序）
+  // 时历史保持内存态，不阻塞数据读写。
+  const currentProfileHistory = () => {
+    const bridge = window.__actaHistoryBridge;
+    if (!bridge?.current) return [];
+    try { return bridge.current().slice(0, bridge.limit || 500); } catch { return []; }
+  };
+  // 把一份档案的历史灌回运行时；旧版不分档案的全局历史键在首个激活的
+  // 档案处一次性并入（并入后即删除，天然只迁移一次），之后随档案保存。
+  const applyProfileHistory = entries => {
+    let next = Array.isArray(entries) ? entries : [];
+    if (!next.length) {
+      try {
+        const legacy = JSON.parse(localStorage.getItem(legacyHistoryFile) || 'null');
+        if (Array.isArray(legacy) && legacy.length) next = legacy;
+      } catch { /* 旧键损坏则忽略 */ }
+    }
+    try { localStorage.removeItem(legacyHistoryFile); } catch { /* 无此键时忽略 */ }
+    window.__actaHistoryBridge?.apply?.(next);
+  };
 
   function libraryFromDataFolderDocuments(documents) {
     const { manifest, classifications, notes = [], todos = [], boards } = documents || {};
@@ -2915,7 +2944,8 @@
         [classificationsFile]: documents.classifications,
         [boardsDirectoryName]: Object.fromEntries(documents.boardFiles.map(entry => [entry.file, entry.document])),
         [notesDirectoryName]: Object.fromEntries(documents.notes.flatMap(entry => [[entry.configFile, entry.config], [entry.markdownFile, entry.markdown]])),
-        [todosDirectoryName]: Object.fromEntries(documents.todos.map(entry => [entry.file, entry.document]))
+        [todosDirectoryName]: Object.fromEntries(documents.todos.map(entry => [entry.file, entry.document])),
+        [historyFile]: documents.history
       }
     };
   }
@@ -2939,6 +2969,7 @@
     } else {
       boards = files[boardsFile];
     }
+    applyProfileHistory(files[historyFile]?.entries);
     return libraryFromDataFolderDocuments({
       manifest,
       classifications:files[classificationsFile],
@@ -2998,6 +3029,7 @@
     // 「清单已升级、板还没写」的半成品。
     await Promise.all(documents.boardFiles.map(entry => writeJSONFile(boardsDirectory, entry.file, entry.document)));
     await writeJSONFile(handle, classificationsFile, documents.classifications);
+    await writeJSONFile(handle, historyFile, documents.history);
     await writeJSONFile(handle, dataManifestFile, documents.manifest);
     await removeStaleItemFiles(notesDirectory, new Set(documents.notes.flatMap(entry => [entry.configFile, entry.markdownFile])));
     await removeStaleItemFiles(todosDirectory, new Set(documents.todos.map(entry => entry.file)));
@@ -3032,6 +3064,10 @@
       try { boards = await readJSONFile(handle, manifest.boards || boardsFile); }
       catch (error) { if (error?.name !== 'NotFoundError') throw error; }
     }
+    let history;
+    try { history = await readJSONFile(handle, manifest.history || historyFile); }
+    catch (error) { if (error?.name !== 'NotFoundError') throw error; }
+    applyProfileHistory(history?.entries);
     const loadedLibrary = libraryFromDataFolderDocuments({ manifest, classifications, notes, todos, boards });
     // v4 及更早的档案没有 boards/ 目录：首次读取后立即补写，把计划板
     // 迁移为逐板文件，并清掉旧位置的 boards.json。
@@ -3079,6 +3115,9 @@
   }
 
   const profileLibraryStorageKey = id => `acta.data.profile.${id}.v1`;
+  // 本地档案的历史独立键：历史跟随档案（切档案即换历史），与档案数据
+  // 分键存储，互不挤占配额。
+  const profileHistoryStorageKey = id => `acta.data.profile.${id}.history.v1`;
   const createBlankLibrary = () => {
     const blank = createDefaultLibrary();
     blank.items = [];
@@ -3095,7 +3134,11 @@
     return {
       kind:'local', label:localProfileLocation(), profile,
       save:async librarySnapshot => {
-        try { localStorage.setItem(profileLibraryStorageKey(profile.id), JSON.stringify(clearLegacyTags(JSON.parse(JSON.stringify(librarySnapshot))))); }
+        const history = { format:'acta-history', version:1, entries:currentProfileHistory() };
+        try {
+          localStorage.setItem(profileLibraryStorageKey(profile.id), JSON.stringify(clearLegacyTags(JSON.parse(JSON.stringify(librarySnapshot)))));
+          localStorage.setItem(profileHistoryStorageKey(profile.id), JSON.stringify(history));
+        }
         catch (error) {
           if (error?.name === 'QuotaExceededError' || error?.code === 22) throw new Error(profileText('localQuota'));
           throw error;
@@ -3108,6 +3151,9 @@
           error.name = 'NotFoundError';
           throw error;
         }
+        let history;
+        try { history = JSON.parse(localStorage.getItem(profileHistoryStorageKey(profile.id)) || 'null'); } catch { history = null; }
+        applyProfileHistory(history?.entries);
         return parseLibraryPayload(raw);
       },
       version:async () => profile.updatedAt || ''
@@ -3306,6 +3352,7 @@
         ...documents.boardFiles.map(entry => ({ path:`${boardsDirectoryName}/${entry.file}`, value:entry.document, type:'json' }))
       ], 4, entry => entry.type === 'text' ? writeText(entry.path, entry.value) : writeJSON(entry.path, entry.value));
       await writeJSON(classificationsFile, documents.classifications);
+      await writeJSON(historyFile, documents.history);
       await writeJSON(dataManifestFile, documents.manifest);
       await Promise.all([
         cleanCollection(notesDirectoryName + '/', new Set(documents.notes.flatMap(entry => [entry.configFile, entry.markdownFile]))),
@@ -3339,6 +3386,10 @@
         try { boards = await readJSON(manifest.boards || boardsFile); }
         catch (error) { if (error.status !== 404) throw error; }
       }
+      let history;
+      try { history = await readJSON(manifest.history || historyFile); }
+      catch (error) { if (error.status !== 404) throw error; }
+      applyProfileHistory(history?.entries);
       const loadedLibrary = libraryFromDataFolderDocuments({ manifest, classifications, notes, todos, boards });
       if (Number(manifest.version) < dataFolderVersion) await save(loadedLibrary);
       return loadedLibrary;

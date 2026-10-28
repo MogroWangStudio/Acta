@@ -76,7 +76,7 @@ const dictionaries = {
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardShowBody:'完整内容', boardShowDoneOnly:'仅显示已完成', boardBodyLargeConfirm:'这篇笔记超过一万字符，完整显示可能影响流畅度。仍要开启完整内容显示吗？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardPatternLines:'横线', boardPatternCross:'交叉点', boardGridColor:'网格颜色', boardGridOpacity:'网格不透明度', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
-    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerDrag:'拖动排序', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合', brandEgg:'行记不辍 —— 这是 Acta 给好奇心的回礼',
+    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerDrag:'拖动排序', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合', brandEgg:'行记不辍 —— 这是 Acta 给好奇心的回礼', historyAlmostFull:'История почти заполнена (450 / 500) — старые записи постепенно будут заменяться', historyAlmostFull:'El historial está casi lleno (450 / 500) — las entradas antiguas se irán reemplazando', historyAlmostFull:'Der Verlauf ist fast voll (450 / 500) — ältere Einträge werden nach und nach ersetzt', historyAlmostFull:'L’historique est presque plein (450 / 500) — les anciennes entrées seront progressivement remplacées', historyAlmostFull:'历史记录将满（450 / 500）——更早的记录会随新记录逐渐被替代',
     boardExportOptionsHint:'选择分辨率与图片格式；JPG 可调节压缩程度', boardExportScale:'分辨率', boardExportFormat:'图片格式', boardExportQuality:'JPG 质量', boardExportConfirm:'导出', boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportWorking:'正在渲染并导出，请稍候…', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出', boardImportPlan:'导入计划板文件 (.actaplan)', boardImported:'计划板已导入', boardImportInvalid:'这不是有效的 Acta 计划板文件', boardExportRegionTitle:'选择导出区域', boardExportRegionHint:'拖动边框或角点调整范围，导出框内内容', boardExportRegionAll:'全部元素', boardExportRegionView:'当前视图', boardExportRegionNext:'下一步',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
@@ -143,7 +143,7 @@ const dictionaries = {
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardShowBody:'Full content', boardShowDoneOnly:'Completed only', boardBodyLargeConfirm:'This note exceeds 10,000 characters — showing it in full may affect smoothness. Enable full content anyway?', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardPatternLines:'Ruled', boardPatternCross:'Crosses', boardGridColor:'Grid color', boardGridOpacity:'Grid opacity', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
-    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerDrag:'Drag to restack', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup', brandEgg:'Keep journaling — Acta thanks the curious',
+    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerDrag:'Drag to restack', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup', brandEgg:'Keep journaling — Acta thanks the curious', historyAlmostFull:'History is nearly full (450 / 500) — older entries will gradually be replaced',
     boardExportOptionsHint:'Pick resolution and image format; JPG compression is adjustable', boardExportScale:'Resolution', boardExportFormat:'Image format', boardExportQuality:'JPG quality', boardExportConfirm:'Export', boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportWorking:'Rendering and exporting — hang on…', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting', boardImportPlan:'Import plan board file (.actaplan)', boardImported:'Plan board imported', boardImportInvalid:'This is not a valid Acta plan board file', boardExportRegionTitle:'Choose export area', boardExportRegionHint:'Drag the frame or handles to adjust; the framed area is exported', boardExportRegionAll:'All elements', boardExportRegionView:'Current view', boardExportRegionNext:'Next',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   },
@@ -210,7 +210,7 @@ const dictionaries = {
     boardDeleteArm:'もう一度タップで削除', boardUndo:'元に戻す', boardRedo:'やり直す', boardMarqueeClear:'選択を解除', boardMarqueeDelete:'選択中を削除', boardSelectedCount:'{0} 件を選択中',
     boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardShowBody:'全文表示', boardShowDoneOnly:'完了のみ表示', boardBodyLargeConfirm:'このノートは1万文字を超えています。全文表示は動作に影響する可能性があります。それでも有効にしますか？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardPatternLines:'罫線', boardPatternCross:'交差ポイント', boardGridColor:'グリッドの色', boardGridOpacity:'グリッドの不透明度', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
-    boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenCap:'ペン先', boardCapRound:'丸', boardCapFlat:'平', boardCapSquare:'角', boardBrushEraser:'消しゴム', boardPenMode:'フリーハンドモード：何筆でも描けます。消しゴムはパネルで切り替え、完了または Esc で終了', boardLayers:'レイヤー', boardLayerShow:'レイヤーを表示', boardLayerHide:'レイヤーを非表示', boardLayerDrag:'ドラッグで並べ替え', boardLayerGroup:'グループ', boardGroup:'選択をグループ化', boardUngroup:'グループ解除', brandEgg:'筆を絶たず —— 好奇心に、Acta からの贈りもの',
+    boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenCap:'ペン先', boardCapRound:'丸', boardCapFlat:'平', boardCapSquare:'角', boardBrushEraser:'消しゴム', boardPenMode:'フリーハンドモード：何筆でも描けます。消しゴムはパネルで切り替え、完了または Esc で終了', boardLayers:'レイヤー', boardLayerShow:'レイヤーを表示', boardLayerHide:'レイヤーを非表示', boardLayerDrag:'ドラッグで並べ替え', boardLayerGroup:'グループ', boardGroup:'選択をグループ化', boardUngroup:'グループ解除', brandEgg:'筆を絶たず —— 好奇心に、Acta からの贈りもの', historyAlmostFull:'履歴がまもなく上限（450 / 500）— 古い履歴から置き換えられていきます',
     boardExportOptionsHint:'解像度と画像形式を選択。JPG は圧縮率を調整できます', boardExportScale:'解像度', boardExportFormat:'画像形式', boardExportQuality:'JPG 画質', boardExportConfirm:'書き出す', boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportWorking:'レンダリングして書き出し中です。しばらくお待ちください…', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください', boardImportPlan:'プランボードファイルを読み込む(.actaplan)', boardImported:'プランボードを読み込みました', boardImportInvalid:'有効な Acta プランボードファイルではありません', boardExportRegionTitle:'書き出し範囲を選択', boardExportRegionHint:'枠やハンドルをドラッグして調整。枠内が書き出されます', boardExportRegionAll:'すべての要素', boardExportRegionView:'現在のビュー', boardExportRegionNext:'次へ',
     boardEmptyTitle:'このボードは空です', boardEmptyHint:'下のツールでテキストとマーカーを追加したり、タスクとノートを読み込んで、自由にプランボードを組み立てましょう。'
   },
@@ -277,7 +277,7 @@ const dictionaries = {
     boardDeleteArm:'한 번 더 누르면 삭제', boardUndo:'실행 취소', boardRedo:'다시 실행', boardMarqueeClear:'선택 해제', boardMarqueeDelete:'선택 항목 삭제', boardSelectedCount:'{0}개 선택됨',
     boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardShowBody:'전체 내용', boardShowDoneOnly:'완료된 항목만', boardBodyLargeConfirm:'이 노트는 1만 자를 넘습니다. 전체 표시가 성능에 영향을 줄 수 있어요. 그래도 켜시겠어요?', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardPatternLines:'줄선', boardPatternCross:'교차점', boardGridColor:'격자 색', boardGridOpacity:'격자 불투명도', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
-    boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenCap:'펜촉', boardCapRound:'둥근 촉', boardCapFlat:'평평한 촉', boardCapSquare:'각진 촉', boardBrushEraser:'지우개', boardPenMode:'자유 곡선 모드: 여러 번 그릴 수 있어요. 지우개는 패널에서 전환하고 완료 또는 Esc로 종료', boardLayers:'레이어', boardLayerShow:'레이어 보이기', boardLayerHide:'레이어 숨기기', boardLayerDrag:'드래그하여 재배치', boardLayerGroup:'그룹', boardGroup:'선택 항목 그룹화', boardUngroup:'그룹 해제', brandEgg:'꾸준히 기록하기 — 호기심 깊은 당신에게, Acta 드림',
+    boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenCap:'펜촉', boardCapRound:'둥근 촉', boardCapFlat:'평평한 촉', boardCapSquare:'각진 촉', boardBrushEraser:'지우개', boardPenMode:'자유 곡선 모드: 여러 번 그릴 수 있어요. 지우개는 패널에서 전환하고 완료 또는 Esc로 종료', boardLayers:'레이어', boardLayerShow:'레이어 보이기', boardLayerHide:'레이어 숨기기', boardLayerDrag:'드래그하여 재배치', boardLayerGroup:'그룹', boardGroup:'선택 항목 그룹화', boardUngroup:'그룹 해제', brandEgg:'꾸준히 기록하기 — 호기심 깊은 당신에게, Acta 드림', historyAlmostFull:'기록이 거의 찼어요 (450 / 500) — 오래된 기록부터 서서히 대체돼요',
     boardExportOptionsHint:'해상도와 이미지 형식을 선택하세요. JPG는 압축 수준을 조절할 수 있어요', boardExportScale:'해상도', boardExportFormat:'이미지 형식', boardExportQuality:'JPG 품질', boardExportConfirm:'내보내기', boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportWorking:'렌더링 후 내보내는 중이에요. 잠시만 기다려 주세요…', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요', boardImportPlan:'플랜 보드 파일 가져오기(.actaplan)', boardImported:'플랜 보드를 가져왔어요', boardImportInvalid:'유효한 Acta 플랜 보드 파일이 아니에요', boardExportRegionTitle:'내보낼 영역 선택', boardExportRegionHint:'테두리나 핸들을 드래그해 조정하면 프레임 안이 내보내져요', boardExportRegionAll:'모든 요소', boardExportRegionView:'현재 보기', boardExportRegionNext:'다음',
     boardEmptyTitle:'이 보드는 비어 있어요', boardEmptyHint:'아래 도구로 텍스트와 마커를 추가하거나 할 일과 노트를 가져와 자유롭게 플랜 보드를 꾸며 보세요.'
   },
@@ -568,12 +568,25 @@ const formatMonthDay = value => {
 // 当前语言的描述，detail 携带目标标题等原文。
 const HISTORY_KEY = 'acta.history.v1';
 const HISTORY_LIMIT = 500;
+const HISTORY_WARN_AT = 450;
+// 历史记录跟随行记数据：运行时数组仍在 renderer，持久化交给档案层
+//（数据档案文件夹的 history.json / 本地档案的独立存储键），随档案
+// 切换与保存读写。全局键 acta.history.v1 是旧版不分档案的遗留，
+// 首个档案激活时由档案层一次性迁移。
 let historyEntries = (() => {
   try {
     const raw = JSON.parse(localStorage.getItem(HISTORY_KEY));
     return Array.isArray(raw) ? raw.slice(0, HISTORY_LIMIT) : [];
   } catch { return []; }
 })();
+window.__actaHistoryBridge = {
+  limit: HISTORY_LIMIT,
+  current: () => JSON.parse(JSON.stringify(historyEntries)),
+  // 档案层加载后把该档案的历史灌回运行时（切换 / 刷新 / 恢复共用）。
+  apply: entries => {
+    historyEntries = Array.isArray(entries) ? entries.filter(entry => entry && entry.id).slice(0, HISTORY_LIMIT) : [];
+  }
+};
 const historyMessages = {
   zh: {
     'note-created': '创建了笔记《{detail}》', 'todo-created': '创建了待办《{detail}》', 'checkin-created': '创建了打卡待办《{detail}》',
@@ -609,15 +622,11 @@ function logHistory(type, detail = '', targetId = '', snapshotBefore = null) {
   } catch { snapshot = null; }
   historyEntries.unshift({ id: uid(), type, detail: String(detail || ''), at: new Date().toISOString(), targetId: String(targetId || ''), snapshot });
   if (historyEntries.length > HISTORY_LIMIT) historyEntries.length = HISTORY_LIMIT;
-  // 存储溢出时从最旧开始淘汰，直到写入成功。
-  while (historyEntries.length) {
-    try {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(historyEntries));
-      break;
-    } catch {
-      historyEntries.pop();
-    }
-  }
+  // 持久化由档案层完成（跟随行记数据一同存储）：调度一次保存，让历史
+  // 随档案写入；这里只负责将满提醒——恰好达到 450 条时提示一次，
+  // 删除回落后再涨回会再次提醒。
+  persist();
+  if (historyEntries.length === HISTORY_WARN_AT) showToast(t('historyAlmostFull'), 4600);
 }
 
 const daysFromToday = (days) => {
