@@ -3501,9 +3501,23 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   html[data-acta-palette="mono-dark"] .mobile-create-button.is-note,
   html[data-acta-palette="mono-dark"] .mobile-create-button.is-checkin,
   html[data-acta-palette="mono-dark"] .mobile-create-button.is-import { color: #f6f4ec; }
-  /* 打开时新建按钮浮于遮罩之上（可再次点击收起），图标 + 旋转为 ×。 */
-  .new-button.is-open { z-index: 222; }
-  .new-button.is-open svg { transform: rotate(45deg); }
+  /* 打开时新建按钮浮于遮罩之上（可再次点击收起），图标 + 旋转为 ×。
+     底栏的层叠上下文困住原按钮的 z-index，镜像圆钮在这里替它保持
+     置顶与高亮：与原按钮像素级同位，强调色背景 + × 旋转态，
+     点击收起（复用遮罩的 close 委托）。 */
+  .mobile-create-toggle {
+    position: fixed; z-index: 222; left: 50%; bottom: calc(4px + env(safe-area-inset-bottom));
+    width: var(--mobile-new-button-size); height: var(--mobile-new-button-size);
+    padding: 0; border: 0; border-radius: 50%;
+    background: var(--sage); color: #fff; cursor: pointer;
+    transform: translateX(-50%) scale(.8); transform-origin: 50% 100%;
+    box-shadow: 0 2px 6px rgba(22,25,22,.18), 0 10px 26px -6px rgba(22,25,22,.3);
+    display: grid; place-items: center;
+    opacity: 0; transition: opacity .26s ease, transform .26s var(--ease-out), background .16s ease;
+  }
+  .mobile-create-layer.open .mobile-create-toggle { opacity: 1; transform: translateX(-50%) scale(1); }
+  .mobile-create-toggle:active { transform: translateX(-50%) scale(.94); transition-duration: .08s; }
+  .mobile-create-toggle svg { width: 26px; height: 26px; transform: rotate(45deg); transition: transform .3s var(--ease-out); }
   .new-button svg { transition: transform .3s var(--ease-out); }
 }
 @media (min-width: 801px) { .mobile-create-layer { display: none !important; } }

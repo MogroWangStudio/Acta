@@ -8947,13 +8947,11 @@ function bindShell() {
     syncMobileCreatePositions();
     layer.hidden = false;
     requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.add('open')));
-    $('#newButton').classList.add('is-open');
   };
   const closeMobileCreate = () => {
     const layer = $('#mobileCreateLayer');
     if (!layer || layer.hidden) return;
     layer.classList.remove('open');
-    $('#newButton').classList.remove('is-open');
     clearTimeout(mobileCreateHideTimer);
     mobileCreateHideTimer = setTimeout(() => { layer.hidden = true; }, 300);
   };

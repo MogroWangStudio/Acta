@@ -970,7 +970,9 @@
     <div class="context-menu" id="contextMenu" role="menu" aria-hidden="true"></div>
 
     <!-- 安卓端放射式新建菜单：五枚圆钮从中央新建按钮沿弧线弹出，
-         底部渐入遮罩保证文字对比度；桌面端保持侧栏功能列表。 -->
+         底部渐入遮罩保证文字对比度；桌面端保持侧栏功能列表。
+         层内的镜像圆钮与被遮罩盖住的新建按钮像素级同位——底栏的
+         层叠上下文困住原按钮的 z-index，镜像在这里替它保持置顶与高亮。 -->
     <div class="mobile-create-layer" id="mobileCreateLayer" hidden>
       <div class="mobile-create-backdrop" data-mobile-create-close></div>
       <div class="mobile-create-actions" id="mobileCreateActions">
@@ -995,5 +997,6 @@
           <button class="mobile-create-button is-import" type="button" aria-label="导入数据"><svg><use href="#i-download"/></svg></button>
         </div>
       </div>
+      <button class="mobile-create-toggle" data-mobile-create-close type="button" aria-label="收起新建菜单"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
     </div>
 </template>
