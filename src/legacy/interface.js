@@ -3466,16 +3466,20 @@
     library = next;
     statsSelection.clear();
     selectedId = activeItems()[0]?.id || null;
-    // 刷新（下拉刷新 / 刷新按钮）传 keepView：数据更新不改变用户所在视图，
-    // 归类视图的归类已被删时回落收集箱。数据替换类调用（导入 / 下载 /
-    // 局域网接收 / 切换档案）保持默认，回到收集箱。
-    if (options.keepView !== true) currentView = 'inbox';
-    else if (currentView.startsWith('folder:') && !getFolder(currentView.slice(7))) currentView = 'inbox';
-    resetListFilters();
-    searchQuery = '';
+    // 刷新（下拉刷新 / 刷新按钮）传 keepView：数据更新不改变用户所在视图
+    // 与筛选——收集箱里「所有笔记 / 所有待办」的类型筛选、其他筛选与搜索
+    // 词都保持，只有归类视图的归类已被删时回落收集箱。数据替换类调用
+    // （导入 / 下载 / 局域网接收 / 切换档案）保持默认，回到收集箱并清筛选。
+    if (options.keepView !== true) {
+      currentView = 'inbox';
+      resetListFilters();
+      searchQuery = '';
+      byId('searchInput').value = '';
+      document.querySelectorAll('.filter-row [data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+    } else {
+      if (currentView.startsWith('folder:') && !getFolder(currentView.slice(7))) currentView = 'inbox';
+    }
     mobileEditorOpen = false;
-    byId('searchInput').value = '';
-    document.querySelectorAll('.filter-row [data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
     renderAll();
   }
 
