@@ -2168,6 +2168,20 @@ body.trash-view .editor-pane { display: none; }
 .trash-empty h3 { margin: 0 0 6px; color: var(--ink); font: 600 calc(16px * var(--acta-font-scale)) var(--acta-font-display); }
 .trash-empty p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); max-width: 320px; line-height: 1.7; }
 
+/* 恢复确认详情：左「将被替换」右「将恢复」，窄屏纵向堆叠。 */
+.backup-restore-compare { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); gap: 10px; align-items: stretch; }
+.backup-restore-side { min-width: 0; padding: 12px 13px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 55%, transparent); display: grid; gap: 5px; align-content: start; }
+.backup-restore-side.is-backup { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); background: color-mix(in srgb, var(--sage-2) 30%, var(--white)); }
+.backup-restore-side b { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
+.backup-restore-side strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-size: calc(12px * var(--acta-font-scale)); }
+.backup-restore-side small { color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.5; }
+.backup-restore-arrow { align-self: center; color: var(--faint); display: grid; place-items: center; }
+.backup-restore-arrow svg { width: 15px; height: 15px; }
+@media (max-width: 640px) {
+  .backup-restore-compare { grid-template-columns: 1fr; }
+  .backup-restore-arrow svg { transform: rotate(90deg); }
+}
+
 /* --- Board（汇总板）：自由搭建的模块化画布 ---
    三类组件（条目卡片 / 富文本 / 标注）随意摆放；条目卡片虚拟化渲染，文本与
    标注常驻。画布是 transform 驱动的坐标平面，底纹点阵跟随相机；未选中条目
