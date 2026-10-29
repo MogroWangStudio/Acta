@@ -3515,9 +3515,12 @@ function boardNodeHTML(card, silent) {
   const progress = tasks.length ? Math.round((completedCount / tasks.length) * 100) : (done ? 100 : 0);
   const stampDate = item.type === 'todo' ? todoScheduleDate(item) : item.updatedAt;
   const stamp = stampDate ? `<time datetime="${escapeHTML(stampDate)}">${escapeHTML(formatDate(stampDate, true))}</time>` : '';
-  const delay = boardEnterAnimated && !silent ? Math.min(card.rowIndex * 16, 360) : 0;
-  // 首次进入按序级联落位；滚动中新增的卡片只做短淡入。
-  const motion = delay ? ' data-enter="1"' : (!silent ? ' data-new="1"' : '');
+  // 首次进入的组件级联：全部卡片走浮动入场（最顶部卡片延迟为 0、立即
+  // 浮动）——此前标记跟着 delay 走，首卡 delay 为 0 被发去 data-new 的
+  // 快速弹现，单卡板 / 最上方卡片进入时完全看不到浮动动画。
+  const entering = boardEnterAnimated && !silent;
+  const delay = entering ? Math.min(card.rowIndex * 16, 360) : 0;
+  const motion = entering ? ' data-enter="1"' : (!silent ? ' data-new="1"' : '');
   const widget = card.widget;
   const show = widget.show || {};
   const opacity = Number.isFinite(widget.opacity) ? Math.min(100, Math.max(30, widget.opacity)) : 100;
