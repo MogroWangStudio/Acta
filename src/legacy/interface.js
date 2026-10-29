@@ -4344,7 +4344,9 @@
           }
         }
         if (byId('backupManagerDialog')?.open) await refreshBackupList();
-        setStatus(status, failed ? profileText('backupAllPartial', ok, failed) : profileText('backupAllDone', ok), failed ? 'error' : 'success');
+        const summary = failed ? profileText('backupAllPartial', ok, failed) : profileText('backupAllDone', ok);
+        setStatus(status, summary, failed ? 'error' : 'success');
+        showToast(summary);
       } else {
         const target = choice.mode === 'specific'
           ? (dataProfiles.find(entry => entry.id === choice.profileId) || profile)
@@ -4352,6 +4354,8 @@
         const name = await backupOneProfile(target, lanBridge);
         if (byId('backupManagerDialog')?.open) await refreshBackupList();
         setStatus(status, profileText('backupCreated', name), 'success');
+        // 全局 toast：即使用户已离开行记数据页，也能看到备份成功。
+        showToast(profileText('backupCreated', name));
       }
     } catch (error) {
       setStatus(status, `${profileText('createBackupFailed')}${error.message || error}`, 'error');
