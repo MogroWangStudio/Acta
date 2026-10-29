@@ -2202,6 +2202,19 @@ body.board-view .item-header :is(button, select, input, .board-pill-menu, .view-
     transition: transform .42s var(--ease-out), width .05s linear;
   }
   body.board-view.board-editor-open .editor-pane { transform: translateX(0); }
+  /* 计划板编辑面板进入沉浸模式：常规沉浸规则与本块同为 (0,2,1) 特异性
+     且本块在文件更后，宽度 / 位移 / 层级会被压回覆盖层形态（460px 窄条
+     贴左、右侧计划板外露）——以更高特异性回到全屏；计划板的关闭钮与
+     拖宽条（z 26/27）沉到全屏面板（z 160）之下，无需单独隐藏。 */
+  body.board-view.note-focus-mode .editor-pane {
+    width: 100vw;
+    max-width: none;
+    transform: none;
+    transition: none;
+    z-index: 160;
+    border-left: 0;
+    box-shadow: none;
+  }
 }
 body.acta-reduce-motion.board-view .editor-pane { transition: opacity .18s ease; transform: none; }
 body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resizer) { transform: none; }
