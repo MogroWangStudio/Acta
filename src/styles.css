@@ -323,28 +323,21 @@ body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"] > svg { a
 .search-box input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); }
 .search-box input::placeholder { color: var(--faint); }
 .search-box kbd { font: calc(9px * var(--acta-font-scale))/1 system-ui; padding: 4px 5px; border-radius: 5px; background: var(--sidebar); color: var(--faint); }
-.filter-row { min-height: 38px; padding: 0 18px 9px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, .9fr); gap: 6px; align-items: center; border-bottom: 1px solid var(--line); }
-.filter-group { min-width: 0; flex: 1; display: flex; align-items: center; gap: 6px; }
+/* 行内筛选区只承载内容类型分段（全部 / 待办 / 笔记）一个控件：
+   排序、优先级、截止时间、归类、关联、更新时间与「显示已完成」都在
+   标题行的筛选面板里。行按内容宽度左对齐，不再铺满列表窗格——
+   回收站与移动端全宽列表下，分段曾被拉成三条巨型按钮。 */
+.filter-row { min-height: 38px; padding: 0 18px 9px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); }
+.filter-row[hidden] { display: none; }
+.filter-group { min-width: 0; display: flex; align-items: center; gap: 6px; }
 .filter-group[hidden] { display: none; }
-/* 上下文筛选组不参与布局（display: contents），组内下拉直接成为筛选行
-   网格的行 1 单元格；布局由 interface.css 按 data-filter-context 三态
-   网格化，杜绝 flex 换行带来的空缺。 */
-.contextual-filter-group { display: contents; }
-.contextual-filter-group[hidden] { display: none; }
-.contextual-filter-group .filter-select { min-width: 0; }
-.filter-row button { height: 30px; padding: 0 11px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
-.filter-row button:hover { transform: scale(1.04); color: var(--ink); background: rgba(255,255,255,.5); }
+.filter-row button { height: 28px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 600; cursor: pointer; transition: background-color .16s ease, color .16s ease; }
 .filter-row button.active { background: var(--ink); color: var(--white); }
+.filter-row button:active { transform: scale(.98); }
 .filter-select { min-width: 0; height: 30px; padding: 0 5px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.5); color: var(--muted); display: flex; align-items: center; gap: 4px; transition: border-color .2s, background .2s, box-shadow .2s; }
 .filter-select:focus-within { border-color: rgba(82,107,85,.3); background: var(--white); box-shadow: 0 0 0 2px rgba(82,107,85,.06); }
 .filter-select svg { width: 12px; height: 12px; flex: 0 0 auto; color: var(--faint); }
-/* 筛选下拉的图标纯装饰（文字已表意），隐藏后把空间还给选项文字，
-   最窄栏宽下「全部截止时间」等长选项不再截断。 */
-.filter-row .filter-select > svg { display: none; }
 .filter-select select { width: 100%; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: inherit; font-size: calc(9px * var(--acta-font-scale)); text-overflow: ellipsis; cursor: pointer; }
-.filter-row .clear-list-filters { height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); display: inline-flex; align-items: center; justify-content: center; gap: 5px; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; transition: border-color .15s ease, color .15s ease, background .15s ease; }
-.filter-row .clear-list-filters[hidden] { display: none; }
-.clear-list-filters svg { width: 12px; height: 12px; }
 
 .item-list { flex: 1; overflow: hidden auto; padding: 10px; }
 /* 列表内容统一包一层 .list-body：底部弹性的位移作用在它身上——

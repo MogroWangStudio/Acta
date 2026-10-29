@@ -1121,37 +1121,44 @@ html[data-acta-theme="mono-dark"] .classification-emoji-picker > header button {
 .note-editor .note-date-line time + time::before { content: ""; width: 3px; height: 3px; margin-right: 7px; border-radius: 50%; background: color-mix(in srgb, var(--note-accent) 45%, var(--line)); }
 .note-editor .note-date-line svg { width: 12px; height: 12px; }
 .todo-notes:focus-visible, .note-body:focus-visible, .note-markdown-source:focus-visible, .editor-title:focus-visible { outline: none; }
-/* 「显示已完成」开关：位于标题行右端的视图级显示选项。 */
-.item-header .todo-completed-toggle { flex: 0 0 auto; gap: 7px; cursor: pointer; font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; color: var(--muted); transition: border-color .2s, background .2s, color .2s; }
-.item-header .todo-completed-toggle input { width: 14px; height: 14px; margin: 0; flex: 0 0 auto; accent-color: var(--todo-accent); cursor: pointer; }
-.item-header .todo-completed-toggle svg { width: 12px; height: 12px; color: var(--todo-accent); }
-.item-header .todo-completed-toggle:hover { border-color: color-mix(in srgb, var(--todo-accent) 30%, var(--line)); color: var(--todo-accent); background: color-mix(in srgb, var(--todo-soft) 50%, var(--white)); }
-.item-header .todo-completed-toggle.is-active { border-color: color-mix(in srgb, var(--todo-accent) 34%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 62%, var(--white)); color: var(--todo-accent); }
-/* —— 筛选面板（收集箱 / 归类页）：标题行漏斗按钮弹出的筛选集成面板 ——
-   面板收纳四个筛选（按优先级、按截止时间、按归类、按更新时间）与
-   「显示已完成待办」开关；弹出与条目元数据浮层同一动画语言。 */
+/* —— 筛选面板：标题行漏斗按钮弹出的唯一筛选入口 ——
+   排序、优先级、截止时间、归类、关联、更新时间与「显示已完成」都在
+   这里；面板随视图裁剪行数，弹出与条目元数据浮层同一动画语言。 */
 .item-title-row { position: relative; }
-.list-filter-toggle { display: grid; place-items: center; width: 28px; height: 28px; margin-left: 2px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--faint); cursor: pointer; transition: color .18s ease, background-color .18s ease, transform .16s var(--ease-out); }
-.list-filter-toggle svg { width: 14px; height: 14px; }
-.list-filter-toggle:hover { color: var(--ink); background: var(--panel); transform: scale(1.05); }
-.list-filter-toggle[aria-expanded="true"] { color: var(--ink); background: var(--panel); }
+.list-filter-toggle { position: relative; display: grid; place-items: center; width: 28px; height: 28px; margin-left: auto; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); flex: 0 0 auto; cursor: pointer; transition: color .18s ease, background-color .18s ease, transform .16s var(--ease-out); }
+.list-filter-toggle[hidden] { display: none; }
+.list-filter-toggle svg { width: 15px; height: 15px; }
+.list-filter-toggle:hover { color: var(--ink); background: color-mix(in srgb, var(--panel) 88%, transparent); transform: none; }
+.list-filter-toggle:active { transform: scale(.94); }
+.list-filter-toggle[aria-expanded="true"] { color: var(--ink); background: color-mix(in srgb, var(--panel) 88%, transparent); }
+/* 有筛选在生效时点一个 4px 的实心点：入口本身不换色，状态在角上。 */
+.list-filter-toggle.is-active::after { content: ""; position: absolute; top: 6px; right: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--sage); box-shadow: 0 0 0 1.5px var(--paper); }
 .list-filter-panel {
-  position: absolute; top: calc(100% + 6px); right: 18px; z-index: 40; width: max(min(280px, calc(100vw - 40px)), 220px);
-  padding: 12px; display: grid; gap: 8px;
+  position: absolute; top: calc(100% + 6px); right: 18px; z-index: 40; width: max(min(252px, calc(100vw - 40px)), 216px);
+  max-height: min(72vh, 460px); overflow: hidden auto;
+  padding: 12px; display: grid; gap: 7px; align-content: start;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 14px;
   background: var(--paper);
   box-shadow: 0 3px 9px -2px rgba(31,35,30,.12), 0 14px 32px -10px rgba(31,35,30,.2);
   transform-origin: top right;
   animation: itemMetaPopoverIn .22s var(--ease-out) both;
+  overscroll-behavior: contain;
 }
 .list-filter-panel[hidden] { display: none; }
-.list-filter-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.list-filter-panel-head b { font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; color: var(--ink); }
+.list-filter-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 22px; }
+.list-filter-panel-head b { font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; letter-spacing: .02em; color: var(--ink); }
+.list-filter-panel-divider { height: 1px; margin: 2px 1px; background: color-mix(in srgb, var(--line) 70%, transparent); }
+.list-filter-panel-divider[hidden] { display: none; }
 .list-filter-panel-clear { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: color .16s ease, border-color .16s ease; }
+.list-filter-panel-clear[hidden] { display: none; }
 .list-filter-panel-clear svg { width: 10px; height: 10px; }
 .list-filter-panel-clear:hover { color: var(--ink); border-color: color-mix(in srgb, var(--faint) 40%, var(--line)); }
-.list-filter-panel .filter-select { width: 100%; }
+.list-filter-panel .filter-select { width: 100%; height: 30px; }
+.list-filter-panel .filter-select[hidden] { display: none; }
+.list-filter-panel .filter-select select { font-size: calc(10px * var(--acta-font-scale)); }
 .list-filter-panel .todo-completed-toggle { justify-content: flex-start; gap: 7px; }
+.list-filter-panel .todo-completed-toggle input { width: 14px; height: 14px; margin: 0; flex: 0 0 auto; accent-color: var(--todo-accent); cursor: pointer; }
+.list-filter-panel .todo-completed-toggle span { font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
   .list-filter-panel { animation: none; }
 }
@@ -1621,51 +1628,24 @@ body.acta-reduce-motion.note-focus-mode :is(.editor-pane,.note-editor) { animati
   body.note-focus-mode :is(.editor-pane,.note-editor) { animation: none !important; }
 }
 
-.filter-row button[data-filter="todo"].active { color: var(--todo-accent); background: var(--todo-soft); }
-.filter-row button[data-filter="note"].active { color: var(--note-accent); background: var(--note-soft); }
-.filter-row[data-filter-context="todo"] .filter-select:focus-within,
-.filter-row[data-filter-context="todo"] .filter-select.is-active { border-color: color-mix(in srgb, var(--todo-accent) 34%, var(--line)); background: color-mix(in srgb, var(--todo-soft) 54%, var(--white)); color: var(--todo-accent); }
-.filter-row[data-filter-context="note"] .filter-select:focus-within,
-.filter-row[data-filter-context="note"] .filter-select.is-active { border-color: color-mix(in srgb, var(--note-accent) 34%, var(--line)); background: color-mix(in srgb, var(--note-soft) 54%, var(--white)); color: var(--note-accent); }
-/* 筛选区网格（4 列 = 3×1fr + 排序列 .9fr），格子按 data-filter-view
-   分派——视图身份稳定，筛选状态切换不会引起布局跳动：
-   - 收集箱/归类（mixed）：行 1 = 分段控件（跨 1-3 列）+ 排序；选中
-     类型后行 2 = 三个上下文下拉（清除隐藏时第三个跨 3-4 列补满，
-     清除出现时收窄到列 3、清除占列 4）。
-   - 待办/笔记/今天（todo/note）：行 1 = 三个下拉 + 排序；清除按钮
-     出现时独占行 2 全宽。
-   「显示已完成」开关已移至标题行右端（视图级显示选项）。 */
-.filter-row .list-sort-field { grid-column: 4; grid-row: 1; }
-/* 回收站固定按删除时间排序：类型与归类筛选已足够，排序下拉不出场。 */
-#listFilterRow[data-filter-view="trash"] .list-sort-field { display: none; }
-.filter-row[data-filter-view="mixed"] .type-filter-group { grid-column: 1 / 4; grid-row: 1; gap: 4px; padding: 3px; border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--white) 55%, transparent); }
-.filter-row[data-filter-view="mixed"] .type-filter-group button { flex: 1 1 0; }
-.filter-row[data-filter-view="todo"] .contextual-filter-group .filter-select:nth-of-type(1),
-.filter-row[data-filter-view="note"] .contextual-filter-group .filter-select:nth-of-type(1) { grid-column: 1; grid-row: 1; }
-.filter-row[data-filter-view="todo"] .contextual-filter-group .filter-select:nth-of-type(2),
-.filter-row[data-filter-view="note"] .contextual-filter-group .filter-select:nth-of-type(2) { grid-column: 2; grid-row: 1; }
-.filter-row[data-filter-view="todo"] .contextual-filter-group .filter-select:nth-of-type(3),
-.filter-row[data-filter-view="note"] .contextual-filter-group .filter-select:nth-of-type(3) { grid-column: 3; grid-row: 1; }
-.filter-row[data-filter-view="mixed"] .contextual-filter-group .filter-select:nth-of-type(1) { grid-column: 1; grid-row: 2; }
-.filter-row[data-filter-view="mixed"] .contextual-filter-group .filter-select:nth-of-type(2) { grid-column: 2; grid-row: 2; }
-.filter-row[data-filter-view="mixed"] .contextual-filter-group .filter-select:nth-of-type(3) { grid-column: 3 / 5; grid-row: 2; }
-.filter-row[data-filter-view="mixed"]:has(.clear-list-filters:not([hidden])) .contextual-filter-group .filter-select:nth-of-type(3) { grid-column: 3; }
-.filter-row[data-filter-view="mixed"] .clear-list-filters { grid-column: 4; grid-row: 2; width: auto; justify-self: stretch; }
-/* 回收站：类型分段铺满第一行（与混合视图同款分段样式），归类下拉铺满
-   第二行；清除按钮可见时与下拉同行（下拉占 1-3 列、清除占第 4 列）。
-   此前没有摆放规则，项自动流入四列——类型分段被压进一格、按钮向外
-   溢出压到归类下拉，移动端尤甚。 */
-.filter-row[data-filter-view="trash"] .type-filter-group { grid-column: 1 / -1; grid-row: 1; display: flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--white) 55%, transparent); }
-.filter-row[data-filter-view="trash"] .type-filter-group button { flex: 1 1 0; }
-.filter-row[data-filter-view="trash"] .contextual-filter-group .filter-select:nth-of-type(1) { grid-column: 1 / -1; grid-row: 2; }
-.filter-row[data-filter-view="trash"]:has(.clear-list-filters:not([hidden])) .contextual-filter-group .filter-select:nth-of-type(1) { grid-column: 1 / 4; }
-.filter-row[data-filter-view="trash"] .clear-list-filters { grid-column: 4; grid-row: 2; width: auto; justify-self: stretch; }
-.filter-row[data-filter-view="todo"] .clear-list-filters,
-.filter-row[data-filter-view="note"] .clear-list-filters { grid-column: 1 / -1; grid-row: 2; width: auto; justify-self: stretch; }
-.list-sort-field { min-width: 0; }
-.filter-row .list-sort-field.is-active { border-color: color-mix(in srgb, var(--ink) 26%, var(--line)); background: var(--white); color: var(--ink); }
-html[data-acta-theme="mono-dark"] .filter-select,
-html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: #242424; }
+/* —— 行内内容类型分段：列表页唯一的行内控件 ——
+   收集箱 / 归类 / 回收站在页内按类型收窄；「全部待办」与「全部笔记」
+   用同一三段切换三个「全部」范围。容器只占内容宽度（不再铺满整行），
+   选中段用 ink 实心，与日历视图切换、设置页分段同一套语言。 */
+.list-type-switch { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid color-mix(in srgb, var(--line) 90%, transparent); border-radius: 9px; background: color-mix(in srgb, var(--white) 62%, transparent); }
+.list-type-switch button { min-width: 58px; height: 26px; padding: 0 12px; }
+.list-type-switch button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 82%, transparent); }
+.list-type-switch button.active,
+.list-type-switch button.active:hover { color: var(--white); background: var(--ink); }
+.list-type-switch button:focus-visible { outline: 2px solid color-mix(in srgb, var(--sage) 40%, transparent); outline-offset: 1px; }
+/* 面板里的下拉在一列里并排对齐：同一高度、同一图标尺寸，激活态只换
+   边框与底色，不再按 todo / note 各染一色（三列同款控件应同款反馈）。 */
+.list-filter-panel .filter-select.is-active { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); background: var(--white); color: var(--ink); }
+html[data-acta-theme="mono-dark"] .filter-select { background: #242424; }
+html[data-acta-theme="mono-dark"] .list-filter-panel .filter-select.is-active { background: #333; }
+@media (prefers-reduced-motion: reduce) {
+  .list-type-switch button { transition: none; }
+}
 .smart-nav button[data-view="todos"].active, .smart-nav button[data-view="completed"].active { color: var(--todo-accent); background: var(--todo-soft); }
 .smart-nav button[data-view="notes"].active { color: var(--note-accent); background: var(--note-soft); }
 .todo-burst { background: var(--todo-accent); box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--todo-accent) 34%, transparent); }
@@ -2938,9 +2918,9 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .mobile-titlebar-action:disabled { opacity: .58; cursor: progress; }
   html[data-acta-theme="mono-dark"] .mobile-titlebar-action { background: #292929; color: #e6e6e6; }
   .search-box { margin-bottom: 6px; }
-  .filter-row { row-gap: 7px; }
-  .item-header .todo-completed-toggle { height: 31px; }
-  .list-sort-field select { min-width: 0; }
+  /* 行内只剩一段分段控件：移动端把高度收到 32px，仍左对齐不铺满。 */
+  .filter-row { min-height: 34px; padding-bottom: 7px; }
+  .list-type-switch button { min-width: 62px; height: 28px; }
   /* 归类入口收进标题：小箭头触发下拉，不再单独占用一行胶囊按钮。 */
   .item-title-row { min-width: 0; }
   .item-title-row h1 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -3772,10 +3752,3 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 .board-export-dialog .board-style-check { cursor: pointer; }
 .board-export-dialog .board-style-check input { width: 15px; height: 15px; accent-color: var(--sage); }
 .board-export-dialog [data-bg-image] button { flex: 0 0 auto; }
-
-/* 筛选面板内的类型段与排序（自 .filter-row 迁入）。 */
-.list-filter-panel .type-filter-group { display: flex; gap: 6px; }
-.list-filter-panel .type-filter-group button { flex: 1; min-width: 0; height: 32px; padding: 0 8px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 62%, transparent); color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: color .16s ease, background .16s ease, border-color .16s ease; }
-.list-filter-panel .type-filter-group button:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); }
-.list-filter-panel .type-filter-group button.active { color: #fff; background: var(--sage); border-color: var(--sage); }
-.list-filter-panel .type-filter-group[hidden] { display: none; }

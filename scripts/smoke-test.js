@@ -98,87 +98,92 @@ async function main() {
       currentView = 'inbox';
       renderAll();
       const developerSettingsRemoved = !document.querySelector('[data-settings-page="developer"], [data-settings-panel="developer"], #notificationStatus, #sendNotificationNow, #scheduleNotification');
-      document.querySelector('[data-view="todos"]').click();
-      const todoFilterControlsVisible = !document.querySelector('[data-filter-context="todo"]').hidden && document.querySelector('[data-filter-context="mixed"]').hidden;
-      const todoOrder = [...document.querySelectorAll('.item-card')].map(card => card.dataset.id);
-      const todosOnly = [...document.querySelectorAll('.item-card')].every(card => library.items.find(item => item.id === card.dataset.id)?.type === 'todo');
-      const changeFilter = (selector, value) => {
-        const select = document.querySelector(selector);
-        select.value = value;
-        select.dispatchEvent(new Event('change', { bubbles:true }));
-        return [...document.querySelectorAll('.item-card')].map(card => card.dataset.id);
-      };
-      // 优先级筛选已并入筛选面板（外部不再有 #todoPriorityFilter）。
+      // 筛选区只剩「全部 / 待办 / 笔记」一段分段：其余选项（排序、优先级、
+      // 截止时间、归类、关联、更新时间、显示已完成）全部在面板里。
+      const activeSegment = () => [...document.querySelectorAll('#listTypeSwitch [data-filter]')]
+        .find(button => button.classList.contains('active'))?.dataset.filter;
+      const rowOnlyHasTypeSwitch = () => !document.querySelector('#listFilterRow').hidden
+        && document.querySelectorAll('#listTypeSwitch [data-filter]').length === 3
+        && document.querySelectorAll('#listFilterRow select, #listFilterRow .filter-select').length === 0;
+      const cards = () => [...document.querySelectorAll('.item-card')].map(card => card.dataset.id);
+      const openPanel = () => document.querySelector('#listFilterToggle').click();
       const changePanelFilter = (selector, value) => {
-        document.querySelector('#listFilterToggle').click();
+        openPanel();
         const select = document.querySelector(selector);
         select.value = value;
         select.dispatchEvent(new Event('change', { bubbles:true }));
-        document.querySelector('#listFilterToggle').click();
-        return [...document.querySelectorAll('.item-card')].map(card => card.dataset.id);
+        openPanel();
+        return cards();
       };
-      // 行内清除按钮已并入面板（收集箱 / 归类整行隐藏）。
       const clearViaPanel = () => {
-        document.querySelector('#listFilterToggle').click();
+        openPanel();
         document.querySelector('#listFilterPanelClear').click();
-        document.querySelector('#listFilterToggle').click();
+        openPanel();
       };
+
+      document.querySelector('[data-view="todos"]').click();
+      const todoFilterControlsVisible = rowOnlyHasTypeSwitch() && activeSegment() === 'todo';
+      const todoOrder = cards();
+      const todosOnly = [...document.querySelectorAll('.item-card')].every(card => library.items.find(item => item.id === card.dataset.id)?.type === 'todo');
       const todoPriorityFilterWorks = JSON.stringify(changePanelFilter('#panelPriorityFilter', 'low')) === JSON.stringify(['weekend-list']);
       clearViaPanel();
-      const todoDeadlineFilterWorks = JSON.stringify(changeFilter('#todoDueFilter', 'today')) === JSON.stringify(['launch-plan']);
+      const todoDeadlineFilterWorks = JSON.stringify(changePanelFilter('#panelDueFilter', 'today')) === JSON.stringify(['launch-plan']);
       clearViaPanel();
-      const todoFolderFilterWorks = JSON.stringify(changeFilter('#todoFolderFilter', 'life')) === JSON.stringify(['weekend-list']);
+      const todoFolderFilterWorks = JSON.stringify(changePanelFilter('#panelFolderFilter', 'life')) === JSON.stringify(['weekend-list']);
       clearViaPanel();
-      document.querySelector('#listFilterToggle').click();
-      const todoFiltersClear = ['todoDueFilter', 'todoFolderFilter'].every(id => document.querySelector('#' + id).value === 'all')
-        && document.querySelector('#panelPriorityFilter').value === 'all'
+      openPanel();
+      const todoFiltersClear = ['panelDueFilter', 'panelFolderFilter', 'panelPriorityFilter'].every(id => document.querySelector('#' + id).value === 'all')
         && document.querySelectorAll('.item-card').length === 2;
-      document.querySelector('#listFilterToggle').click();
+      openPanel();
       document.querySelector('[data-view="notes"]').click();
-      const noteFilterControlsVisible = !document.querySelector('[data-filter-context="note"]').hidden && document.querySelector('[data-filter-context="mixed"]').hidden;
+      const noteFilterControlsVisible = rowOnlyHasTypeSwitch() && activeSegment() === 'note';
       const notesOnly = [...document.querySelectorAll('.item-card')].every(card => library.items.find(item => item.id === card.dataset.id)?.type === 'note');
-      const noteFolderFilterWorks = JSON.stringify(changeFilter('#noteFolderFilter', 'reading')) === JSON.stringify(['reading-note']);
+      const noteFolderFilterWorks = JSON.stringify(changePanelFilter('#panelFolderFilter', 'reading')) === JSON.stringify(['reading-note']);
       clearViaPanel();
-      const noteUpdatedFilterWorks = JSON.stringify(changeFilter('#noteUpdatedFilter', '7')) === JSON.stringify(['welcome-note']);
+      const noteUpdatedFilterWorks = JSON.stringify(changePanelFilter('#panelUpdatedFilter', '7')) === JSON.stringify(['welcome-note']);
       clearViaPanel();
-      const noteRelationFilterWorks = changeFilter('#noteRelationFilter', 'unlinked').length === 2;
+      const noteRelationFilterWorks = changePanelFilter('#panelRelationFilter', 'unlinked').length === 2;
       clearViaPanel();
-      const noteFiltersClear = ['noteFolderFilter', 'noteRelationFilter', 'noteUpdatedFilter'].every(id => document.querySelector('#' + id).value === 'all') && document.querySelectorAll('.item-card').length === 2;
+      openPanel();
+      const noteFiltersClear = ['panelFolderFilter', 'panelRelationFilter', 'panelUpdatedFilter'].every(id => document.querySelector('#' + id).value === 'all')
+        && document.querySelectorAll('.item-card').length === 2;
+      openPanel();
       document.querySelector('[data-view="inbox"]').click();
-      // 收集箱行内不再有任何筛选选项（整行隐藏），类型筛选在面板里。
-      const inboxRowHidden = document.querySelector('#listFilterRow').hidden;
-      document.querySelector('#listFilterToggle').click();
-      const panelTypeVisible = !document.querySelector('#listFilterPanel [data-panel-type]').hidden;
-      document.querySelector('#listFilterPanel [data-filter="todo"]').click();
-      await new Promise(resolve => setTimeout(resolve, 60));
+      // 收集箱行内同样只有类型分段：类型在行内筛，其余在面板里。
+      const inboxRowsOnlyTypeSwitch = rowOnlyHasTypeSwitch();
+      document.querySelector('#listTypeSwitch [data-filter="todo"]').click();
       const inboxTodoOnly = [...document.querySelectorAll('.item-card')].every(card => library.items.find(item => item.id === card.dataset.id)?.type === 'todo');
-      document.querySelector('#listFilterPanel [data-filter="note"]').click();
-      await new Promise(resolve => setTimeout(resolve, 60));
+      document.querySelector('#listTypeSwitch [data-filter="note"]').click();
       const inboxNoteOnly = [...document.querySelectorAll('.item-card')].every(card => library.items.find(item => item.id === card.dataset.id)?.type === 'note');
-      document.querySelector('#listFilterPanel [data-filter="all"]').click();
-      document.querySelector('#listFilterToggle').click();
-      const inboxTodoFilterControlsVisible = inboxRowHidden && panelTypeVisible && inboxTodoOnly;
-
-      const inboxNoteFilterControlsVisible = inboxNoteOnly;
-      // 真实用法：先在面板里把类型切到待办，再调优先级（混合视图下优先级
-      // 只约束待办，注释类条目不受影响）。
-      document.querySelector('#listFilterToggle').click();
-      document.querySelector('#listFilterPanel [data-filter="todo"]').click();
+      const inboxNoteFilterControlsVisible = inboxRowsOnlyTypeSwitch && inboxNoteOnly;
+      document.querySelector('#listTypeSwitch [data-filter="all"]').click();
+      const inboxTodoFilterControlsVisible = inboxRowsOnlyTypeSwitch && inboxTodoOnly;
+      // 真实用法：行内先切到待办，再在面板里调优先级（混合视图下优先级
+      // 只约束待办，笔记不受影响）。
+      document.querySelector('#listTypeSwitch [data-filter="todo"]').click();
+      openPanel();
       const prioSelect = document.querySelector('#panelPriorityFilter');
       prioSelect.value = 'low';
       prioSelect.dispatchEvent(new Event('change', { bubbles:true }));
-      document.querySelector('#listFilterToggle').click();
-      const inboxTodoFilterWorks = JSON.stringify([...document.querySelectorAll('.item-card')].map(card => card.dataset.id)) === JSON.stringify(['weekend-list']);
+      openPanel();
+      const inboxTodoFilterWorks = JSON.stringify(cards()) === JSON.stringify(['weekend-list']);
       clearViaPanel();
-      // 更新时间在混合视图约束全部条目：先切类型到笔记再筛选（真实用法）。
-      document.querySelector('#listFilterToggle').click();
-      document.querySelector('#listFilterPanel [data-filter="note"]').click();
+      // 更新时间在混合视图约束全部条目：切到笔记再筛选（真实用法）。
+      document.querySelector('#listTypeSwitch [data-filter="note"]').click();
+      openPanel();
       const updSelect = document.querySelector('#panelUpdatedFilter');
       updSelect.value = '7';
       updSelect.dispatchEvent(new Event('change', { bubbles:true }));
-      document.querySelector('#listFilterToggle').click();
-      const inboxNoteFilterWorks = JSON.stringify([...document.querySelectorAll('.item-card')].map(card => card.dataset.id)) === JSON.stringify(['welcome-note']);
+      openPanel();
+      const inboxNoteFilterWorks = JSON.stringify(cards()) === JSON.stringify(['welcome-note']);
       clearViaPanel();
+      // 「全部待办 / 全部笔记」页已被类型锁定，同一段分段切的是三个「全部」
+      // 范围：待办 → 笔记 → 收集箱，每个按钮都有实际动作。
+      document.querySelector('[data-view="todos"]').click();
+      document.querySelector('#listTypeSwitch [data-filter="note"]').click();
+      const typeSwitchNavigatesToNotes = currentView === 'notes' && activeSegment() === 'note';
+      document.querySelector('#listTypeSwitch [data-filter="all"]').click();
+      const typeSwitchNavigatesToInbox = currentView === 'inbox' && activeSegment() === 'all';
       document.querySelector('[data-view="todos"]').click();
       document.querySelector('[data-id="launch-plan"]').click();
       const taskBeforeImeEnter = library.items.find(item => item.id === 'launch-plan').tasks.length;
@@ -816,10 +821,17 @@ async function main() {
       const completedLingersDuringSinkDelay = Boolean(document.querySelector('.item-card[data-id="launch-plan"].completed-card'));
       await waitFor(() => !document.querySelector('[data-id="launch-plan"]'));
       const completedHiddenFromTodos = !document.querySelector('[data-id="launch-plan"]');
-      const showCompletedToggleVisible = Boolean(document.querySelector('#todoCompletedToggle')) && !document.querySelector('#todoCompletedToggle').hidden;
-      document.querySelector('#todoShowCompleted').click();
+      // 「显示已完成」现在只在筛选面板里：打开面板才能开关。
+      document.querySelector('#listFilterToggle').click();
+      const showCompletedToggleVisible = Boolean(document.querySelector('#panelCompletedToggle'))
+        && !document.querySelector('#panelCompletedToggle').hidden
+        && Boolean(document.querySelector('#panelShowCompleted'));
+      document.querySelector('#panelShowCompleted').click();
+      document.querySelector('#listFilterToggle').click();
       const completedShownInTodos = Boolean(document.querySelector('[data-id="launch-plan"]'));
-      document.querySelector('#todoShowCompleted').click();
+      document.querySelector('#listFilterToggle').click();
+      document.querySelector('#panelShowCompleted').click();
+      document.querySelector('#listFilterToggle').click();
       const completedHiddenAgainAfterToggle = !document.querySelector('[data-id="launch-plan"]');
       document.querySelector('[data-view="stats"]').click();
       const statsCollectionViewVisible = Boolean(document.querySelector('.stats-collection-wrap')) && document.body.classList.contains('stats-view');
@@ -1564,6 +1576,8 @@ async function main() {
         inboxTodoFilterWorks,
         inboxNoteFilterControlsVisible,
         inboxNoteFilterWorks,
+        typeSwitchNavigatesToNotes,
+        typeSwitchNavigatesToInbox,
         completedLingersDuringSinkDelay,
         inboxCompletedLingers,
         inboxCompletedFadesOut,
@@ -1901,6 +1915,8 @@ async function main() {
     assert.equal(result.inboxTodoFilterWorks, true);
     assert.equal(result.inboxNoteFilterControlsVisible, true);
     assert.equal(result.inboxNoteFilterWorks, true);
+    assert.equal(result.typeSwitchNavigatesToNotes, true);
+    assert.equal(result.typeSwitchNavigatesToInbox, true);
     assert.equal(result.completedLingersDuringSinkDelay, true);
     assert.equal(result.inboxCompletedLingers, true);
     assert.equal(result.inboxCompletedFadesOut, true);

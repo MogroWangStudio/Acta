@@ -3499,7 +3499,7 @@
       resetListFilters();
       searchQuery = '';
       byId('searchInput').value = '';
-      document.querySelectorAll('.filter-row [data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+      // 行内类型分段与面板的选中态由随后的 renderAll → syncListFilterUI 同步。
     } else {
       if (currentView.startsWith('folder:') && !getFolder(currentView.slice(7))) currentView = 'inbox';
     }
@@ -6185,7 +6185,7 @@
     renderEditor();
   });
   applySubtaskDates();
-  // 「显示已完成待办」与筛选栏的开关共用同一设置（renderer 的
+  // 「显示已完成待办」与筛选面板的开关共用同一设置（renderer 的
   // settings.showCompletedTodos），两处 UI 双向同步。
   const showCompletedSetting = byId('showCompletedSetting');
   if (showCompletedSetting) {
@@ -6194,9 +6194,9 @@
       settings.showCompletedTodos = showCompletedSetting.checked;
       persist();
       refreshFilteredList();
-      const filterBox = document.getElementById('todoShowCompleted');
+      const filterBox = document.getElementById('panelShowCompleted');
       if (filterBox) filterBox.checked = settings.showCompletedTodos;
-      document.getElementById('todoCompletedToggle')?.classList.toggle('is-active', settings.showCompletedTodos);
+      document.getElementById('panelCompletedToggle')?.classList.toggle('is-active', settings.showCompletedTodos);
     });
   }
   // 已完成待办自动置底：开关与延迟写进 <html data-completed-todo-sink*>，

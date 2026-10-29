@@ -1895,97 +1895,75 @@ function hasActiveListFilters(context = listFilterContext()) {
   return [noteFolderFilter, noteRelationFilter, noteUpdatedFilter].some(value => value !== 'all');
 }
 
-function syncFolderFilter(select, selectedValue) {
-  if (!select) return;
+// 归类筛选：收集箱 / 待办共用一个变量，笔记与回收站各有自己的变量。
+// 面板与列表过滤都从这里取，切换视图时不会串值。
+function folderFilterFor(viewContext) {
+  if (viewContext === 'trash') return trashFolderFilter;
+  if (viewContext === 'note') return noteFolderFilter;
+  return todoFolderFilter;
+}
+
+function setFolderFilterFor(viewContext, value) {
+  if (viewContext === 'trash') { trashFolderFilter = value; return; }
+  if (viewContext === 'note') { noteFolderFilter = value; return; }
+  todoFolderFilter = value;
+}
+
+function syncFolderFilter(select, selectedValue, { includeUnclassified = false } = {}) {
+  if (!select) return selectedValue;
   select.innerHTML = [
     `<option value="all">${escapeHTML(t('allFolders'))}</option>`,
+    includeUnclassified ? `<option value="none">${escapeHTML(t('unclassified'))}</option>` : '',
     ...library.folders.map(folder => `<option value="${escapeHTML(folder.id)}">${escapeHTML(folderName(folder))}</option>`)
   ].join('');
   select.value = selectedValue;
+  if (select.value !== selectedValue) select.value = 'all';
+  return select.value;
+}
+
+// 行内只保留内容类型分段（全部 / 待办 / 笔记）——收集箱、归类、回收站，
+// 以及两个「全部」列表页共用同一个控件；排序与其余筛选全在面板里。
+function typeSwitchVisible() {
+  return currentView === 'inbox' || currentView === 'todos' || currentView === 'notes'
+    || currentView.startsWith('folder:') || currentView === 'trash';
+}
+
+function activeTypeSwitch() {
+  if (currentView === 'trash') return trashTypeFilter;
+  const viewContext = listViewContext();
+  if (viewContext === 'mixed') return currentFilter;
+  if (viewContext === 'todo') return 'todo';
+  if (viewContext === 'note') return 'note';
+  return 'all';
 }
 
 function syncListFilterUI() {
-  const row = $('#listFilterRow') || $('.filter-row');
+  const row = $('#listFilterRow');
   if (!row) return;
   const viewContext = listViewContext();
-  const context = listFilterContext();
+  // 归类被删后筛选归位：面板不会留下指向不存在归类的选项。
   const folderIds = new Set(library.folders.map(folder => folder.id));
   if (todoFolderFilter !== 'all' && !folderIds.has(todoFolderFilter)) todoFolderFilter = 'all';
   if (noteFolderFilter !== 'all' && !folderIds.has(noteFolderFilter)) noteFolderFilter = 'all';
+  if (!['all', 'none'].includes(trashFolderFilter) && !folderIds.has(trashFolderFilter)) trashFolderFilter = 'all';
 
-  row.dataset.filterContext = context;
+  row.hidden = !typeSwitchVisible();
   row.dataset.filterView = viewContext;
-  // 收集箱 / 归类（mixed）：行内不再显示任何筛选选项——类型 / 排序 /
-  // 清除都已并入筛选面板，整行隐藏；回收站与待办 / 笔记的上下文筛选行保留。
-  row.hidden = context === 'mixed';
-  $$('[data-filter-context]', row).forEach(group => {
-    group.hidden = group.dataset.filterContext === 'mixed'
-      ? viewContext !== 'mixed'
-      : group.dataset.filterContext !== context;
+  const activeType = activeTypeSwitch();
+  $$('#listTypeSwitch [data-filter]').forEach(button => {
+    const selected = button.dataset.filter === activeType;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-pressed', String(selected));
   });
-  $$('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === currentFilter));
-  $$('[data-trash-filter]', row).forEach(button => button.classList.toggle('active', button.dataset.trashFilter === trashTypeFilter));
-  if (context === 'trash') {
-    const trashFolderSelect = $('#trashFolderFilter');
-    if (trashFolderSelect) {
-      trashFolderSelect.innerHTML = [
-        `<option value="all">${escapeHTML(t('allFolders'))}</option>`,
-        `<option value="none">${escapeHTML(t('unclassified'))}</option>`,
-        ...library.folders.map(folder => `<option value="${escapeHTML(folder.id)}">${escapeHTML(folderName(folder))}</option>`)
-      ].join('');
-      trashFolderSelect.value = trashFolderFilter;
-      if (trashFolderSelect.value !== trashFolderFilter) { trashFolderFilter = 'all'; trashFolderSelect.value = 'all'; }
-      trashFolderSelect.closest('.filter-select')?.classList.toggle('is-active', trashFolderFilter !== 'all');
-    }
-  }
-
-  const values = {
-    todoPriorityFilter, todoDueFilter, todoFolderFilter,
-    noteFolderFilter, noteRelationFilter, noteUpdatedFilter
-  };
-  syncFolderFilter($('#todoFolderFilter'), todoFolderFilter);
-  syncFolderFilter($('#noteFolderFilter'), noteFolderFilter);
-  Object.entries(values).forEach(([id, value]) => {
-    const select = $(`#${id}`);
-    if (!select) return;
-    select.value = value;
-    select.closest('.filter-select')?.classList.toggle('is-active', value !== 'all');
-  });
-
-  const sortSelect = $('#listSortOrder');
-  if (sortSelect) {
-    sortSelect.value = listSortMode;
-    sortSelect.closest('.filter-select')?.classList.toggle('is-active', listSortMode !== 'updated');
-  }
-
-  const labels = {
-    todoPriorityFilter:'filterByPriority', todoDueFilter:'filterByDeadline', todoFolderFilter:'filterByFolder',
-    noteFolderFilter:'filterByFolder', noteRelationFilter:'filterByRelation', noteUpdatedFilter:'filterByUpdated',
-    listSortOrder:'sortBy'
-  };
-  Object.entries(labels).forEach(([id, key]) => {
-    const select = $(`#${id}`);
-    select?.setAttribute('aria-label', t(key));
-    select?.setAttribute('title', t(key));
-  });
-
-  const completedToggle = $('#todoCompletedToggle');
-  if (completedToggle) {
-    // 归类页的「显示已完成」由筛选面板承担，标题行开关只保留在所有待办。
-    completedToggle.hidden = currentView !== 'todos';
-    completedToggle.classList.toggle('is-active', settings.showCompletedTodos);
-    const box = $('#todoShowCompleted');
-    if (box) box.checked = settings.showCompletedTodos;
-  }
-
-  // 行内清除按钮已并入筛选面板（#listFilterPanelClear）。
 
   syncListFilterPanel(viewContext);
 }
 
-// —— 筛选面板（收集箱 / 归类页标题行的漏斗入口）——
-// 面板集成四个筛选（按优先级、按截止时间、按归类、按更新时间）与
-// 「显示已完成待办」开关；视图切换时自动收起。
+
+// —— 筛选面板（标题行的漏斗入口）——
+// 列表页的全部筛选都收在这里：排序、优先级、截止时间、归类、关联、
+// 更新时间与「显示已完成」。行内只留内容类型分段，一个入口、一套状态；
+// 各视图只渲染自己适用的行（回收站只剩排序与归类，笔记页没有优先级）。
 let listFilterPanelOpen = false;
 let listFilterPanelView = '';
 
@@ -1993,58 +1971,73 @@ function syncListFilterPanel(viewContext = listViewContext()) {
   const panel = $('#listFilterPanel');
   const toggle = $('#listFilterToggle');
   if (!panel || !toggle) return;
-  // 筛选按钮覆盖全部列表视图（含回收站——排序仍从面板调整）：
-  // 「按优先级」只在面板里出现，外部筛选行不再重复展示。
-  const showToggle = currentView === 'inbox' || currentView.startsWith('folder:')
-    || currentView === 'todos' || currentView === 'notes' || currentView === 'trash';
+  const showToggle = !['calendar', 'stats', 'board'].includes(viewContext);
   if (viewContext !== listFilterPanelView) { listFilterPanelView = viewContext; listFilterPanelOpen = false; }
+  const hasFilters = hasActiveListFilters(listFilterContext());
   toggle.hidden = !showToggle;
+  toggle.classList.toggle('is-active', hasFilters);
   toggle.setAttribute('aria-expanded', String(listFilterPanelOpen));
+  toggle.setAttribute('aria-label', t('filterPanelTitle'));
+  toggle.setAttribute('title', t('filterPanelTitle'));
   panel.hidden = !listFilterPanelOpen;
   if (!listFilterPanelOpen) return;
+
+  const rowVisibility = {
+    panelPriorityRow: viewContext !== 'note' && viewContext !== 'trash',
+    panelDueRow: viewContext !== 'note' && viewContext !== 'trash',
+    panelFolderRow: true,
+    panelRelationRow: viewContext === 'note',
+    panelUpdatedRow: viewContext === 'note' || viewContext === 'mixed',
+    panelCompletedToggle: viewContext === 'todo' || viewContext === 'mixed'
+  };
+  Object.entries(rowVisibility).forEach(([id, visible]) => {
+    const row = document.getElementById(id);
+    if (row) row.hidden = !visible;
+  });
+
+  const folderValue = folderFilterFor(viewContext);
+  const folderSelect = $('#panelFolderFilter');
+  if (folderSelect) {
+    const applied = syncFolderFilter(folderSelect, folderValue, { includeUnclassified: viewContext === 'trash' });
+    if (applied !== folderValue) setFolderFilterFor(viewContext, applied);
+    folderSelect.closest('.filter-select')?.classList.toggle('is-active', applied !== 'all');
+  }
+
   const values = {
+    listSortOrder: listSortMode,
     panelPriorityFilter: todoPriorityFilter,
     panelDueFilter: todoDueFilter,
-    panelFolderFilter: todoFolderFilter,
+    panelRelationFilter: noteRelationFilter,
     panelUpdatedFilter: noteUpdatedFilter
   };
-  syncFolderFilter($('#panelFolderFilter'), todoFolderFilter);
   Object.entries(values).forEach(([id, value]) => {
     const select = $(`#${id}`);
     if (!select) return;
     select.value = value;
-    select.closest('.filter-select')?.classList.toggle('is-active', value !== 'all');
+    // 排序的默认值是「最近更新」，其余筛选的默认值是 all——只有偏离
+    // 默认时才点亮，避免整列控件看起来都处于激活态。
+    select.closest('.filter-select')?.classList.toggle('is-active', id === 'listSortOrder' ? value !== 'updated' : value !== 'all');
   });
+
   const completedBox = $('#panelShowCompleted');
   if (completedBox) completedBox.checked = settings.showCompletedTodos;
-  // 类型段只在收集箱 / 归类（mixed）出现；与上下文无关的筛选行按视图
-  // 显隐（回收站只保留排序），排序随面板状态同步。
-  const typeGroup = panel.querySelector('[data-panel-type]');
-  if (typeGroup) typeGroup.hidden = viewContext !== 'mixed';
-  const panelContextHidden = { panelPriorityFilter: viewContext === 'note' || viewContext === 'trash', panelDueFilter: viewContext === 'note' || viewContext === 'trash', panelFolderFilter: viewContext === 'trash', panelUpdatedFilter: viewContext === 'todo' || viewContext === 'trash', panelCompletedToggle: viewContext === 'trash' };
-  Object.entries(panelContextHidden).forEach(([id, hidden]) => {
-    const el = panel.querySelector(`#${id}`);
-    if (el) el.closest('.filter-select').hidden = hidden;
-  });
-  const sortSelect = $('#listSortOrder');
-  if (sortSelect) {
-    sortSelect.value = listSortMode;
-    sortSelect.closest('.filter-select')?.classList.toggle('is-active', listSortMode !== 'updated');
-    sortSelect.setAttribute('aria-label', t('sortBy'));
-  }
+  $('#panelCompletedToggle')?.classList.toggle('is-active', settings.showCompletedTodos);
+
   const clearButton = $('#listFilterPanelClear');
   if (clearButton) {
-    clearButton.hidden = !hasActiveListFilters(currentView === 'notes' ? 'note' : currentView === 'todos' ? 'todo' : 'mixed');
+    clearButton.hidden = !hasFilters;
     clearButton.title = t('clearFilters');
     clearButton.setAttribute('aria-label', t('clearFilters'));
   }
-  ['panelPriorityFilter', 'panelDueFilter', 'panelFolderFilter', 'panelUpdatedFilter'].forEach((id, index) => {
+  const labels = {
+    panelPriorityFilter: 'filterByPriority', panelDueFilter: 'filterByDeadline', panelFolderFilter: 'filterByFolder',
+    panelRelationFilter: 'filterByRelation', panelUpdatedFilter: 'filterByUpdated', listSortOrder: 'sortBy'
+  };
+  Object.entries(labels).forEach(([id, key]) => {
     const select = $(`#${id}`);
-    select?.setAttribute('aria-label', t(['filterByPriority', 'filterByDeadline', 'filterByFolder', 'filterByUpdated'][index]));
+    select?.setAttribute('aria-label', t(key));
+    select?.setAttribute('title', t(key));
   });
-  const toggleTitle = $('#listFilterToggle');
-  toggleTitle?.setAttribute('aria-label', t('filterPanelTitle'));
-  toggleTitle?.setAttribute('title', t('filterPanelTitle'));
 }
 
 // 截止时间窗口筛选：待办列表与收集箱 / 归类页的筛选面板共用同一套窗口。
@@ -9462,22 +9455,25 @@ function bindShell() {
     const todoButton = event.target.closest('[data-calendar-open]');
     if (todoButton) openItem(todoButton.dataset.calendarOpen);
   });
+  // 视图切换的唯一入口：侧栏 / 移动端导航与行内类型分段都走这里，
+  // 保证切换后的选中项回落、日历入场与编辑器刷新完全一致。
+  const activateView = view => {
+    currentView = view;
+    // 切换视图即重置日历模式历史：每次进入日历都是新的回退起点。
+    calendarModeHistory.length = 0;
+    if (currentView === 'calendar') calendarMotion = 'enter';
+    mobileEditorOpen = false;
+    renderSidebar(); renderList();
+    const visible = getVisibleItems();
+    // 进入汇总板不带旧选中：画布以全宽打开，点击卡片再展开编辑器；
+    // 其余视图维持「选中项不在列表时回落到第一项」的既有行为。
+    if (currentView === 'board') selectedId = null;
+    else if (!visible.some(item => item.id === selectedId)) selectedId = visible[0]?.id || null;
+    if (currentView !== 'calendar') renderEditor();
+  };
   document.addEventListener('click', event => {
     const navigation = event.target.closest('[data-view]');
-    if (navigation) {
-      currentView = navigation.dataset.view;
-      // 切换视图即重置日历模式历史：每次进入日历都是新的回退起点。
-      calendarModeHistory.length = 0;
-      if (currentView === 'calendar') calendarMotion = 'enter';
-      mobileEditorOpen = false;
-      renderSidebar(); renderList();
-      const visible = getVisibleItems();
-      // 进入汇总板不带旧选中：画布以全宽打开，点击卡片再展开编辑器；
-      // 其余视图维持「选中项不在列表时回落到第一项」的既有行为。
-      if (currentView === 'board') selectedId = null;
-      else if (!visible.some(item => item.id === selectedId)) selectedId = visible[0]?.id || null;
-      if (currentView !== 'calendar') renderEditor();
-    }
+    if (navigation) activateView(navigation.dataset.view);
     const card = event.target.closest('.item-card');
     if (card) {
       selectedId = card.dataset.id;
@@ -9493,54 +9489,43 @@ function bindShell() {
     const visible = getVisibleItems();
     if (!visible.some(item => item.id === selectedId)) { selectedId = visible[0]?.id || null; renderEditor(); }
   };
-  $$('[data-filter]').forEach(button => button.addEventListener('click', () => {
-    currentFilter = button.dataset.filter;
-    $$('[data-filter]').forEach(entry => entry.classList.toggle('active', entry === button));
+  // 行内类型分段：控件只有一个，语义随页面而定——
+  // 收集箱 / 归类 / 回收站是在本页内按类型收窄；「全部待办」与「全部笔记」
+  // 页本身已被类型锁定，三个分段对应三个「全部」范围（待办 → 全部待办、
+  // 笔记 → 全部笔记、全部 → 收集箱），点哪一个都有实际动作。
+  $$('#listTypeSwitch [data-filter]').forEach(button => button.addEventListener('click', () => {
+    const type = button.dataset.filter;
+    if (currentView === 'trash') {
+      trashTypeFilter = type;
+      syncListFilterUI();
+      refreshFilteredList();
+      return;
+    }
+    const viewContext = listViewContext();
+    if (viewContext === 'todo' || viewContext === 'note') {
+      const target = type === 'todo' ? 'todos' : type === 'note' ? 'notes' : 'inbox';
+      if (currentView === target) return;
+      // 回到收集箱时先复位类型，避免「点了全部却仍只看到笔记」。
+      if (target === 'inbox') currentFilter = 'all';
+      activateView(target);
+      return;
+    }
+    currentFilter = type;
+    syncListFilterUI();
     refreshFilteredList();
   }));
-  $$('.filter-row [data-trash-filter]').forEach(button => button.addEventListener('click', () => {
-    trashTypeFilter = button.dataset.trashFilter;
-    $$('.filter-row [data-trash-filter]').forEach(entry => entry.classList.toggle('active', entry === button));
-    refreshFilteredList();
-  }));
-  $('#trashFolderFilter')?.addEventListener('change', event => {
-    trashFolderFilter = event.target.value;
-    event.target.closest('.filter-select')?.classList.toggle('is-active', trashFolderFilter !== 'all');
-    refreshFilteredList();
-  });
-  [
-    ['todoPriorityFilter', value => { todoPriorityFilter = value; }],
-    ['todoDueFilter', value => { todoDueFilter = value; }],
-    ['todoFolderFilter', value => { todoFolderFilter = value; }],
-    ['noteFolderFilter', value => { noteFolderFilter = value; }],
-    ['noteRelationFilter', value => { noteRelationFilter = value; }],
-    ['noteUpdatedFilter', value => { noteUpdatedFilter = value; }]
-  ].forEach(([id, update]) => $(`#${id}`)?.addEventListener('change', event => {
-    update(event.target.value);
-    refreshFilteredList();
-  }));
-  $('#clearListFilters')?.addEventListener('click', () => {
-    resetListFilters(listFilterContext());
-    refreshFilteredList();
-  });
   $('#listSortOrder')?.addEventListener('change', event => {
     listSortMode = listSortModes.includes(event.target.value) ? event.target.value : 'updated';
     settings.sortMode = listSortMode;
     persist();
     refreshFilteredList();
   });
-  $('#todoShowCompleted')?.addEventListener('change', event => {
-    settings.showCompletedTodos = event.target.checked;
-    persist();
-    refreshFilteredList();
-  });
-  // 设置页「显示已完成待办」与筛选栏双向同步。
+  // 设置页「显示已完成待办」与筛选面板双向同步。
   const showCompletedSettingSync = () => {
     const settingBox = document.getElementById('showCompletedSetting');
     if (settingBox) settingBox.checked = settings.showCompletedTodos;
   };
-  $('#todoCompletedToggle')?.addEventListener('click', () => setTimeout(showCompletedSettingSync, 0));
-  // —— 筛选面板（收集箱 / 归类页）：开关、四个筛选、显示已完成与清除 ——
+  // —— 筛选面板：开关、各个筛选、显示已完成与清除 ——
   $('#listFilterToggle')?.addEventListener('click', event => {
     event.stopPropagation();
     // 视图切换后的首次打开：先把视图锚记对齐，避免 syncListFilterPanel
@@ -9552,13 +9537,16 @@ function bindShell() {
   });
   $('#listFilterPanel')?.addEventListener('click', event => {
     if (!event.target.closest('#listFilterPanelClear')) return;
-    resetListFilters('mixed');
+    // 按当前视图的上下文清除：笔记页不能去重置待办的筛选，反之亦然。
+    resetListFilters(listFilterContext());
     renderAll();
   });
   const panelFilterBindings = {
     panelPriorityFilter: value => { todoPriorityFilter = value; },
     panelDueFilter: value => { todoDueFilter = value; },
-    panelFolderFilter: value => { todoFolderFilter = value; noteFolderFilter = value; },
+    // 归类筛选的落点随视图而定（收集箱/待办、笔记、回收站各一份）。
+    panelFolderFilter: value => { setFolderFilterFor(listViewContext(), value); },
+    panelRelationFilter: value => { noteRelationFilter = value; },
     panelUpdatedFilter: value => { noteUpdatedFilter = value; }
   };
   Object.entries(panelFilterBindings).forEach(([id, apply]) => {

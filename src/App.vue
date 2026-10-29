@@ -118,20 +118,19 @@
             <div class="item-title-row">
               <h1 id="viewTitle">收集箱</h1>
               <button class="view-title-menu" id="viewTitleMenu" type="button" aria-label="查看归类" aria-haspopup="true" aria-expanded="false"><svg class="view-title-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
-              <button class="icon-button list-filter-toggle" id="listFilterToggle" type="button" aria-label="筛选" aria-haspopup="true" aria-expanded="false" hidden><svg aria-hidden="true"><use href="#i-filter"/></svg></button>
             </div>
-            <!-- 筛选面板挂在 item-header（相对锚）下、右缘对齐标题行右端：
-                 宽度自适应且最小 200px，窄屏不左溢出。 -->
-            <div class="list-filter-panel" id="listFilterPanel" hidden>
+            <!-- 筛选入口贴在页头右端（面板也从右缘弹出）：标题旁的折叠箭头
+                 负责「换归类」，漏斗负责「筛内容」，两个入口各占一头，
+                 不会挤在标题后面互相干扰。 -->
+            <button class="icon-button list-filter-toggle" id="listFilterToggle" type="button" aria-label="筛选" aria-haspopup="true" aria-expanded="false" hidden><svg aria-hidden="true"><use href="#i-filter"/></svg></button>
+            <!-- 筛选面板挂在 item-header（相对锚）下、右缘与漏斗对齐：
+                 宽度自适应且最小 216px，窄屏不左溢出。 -->
+            <div class="list-filter-panel" id="listFilterPanel" role="group" aria-label="筛选" hidden>
                 <div class="list-filter-panel-head">
                   <b data-i18n="filterPanelTitle">筛选</b>
                   <button type="button" class="list-filter-panel-clear" id="listFilterPanelClear" hidden><svg><use href="#i-close"/></svg><span data-i18n="clearFilters">清除</span></button>
                 </div>
-                <div class="filter-group type-filter-group" data-filter-context="mixed" data-panel-type hidden>
-                  <button class="active" data-filter="all" data-i18n="all">全部</button>
-                  <button data-filter="todo" data-i18n="todos">待办</button>
-                  <button data-filter="note" data-i18n="notes">笔记</button>
-                </div>
+                <!-- 排序：所有列表页共用，放在最前（改动最频繁的一项）。 -->
                 <label class="filter-select"><svg><use href="#i-sliders"/></svg><select id="listSortOrder" aria-label="排序方式">
                   <option value="updated" data-i18n="sortUpdated">最近更新</option>
                   <option value="created" data-i18n="sortCreated">最近创建</option>
@@ -139,36 +138,36 @@
                   <option value="priority" data-i18n="sortPriority">按优先级</option>
                   <option value="title" data-i18n="sortTitle">按标题</option>
                 </select></label>
-                <label class="filter-select"><svg><use href="#i-spark"/></svg><select id="panelPriorityFilter">
+                <div class="list-filter-panel-divider" aria-hidden="true"></div>
+                <label class="filter-select" id="panelPriorityRow"><svg><use href="#i-spark"/></svg><select id="panelPriorityFilter">
                   <option value="all" data-i18n="allPriorities">全部优先级</option>
                   <option value="high" data-i18n="high">优先处理</option>
                   <option value="medium" data-i18n="medium">稍后处理</option>
                   <option value="low" data-i18n="low">延缓处理</option>
                 </select></label>
-                <label class="filter-select"><svg><use href="#i-calendar"/></svg><select id="panelDueFilter">
+                <label class="filter-select" id="panelDueRow"><svg><use href="#i-calendar"/></svg><select id="panelDueFilter">
                   <option value="all" data-i18n="allDeadlines">全部截止时间</option>
                   <option value="overdue" data-i18n="overdue">已逾期</option>
                   <option value="today" data-i18n="dueToday">今天截止</option>
                   <option value="upcoming" data-i18n="nextSevenDays">未来 7 天</option>
                   <option value="none" data-i18n="withoutDeadline">无截止时间</option>
                 </select></label>
-                <label class="filter-select"><svg><use href="#i-folder"/></svg><select id="panelFolderFilter"></select></label>
-                <label class="filter-select"><svg><use href="#i-clock"/></svg><select id="panelUpdatedFilter">
+                <label class="filter-select" id="panelFolderRow"><svg><use href="#i-folder"/></svg><select id="panelFolderFilter"></select></label>
+                <label class="filter-select" id="panelRelationRow"><svg><use href="#i-link"/></svg><select id="panelRelationFilter">
+                  <option value="all" data-i18n="allRelations">全部关联</option>
+                  <option value="linked" data-i18n="linkedOnly">已关联</option>
+                  <option value="unlinked" data-i18n="unlinkedOnly">未关联</option>
+                </select></label>
+                <label class="filter-select" id="panelUpdatedRow"><svg><use href="#i-clock"/></svg><select id="panelUpdatedFilter">
                   <option value="all" data-i18n="anyUpdatedTime">全部更新时间</option>
                   <option value="7" data-i18n="lastSevenDays">最近 7 天</option>
                   <option value="30" data-i18n="lastThirtyDays">最近 30 天</option>
                 </select></label>
                 <label class="filter-select todo-completed-toggle" id="panelCompletedToggle">
                   <input id="panelShowCompleted" type="checkbox"/>
-                  <svg><use href="#i-check"/></svg>
                   <span data-i18n="showCompletedTodos">显示已完成</span>
                 </label>
             </div>
-            <label class="filter-select todo-completed-toggle" id="todoCompletedToggle" hidden>
-              <input id="todoShowCompleted" type="checkbox"/>
-              <svg><use href="#i-check"/></svg>
-              <span data-i18n="showCompletedTodos">显示已完成</span>
-            </label>
             <div class="calendar-toolbar" id="calendarToolbar" hidden>
               <div class="calendar-jump" id="calendarJump">
                 <button type="button" class="calendar-jump-trigger" id="calendarJumpTrigger" aria-haspopup="dialog" aria-expanded="false"><span id="calendarJumpLabel"></span><svg><use href="#i-chevron"/></svg></button>
@@ -195,55 +194,14 @@
             <input id="searchInput" type="search" data-i18n-placeholder="search" placeholder="搜索笔记和待办…" />
             <kbd class="shortcut-search" aria-hidden="true"></kbd>
           </label>
-          <div class="filter-row" id="listFilterRow">
-            <div class="filter-group contextual-filter-group" data-filter-context="trash" hidden>
-              <div class="type-filter-group" role="group" aria-label="类型">
-                <button class="active" data-trash-filter="all" data-i18n="all">全部</button>
-                <button data-trash-filter="todo" data-i18n="todos">待办</button>
-                <button data-trash-filter="note" data-i18n="notes">笔记</button>
-              </div>
-              <label class="filter-select">
-                <svg><use href="#i-folder"/></svg>
-                <select id="trashFolderFilter"></select>
-              </label>
-            </div>
-            <div class="filter-group contextual-filter-group" data-filter-context="todo" hidden>
-              <label class="filter-select">
-                <svg><use href="#i-calendar"/></svg>
-                <select id="todoDueFilter">
-                  <option value="all" data-i18n="allDeadlines">全部截止时间</option>
-                  <option value="overdue" data-i18n="overdue">已逾期</option>
-                  <option value="today" data-i18n="dueToday">今天截止</option>
-                  <option value="upcoming" data-i18n="nextSevenDays">未来 7 天</option>
-                  <option value="none" data-i18n="withoutDeadline">无截止时间</option>
-                </select>
-              </label>
-              <label class="filter-select">
-                <svg><use href="#i-folder"/></svg>
-                <select id="todoFolderFilter"></select>
-              </label>
-            </div>
-            <div class="filter-group contextual-filter-group" data-filter-context="note" hidden>
-              <label class="filter-select">
-                <svg><use href="#i-folder"/></svg>
-                <select id="noteFolderFilter"></select>
-              </label>
-              <label class="filter-select">
-                <svg><use href="#i-link"/></svg>
-                <select id="noteRelationFilter">
-                  <option value="all" data-i18n="allRelations">全部关联</option>
-                  <option value="linked" data-i18n="linkedOnly">已关联</option>
-                  <option value="unlinked" data-i18n="unlinkedOnly">未关联</option>
-                </select>
-              </label>
-              <label class="filter-select">
-                <svg><use href="#i-clock"/></svg>
-                <select id="noteUpdatedFilter">
-                  <option value="all" data-i18n="anyUpdatedTime">全部更新时间</option>
-                  <option value="7" data-i18n="lastSevenDays">最近 7 天</option>
-                  <option value="30" data-i18n="lastThirtyDays">最近 30 天</option>
-                </select>
-              </label>
+          <div class="filter-row" id="listFilterRow" hidden>
+            <!-- 列表页唯一保留的行内控件：内容类型分段（全部 / 待办 / 笔记）。
+                 排序、优先级、截止时间、归类、关联、更新时间与「显示已完成」
+                 统一收进标题行的筛选面板，行内不再并列下拉。 -->
+            <div class="list-type-switch" id="listTypeSwitch" role="group" aria-label="内容类型">
+              <button type="button" class="active" data-filter="all" data-i18n="all" aria-pressed="true">全部</button>
+              <button type="button" data-filter="todo" data-i18n="todos" aria-pressed="false">待办</button>
+              <button type="button" data-filter="note" data-i18n="notes" aria-pressed="false">笔记</button>
             </div>
           </div>
           <div class="item-list-frame">
