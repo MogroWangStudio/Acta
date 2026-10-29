@@ -5337,7 +5337,7 @@
     const row = event.target.closest('[data-nav-row]');
     if (!handle || !row || !byId('navPreviewSidebar').contains(row)) return;
     event.preventDefault();
-    handle.setPointerCapture(event.pointerId);
+    try { handle.setPointerCapture(event.pointerId); } catch { /* 指针已释放时按普通流处理 */ }
     navDragState.row = row;
     navDragState.host = byId('navPreviewSidebar');
     navDragState.startY = event.clientY;
@@ -5348,19 +5348,24 @@
   document.addEventListener('pointermove', event => {
     if (!navDragState.active || !navDragState.row) return;
     const dy = event.clientY - navDragState.startY;
-    navDragState.offsetY = dy;
     navDragState.row.style.transform = `translateY(${dy}px)`;
-    // 越过相邻行中线：与相邻行交换（DOM 移动后中线随行更新）。
+    // 以「行中线越过邻行中线」为交换判据（苹果式 1:1 跟随 + 半程吸附）：
+    // 找出第一个中线在拖拽行中线以下的行，插到它之前；没有则落到末尾。
     const rect = navDragState.row.getBoundingClientRect();
     const midY = rect.top + rect.height / 2;
-    const siblings = [...navDragState.host.querySelectorAll('[data-nav-row]')].filter(el => el !== navDragState.row);
-    const target = dy < 0
-      ? siblings.filter(el => el.getBoundingClientRect().bottom < rect.top).sort((a, b) => b.getBoundingClientRect().bottom - a.getBoundingClientRect().bottom)[0]
-      : siblings.filter(el => el.getBoundingClientRect().top > rect.bottom).sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
-    if (target && ((dy < 0 && midY < target.getBoundingClientRect().bottom) || (dy > 0 && midY > target.getBoundingClientRect().top))) {
-      navDragState.host.insertBefore(navDragState.row, dy < 0 ? target : target.nextSibling);
+    const others = [...navDragState.host.querySelectorAll('[data-nav-row]')].filter(el => el !== navDragState.row);
+    let anchor = null;
+    for (const other of others) {
+      const otherRect = other.getBoundingClientRect();
+      if (midY < otherRect.top + otherRect.height / 2) { anchor = other; break; }
+    }
+    const currentNext = navDragState.row.nextElementSibling;
+    const alreadyPlaced = anchor ? currentNext === anchor : !currentNext;
+    if (!alreadyPlaced) {
+      if (anchor) navDragState.host.insertBefore(navDragState.row, anchor);
+      else navDragState.host.appendChild(navDragState.row);
+      // 落位后把位移基准重置到指针当前位置，1:1 跟随不跳变。
       navDragState.startY = event.clientY;
-      navDragState.offsetY = 0;
       navDragState.row.style.transform = 'translateY(0)';
     }
   });
@@ -6105,7 +6110,7 @@
   // 底缘锁定在 styles.css 换算（放大的部分向上生长，底边与入口按钮平齐）。
   const newButtonSizeSetting = byId('newButtonSizeSetting');
   const applyNewButtonSize = () => {
-    const size = Math.min(Math.max(Math.round(Number(uiSettings.newButtonSize)) || 68, 56), 88);
+    const size = Math.min(Math.max(Math.round(Number(uiSettings.newButtonSize)) || 76, 60), 96);
     document.documentElement.style.setProperty('--acta-new-size', `${size}px`);
     if (newButtonSizeSetting) {
       newButtonSizeSetting.value = String(size);
@@ -6113,7 +6118,12 @@
     }
   };
   if (newButtonSizeSetting) {
-    byId('newButtonSizeRow').hidden = false;
+    // 圆形新建按钮只在 ≤800px 的移动布局里存在：设置行按同一断点显隐，
+    // 拖窄桌面窗口时同步出现（与左栏折叠无关）。
+    const newButtonSizeRow = byId('newButtonSizeRow');
+    const syncNewButtonSizeRow = () => { newButtonSizeRow.hidden = !matchMedia('(max-width: 800px)').matches; };
+    syncNewButtonSizeRow();
+    matchMedia('(max-width: 800px)').addEventListener?.('change', syncNewButtonSizeRow);
     newButtonSizeSetting.addEventListener('input', () => {
       uiSettings.newButtonSize = Number(newButtonSizeSetting.value);
       applyNewButtonSize();
@@ -9339,26 +9349,52 @@
       const rect = page.getBoundingClientRect();
       return rect.width >= window.innerWidth - 8 && rect.height >= window.innerHeight - 8;
     };
+    // 设置页的不透明遮罩在侧滑期间临时透明：设置窗口收缩让位时，底下
+    // 露出的是工作区（与 iOS 应用卡片让位同一观感），而不是一片空白。
+    let backGestureBackdropEl = null;
+    const setBackGestureBackdrop = on => {
+      if (on) {
+        if (!backGestureBackdropEl && settingsModal.classList.contains('open')) {
+          backGestureBackdropEl = settingsModal;
+          settingsModal.classList.add('is-gesturing');
+        }
+      } else if (backGestureBackdropEl) {
+        backGestureBackdropEl.classList.remove('is-gesturing');
+        backGestureBackdropEl = null;
+      }
+    };
     const clearBackGestureStyles = el => {
       el.style.removeProperty('transform');
       el.style.removeProperty('border-radius');
       el.style.removeProperty('overflow');
       el.style.removeProperty('opacity');
       el.style.removeProperty('transition');
+      setBackGestureBackdrop(false);
     };
-    // 幅度分层：滑杆 0–200 分两档段——0–100 线性放大既有幅度（弹层
-    // 4%→8%、整页 7%→14%），100–200 再叠加第二段（弹层到 12%、整页到
-    // 22%），100% 与 200% 的视觉差清晰可辨且都强于默认 45。
+    // 幅度分层（两段式，100% 与 200% 拉开明显差异）：
+    //   页面级表面 0–100% → 最大收缩 14%；100–200% 继续到 30%。
+    //   小浮层     0–100% → 最大收缩 6%； 100–200% 继续到 13%。
+    // 默认 45 落在 6.3% / 2.7%，比旧版更强一档；滑杆 200% 时页面明显
+    // 「退到后面」，与 100% 一眼可辨。
+    const BACK_PAGE_SPAN = .14;
+    const BACK_PAGE_SPAN_MAX = .30;
+    const BACK_LAYER_SPAN = .06;
+    const BACK_LAYER_SPAN_MAX = .13;
     const backGestureScaleFor = (v, isPage) => {
-      const setting = Number.isFinite(Number(uiSettings.backGestureScale)) ? Math.min(Math.max(Number(uiSettings.backGestureScale), 0), 200) : 45;
-      const span = isPage ? .07 : .04;
-      const span2 = isPage ? .08 : .04;
-      const factor = setting <= 100 ? setting / 100 : 1 + (setting - 100) / 100 * (span2 / span);
-      return 1 - (span * factor) * v;
+      const raw = Number(uiSettings.backGestureScale);
+      const setting = Number.isFinite(raw) ? Math.min(Math.max(raw, 0), 200) : 45;
+      const low = isPage ? BACK_PAGE_SPAN : BACK_LAYER_SPAN;
+      const high = isPage ? BACK_PAGE_SPAN_MAX : BACK_LAYER_SPAN_MAX;
+      const span = setting <= 100
+        ? low * (setting / 100)
+        : low + (high - low) * ((setting - 100) / 100);
+      return 1 - span * v;
     };
-    // 圆角过渡：手势中从 0 平滑涨到 28px（手机屏的大圆角贴合），提交时
-    // 借 transition 收满到 34px 再随表面淡出。
-    const backGestureRadiusFor = v => 28 * v;
+    // 圆角过渡：手势中从 0 平滑涨到 32px（手机屏的大圆角贴合），提交时
+    // 借 transition 收满到 42px 再随表面淡出；取消时圆角随回弹归零。
+    const BACK_GESTURE_RADIUS = 32;
+    const BACK_COMMIT_RADIUS = 42;
+    const backGestureRadiusFor = v => BACK_GESTURE_RADIUS * v;
     window.__actaBackGesture = (phase, value, edge) => {
       if (phase === 'start' || phase === 'progress') {
         if (document.body.classList.contains('acta-reduce-motion')) return;
@@ -9370,6 +9406,7 @@
         if (backGestureEl && backGestureEl !== surface) clearBackGestureStyles(backGestureEl);
         backGestureEl = surface;
         backGesturePageSurface = backGestureIsPageSurface(page);
+        setBackGestureBackdrop(page === settingsModal);
         if (phase === 'start') {
           clearTimeout(backGestureTransitionTimer);
           surface.style.transition = 'none';
@@ -9402,6 +9439,7 @@
         el.style.removeProperty('border-radius');
         el.style.removeProperty('overflow');
         el.style.removeProperty('opacity');
+        setBackGestureBackdrop(false);
         clearTimeout(backGestureTransitionTimer);
         backGestureTransitionTimer = setTimeout(() => { el.style.removeProperty('transition'); }, 240);
         return;
@@ -9420,7 +9458,7 @@
         el.style.setProperty('transform', `translateX(${endOffsetX.toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important');
         el.style.setProperty('opacity', '0', 'important');
         if (pageSurface) {
-          el.style.setProperty('border-radius', '34px', 'important');
+          el.style.setProperty('border-radius', `${BACK_COMMIT_RADIUS}px`, 'important');
           el.style.setProperty('overflow', 'hidden', 'important');
         }
         clearTimeout(backGestureTransitionTimer);

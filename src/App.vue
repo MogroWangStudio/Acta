@@ -202,15 +202,6 @@
             </div>
             <div class="filter-group contextual-filter-group" data-filter-context="todo" hidden>
               <label class="filter-select">
-                <svg><use href="#i-spark"/></svg>
-                <select id="todoPriorityFilter">
-                  <option value="all" data-i18n="allPriorities">全部优先级</option>
-                  <option value="high" data-i18n="high">优先处理</option>
-                  <option value="medium" data-i18n="medium">稍后处理</option>
-                  <option value="low" data-i18n="low">延缓处理</option>
-                </select>
-              </label>
-              <label class="filter-select">
                 <svg><use href="#i-calendar"/></svg>
                 <select id="todoDueFilter">
                   <option value="all" data-i18n="allDeadlines">全部截止时间</option>
@@ -471,7 +462,7 @@
               </div>
               <div class="settings-group mobile-nav-settings" style="margin-top:18px">
                 <label class="settings-row"><span><b>底栏图标</b></span><select id="mobileNavStyleSetting"><option value="labeled">图标和文字</option><option value="icon">仅图标</option></select></label>
-                <label class="settings-row" id="newButtonSizeRow" data-mobile-app-icon-only hidden><span><b>新建按钮大小</b></span><span class="font-size-control"><input id="newButtonSizeSetting" type="range" min="56" max="88" step="2"/><output id="newButtonSizeValue">68 px</output></span></label>
+                <label class="settings-row" id="newButtonSizeRow" hidden><span><b>新建按钮大小</b></span><span class="font-size-control"><input id="newButtonSizeSetting" type="range" min="60" max="96" step="2"/><output id="newButtonSizeValue">76 px</output></span></label>
               </div>
               <div class="appearance-subsection app-icon-settings" data-mobile-app-icon-only>
                 <header><b>应用图标</b></header>
@@ -1001,7 +992,6 @@
           <button class="mobile-create-button is-import" type="button" aria-label="导入数据"><svg><use href="#i-download"/></svg></button>
         </div>
       </div>
-      <button class="mobile-create-toggle" data-mobile-create-close type="button" aria-label="收起新建菜单"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
-      <!-- 镜像尺寸同步由 renderer 的 syncMobileCreateToggle 注入 -->
+
     </div>
 </template>

@@ -766,6 +766,17 @@ function sanitizeBoards(boards) {
         widgets.push(marker);
       }
     });
+    // 组关系与组件类型无关：清洗后统一把原始 groupId 回填到每个组件
+    //（此前只有标注成员保留、卡片与文本的组在保存后丢失）。
+    const groupMap = new Map();
+    (Array.isArray(board.widgets) ? board.widgets : []).forEach(rawWidget => {
+      if (rawWidget && typeof rawWidget.groupId === 'string' && rawWidget.groupId) groupMap.set(rawWidget.id, rawWidget.groupId.slice(0, 64));
+    });
+    widgets.forEach(cleanWidget => {
+      const groupId = groupMap.get(cleanWidget.id);
+      if (groupId) cleanWidget.groupId = groupId;
+      else delete cleanWidget.groupId;
+    });
     const style = board.style && typeof board.style === 'object' ? board.style : {};
     clean.push({
       id: board.id,
@@ -1983,7 +1994,10 @@ function syncListFilterPanel(viewContext = listViewContext()) {
   const panel = $('#listFilterPanel');
   const toggle = $('#listFilterToggle');
   if (!panel || !toggle) return;
-  const showToggle = currentView === 'inbox' || currentView.startsWith('folder:');
+  // 筛选按钮覆盖全部列表视图：收集箱 / 归类页 / 所有待办 / 所有笔记——
+  // 「按优先级」只在面板里出现，外部筛选行不再重复展示。
+  const showToggle = currentView === 'inbox' || currentView.startsWith('folder:')
+    || currentView === 'todos' || currentView === 'notes';
   if (viewContext !== listFilterPanelView) { listFilterPanelView = viewContext; listFilterPanelOpen = false; }
   toggle.hidden = !showToggle;
   toggle.setAttribute('aria-expanded', String(listFilterPanelOpen));
@@ -2006,7 +2020,7 @@ function syncListFilterPanel(viewContext = listViewContext()) {
   if (completedBox) completedBox.checked = settings.showCompletedTodos;
   const clearButton = $('#listFilterPanelClear');
   if (clearButton) {
-    clearButton.hidden = !hasActiveListFilters('mixed');
+    clearButton.hidden = !hasActiveListFilters(currentView === 'notes' ? 'note' : currentView === 'todos' ? 'todo' : 'mixed');
     clearButton.title = t('clearFilters');
     clearButton.setAttribute('aria-label', t('clearFilters'));
   }
@@ -2472,9 +2486,38 @@ function statsExportBackgroundPattern(kind, base, ink) {
   return tile;
 }
 
+// 十六进制混色（sRGB 线性插值近似）：用于由所选文字色派生弱化层级。
+const statsMixHex = (from, to, weight) => {
+  const parse = hex => {
+    const value = String(hex || '').trim().replace('#', '');
+    const full = value.length === 3 ? value.split('').map(ch => ch + ch).join('') : value;
+    return /^[0-9a-f]{6}$/i.test(full) ? [0, 2, 4].map(offset => parseInt(full.slice(offset, offset + 2), 16)) : null;
+  };
+  const a = parse(from); const b = parse(to);
+  if (!a || !b) return from;
+  const mix = a.map((channel, index) => Math.round(channel + (b[index] - channel) * weight));
+  return `#${mix.map(channel => channel.toString(16).padStart(2, '0')).join('')}`;
+};
+
+// 验证钩子：导出画布的外观参数（标题 / 背景 / 文字色 / 字体 / 纹理）
+// 需要能被程序采样，暴露渲染函数供冒烟与回归脚本检查。
+window.__actaRenderStatsCanvas = (items, scale, appearance) => renderStatsCanvas(items, scale, appearance);
+
 function renderStatsCanvas(items, scale = 1, appearance = null) {
   const options = appearance || {};
-  const colors = { ...themeCanvasColors(), paper: options.bg || themeCanvasColors().paper, ink: options.text || themeCanvasColors().ink };
+  const themeColors = themeCanvasColors();
+  const paper = options.bg || themeColors.paper;
+  const ink = options.text || themeColors.ink;
+  // 文字颜色作用于全部文本：弱化（muted）与辅助（faint）层级都由所选
+  // 文字色向底色混合而来——换深色底 + 浅色字时不会残留主题的深灰。
+  const colors = {
+    ...themeColors,
+    paper,
+    ink,
+    muted: statsMixHex(ink, paper, .34),
+    faint: statsMixHex(ink, paper, .52),
+    line: statsMixHex(ink, paper, .82)
+  };
   const width = 1080;
   const margin = 84;
   const fontFamily = statsExportFontStack(options.font);
@@ -6243,6 +6286,7 @@ function boardLayerCopySelection(cut = false) {
     return clone;
   });
   boardClipboard.cutMode = cut;
+  if (!cut) boardSyncLayerPop();  // 剪贴板有内容 → 粘贴按钮解除禁用
   if (cut) {
     boardPushUndo();
     const ids = new Set(picked.map(widget => widget.id));
@@ -7593,6 +7637,7 @@ function bindBoardScene() {
     }
     if (event.target.closest('[data-style-close]')) {
       pop.hidden = true;
+      boardSyncBoardTriggers();
       return;
     }
     const themeColor = event.target.closest('[data-bg-color="theme"]');
@@ -7602,14 +7647,14 @@ function bindBoardScene() {
       boardRenderStylePop();
       return;
     }
-    if (!event.target.closest('#boardStylePop, #boardStyleTrigger')) pop.hidden = true;
+    if (!event.target.closest('#boardStylePop, #boardStyleTrigger')) { pop.hidden = true; boardSyncBoardTriggers(); }
   });
   // 图层面板：行点击选中（组行选整组）、眼睛显隐、头部关闭；点面板外收起。
   canvas.addEventListener('click', event => {
     const pop = $('#boardLayerPop', canvas);
     if (!pop || pop.hidden) return;
-    if (event.target.closest('[data-layer-close]')) { pop.hidden = true; return; }
-    if (!event.target.closest('#boardLayerPop, #boardLayerTrigger')) { pop.hidden = true; return; }
+    if (event.target.closest('[data-layer-close]')) { pop.hidden = true; boardSyncBoardTriggers(); return; }
+    if (!event.target.closest('#boardLayerPop, #boardLayerTrigger')) { pop.hidden = true; boardSyncBoardTriggers(); return; }
     const toggleGroup = event.target.closest('[data-layer-toggle-group]');
     if (toggleGroup) {
       const board = boardLayoutCache.board;
@@ -9212,20 +9257,18 @@ function bindShell() {
       }
     });
   };
+  // 打开菜单：把原圆形新建按钮搬进菜单层——层内置于遮罩之上（底栏自身的
+  // 层叠上下文困住它原来的 z-index），成为「置顶高亮」的收起按钮且保留
+  // 加号→叉号的旋转；关闭时搬回底栏原位，不另加任何图标。
   const openMobileCreate = () => {
     const layer = $('#mobileCreateLayer');
     if (!layer) return;
     clearTimeout(mobileCreateHideTimer);
     syncMobileCreatePositions();
-    // 镜像圆钮与原按钮尺寸同步（外观设置可自定义新建按钮大小）：
-    // 宽高读自原按钮，尺寸变化（含动画期间）每次打开都重新校准。
-    const toggle = layer.querySelector('.mobile-create-toggle');
     const source = $('#newButton');
-    if (toggle && source) {
-      const rect = source.getBoundingClientRect();
-      toggle.style.width = `${Math.round(rect.width)}px`;
-      toggle.style.height = `${Math.round(rect.height)}px`;
-      toggle.style.marginLeft = `${-Math.round(rect.width / 2)}px`;
+    if (source) {
+      layer.appendChild(source);
+      source.classList.add('is-open');
     }
     layer.hidden = false;
     requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.add('open')));
@@ -9239,6 +9282,14 @@ function bindShell() {
     const skip = window.__actaSkipNextCloseAnimation === true;
     window.__actaSkipNextCloseAnimation = false;
     layer.classList.remove('open');
+    const source = $('#newButton');
+    const sidebar = $('.sidebar');
+    const createMenu = $('#createMenu');
+    if (source && sidebar && layer.contains(source)) {
+      source.classList.remove('is-open');
+      // 放回底栏原序位（新建按钮在侧栏里位于 createMenu 之前）。
+      sidebar.insertBefore(source, createMenu || null);
+    }
     clearTimeout(mobileCreateHideTimer);
     mobileCreateHideTimer = setTimeout(() => { layer.hidden = true; }, skip ? 0 : 300);
   };

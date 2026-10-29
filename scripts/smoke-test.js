@@ -108,13 +108,26 @@ async function main() {
         select.dispatchEvent(new Event('change', { bubbles:true }));
         return [...document.querySelectorAll('.item-card')].map(card => card.dataset.id);
       };
-      const todoPriorityFilterWorks = JSON.stringify(changeFilter('#todoPriorityFilter', 'low')) === JSON.stringify(['weekend-list']);
+      // 优先级筛选已并入筛选面板（外部不再有 #todoPriorityFilter）。
+      const changePanelFilter = (selector, value) => {
+        document.querySelector('#listFilterToggle').click();
+        const select = document.querySelector(selector);
+        select.value = value;
+        select.dispatchEvent(new Event('change', { bubbles:true }));
+        document.querySelector('#listFilterToggle').click();
+        return [...document.querySelectorAll('.item-card')].map(card => card.dataset.id);
+      };
+      const todoPriorityFilterWorks = JSON.stringify(changePanelFilter('#panelPriorityFilter', 'low')) === JSON.stringify(['weekend-list']);
       document.querySelector('#clearListFilters').click();
       const todoDeadlineFilterWorks = JSON.stringify(changeFilter('#todoDueFilter', 'today')) === JSON.stringify(['launch-plan']);
       document.querySelector('#clearListFilters').click();
       const todoFolderFilterWorks = JSON.stringify(changeFilter('#todoFolderFilter', 'life')) === JSON.stringify(['weekend-list']);
       document.querySelector('#clearListFilters').click();
-      const todoFiltersClear = ['todoPriorityFilter', 'todoDueFilter', 'todoFolderFilter'].every(id => document.querySelector('#' + id).value === 'all') && document.querySelectorAll('.item-card').length === 2;
+      document.querySelector('#listFilterToggle').click();
+      const todoFiltersClear = ['todoDueFilter', 'todoFolderFilter'].every(id => document.querySelector('#' + id).value === 'all')
+        && document.querySelector('#panelPriorityFilter').value === 'all'
+        && document.querySelectorAll('.item-card').length === 2;
+      document.querySelector('#listFilterToggle').click();
       document.querySelector('[data-view="notes"]').click();
       const noteFilterControlsVisible = !document.querySelector('[data-filter-context="note"]').hidden && document.querySelector('[data-filter-context="mixed"]').hidden;
       const notesOnly = [...document.querySelectorAll('.item-card')].every(card => library.items.find(item => item.id === card.dataset.id)?.type === 'note');
@@ -130,7 +143,7 @@ async function main() {
       const inboxTodoFilterControlsVisible = !document.querySelector('[data-filter-context="mixed"]').hidden
         && !document.querySelector('[data-filter-context="todo"]').hidden
         && document.querySelector('[data-filter-context="note"]').hidden;
-      const inboxTodoFilterWorks = JSON.stringify(changeFilter('#todoPriorityFilter', 'low')) === JSON.stringify(['weekend-list']);
+      const inboxTodoFilterWorks = JSON.stringify(changePanelFilter('#panelPriorityFilter', 'low')) === JSON.stringify(['weekend-list']);
       document.querySelector('#clearListFilters').click();
       document.querySelector('.type-filter-group [data-filter="note"]').click();
       const inboxNoteFilterControlsVisible = !document.querySelector('[data-filter-context="mixed"]').hidden

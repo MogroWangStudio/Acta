@@ -161,6 +161,9 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
 dialog.relation-dialog:not(.quick-capture-dialog), dialog.note-export-dialog, dialog.history-dialog, dialog.classification-manager-dialog { --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.1); }
 .settings-backdrop { position: fixed; inset: 0; z-index: 110; background: var(--paper); opacity: 0; pointer-events: none; transition: opacity .24s ease; }
 .settings-backdrop.open { opacity: 1; pointer-events: auto; }
+/* 预见式返回手势中：遮罩临时透明，收缩中的设置窗口底下露出工作区，
+   不再是空白纸面（窗口自身的纸色即为可见表面）。 */
+.settings-backdrop.open.is-gesturing { background: transparent; }
 .settings-window { position: relative; width: 100vw; height: 100vh; border: 0; border-radius: 0; background: var(--paper); color: var(--ink); overflow: hidden; display: grid; grid-template-rows: 52px minmax(0,1fr); transform: translateY(12px); transition: transform .32s var(--ease-out); }
 html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-backdrop.open .settings-window { transform: translateY(0); }
@@ -2600,8 +2603,10 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-layer-grip svg { width: 12px; height: 12px; }
 .board-layer-grip:hover { color: var(--muted); background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .board-layer-grip:active { cursor: grabbing; color: var(--ink); }
-.board-layer-row.is-dragging { opacity: .72; }
-.board-layer-row.is-dragging .board-layer-grip { opacity: 1; background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); }
+/* 拖拽中的行：不做整行降透明（降透明会连累拖柄），改用抬升 + 阴影表达
+   「被拿起」，拖柄保持 100% 不透明并加底色强调。 */
+.board-layer-row.is-dragging { position: relative; z-index: 3; box-shadow: 0 4px 14px -6px rgba(24,28,23,.28); background: var(--paper); }
+.board-layer-row.is-dragging .board-layer-grip { opacity: 1; background: color-mix(in srgb, var(--sage) 22%, transparent); color: var(--sage); }
 .board-layer-row.is-drop-before { box-shadow: 0 -2px 0 var(--sage); }
 .board-layer-row.is-drop-after { box-shadow: 0 2px 0 var(--sage); }
 .board-pop-hint { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
@@ -2918,9 +2923,10 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .calendar-todo-meta { flex-wrap: wrap; }
   .calendar-subtask { min-height: 29px; }
   .calendar-subtask-title { font-size: calc(11px * var(--acta-font-scale)); }
-  /* 顶栏右上角按钮区：与顶栏内容行（48px，安卓端整体上移 5px）垂直
-     居中——top 由安全区上缘扣 5px 起算 + (48 - 36)/2 = 6px。 */
-  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(env(safe-area-inset-top) - 5px + 6px); display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
+  /* 顶栏右上角按钮区：与顶栏内容行（安卓端收至 43px）垂直居中并随
+     顶栏一起上移 5px——top = 安全区上缘 − 5px + (43 − 36)/2 = −5px + 3.5px，
+     与 logo 同一条水平中线。 */
+  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(max(0px, env(safe-area-inset-top) - 5px) + 3.5px); display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
   html:not(.acta-native-mobile) .mobile-titlebar-actions { top: calc(env(safe-area-inset-top) + 6px); }
   /* 顶栏右上角是自定义按钮区：候选按钮全部隐藏，由设置中的三个槽位
      （mobile-title-slot-N）决定显示哪三个；设置按钮固定在末尾。 */
@@ -3568,19 +3574,19 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
      底栏的层叠上下文困住原按钮的 z-index，镜像圆钮在这里替它保持
      置顶与高亮：与原按钮像素级同位，强调色背景 + × 旋转态，
      点击收起（复用遮罩的 close 委托）。 */
-  .mobile-create-toggle {
-    position: fixed; z-index: 222; left: 50%; bottom: calc(4px + env(safe-area-inset-bottom));
-    width: var(--mobile-new-button-size); height: var(--mobile-new-button-size);
-    padding: 0; border: 0; border-radius: 50%;
-    background: var(--sage); color: #fff; cursor: pointer;
-    transform: translateX(-50%) scale(.8); transform-origin: 50% 100%;
-    box-shadow: 0 2px 6px rgba(22,25,22,.18), 0 10px 26px -6px rgba(22,25,22,.3);
-    display: grid; place-items: center;
-    opacity: 0; transition: opacity .26s ease, transform .26s var(--ease-out), background .16s ease;
+  /* 放射菜单打开时：原圆形新建按钮重挂载进菜单层（renderer 负责搬移），
+     在层内置于遮罩之上并保持高亮——「原按钮置顶高亮」，不是另加一个图标；
+     加号旋转 45° 成叉号，表示可再次点击收起。 */
+  .mobile-create-layer .new-button {
+    position: absolute; z-index: 3; left: 50%;
+    bottom: calc(4px + env(safe-area-inset-bottom));
+    width: var(--acta-new-size, var(--mobile-new-button-size));
+    height: var(--acta-new-size, var(--mobile-new-button-size));
+    background: var(--sage); color: #fff;
+    box-shadow: 0 3px 10px -2px color-mix(in srgb, var(--sage) 55%, transparent), 0 12px 28px -8px rgba(22,25,22,.34);
   }
-  .mobile-create-layer.open .mobile-create-toggle { opacity: 1; transform: translateX(-50%) scale(1); }
-  .mobile-create-toggle:active { transform: translateX(-50%) scale(.94); transition-duration: .08s; }
-  .mobile-create-toggle svg { width: 26px; height: 26px; transform: rotate(45deg); transition: transform .3s var(--ease-out); }
+  .mobile-create-layer .new-button svg { transform: rotate(45deg); }
+  .mobile-create-layer .new-button:active { transform: translateX(-50%) scale(.94); }
   .new-button svg { transition: transform .3s var(--ease-out); }
 }
 @media (min-width: 801px) { .mobile-create-layer { display: none !important; } }
