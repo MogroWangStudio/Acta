@@ -360,6 +360,37 @@ async fn read_data_backup(app: AppHandle, path: String) -> Result<Value, String>
     .map_err(|error| error.to_string())?
 }
 
+// 备份管理：删除所选备份。与读取同一安全模型——只允许删软件数据文件夹
+// backups/ 下的备份目录，防止把任意路径当备份删掉；不存在的条目视为已删。
+#[tauri::command]
+async fn delete_data_backups(app: AppHandle, paths: Vec<String>) -> Result<Vec<String>, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let backups_root = resolve_backups_root(&app)?;
+        let canonical_root = backups_root
+            .canonicalize()
+            .map_err(|_| "备份文件夹不存在".to_string())?;
+        let mut deleted = Vec::new();
+        for path in paths {
+            let requested = PathBuf::from(&path);
+            let canonical_requested = match requested.canonicalize() {
+                Ok(canonical) => canonical,
+                Err(_) => continue,
+            };
+            if !canonical_requested.starts_with(&canonical_root) {
+                return Err("只能删除软件数据文件夹内的备份".into());
+            }
+            if canonical_requested == canonical_root {
+                continue;
+            }
+            fs::remove_dir_all(&canonical_requested).map_err(|error| error.to_string())?;
+            deleted.push(path);
+        }
+        Ok(deleted)
+    })
+    .await
+    .map_err(|error| error.to_string())?
+}
+
 const SYNC_FILE: &str = "acta-library.json";
 const DATA_MANIFEST_FILE: &str = "acta-manifest.json";
 const CLASSIFICATIONS_FILE: &str = "classifications.json";
@@ -2221,6 +2252,7 @@ pub fn run() {
             lan_sync_reject_incoming,
             lan_sync_backup_local,
             create_data_backup,
+            delete_data_backups,
             list_data_backups,
             read_data_backup,
             import_note,

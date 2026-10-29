@@ -640,9 +640,9 @@
   Object.assign(profileMessages.zh, { deleteProfile:'删除档案', lastProfile:'至少需要保留一个数据档案。', confirmDeleteLocal:'删除“{0}”将永久移除保存在软件或浏览器本地的全部档案数据，确定继续？', confirmDeleteFolder:'从列表删除“{0}”？外部文件夹中的完整档案不会被删除。', profileDeleted:'已删除数据档案“{0}”。', readExisting:'读取现有档案', readingExisting:'正在读取现有档案…', noExistingData:'此文件夹中没有找到行记数据，请选择包含 acta-manifest.json 的文件夹。', imported:'已读取并打开“{0}”。', overwriteActaWarn:'此文件夹已包含行记数据。创建空白档案将覆盖并清除其中的现有数据，是否继续？', overwriteFolderWarn:'此文件夹不是空文件夹。创建空白档案将在此文件夹中写入新的行记数据，是否继续？', refreshData:'刷新行记数据', refreshingData:'正在刷新行记数据…', dataRefreshed:'已刷新「{0}」。', refreshNoData:'还没有已保存的数据文件，保留当前内容。', loadingProfile:'正在加载「{0}」…' });
   Object.assign(profileMessages.en, { deleteProfile:'Delete profile', lastProfile:'At least one data profile must remain.', confirmDeleteLocal:'Deleting “{0}” permanently removes all profile data stored inside Acta or the browser. Continue?', confirmDeleteFolder:'Remove “{0}” from the list? The complete profile in its external folder will not be deleted.', profileDeleted:'Deleted the data profile “{0}”.', readExisting:'Read existing profile', readingExisting:'Reading existing profile…', noExistingData:'No Acta data was found in this folder. Choose a folder that contains acta-manifest.json.', imported:'Read and opened “{0}”.', overwriteActaWarn:'This folder already contains Acta data. Creating a blank profile will overwrite and clear its existing data. Continue?', overwriteFolderWarn:'This folder is not empty. Creating a blank profile will write new Acta data into it. Continue?', refreshData:'Refresh Acta data', refreshingData:'Refreshing Acta data…', dataRefreshed:'Refreshed “{0}”.', refreshNoData:'No saved data file yet; keeping the current content.', loadingProfile:'Loading “{0}”…' });
   Object.assign(profileMessages['zh-Hant'], { deleteProfile:'刪除檔案', lastProfile:'至少需要保留一個資料檔案。', confirmDeleteLocal:'刪除「{0}」將永久移除儲存在軟體或瀏覽器本機的全部檔案資料，確定繼續？', confirmDeleteFolder:'從清單刪除「{0}」？外部資料夾中的完整檔案不會被刪除。', profileDeleted:'已刪除資料檔案「{0}」。', readExisting:'讀取現有檔案', readingExisting:'正在讀取現有檔案…', noExistingData:'此資料夾中沒有找到行記資料，請選擇包含 acta-manifest.json 的資料夾。', imported:'已讀取並開啟「{0}」。', overwriteActaWarn:'此資料夾已包含行記資料。建立空白檔案將覆蓋並清除其中的現有資料，是否繼續？', overwriteFolderWarn:'此資料夾不是空資料夾。建立空白檔案將在此資料夾中寫入新的行記資料，是否繼續？', refreshData:'重新整理行記資料', refreshingData:'正在重新整理行記資料…', dataRefreshed:'已重新整理「{0}」。', refreshNoData:'尚未有已保存的資料檔案，保留目前內容。', loadingProfile:'正在載入「{0}」…' });
-  Object.assign(profileMessages.zh, { backupManager:'备份管理', backupManagerSubtitle:'同步覆盖前的自动备份都保存在软件数据文件夹中，可随时恢复', backupEmpty:'还没有可恢复的备份。同步覆盖、恢复数据前都会先自动备份一份。', backupUnavailable:'当前平台不支持备份管理。', backupStats:'{0} 则笔记 {1} 个待办 {2} 块计划板', restoreBackup:'恢复', backupBeforeRestore:'正在备份当前数据…', readingBackup:'正在读取备份…', restoreDialogTitle:'恢复备份', restoreDialogHint:'确认后会先自动备份当前数据，再写入所选备份的内容。', restoreCurrentTitle:'将被替换的数据', restoreBackupSideTitle:'将恢复的数据', backupRestored:'已恢复备份「{0}」。', restoreBackupFailed:'恢复失败：' });
-  Object.assign(profileMessages.en, { backupManager:'Backup manager', backupManagerSubtitle:'Automatic backups created before sync overwrites live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. A backup is created automatically before every sync overwrite or restore.', backupUnavailable:'Backup management is not available on this platform.', backupStats:'{0} notes {1} tasks {2} boards', restoreBackup:'Restore', backupBeforeRestore:'Backing up current data…', readingBackup:'Reading the backup…', restoreDialogTitle:'Restore backup', restoreDialogHint:'The current data is backed up automatically first, then the selected backup is written in. Review both sides before confirming.', restoreCurrentTitle:'Will be replaced', restoreBackupSideTitle:'Will be restored', backupRestored:'Restored the backup “{0}”.', restoreBackupFailed:'Restore failed: ' });
-  Object.assign(profileMessages['zh-Hant'], { backupManager:'備份管理', backupManagerSubtitle:'同步覆寫前的自動備份都儲存在軟體資料資料夾中，可隨時還原', backupEmpty:'還沒有可還原的備份。同步覆寫、還原資料前都會先自動備份一份。', backupUnavailable:'目前平台不支援備份管理。', backupStats:'{0} 則筆記 {1} 個待辦 {2} 塊計劃板', restoreBackup:'還原', backupBeforeRestore:'正在備份目前資料…', readingBackup:'正在讀取備份…', restoreDialogTitle:'還原備份', restoreDialogHint:'確認後會先自動備份目前資料，再寫入所選備份的內容。', restoreCurrentTitle:'將被替換的資料', restoreBackupSideTitle:'將還原的資料', backupRestored:'已還原備份「{0}」。', restoreBackupFailed:'還原失敗：' });
+  Object.assign(profileMessages.zh, { backupManager:'备份管理', backupManagerSubtitle:'同步覆盖前的自动备份都保存在软件数据文件夹中，可随时恢复', backupEmpty:'还没有可恢复的备份。同步覆盖、恢复数据前都会先自动备份一份。', backupUnavailable:'当前平台不支持备份管理。', backupStats:'{0} 则笔记 {1} 个待办 {2} 块计划板', restoreBackup:'恢复', backupSelectAll:'全选', backupDeleteSelected:'删除所选', backupDeleteConfirm:'确定删除所选的 {0} 份备份吗？删除后无法恢复。', backupDeleted:'已删除 {0} 份备份。', backupBeforeRestore:'正在备份当前数据…', readingBackup:'正在读取备份…', restoreDialogTitle:'恢复备份', restoreDialogHint:'确认后会先自动备份当前数据，再写入所选备份的内容。', restoreCurrentTitle:'将被替换的数据', restoreBackupSideTitle:'将恢复的数据', backupRestored:'已恢复备份「{0}」。', restoreBackupFailed:'恢复失败：' });
+  Object.assign(profileMessages.en, { backupManager:'Backup manager', backupManagerSubtitle:'Automatic backups created before sync overwrites live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. A backup is created automatically before every sync overwrite or restore.', backupUnavailable:'Backup management is not available on this platform.', backupStats:'{0} notes {1} tasks {2} boards', restoreBackup:'Restore', backupSelectAll:'Select all', backupDeleteSelected:'Delete selected', backupDeleteConfirm:'Delete the {0} selected backups? This cannot be undone.', backupDeleted:'Deleted {0} backups.', backupBeforeRestore:'Backing up current data…', readingBackup:'Reading the backup…', restoreDialogTitle:'Restore backup', restoreDialogHint:'The current data is backed up automatically first, then the selected backup is written in. Review both sides before confirming.', restoreCurrentTitle:'Will be replaced', restoreBackupSideTitle:'Will be restored', backupRestored:'Restored the backup “{0}”.', restoreBackupFailed:'Restore failed: ' });
+  Object.assign(profileMessages['zh-Hant'], { backupManager:'備份管理', backupManagerSubtitle:'同步覆寫前的自動備份都儲存在軟體資料資料夾中，可隨時還原', backupEmpty:'還沒有可還原的備份。同步覆寫、還原資料前都會先自動備份一份。', backupUnavailable:'目前平台不支援備份管理。', backupStats:'{0} 則筆記 {1} 個待辦 {2} 塊計劃板', restoreBackup:'還原', backupSelectAll:'全選', backupDeleteSelected:'刪除所選', backupDeleteConfirm:'確定刪除所選的 {0} 份備份嗎？刪除後無法復原。', backupDeleted:'已刪除 {0} 份備份。', backupBeforeRestore:'正在備份目前資料…', readingBackup:'正在讀取備份…', restoreDialogTitle:'還原備份', restoreDialogHint:'確認後會先自動備份目前資料，再寫入所選備份的內容。', restoreCurrentTitle:'將被替換的資料', restoreBackupSideTitle:'將還原的資料', backupRestored:'已還原備份「{0}」。', restoreBackupFailed:'還原失敗：' });
   // 立即备份（行记数据 → 立即备份）：备份管理里同时存在自动备份与手动备份。
   Object.assign(profileMessages.zh, { createBackup:'立即备份', creatingBackup:'正在创建备份…', backupCreated:'已创建备份「{0}」。', createBackupFailed:'备份失败：', backupManagerSubtitle:'同步覆盖前的自动备份与手动创建的备份都保存在软件数据文件夹中，可随时恢复', backupEmpty:'还没有可恢复的备份。同步覆盖、恢复数据前会自动备份一份，也可以随时手动备份。' });
   Object.assign(profileMessages.en, { createBackup:'Back up now', creatingBackup:'Creating a backup…', backupCreated:'Created the backup “{0}”.', createBackupFailed:'Backup failed: ', backupManagerSubtitle:'Automatic backups from sync overwrites and manual backups live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. One is created automatically before sync overwrites, and you can back up anytime.' });
@@ -4046,6 +4046,20 @@
   // 与「同步覆盖前自动备份」保持同一安全底线。
   let backupEntries = [];
   let backupRestoring = false;
+  const backupSelection = new Set();
+
+  // 多选工具栏：删除按钮的可用态与计数、全选框的勾选态随选择集合同步。
+  const syncBackupToolbar = () => {
+    const toolbar = byId('backupToolbar');
+    if (!toolbar) return;
+    toolbar.hidden = !backupEntries.length;
+    byId('backupDeleteSelected').disabled = !backupSelection.size || backupRestoring;
+    byId('backupDeleteLabel').textContent = backupSelection.size
+      ? `${profileText('backupDeleteSelected')} (${backupSelection.size})`
+      : profileText('backupDeleteSelected');
+    const selectAll = byId('backupSelectAll');
+    if (selectAll) selectAll.checked = backupEntries.length > 0 && backupSelection.size === backupEntries.length;
+  };
 
   const lanFormatBackupBytes = value => {
     const bytes = Number(value) || 0;
@@ -4069,6 +4083,7 @@
     }
     list.innerHTML = backupEntries.map((entry, index) => `
       <article class="backup-entry" role="listitem" data-backup-path="${escapeHTML(entry.path)}" style="--backup-delay:${Math.min(index * 30, 150)}ms">
+        <label class="backup-entry-select"><input type="checkbox" data-backup-select="${escapeHTML(entry.path)}" ${backupSelection.has(entry.path) ? 'checked' : ''} aria-label="${escapeHTML(`${profileText('backupDeleteSelected')}: ${entry.name}`)}"/></label>
         <span class="backup-entry-icon"><svg><use href="#i-clock"/></svg></span>
         <div class="backup-entry-copy">
           <b title="${escapeHTML(entry.name)}">${escapeHTML(entry.name)}</b>
@@ -4076,6 +4091,7 @@
         </div>
         <button class="data-profile-action primary" type="button" data-backup-restore="${escapeHTML(entry.path)}"><svg><use href="#i-undo"/></svg><span>${escapeHTML(profileText('restoreBackup'))}</span></button>
       </article>`).join('');
+    syncBackupToolbar();
   }
 
   async function refreshBackupList() {
@@ -4100,6 +4116,7 @@
   }
 
   function openBackupManager() {
+    backupSelection.clear();
     byId('backupManagerDialog')?.showModal();
     setStatus(byId('backupManagerStatus'), profileText('readingBackup'), '');
     renderBackupList();
@@ -4257,6 +4274,35 @@
   byId('createBackupInline')?.addEventListener('click', () => { void createDataBackupNow(byId('backupManagerStatus')); });
   byId('backupManagerButton')?.addEventListener('click', openBackupManager);
   byId('closeBackupManager')?.addEventListener('click', () => byId('backupManagerDialog')?.close());
+  // 多选删除：勾选 → 工具栏计数；删除前再次询问用户确认。
+  byId('backupSelectAll')?.addEventListener('change', event => {
+    backupSelection.clear();
+    if (event.target.checked) backupEntries.forEach(entry => backupSelection.add(entry.path));
+    renderBackupList();
+  });
+  byId('backupList')?.addEventListener('change', event => {
+    const checkbox = event.target.closest('[data-backup-select]');
+    if (!checkbox) return;
+    if (checkbox.checked) backupSelection.add(checkbox.dataset.backupSelect);
+    else backupSelection.delete(checkbox.dataset.backupSelect);
+    syncBackupToolbar();
+  });
+  byId('backupDeleteSelected')?.addEventListener('click', async () => {
+    if (backupRestoring || !backupSelection.size) return;
+    const paths = [...backupSelection];
+    if (!window.confirm(profileText('backupDeleteConfirm', paths.length))) return;
+    const status = byId('backupManagerStatus');
+    try {
+      const bridge = getSyncBridge();
+      if (!bridge?.deleteBackups) throw new Error(profileText('backupUnavailable'));
+      const deleted = await bridge.deleteBackups(paths);
+      backupSelection.clear();
+      await refreshBackupList();
+      setStatus(status, profileText('backupDeleted', deleted.length), 'success');
+    } catch (error) {
+      setStatus(status, `${profileText('restoreBackupFailed')}${error.message || error}`, 'error');
+    }
+  });
   byId('backupList')?.addEventListener('click', event => {
     const button = event.target.closest('[data-backup-restore]');
     if (!button) return;

@@ -651,6 +651,10 @@
     <dialog class="relation-dialog backup-manager-dialog" id="backupManagerDialog" aria-labelledby="backupManagerTitle">
       <header class="relation-dialog-head"><span><svg><use href="#i-clock"/></svg></span><div><h3 id="backupManagerTitle">备份管理</h3><small id="backupManagerSubtitle">同步覆盖前的自动备份都保存在软件数据文件夹中，可随时恢复</small></div><button class="relation-dialog-close" id="closeBackupManager" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
       <div class="relation-dialog-body backup-manager-body">
+        <div class="backup-toolbar" id="backupToolbar" hidden>
+          <label class="backup-select-all"><input type="checkbox" id="backupSelectAll"/><span id="backupSelectAllLabel">全选</span></label>
+          <button type="button" class="settings-button danger" id="backupDeleteSelected" disabled><svg><use href="#i-trash"/></svg><span id="backupDeleteLabel">删除所选</span></button>
+        </div>
         <div class="backup-list" id="backupList" role="list"></div>
         <p class="settings-status" id="backupManagerStatus" role="status"></p>
       </div>

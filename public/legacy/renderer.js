@@ -9782,7 +9782,8 @@ function getSyncBridge() {
     inspectFolder: (folder) => nativeSync.inspectFolder({ folder }),
     // 备份管理：原生实现位于 ActaLanPlugin（备份由 LAN 同步写入同一目录）。
     listBackups: () => window.Capacitor?.Plugins?.ActaLan?.listBackups?.() || Promise.reject(new Error('备份管理不可用')),
-    readBackup: (path) => window.Capacitor?.Plugins?.ActaLan?.readBackup?.({ path }) || Promise.reject(new Error('备份管理不可用'))
+    readBackup: (path) => window.Capacitor?.Plugins?.ActaLan?.readBackup?.({ path }) || Promise.reject(new Error('备份管理不可用')),
+    deleteBackups: (paths) => (window.Capacitor?.Plugins?.ActaLan?.deleteBackups ? window.Capacitor.Plugins.ActaLan.deleteBackups({ paths }).then(result => result?.deleted || []) : Promise.reject(new Error('备份管理不可用')))
   };
 }
 

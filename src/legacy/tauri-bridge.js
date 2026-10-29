@@ -175,6 +175,10 @@
     readBackup(path) {
       return invoke('read_data_backup', { path });
     },
+    // 备份管理：删除所选备份（Rust 侧校验路径必须位于 backups/ 内）。
+    deleteBackups(paths) {
+      return invoke('delete_data_backups', { paths });
+    },
     // 立即备份（行记数据 → 立即备份）：写一份手动备份，落在 backups/
     // 根目录、不参与 LAN 备份的轮换清理。
     createBackup(bundle, profileName) {
