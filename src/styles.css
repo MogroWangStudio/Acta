@@ -23,7 +23,7 @@
   /* 移动端底栏的圆形「新建」按钮：按正方形占位（直径 + 两侧净空），
      底栏网格据此留出中列，入口按钮不与圆形交叉。圆形略高于底栏上缘，
      形成悬浮的主操作按钮；占位同步加大，避免压住两侧入口。 */
-  --mobile-new-button-size: 68px;
+  --mobile-new-button-size: 68px; /* 外观设置「新建按钮大小」可调（56–88px），经 --acta-new-size 覆盖 */
   --mobile-new-button-clearance: 12px;
 }
 
@@ -242,12 +242,16 @@ html[data-nav-effect="pop"] .nav-section button.active .nav-icon { animation: na
   100% { transform: scale(1); }
 }
 body.acta-reduce-motion .nav-section button .nav-icon { animation: none !important; }
-/* 局域网雷达入口：可被发现（服务运行中）时按钮内部循环扫光（从左到右），
+/* 局域网雷达入口：可被发现（服务运行中）时按钮内部循环扫光 + 图标
+   持续旋转，按钮保持高亮（强调色描边）——三种信号同帧表达「运行中」，
    桌面侧栏入口与移动端顶栏入口同一语言；跟随「减少动态效果」关闭。 */
 .smart-nav [data-nav-action="lan"], .mobile-titlebar-action[data-nav-action="lan"] { position: relative; overflow: hidden; }
 @keyframes lanRadarSweep {
   0% { transform: translateX(-130%); }
   55%, 100% { transform: translateX(130%); }
+}
+@keyframes lanRadarSpin {
+  to { transform: rotate(360deg); }
 }
 body.lan-radar-live .smart-nav [data-nav-action="lan"]::after,
 body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::after {
@@ -255,8 +259,16 @@ body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::after {
   background: linear-gradient(104deg, transparent 34%, color-mix(in srgb, var(--sage) 18%, transparent) 46%, color-mix(in srgb, var(--white) 62%, transparent) 50%, color-mix(in srgb, var(--sage) 18%, transparent) 54%, transparent 66%);
   animation: lanRadarSweep 2.6s cubic-bezier(.4, 0, .2, 1) infinite;
 }
+/* 图标持续旋转 + 按钮高亮：侧栏主图标（描线层一起）与移动端顶栏图标。 */
+body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon,
+body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { animation: lanRadarSpin 2.4s linear infinite; }
+body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon > svg:not(.nav-icon-trace),
+body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { color: var(--sage); opacity: 1 !important; }
+body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] { border-color: color-mix(in srgb, var(--sage) 46%, var(--line)); background: color-mix(in srgb, var(--sage-2) 62%, var(--white)); color: var(--sage); }
 body.acta-reduce-motion .smart-nav [data-nav-action="lan"]::after,
-body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"]::after { animation: none; }
+body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"]::after,
+body.acta-reduce-motion .smart-nav [data-nav-action="lan"] .nav-icon,
+body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"] > svg { animation: none; }
 
 .folder-section { margin-top: 23px; min-height: 0; overflow: hidden auto; }
 .section-label { height: 28px; padding: 0 9px; display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; letter-spacing: .12em; color: #989b94; font-size: calc(9px * var(--acta-font-scale)); font-weight: 700; }
@@ -702,7 +714,10 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
      对齐（栏底留 4px，和安全区一起换算），不再向上浮出一截。 */
   .new-button {
     position: absolute; z-index: 48; left: 50%; bottom: calc(4px + env(safe-area-inset-bottom));
-    width: var(--mobile-new-button-size); height: var(--mobile-new-button-size);
+    /* 底缘锁定：size 变化时 bottom = 4px - (size - 基准)/2，把多出的高度沉到栏底以下，
+       视觉上按钮向上生长、底边与入口按钮平齐。基准 68px。 */
+    bottom: calc(4px - (var(--acta-new-size, var(--mobile-new-button-size)) - 68px) / 2 + env(safe-area-inset-bottom));
+    width: var(--acta-new-size, var(--mobile-new-button-size)); height: var(--acta-new-size, var(--mobile-new-button-size));
     padding: 0; border-radius: 50%;
     /* 以底边为缩放轴心：按下 / 悬停放大时向上升，不会把底边推离入口按钮。 */
     transform: translateX(-50%); transform-origin: 50% 100%; justify-content: center;

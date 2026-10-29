@@ -119,7 +119,10 @@
               <h1 id="viewTitle">收集箱</h1>
               <button class="view-title-menu" id="viewTitleMenu" type="button" aria-label="查看归类" aria-haspopup="true" aria-expanded="false"><svg class="view-title-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
               <button class="icon-button list-filter-toggle" id="listFilterToggle" type="button" aria-label="筛选" aria-haspopup="true" aria-expanded="false" hidden><svg aria-hidden="true"><use href="#i-filter"/></svg></button>
-              <div class="list-filter-panel" id="listFilterPanel" hidden>
+            </div>
+            <!-- 筛选面板挂在 item-header（相对锚）下、右缘对齐标题行右端：
+                 宽度自适应且最小 200px，窄屏不左溢出。 -->
+            <div class="list-filter-panel" id="listFilterPanel" hidden>
                 <div class="list-filter-panel-head">
                   <b data-i18n="filterPanelTitle">筛选</b>
                   <button type="button" class="list-filter-panel-clear" id="listFilterPanelClear" hidden><svg><use href="#i-close"/></svg><span data-i18n="clearFilters">清除</span></button>
@@ -148,7 +151,6 @@
                   <svg><use href="#i-check"/></svg>
                   <span data-i18n="showCompletedTodos">显示已完成</span>
                 </label>
-              </div>
             </div>
             <label class="filter-select todo-completed-toggle" id="todoCompletedToggle" hidden>
               <input id="todoShowCompleted" type="checkbox"/>
@@ -377,7 +379,7 @@
                 <div class="nav-desktop-layout">
                   <div class="nav-desktop-preview">
                     <div class="nav-preview-sidebar" id="navPreviewSidebar"></div>
-                    <small class="nav-preview-hint">预览：点击入口切换显示与隐藏</small>
+                    <small class="nav-preview-hint">预览：点击入口切换显示与隐藏，拖动把手调整顺序</small>
                   </div>
                   <div class="nav-page-grid" id="navPageGrid">
                     <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
@@ -469,6 +471,7 @@
               </div>
               <div class="settings-group mobile-nav-settings" style="margin-top:18px">
                 <label class="settings-row"><span><b>底栏图标</b></span><select id="mobileNavStyleSetting"><option value="labeled">图标和文字</option><option value="icon">仅图标</option></select></label>
+                <label class="settings-row" id="newButtonSizeRow" data-mobile-app-icon-only hidden><span><b>新建按钮大小</b></span><span class="font-size-control"><input id="newButtonSizeSetting" type="range" min="56" max="88" step="2"/><output id="newButtonSizeValue">68 px</output></span></label>
               </div>
               <div class="appearance-subsection app-icon-settings" data-mobile-app-icon-only>
                 <header><b>应用图标</b></header>
@@ -999,5 +1002,6 @@
         </div>
       </div>
       <button class="mobile-create-toggle" data-mobile-create-close type="button" aria-label="收起新建菜单"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+      <!-- 镜像尺寸同步由 renderer 的 syncMobileCreateToggle 注入 -->
     </div>
 </template>

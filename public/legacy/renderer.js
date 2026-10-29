@@ -42,6 +42,7 @@ const dictionaries = {
     filterPanelTitle: '筛选',
     exportScale: '分辨率', exportFormat: '图片格式', exportQuality: 'JPG 质量', exportConfirm: '导出',
     statsExportTitle: '导出清单图片', statsExportHint: '选择分辨率与图片格式；JPG 可调节压缩程度',
+    statsExportBylineText: '由 Acta 行记 创建', statsExportImageTitle: '图片标题', statsExportImageTitlePh: '默认为 Acta 行记', statsExportByline: '显示「由 Acta 行记 创建」', statsExportBg: '背景颜色', statsExportBgImage: '背景图片', statsExportBgNone: '无', statsExportBgPaper: '纸纹', statsExportBgLinen: '亚麻', statsExportBgDots: '点阵', statsExportBgWaves: '波纹', statsExportBgCustom: '自定义图片…', statsExportText: '文字颜色', statsExportFont: '文字字体', fontSystem: '系统字体', fontSerif: '衬线字体', fontRounded: '圆体', fontMono: '等宽字体', statsExportAppearance: '外观', statsExportMeta: '内容',
     importTodo: '导入待办', importTodoHint: '支持分行文字与任务清单', todoImported: '待办已导入', invalidTodoFile: '无法读取这份待办',
     importFailed: '导入失败', exportFailed: '导出失败', fileTooLarge: '文件不能超过 5 MB', invalidNoteFile: '无法读取这份笔记',
     calendar:'日历', yearView:'年', monthView:'月', weekView:'周', dayView:'日', previousPeriod:'上一时段', nextPeriod:'下一时段', previousYear:'上一年', nextYear:'下一年', previousMonth:'上一月', nextMonth:'下一月', previousWeek:'上一周', nextWeek:'下一周', previousDay:'上一日', nextDay:'下一日', backToToday:'今天', calendarNavigation:'日历导航', calendarViewOptions:'日历视图',
@@ -76,7 +77,7 @@ const dictionaries = {
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardShowBody:'完整内容', boardShowDoneOnly:'仅显示已完成', boardBodyLargeConfirm:'这篇笔记超过一万字符，完整显示可能影响流畅度。仍要开启完整内容显示吗？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardPatternLines:'横线', boardPatternCross:'交叉点', boardGridColor:'网格颜色', boardGridOpacity:'网格不透明度', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
-    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerDrag:'拖动排序', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合', brandEgg:'行记不辍 —— 这是 Acta 给好奇心的回礼', historyAlmostFull:'История почти заполнена (450 / 500) — старые записи постепенно будут заменяться', historyAlmostFull:'El historial está casi lleno (450 / 500) — las entradas antiguas se irán reemplazando', historyAlmostFull:'Der Verlauf ist fast voll (450 / 500) — ältere Einträge werden nach und nach ersetzt', historyAlmostFull:'L’historique est presque plein (450 / 500) — les anciennes entrées seront progressivement remplacées', historyAlmostFull:'历史记录将满（450 / 500）——更早的记录会随新记录逐渐被替代',
+    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerDrag:'拖动排序', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合', boardLayerRename:'重命名', boardLayerCopy:'复制', boardLayerCut:'剪切', boardLayerPaste:'粘贴', boardLayerRenamed:'已重命名', boardLayerPasted:'已粘贴 {0} 个元素', brandEgg:'行记不辍 —— 这是 Acta 给好奇心的回礼', historyAlmostFull:'История почти заполнена (450 / 500) — старые записи постепенно будут заменяться', historyAlmostFull:'El historial está casi lleno (450 / 500) — las entradas antiguas se irán reemplazando', historyAlmostFull:'Der Verlauf ist fast voll (450 / 500) — ältere Einträge werden nach und nach ersetzt', historyAlmostFull:'L’historique est presque plein (450 / 500) — les anciennes entrées seront progressivement remplacées', historyAlmostFull:'历史记录将满（450 / 500）——更早的记录会随新记录逐渐被替代',
     boardExportOptionsHint:'选择分辨率与图片格式；JPG 可调节压缩程度', boardExportScale:'分辨率', boardExportFormat:'图片格式', boardExportQuality:'JPG 质量', boardExportConfirm:'导出', boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportWorking:'正在渲染并导出，请稍候…', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出', boardImportPlan:'导入计划板文件 (.actaplan)', boardImported:'计划板已导入', boardImportInvalid:'这不是有效的 Acta 计划板文件', boardExportRegionTitle:'选择导出区域', boardExportRegionHint:'拖动边框或角点调整范围，导出框内内容', boardExportRegionAll:'全部元素', boardExportRegionView:'当前视图', boardExportRegionNext:'下一步',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
@@ -109,6 +110,7 @@ const dictionaries = {
     filterPanelTitle: 'Filter',
     exportScale: 'Resolution', exportFormat: 'Image format', exportQuality: 'JPG quality', exportConfirm: 'Export',
     statsExportTitle: 'Export list image', statsExportHint: 'Pick resolution and image format; JPG compression is adjustable',
+    statsExportBylineText: 'Created with Acta', statsExportImageTitle: 'Image title', statsExportImageTitlePh: 'Acta by default', statsExportByline: 'Show “Created with Acta”', statsExportBg: 'Background color', statsExportBgImage: 'Background image', statsExportBgNone: 'None', statsExportBgPaper: 'Paper', statsExportBgLinen: 'Linen', statsExportBgDots: 'Dots', statsExportBgWaves: 'Waves', statsExportBgCustom: 'Custom image…', statsExportText: 'Text color', statsExportFont: 'Text font', fontSystem: 'System', fontSerif: 'Serif', fontRounded: 'Rounded', fontMono: 'Mono', statsExportAppearance: 'Appearance', statsExportMeta: 'Content',
     importTodo: 'Import todo', importTodoHint: 'Plain lines or a task list', todoImported: 'Todo imported', invalidTodoFile: 'Cannot read this todo file',
     importFailed: 'Import failed', exportFailed: 'Export failed', fileTooLarge: 'Files must be under 5 MB', invalidNoteFile: 'This note could not be read',
     calendar:'Calendar', yearView:'Year', monthView:'Month', weekView:'Week', dayView:'Day', previousPeriod:'Previous period', nextPeriod:'Next period', previousYear:'Previous year', nextYear:'Next year', previousMonth:'Previous month', nextMonth:'Next month', previousWeek:'Previous week', nextWeek:'Next week', previousDay:'Previous day', nextDay:'Next day', backToToday:'Today', calendarNavigation:'Calendar navigation', calendarViewOptions:'Calendar views',
@@ -143,7 +145,7 @@ const dictionaries = {
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardShowBody:'Full content', boardShowDoneOnly:'Completed only', boardBodyLargeConfirm:'This note exceeds 10,000 characters — showing it in full may affect smoothness. Enable full content anyway?', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardPatternLines:'Ruled', boardPatternCross:'Crosses', boardGridColor:'Grid color', boardGridOpacity:'Grid opacity', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
-    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerDrag:'Drag to restack', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup', brandEgg:'Keep journaling — Acta thanks the curious', historyAlmostFull:'History is nearly full (450 / 500) — older entries will gradually be replaced',
+    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerDrag:'Drag to restack', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup', boardLayerRename:'Rename', boardLayerCopy:'Copy', boardLayerCut:'Cut', boardLayerPaste:'Paste', boardLayerRenamed:'Renamed', boardLayerPasted:'Pasted {0} items', brandEgg:'Keep journaling — Acta thanks the curious', historyAlmostFull:'History is nearly full (450 / 500) — older entries will gradually be replaced',
     boardExportOptionsHint:'Pick resolution and image format; JPG compression is adjustable', boardExportScale:'Resolution', boardExportFormat:'Image format', boardExportQuality:'JPG quality', boardExportConfirm:'Export', boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportWorking:'Rendering and exporting — hang on…', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting', boardImportPlan:'Import plan board file (.actaplan)', boardImported:'Plan board imported', boardImportInvalid:'This is not a valid Acta plan board file', boardExportRegionTitle:'Choose export area', boardExportRegionHint:'Drag the frame or handles to adjust; the framed area is exported', boardExportRegionAll:'All elements', boardExportRegionView:'Current view', boardExportRegionNext:'Next',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   },
@@ -2426,11 +2428,56 @@ function canvasWrapLines(ctx, text, maxWidth) {
 // 总结导出画布：按日分组的清单长图。待办逐条列出子待办与补充说明、
 // 笔记渲染完整正文，均不截断；scale 为导出分辨率倍率（1×/2×/3×），
 // 画布以 1080 逻辑宽度排版后整体放大绘制。
-function renderStatsCanvas(items, scale = 1) {
-  const colors = themeCanvasColors();
+// 导出外观字体栈（与编辑器的四档一致）。
+const statsExportFontStack = font => ({
+  system: '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif',
+  serif: '"Songti SC","Noto Serif SC","SimSun",Georgia,serif',
+  rounded: '"Yuanti SC","Quicksand","Comfortaa","PingFang SC",system-ui,sans-serif',
+  mono: 'ui-monospace,"SF Mono","Cascadia Code","PingFang SC",monospace'
+})[font] || '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif';
+
+// 背景预设：在底色上叠加程序化纹理（离屏 canvas 平铺）。
+function statsExportBackgroundPattern(kind, base, ink) {
+  if (kind === 'none') return null;
+  const tile = document.createElement('canvas');
+  const size = kind === 'dots' ? 26 : kind === 'waves' ? 44 : 18;
+  tile.width = size; tile.height = size;
+  const g = tile.getContext('2d');
+  g.fillStyle = base;
+  g.fillRect(0, 0, size, size);
+  g.strokeStyle = ink;
+  g.fillStyle = ink;
+  g.globalAlpha = 0.07;
+  if (kind === 'dots') {
+    g.beginPath(); g.arc(size / 2, size / 2, 1.6, 0, Math.PI * 2); g.fill();
+  } else if (kind === 'linen') {
+    g.lineWidth = 1;
+    for (let i = 0; i <= size; i += 6) { g.beginPath(); g.moveTo(i + .5, 0); g.lineTo(i + .5, size); g.stroke(); }
+  } else if (kind === 'waves') {
+    g.lineWidth = 1.4;
+    g.beginPath();
+    for (let x = 0; x <= size; x += 2) {
+      const y = size / 2 + Math.sin((x / size) * Math.PI * 2) * 7;
+      x === 0 ? g.moveTo(x, y) : g.lineTo(x, y);
+    }
+    g.stroke();
+  } else if (kind === 'paper') {
+    g.lineWidth = 1;
+    for (let i = 0; i < 26; i += 1) {
+      g.beginPath();
+      g.arc(Math.random() * size, Math.random() * size, Math.random() * .9 + .3, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  return tile;
+}
+
+function renderStatsCanvas(items, scale = 1, appearance = null) {
+  const options = appearance || {};
+  const colors = { ...themeCanvasColors(), paper: options.bg || themeCanvasColors().paper, ink: options.text || themeCanvasColors().ink };
   const width = 1080;
   const margin = 84;
-  const fontFamily = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif';
+  const fontFamily = statsExportFontStack(options.font);
   const measure = document.createElement('canvas').getContext('2d');
   const textWidth = width - margin * 2 - 118 - 24;
 
@@ -2478,12 +2525,36 @@ function renderStatsCanvas(items, scale = 1) {
   ctx.scale(scale, scale);
   ctx.fillStyle = colors.paper;
   ctx.fillRect(0, 0, width, Math.round(height));
+  // 背景层：预设纹理平铺或自定义图片 cover 铺满（异步加载改为同步解码
+  // 不可行——导出前在选项对话框里已把 dataURL 交给 <img> 预解码，
+  // 这里直接绘制；未就绪时退回纯色）。
+  const bgKind = options.bgImage || 'none';
+  if (bgKind === 'custom' && options.bgCustom) {
+    const img = document.querySelector('img[data-stats-bg-decode]');
+    if (img?.complete && img.naturalWidth) {
+      const ratio = Math.max(width / img.naturalWidth, Math.round(height) / img.naturalHeight);
+      const drawW = img.naturalWidth * ratio;
+      const drawH = img.naturalHeight * ratio;
+      ctx.drawImage(img, (width - drawW) / 2, (Math.round(height) - drawH) / 2, drawW, drawH);
+      // 文字可读性：叠一层底色薄纱（40%）。
+      ctx.globalAlpha = .4;
+      ctx.fillStyle = colors.paper;
+      ctx.fillRect(0, 0, width, Math.round(height));
+      ctx.globalAlpha = 1;
+    }
+  } else if (bgKind !== 'none') {
+    const tile = statsExportBackgroundPattern(bgKind, colors.paper, colors.ink);
+    if (tile) {
+      const pattern = ctx.createPattern(tile, 'repeat');
+      if (pattern) { ctx.fillStyle = pattern; ctx.fillRect(0, 0, width, Math.round(height)); }
+    }
+  }
   ctx.textBaseline = 'alphabetic';
 
   let y = margin;
   ctx.fillStyle = colors.ink;
   ctx.font = `700 56px ${fontFamily}`;
-  ctx.fillText('Acta 行记', margin, y + 56);
+  ctx.fillText((options.title || '').trim() || 'Acta 行记', margin, y + 56);
   ctx.fillStyle = colors.faint;
   ctx.font = `600 26px ${fontFamily}`;
   const todoCount = items.filter(item => item.type === 'todo').length;
@@ -2579,7 +2650,10 @@ function renderStatsCanvas(items, scale = 1) {
 
   ctx.fillStyle = colors.faint;
   ctx.font = `500 22px ${fontFamily}`;
-  ctx.fillText(`${formatDateTimeSeconds(new Date().toISOString())} Acta 行记`, margin, Math.round(height) - margin / 1.6);
+  const footerText = options.byline === false
+    ? formatDateTimeSeconds(new Date().toISOString())
+    : `${formatDateTimeSeconds(new Date().toISOString())} · ${t('statsExportBylineText')}`;
+  ctx.fillText(footerText, margin, Math.round(height) - margin / 1.6);
   return canvas;
 }
 
@@ -2625,6 +2699,24 @@ function askStatsExportOptions() {
         <div class="board-style-row"><span>${escapeHTML(t('exportScale'))}</span><div class="board-import-seg" role="group">${[1, 2, 3].map(scale => `<button type="button" data-export-scale="${scale}"${scale === state.scale ? ' class="active"' : ''}>${scale}×</button>`).join('')}</div></div>
         <div class="board-style-row"><span>${escapeHTML(t('exportFormat'))}</span><div class="board-import-seg" role="group"><button type="button" data-export-format="png" class="active">PNG</button><button type="button" data-export-format="jpg">JPG</button></div></div>
         <div class="board-style-row"><span>${escapeHTML(t('exportQuality'))}</span><input type="range" min="50" max="100" step="5" value="${state.quality * 100}" data-export-quality disabled aria-label="${escapeHTML(t('exportQuality'))}"/><output>90%</output></div>
+        <div class="board-style-row"><span>${escapeHTML(t('statsExportImageTitle'))}</span><input type="text" class="board-text-input" data-export-title maxlength="60" placeholder="${escapeHTML(t('statsExportImageTitlePh'))}"/></div>
+        <label class="board-style-row board-style-check"><span>${escapeHTML(t('statsExportByline'))}</span><input type="checkbox" data-export-byline checked/></label>
+        <div class="board-style-row"><span>${escapeHTML(t('statsExportBg'))}</span><input type="color" data-export-bg value="${state.bg}"/></div>
+        <div class="board-style-row"><span>${escapeHTML(t('statsExportBgImage'))}</span><div class="board-import-seg" role="group" data-export-bgimage>
+          <button type="button" data-bg-image="none" class="active">${escapeHTML(t('statsExportBgNone'))}</button>
+          <button type="button" data-bg-image="paper">${escapeHTML(t('statsExportBgPaper'))}</button>
+          <button type="button" data-bg-image="linen">${escapeHTML(t('statsExportBgLinen'))}</button>
+          <button type="button" data-bg-image="dots">${escapeHTML(t('statsExportBgDots'))}</button>
+          <button type="button" data-bg-image="waves">${escapeHTML(t('statsExportBgWaves'))}</button>
+          <button type="button" data-bg-image="custom">${escapeHTML(t('statsExportBgCustom'))}</button>
+        </div></div>
+        <div class="board-style-row"><span>${escapeHTML(t('statsExportText'))}</span><input type="color" data-export-text value="${state.text}"/></div>
+        <div class="board-style-row"><span>${escapeHTML(t('statsExportFont'))}</span><select data-export-font aria-label="${escapeHTML(t('statsExportFont'))}">
+          <option value="system">${escapeHTML(t('fontSystem'))}</option>
+          <option value="serif">${escapeHTML(t('fontSerif'))}</option>
+          <option value="rounded">${escapeHTML(t('fontRounded'))}</option>
+          <option value="mono">${escapeHTML(t('fontMono'))}</option>
+        </select></div>
       </div>
       <footer class="settings-actions board-import-actions">
         <button type="button" class="settings-button secondary" data-export-cancel>${escapeHTML(t('cancel'))}</button>
@@ -2660,17 +2752,48 @@ function askStatsExportOptions() {
         return;
       }
       if (event.target.closest('[data-export-cancel]')) { finish(null); return; }
+      const bgImageButton = event.target.closest('[data-bg-image]');
+      if (bgImageButton && bgImageButton.dataset.bgImage !== 'custom') {
+        state.bgImage = bgImageButton.dataset.bgImage;
+        state.bgCustom = null;
+        dialog.querySelectorAll('[data-bg-image]').forEach(button => button.classList.toggle('active', button === bgImageButton));
+        return;
+      }
       if (event.target.closest('[data-export-confirm]')) { finish({ ...state }); }
     });
     dialog.addEventListener('input', event => {
       const slider = event.target.closest('[data-export-quality]');
-      if (!slider) return;
-      state.quality = Number(slider.value) / 100;
-      const output = slider.parentElement?.querySelector('output');
-      if (output) output.textContent = `${slider.value}%`;
+      if (slider) {
+        state.quality = Number(slider.value) / 100;
+        const output = slider.parentElement?.querySelector('output');
+        if (output) output.textContent = `${slider.value}%`;
+        return;
+      }
+      if (event.target.closest('[data-export-title]')) state.title = event.target.value;
+      if (event.target.closest('[data-export-byline]')) state.byline = event.target.checked;
+      if (event.target.closest('[data-export-bg]')) state.bg = event.target.value;
+      if (event.target.closest('[data-export-text]')) state.text = event.target.value;
+      if (event.target.closest('[data-export-font]')) state.font = event.target.value;
     });
     dialog.querySelector('.relation-dialog-close').addEventListener('click', () => finish(null));
     dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); });
+    // 自定义背景图：选择后读取为 dataURL 供画布铺底，并点亮自定义段。
+    dialog.querySelector('[data-bg-image="custom"]')?.addEventListener('click', () => {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          state.bgCustom = String(reader.result);
+          dialog.querySelectorAll('[data-bg-image]').forEach(button => button.classList.toggle('active', button.dataset.bgImage === 'custom'));
+        };
+        reader.readAsDataURL(file);
+      });
+      fileInput.click();
+    });
     dialog.addEventListener('close', () => finish(null));
     syncQuality();
     document.body.appendChild(dialog);
@@ -2687,7 +2810,19 @@ async function exportStatsImage() {
   const options = await askStatsExportOptions();
   if (!options) return;
   try {
-    const canvas = renderStatsCanvas(items, options.scale);
+    if (options.bgImage === 'custom' && options.bgCustom) {
+      // 预解码：把 dataURL 塞进隐藏 <img>，await decode 保证 drawImage 就绪。
+      let img = document.querySelector('img[data-stats-bg-decode]');
+      if (!img) {
+        img = document.createElement('img');
+        img.dataset.statsBgDecode = '';
+        img.hidden = true;
+        document.body.appendChild(img);
+      }
+      img.src = options.bgCustom;
+      try { await img.decode(); } catch { /* 解码失败退回纯色背景 */ }
+    }
+    const canvas = renderStatsCanvas(items, options.scale, options);
     const stamp = todayISO();
     const jpg = options.format === 'jpg';
     const asset = {
@@ -4014,6 +4149,7 @@ function boardRenderStylePop() {
     <label class="board-style-toggle"><input type="checkbox" id="boardSnapToggle"${style.snap ? ' checked' : ''}/><i></i><span>${escapeHTML(t('boardSnapGrid'))}</span></label>
     <div class="board-style-row"><span>${escapeHTML(t('boardGridSize'))}</span><input type="range" min="16" max="64" step="2" value="${style.gridSize}" data-grid-size aria-label="${escapeHTML(t('boardGridSize'))}"/><output>${style.gridSize}px</output></div>`;
   pop.hidden = false;
+  boardSyncBoardTriggers();
 }
 
 function boardApplyStyle(board) {
@@ -5924,7 +6060,7 @@ function boardEnsureStyleTrigger() {
   // 绑定跟随元素创建（同板选择器：避免随 renderList 叠加导致浮层开即关）。
   boardStyleTriggerEl.addEventListener('click', () => {
     const pop = $('#boardStylePop', boardEls?.canvas || document);
-    if (pop && !pop.hidden) { pop.hidden = true; return; }
+    if (pop && !pop.hidden) { pop.hidden = true; boardSyncBoardTriggers(); return; }
     boardRenderStylePop();
   });
   return boardStyleTriggerEl;
@@ -5957,7 +6093,7 @@ function boardEnsureLayerTrigger() {
   boardEnsureTitleActions()?.insertBefore(boardLayerTriggerEl, boardStyleTriggerEl);
   boardLayerTriggerEl.addEventListener('click', () => {
     const pop = $('#boardLayerPop', boardEls?.canvas || document);
-    if (pop && !pop.hidden) { pop.hidden = true; return; }
+    if (pop && !pop.hidden) { pop.hidden = true; boardSyncBoardTriggers(); return; }
     boardRenderLayerPop();
   });
   return boardLayerTriggerEl;
@@ -5990,8 +6126,8 @@ function boardLayerRow(widget, isChild = false) {
   const selected = boardSelection.has(widget.id) ? ' is-selected' : '';
   // 子行随组整体移动，不给拖柄。
   const grip = isChild ? '' : `<i class="board-layer-grip" data-layer-drag="${escapeHTML(widget.id)}" title="${escapeHTML(t('boardLayerDrag'))}" aria-label="${escapeHTML(t('boardLayerDrag'))}"><svg><use href="#i-grip"/></svg></i>`;
-  return `<button type="button" class="board-layer-row${isChild ? ' is-child' : ''}${selected}" data-layer-pick="${escapeHTML(widget.id)}">
-    ${grip}<svg><use href="#${boardLayerIcon(widget)}"/></svg><span>${escapeHTML(boardLayerName(widget))}</span>
+  return `<button type="button" class="board-layer-row${isChild ? ' is-child' : ''}${selected}" data-layer-pick="${escapeHTML(widget.id)}" data-layer-entry="${escapeHTML(widget.id)}">
+    ${grip}<svg><use href="#${boardLayerIcon(widget)}"/></svg><span>${escapeHTML(boardLayerDisplayName(widget))}</span>
     <i class="board-layer-eye${widget.hidden ? ' is-off' : ''}" data-layer-toggle="${escapeHTML(widget.id)}" title="${escapeHTML(widget.hidden ? t('boardLayerShow') : t('boardLayerHide'))}"><svg><use href="#${widget.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></i>
   </button>`;
 }
@@ -6011,6 +6147,17 @@ function boardLayerEntries(board) {
     entries.push({ kind: 'group', id: widget.groupId, ids: members.map(entry => entry.id), type: members[0].type, mixed: new Set(members.map(entry => entry.type)).size > 1 });
   });
   return { zOrder, entries };
+}
+
+// 图层 / 个性化按钮的切换态：面板打开时按钮呈「打开」（强调色填充）。
+// 两面板互斥，同一时刻至多一个 is-open。
+function boardSyncBoardTriggers() {
+  const layerPop = $('#boardLayerPop', boardEls?.canvas || document);
+  const stylePop = $('#boardStylePop', boardEls?.canvas || document);
+  const layerOpen = Boolean(layerPop && !layerPop.hidden);
+  const styleOpen = Boolean(stylePop && !stylePop.hidden);
+  boardLayerTriggerEl?.classList.toggle('is-open', layerOpen);
+  boardStyleTriggerEl?.classList.toggle('is-open', styleOpen && !layerOpen);
 }
 
 function boardRenderLayerPop() {
@@ -6034,16 +6181,125 @@ function boardRenderLayerPop() {
     const selected = members.every(entry => boardSelection.has(entry.id));
     const allHidden = members.every(entry => entry.hidden);
     const childRows = members.map(entry => boardLayerRow(entry, true)).join('');
-    return `<button type="button" class="board-layer-row is-group${selected ? ' is-selected' : ''}" data-layer-pick-group="${escapeHTML(entry.id)}">
+    return `<button type="button" class="board-layer-row is-group${selected ? ' is-selected' : ''}" data-layer-pick-group="${escapeHTML(entry.id)}" data-layer-entry="${escapeHTML(entry.id)}">
       <i class="board-layer-grip" data-layer-drag-group="${escapeHTML(entry.id)}" title="${escapeHTML(t('boardLayerDrag'))}" aria-label="${escapeHTML(t('boardLayerDrag'))}"><svg><use href="#i-grip"/></svg></i>
-      <svg><use href="#i-layers"/></svg><span>${escapeHTML(t('boardLayerGroup'))} ${members.length}</span>
+      <svg><use href="#i-layers"/></svg><span>${escapeHTML(boardLayerNames()[entry.id] || `${t('boardLayerGroup')} ${members.length}`)}</span>
       <i class="board-layer-eye${allHidden ? ' is-off' : ''}" data-layer-toggle-group="${escapeHTML(entry.id)}" title="${escapeHTML(allHidden ? t('boardLayerShow') : t('boardLayerHide'))}"><svg><use href="#${allHidden ? 'i-eye-off' : 'i-eye'}"/></svg></i>
     </button>${childRows}`;
   }).join('');
   pop.innerHTML = `<div class="board-style-pop-head"><b>${escapeHTML(t('boardLayers'))}</b><button type="button" data-layer-close title="${escapeHTML(t('cancel'))}" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></div>
+    <div class="board-layer-tools-row">
+      <button type="button" data-layer-rename title="${escapeHTML(t('boardLayerRename'))}" aria-label="${escapeHTML(t('boardLayerRename'))}"><svg><use href="#i-edit"/></svg><span>${escapeHTML(t('boardLayerRename'))}</span></button>
+      <button type="button" data-layer-copy title="${escapeHTML(t('boardLayerCopy'))}" aria-label="${escapeHTML(t('boardLayerCopy'))}"><svg><use href="#i-copy"/></svg><span>${escapeHTML(t('boardLayerCopy'))}</span></button>
+      <button type="button" data-layer-cut title="${escapeHTML(t('boardLayerCut'))}" aria-label="${escapeHTML(t('boardLayerCut'))}"><svg><use href="#i-eraser"/></svg><span>${escapeHTML(t('boardLayerCut'))}</span></button>
+      <button type="button" data-layer-paste ${boardClipboard.widgets?.length ? '' : 'disabled'} title="${escapeHTML(t('boardLayerPaste'))}" aria-label="${escapeHTML(t('boardLayerPaste'))}"><svg><use href="#i-download"/></svg><span>${escapeHTML(t('boardLayerPaste'))}</span></button>
+    </div>
     <div class="board-layer-list">${rows || `<div class="board-import-empty">${escapeHTML(t('boardEmptyHint'))}</div>`}</div>`;
   pop.hidden = false;
   boardBindLayerDrag(pop);
+  boardSyncBoardTriggers();
+  pop.querySelector('[data-layer-rename]')?.addEventListener('click', () => {
+    const entry = boardLayerPickedEntry(board, entries);
+    if (entry) boardLayerRename(entry);
+  });
+  pop.querySelector('[data-layer-copy]')?.addEventListener('click', () => boardLayerCopySelection(false));
+  pop.querySelector('[data-layer-cut]')?.addEventListener('click', () => boardLayerCopySelection(true));
+  pop.querySelector('[data-layer-paste]')?.addEventListener('click', () => boardLayerPaste());
+  pop.querySelectorAll('[data-layer-entry]').forEach(row => {
+    row.addEventListener('dblclick', event => {
+      if (event.target.closest('.board-layer-grip, .board-layer-eye')) return;
+      const entry = entries.find(item => item.id === row.dataset.layerEntry);
+      if (entry) boardLayerRename(entry);
+    });
+  });
+}
+
+// 重命名的目标条目：优先取当前选中的单条目/组，未选中时取面板首条。
+function boardLayerPickedEntry(board, entries) {
+  const picked = entries.find(entry => entry.ids.every(id => boardSelection.has(id)) && boardSelection.size);
+  return picked || entries[0] || null;
+}
+
+// —— 图层剪贴板与自定名称 ——
+// clipboard：深拷贝的组件数组（含 groupId 归零，粘贴为独立元素）；
+// cutMode：剪切来源（粘贴时移除原元素）。names：组件/组的自定义名称。
+const boardClipboard = { widgets: null, cutMode: false };
+const boardLayerNames = () => {
+  const board = boardLayoutCache?.board || activeBoard();
+  if (!board) return {};
+  if (!board.layerNames || typeof board.layerNames !== 'object') board.layerNames = {};
+  return board.layerNames;
+};
+const boardLayerDisplayName = widget => boardLayerNames()[widget.id] || boardLayerName(widget);
+
+function boardLayerCopySelection(cut = false) {
+  const board = boardLayoutCache?.board || activeBoard();
+  if (!board || !boardSelection.size) return;
+  const picked = board.widgets.filter(widget => boardSelection.has(widget.id));
+  if (!picked.length) return;
+  boardClipboard.widgets = picked.map(widget => {
+    const clone = JSON.parse(JSON.stringify(widget));
+    delete clone.groupId; // 粘贴为独立元素，不携带组关系
+    return clone;
+  });
+  boardClipboard.cutMode = cut;
+  if (cut) {
+    boardPushUndo();
+    const ids = new Set(picked.map(widget => widget.id));
+    board.widgets = board.widgets.filter(widget => !ids.has(widget.id));
+    boardSelection.clear();
+    touchBoard(board);
+    persist();
+    boardLayoutCache.bounds = boardBoundsOf(board.widgets.filter(widget => !widget.hidden));
+    renderList();
+    boardSyncLayerPop();
+  }
+  showToast(cut ? t('boardLayerCut') : t('boardLayerCopy'));
+}
+
+function boardLayerPaste() {
+  const board = boardLayoutCache?.board || activeBoard();
+  if (!board || !boardClipboard.widgets?.length) return;
+  boardPushUndo();
+  const offset = 24;
+  const pasted = boardClipboard.widgets.map(clone => {
+    const widget = JSON.parse(JSON.stringify(clone));
+    widget.id = uid();
+    widget.x = (widget.x || 0) + offset;
+    widget.y = (widget.y || 0) + offset;
+    board.widgets.push(widget);
+    return widget;
+  });
+  if (boardClipboard.cutMode) {
+    // 剪切粘贴：移动语义，剪贴板清空避免重复粘贴。
+    boardClipboard.widgets = null;
+    boardClipboard.cutMode = false;
+  }
+  boardSetSelection(pasted.map(widget => widget.id));
+  touchBoard(board);
+  persist();
+  boardLayoutCache.bounds = boardBoundsOf(board.widgets.filter(widget => !widget.hidden));
+  renderList();
+  boardSyncLayerPop();
+  showToast(t('boardLayerPasted').replace('{0}', pasted.length));
+}
+
+function boardLayerRename(entry) {
+  const board = boardLayoutCache?.board || activeBoard();
+  if (!board) return;
+  const current = entry.kind === 'group'
+    ? (board.layerNames?.[entry.id] || t('boardLayerGroup'))
+    : boardLayerNames()[entry.id] || boardLayerName(board.widgets.find(widget => widget.id === entry.id));
+  const next = window.prompt(t('boardLayerRename'), current);
+  if (next == null) return;
+  const names = boardLayerNames();
+  const trimmed = next.trim().slice(0, 60);
+  if (trimmed) names[entry.id] = trimmed;
+  else delete names[entry.id];
+  touchBoard(board);
+  persist();
+  boardSyncLayerPop();
+  showToast(t('boardLayerRenamed'));
 }
 
 // —— 图层拖移排序 ——
@@ -6155,7 +6411,7 @@ function boardLayerReorder(state, at) {
 // 面板开着时同步重渲染（绘制提交 / 删除 / 选中变化后调用；关着直接返回）。
 function boardSyncLayerPop() {
   const pop = $('#boardLayerPop', boardEls?.canvas || document);
-  if (!pop || pop.hidden) return;
+  if (!pop || pop.hidden) { boardSyncBoardTriggers(); return; }
   boardRenderLayerPop();
 }
 
@@ -6790,8 +7046,15 @@ function bindBoardScene() {
         const now = performance.now();
         const isDoubleTap = lastBoardTap.id === gesture.widget.id && now - lastBoardTap.at < 340;
         lastBoardTap = { id: gesture.widget.id, at: now };
+        // 打组元素默认整组选中：点组内任一成员，选中框落在整个组上
+        // （再点组外空白取消；双击成员仍按原语义逐个操作）。
+        const pickGroup = widget => {
+          const groupId = widget.groupId;
+          if (!groupId) return [widget.id];
+          return boardLayoutCache.board.widgets.filter(entry => entry.groupId === groupId).map(entry => entry.id);
+        };
         if (gesture.widget.type === 'note' || gesture.widget.type === 'todo') {
-          boardSetSelection([gesture.widget.id]);
+          boardSetSelection(pickGroup(gesture.widget));
           // 移动端：单击只选中（工具条见画布底部），双击才弹出编辑面板；
           // 桌面保持单击直开编辑器。
           if (!boardMobileQuery.matches || isDoubleTap) boardSelect(gesture.pressItem);
@@ -6799,7 +7062,7 @@ function bindBoardScene() {
           boardSetSelection([gesture.widget.id]);
           boardEditText(gesture.widget.id);
         } else {
-          boardSetSelection([gesture.widget.id]);
+          boardSetSelection(pickGroup(gesture.widget));
         }
         return;
       }
@@ -8954,15 +9217,30 @@ function bindShell() {
     if (!layer) return;
     clearTimeout(mobileCreateHideTimer);
     syncMobileCreatePositions();
+    // 镜像圆钮与原按钮尺寸同步（外观设置可自定义新建按钮大小）：
+    // 宽高读自原按钮，尺寸变化（含动画期间）每次打开都重新校准。
+    const toggle = layer.querySelector('.mobile-create-toggle');
+    const source = $('#newButton');
+    if (toggle && source) {
+      const rect = source.getBoundingClientRect();
+      toggle.style.width = `${Math.round(rect.width)}px`;
+      toggle.style.height = `${Math.round(rect.height)}px`;
+      toggle.style.marginLeft = `${-Math.round(rect.width / 2)}px`;
+    }
     layer.hidden = false;
     requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.add('open')));
   };
   const closeMobileCreate = () => {
     const layer = $('#mobileCreateLayer');
     if (!layer || layer.hidden) return;
+    // 预见式返回提交后的关闭：手势的收拢淡出已是退出动画，菜单自身的
+    // 收起过渡不再重播（window.__actaSkipNextCloseAnimation 由
+    // interface.js 的手势桥设置，跨文件全局读取）。
+    const skip = window.__actaSkipNextCloseAnimation === true;
+    window.__actaSkipNextCloseAnimation = false;
     layer.classList.remove('open');
     clearTimeout(mobileCreateHideTimer);
-    mobileCreateHideTimer = setTimeout(() => { layer.hidden = true; }, 300);
+    mobileCreateHideTimer = setTimeout(() => { layer.hidden = true; }, skip ? 0 : 300);
   };
   const toggleMobileCreate = () => {
     const layer = $('#mobileCreateLayer');

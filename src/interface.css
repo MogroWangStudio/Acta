@@ -1133,7 +1133,7 @@ html[data-acta-theme="mono-dark"] .classification-emoji-picker > header button {
 .list-filter-toggle:hover { color: var(--ink); background: var(--panel); transform: scale(1.05); }
 .list-filter-toggle[aria-expanded="true"] { color: var(--ink); background: var(--panel); }
 .list-filter-panel {
-  position: absolute; top: calc(100% + 8px); right: 0; z-index: 40; width: min(268px, calc(100vw - 40px));
+  position: absolute; top: calc(100% + 6px); right: 18px; z-index: 40; width: max(min(268px, calc(100vw - 40px)), 200px);
   padding: 12px; display: grid; gap: 8px;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 14px;
   background: var(--paper);
@@ -2600,7 +2600,8 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-layer-grip svg { width: 12px; height: 12px; }
 .board-layer-grip:hover { color: var(--muted); background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .board-layer-grip:active { cursor: grabbing; color: var(--ink); }
-.board-layer-row.is-dragging { opacity: .38; }
+.board-layer-row.is-dragging { opacity: .72; }
+.board-layer-row.is-dragging .board-layer-grip { opacity: 1; background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); }
 .board-layer-row.is-drop-before { box-shadow: 0 -2px 0 var(--sage); }
 .board-layer-row.is-drop-after { box-shadow: 0 2px 0 var(--sage); }
 .board-pop-hint { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
@@ -2623,6 +2624,8 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-style-trigger svg { width: 15px; height: 15px; }
 .board-style-trigger:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); background: color-mix(in srgb, var(--paper) 88%, transparent); }
 .board-style-trigger:active { transform: scale(.95); transition-duration: .08s; }
+/* 切换态：面板打开时按钮呈「打开」——强调色填充（sage 底 + 白图标）。 */
+.board-style-trigger.is-open { background: var(--sage); border-color: var(--sage); color: #fff; box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--sage) 55%, transparent), 0 10px 26px -12px color-mix(in srgb, var(--sage) 42%, transparent); }
 
 /* 工具条小色板 / 滑杆 / 内容开关。 */
 .board-swatch-sm { width: 16px; height: 16px; }
@@ -2915,7 +2918,10 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .calendar-todo-meta { flex-wrap: wrap; }
   .calendar-subtask { min-height: 29px; }
   .calendar-subtask-title { font-size: calc(11px * var(--acta-font-scale)); }
-  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(env(safe-area-inset-top) + 6px); display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
+  /* 顶栏右上角按钮区：与顶栏内容行（48px，安卓端整体上移 5px）垂直
+     居中——top 由安全区上缘扣 5px 起算 + (48 - 36)/2 = 6px。 */
+  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(env(safe-area-inset-top) - 5px + 6px); display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
+  html:not(.acta-native-mobile) .mobile-titlebar-actions { top: calc(env(safe-area-inset-top) + 6px); }
   /* 顶栏右上角是自定义按钮区：候选按钮全部隐藏，由设置中的三个槽位
      （mobile-title-slot-N）决定显示哪三个；设置按钮固定在末尾。 */
   .mobile-titlebar-action { width: 36px; height: 36px; display: none; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 82%, transparent); color: var(--muted); -webkit-app-region: no-drag; }
@@ -3464,7 +3470,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 }
 
 /* —— 工具栏设置 —— */
-.nav-page-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 2px 15px 13px; }
+.nav-page-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 2px 0 0; }
 .nav-page-grid label { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 45%, transparent); cursor: pointer; transition: border-color .15s ease, background .15s ease; }
 .nav-page-grid label:hover { border-color: color-mix(in srgb, var(--sage) 32%, var(--line)); }
 .nav-page-grid label:has(input:checked) { border-color: color-mix(in srgb, var(--sage) 45%, var(--line)); background: color-mix(in srgb, var(--sage) 8%, transparent); }
@@ -3585,13 +3591,21 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
    槽位即互换位置。 */
 .nav-preview-hint { margin: 6px 2px 0; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.5; }
 /* 桌面工具栏设置：左侧竖排预览、右侧开关，空间够时并排呈现。 */
-.nav-desktop-layout { display: grid; grid-template-columns: minmax(168px, 216px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.nav-desktop-layout { display: grid; grid-template-columns: minmax(172px, 220px) minmax(0, 1fr); gap: 20px; align-items: start; padding: 16px 18px 18px; }
 .nav-desktop-preview { display: grid; gap: 4px; }
 /* 竖排预览与实际侧栏同构：图标 + 文字的整行按钮，点击切换显隐。 */
 .nav-preview-sidebar { display: flex; flex-direction: column; gap: 3px; padding: 9px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--sidebar) 40%, var(--panel)); }
 .nav-preview-sidebar .nav-preview-chip { justify-content: flex-start; width: 100%; padding: 7px 11px; border-color: transparent; border-radius: 9px; background: transparent; }
 .nav-preview-sidebar .nav-preview-chip:hover { background: color-mix(in srgb, var(--white) 62%, transparent); transform: none; }
 .nav-preview-sidebar .nav-preview-chip.is-off { opacity: .38; }
+/* 拖拽换序：把手常显（拖拽意图可发现），行拖拽中拾起（阴影 + 抬升）。 */
+.nav-preview-row { display: flex; align-items: center; gap: 2px; }
+.nav-preview-row .nav-preview-chip { flex: 1; min-width: 0; }
+.nav-drag-handle { flex: 0 0 auto; width: 18px; height: 24px; display: grid; place-items: center; color: var(--faint); cursor: grab; touch-action: none; border-radius: 6px; transition: color .15s ease, background .15s ease; }
+.nav-drag-handle:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 62%, transparent); }
+.nav-drag-handle svg { width: 12px; height: 12px; }
+.nav-preview-row.is-dragging { position: relative; z-index: 2; opacity: .95; }
+.nav-preview-row.is-dragging .nav-preview-chip { box-shadow: 0 6px 16px -6px rgba(24,28,23,.3); }
 .nav-preview-bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--panel) 74%, transparent); }
 .nav-preview-cell {
   display: grid; place-items: center; gap: 4px; min-height: 54px; padding: 7px 4px;
@@ -3738,3 +3752,17 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 .lan-web-scan-row #webLanScanPrefix { flex: 1 1 auto; }
 .lan-web-scan-row #webLanScanPort { flex: 0 0 88px; }
 .lan-web-scan-row i { color: var(--faint); font-style: normal; }
+
+/* 图层面板工具条：重命名 / 复制 / 剪切 / 粘贴（面板头部下一行）。 */
+.board-layer-tools-row { display: flex; gap: 4px; padding: 2px 0 6px; border-bottom: 1px solid var(--line); }
+.board-layer-tools-row button { flex: 1; min-width: 0; height: 28px; padding: 0 6px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: calc(8px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: color .15s ease, background .15s ease; }
+.board-layer-tools-row button svg { width: 12px; height: 12px; }
+.board-layer-tools-row button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.board-layer-tools-row button[disabled] { opacity: .38; cursor: default; }
+.board-layer-tools-row button[disabled]:hover { color: var(--muted); background: transparent; }
+
+/* 总结导出选项：文本输入 / 开关行样式（沿用板导出行语言）。 */
+.board-export-dialog .board-text-input { width: 200px; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--white); color: var(--ink); outline: 0; font-size: calc(10px * var(--acta-font-scale)); }
+.board-export-dialog .board-style-check { cursor: pointer; }
+.board-export-dialog .board-style-check input { width: 15px; height: 15px; accent-color: var(--sage); }
+.board-export-dialog [data-bg-image] button { flex: 0 0 auto; }
