@@ -176,7 +176,20 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 /* 设置内容居中收窄：全屏后左右留给导航与留白，阅读宽度保持舒适。 */
 
 @media (min-width: 801px) {
-  html[data-desktop-platform="darwin"] .settings-header { padding-left: 84px; }
+  html[data-desktop-platform="darwin"] .settings-header { padding-left: 84px; position: relative; }
+  /* macOS 专属：设置标题垂直 + 水平居中于顶栏（红绿灯在原生左上，
+     版本与 logo 的居中语言一致）。 */
+  html[data-desktop-platform="darwin"] .settings-header > div:has(> #settingsTitle) {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0;
+  }
+  /* macOS 专属：返回按钮移到窗口左下角——settings-window 常驻 transform
+     使 fixed 以窗口为包含块，打开 / 关闭动画期间随窗口一起移动。 */
+  html[data-desktop-platform="darwin"] .settings-header .settings-back {
+    position: fixed; left: 16px; bottom: 14px; top: auto; z-index: 5;
+    box-shadow: 0 2px 8px -2px rgba(24,28,23,.18), 0 6px 18px -6px rgba(24,28,23,.22);
+  }
+  /* 左下角的返回按钮悬浮在设置导航之上：导航底部留出按钮的高度。 */
+  html[data-desktop-platform="darwin"] .settings-nav { padding-bottom: 56px; }
 }
 /* 头部返回钮：原齿轮图标位改为可点击的返回（关闭设置），与右上关闭互为备用。 */
 .settings-header .settings-back {
