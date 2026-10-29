@@ -184,11 +184,18 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
   pointer-events: none; transition: opacity .2s ease, transform .4s var(--ease-out);
 }
 .create-menu.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-.create-menu button { width: 100%; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; border: 0; background: transparent; text-align: left; padding: 9px; border-radius: 10px; cursor: pointer; transition: background .15s ease, transform .18s var(--ease-out); }
+.create-menu button { width: 100%; display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; border: 0; background: transparent; text-align: left; padding: 9px; border-radius: 10px; cursor: pointer; transition: background .15s ease, transform .18s var(--ease-out); }
 .create-menu button:hover { background: var(--panel); transform: translateX(2px); }
-.create-menu button > span:last-child { display: flex; flex-direction: column; gap: 2px; }
+.create-menu button > span:nth-of-type(2) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .create-menu b { font-size: calc(12px * var(--acta-font-scale)); }
 .create-menu small { font-size: calc(10px * var(--acta-font-scale)); color: var(--muted); }
+/* 菜单项快捷键标注：与右键菜单的 kbd 同一语言（小号、弱化、靠右）。 */
+.create-menu .menu-shortcut { justify-self: end; font: 600 calc(9px * var(--acta-font-scale))/1 system-ui; color: var(--faint); white-space: nowrap; }
+/* 触屏设备没有物理键盘（新建走放射菜单）：快捷键标注只留给指针精细
+   的桌面端——窄桌面窗口即使 ≤800px 也保留标注。 */
+@media (pointer: coarse) {
+  .create-menu .menu-shortcut { display: none; }
+}
 .menu-icon { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; }
 .menu-icon.note { color: var(--violet); background: var(--violet-soft); }
 .menu-icon.todo { color: var(--sage); background: var(--sage-2); }

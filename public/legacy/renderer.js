@@ -9401,13 +9401,18 @@ function bindShell() {
     const layer = $('#mobileCreateLayer');
     if (layer && !layer.hidden) closeMobileCreate();
   };
-  $('#newButton').addEventListener('click', event => {
-    event.stopPropagation();
+  // 新建功能列表的开合：新建按钮与新建快捷键（⌘/Ctrl+N）共用——
+  // 桌面切换侧栏菜单，窄屏 / 移动切换放射菜单层。
+  const toggleCreateMenu = () => {
     if (matchMedia('(max-width: 800px)').matches) {
       toggleMobileCreate();
       return;
     }
     $('#createMenu').classList.toggle('open');
+  };
+  $('#newButton').addEventListener('click', event => {
+    event.stopPropagation();
+    toggleCreateMenu();
   });
   const mobileLayer = $('#mobileCreateLayer');
   mobileLayer?.addEventListener('click', event => {
@@ -9724,8 +9729,17 @@ function bindShell() {
     if (event.repeat) return;
     if (event.target?.closest?.('input, textarea, select, [contenteditable="true"]')) return;
     if (document.querySelector('dialog[open]')) return;
-    if (event.key.toLowerCase() === 'n') { event.preventDefault(); createItem('note'); }
-    if (event.key.toLowerCase() === 'k') { event.preventDefault(); $('#searchInput').focus(); }
+    // 新建家族：⌘/Ctrl+N 弹出新建功能列表（再按一次收起），Shift 档直接
+    // 创建对应类型——速记 ⇧S、笔记 ⇧N、待办 ⇧T、打卡待办 ⇧H、导入 ⇧I
+    // （快捷键标注同步显示在新建功能列表的每一项上）。
+    const globalKey = event.key.toLowerCase();
+    if (globalKey === 'n' && !event.shiftKey) { event.preventDefault(); toggleCreateMenu(); }
+    else if (globalKey === 'n') { event.preventDefault(); createItem('note'); }
+    else if (globalKey === 't' && event.shiftKey) { event.preventDefault(); createItem('todo'); }
+    else if (globalKey === 's' && event.shiftKey) { event.preventDefault(); createItem('quick'); }
+    else if (globalKey === 'h' && event.shiftKey) { event.preventDefault(); createItem('checkin'); }
+    else if (globalKey === 'i' && event.shiftKey) { event.preventDefault(); openImportDataDialog(); }
+    if (globalKey === 'k') { event.preventDefault(); $('#searchInput').focus(); }
     // 计划板：Ctrl/⌘+Z 撤销、Shift+Z 或 Y 重做、G 组合所选、Shift+G 解组、
     // C/X/V 复制 / 剪切 / 粘贴所选（画布手势专用，不抢编辑器内快捷键；
     // C/X 仅在画布有选中时拦截，V 仅在画布剪贴板有内容时拦截，其余放行

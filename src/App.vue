@@ -63,11 +63,11 @@
             <kbd class="shortcut-new" aria-hidden="true"></kbd>
           </button>
           <div class="create-menu" id="createMenu">
-            <button data-create="quick"><span class="menu-icon quick"><svg><use href="#i-lightning"/></svg></span><span><b data-i18n="quickCapture">速记</b><small data-i18n="quickCaptureHint">快速创建待办或笔记</small></span></button>
-            <button data-create="note"><span class="menu-icon note"><svg><use href="#i-note"/></svg></span><span><b data-i18n="newNote">新建笔记</b><small data-i18n="newNoteHint">记录想法与灵感</small></span></button>
-            <button data-create="todo"><span class="menu-icon todo"><svg><use href="#i-check"/></svg></span><span><b data-i18n="newTodo">新建待办</b><small data-i18n="newTodoHint">拆解目标与行动</small></span></button>
-            <button data-create="checkin"><span class="menu-icon checkin"><svg><use href="#i-task-list"/></svg></span><span><b data-i18n="checkinTodo">打卡待办</b><small data-i18n="checkinTodoHint">每天打卡，养成习惯</small></span></button>
-            <button id="importDataButton"><span class="menu-icon import"><svg><use href="#i-download"/></svg></span><span><b data-i18n="importData">导入数据</b><small data-i18n="importDataHint">导入笔记或待办</small></span></button>
+            <button data-create="quick"><span class="menu-icon quick"><svg><use href="#i-lightning"/></svg></span><span><b data-i18n="quickCapture">速记</b><small data-i18n="quickCaptureHint">快速创建待办或笔记</small></span><kbd class="menu-shortcut" aria-hidden="true"></kbd></button>
+            <button data-create="note"><span class="menu-icon note"><svg><use href="#i-note"/></svg></span><span><b data-i18n="newNote">新建笔记</b><small data-i18n="newNoteHint">记录想法与灵感</small></span><kbd class="menu-shortcut" aria-hidden="true"></kbd></button>
+            <button data-create="todo"><span class="menu-icon todo"><svg><use href="#i-check"/></svg></span><span><b data-i18n="newTodo">新建待办</b><small data-i18n="newTodoHint">拆解目标与行动</small></span><kbd class="menu-shortcut" aria-hidden="true"></kbd></button>
+            <button data-create="checkin"><span class="menu-icon checkin"><svg><use href="#i-task-list"/></svg></span><span><b data-i18n="checkinTodo">打卡待办</b><small data-i18n="checkinTodoHint">每天打卡，养成习惯</small></span><kbd class="menu-shortcut" aria-hidden="true"></kbd></button>
+            <button id="importDataButton"><span class="menu-icon import"><svg><use href="#i-download"/></svg></span><span><b data-i18n="importData">导入数据</b><small data-i18n="importDataHint">导入笔记或待办</small></span><kbd class="menu-shortcut" aria-hidden="true"></kbd></button>
           </div>
 
           <nav class="nav-section smart-nav" id="smartNav">

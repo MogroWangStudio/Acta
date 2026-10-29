@@ -9593,6 +9593,14 @@
   const shortcutSearch = document.querySelector('.shortcut-search');
   if (shortcutNew) shortcutNew.textContent = shortcutIsApple ? '⌘ N' : 'Ctrl+N';
   if (shortcutSearch) shortcutSearch.textContent = shortcutIsApple ? '⌘ K' : 'Ctrl+K';
+  // 新建功能列表：逐项显示对应功能的快捷键（键位定义在 renderer 的
+  // 全局快捷键块；⌘/Ctrl+N 弹出列表本身，Shift 档直接创建对应类型）。
+  const menuShortcutSuffixes = { quick: 'S', note: 'N', todo: 'T', checkin: 'H', import: 'I' };
+  Object.entries(menuShortcutSuffixes).forEach(([action, suffix]) => {
+    const item = document.querySelector(`#createMenu ${action === 'import' ? '#importDataButton' : `[data-create="${action}"]`}`);
+    const kbd = item?.querySelector('.menu-shortcut');
+    if (kbd) kbd.textContent = `${shortcutIsApple ? '⌘⇧' : 'Ctrl+Shift+'}${suffix}`;
+  });
 
   /* ===================== 自定义右键菜单（桌面端） ===================== */
   // 桌面端整体屏蔽原生右键菜单；可编辑区域提供剪切/复制/粘贴/全选，
