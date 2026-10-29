@@ -747,9 +747,9 @@
     en: { rename:'Classification name', placeholder:'Rename this classification', hint:'Click “Edit name”, make the change, then confirm with the check button. Renaming applies to every item in this classification.', edit:'Edit name', confirm:'Confirm change', empty:'Classification name cannot be empty', duplicate:'A classification with this name already exists', manage:'Manage classification', managerTitle:'Edit classification', cancel:'Cancel', remove:'Delete classification', unsavedConfirm:'This classification has unsaved changes. Save them?', summary:'This classification contains {0} items. Deleting it moves them to “{1}”.', lastSummary:'This is the last classification and cannot be deleted.', deleteConfirm:'Delete “{0}”? Its {1} items will move to “{2}”.', deleted:'Classification deleted; related items moved to “{0}”' },
     'zh-Hant': { rename:'歸類名稱', placeholder:'修改目前歸類名稱', hint:'先點擊「編輯名稱」，修改後再點擊勾選確認；更名會套用到該歸類下的全部項目。', edit:'編輯名稱', confirm:'確認修改', empty:'歸類名稱不能為空', duplicate:'已經存在同名歸類', manage:'管理歸類', managerTitle:'編輯歸類', cancel:'取消', unsavedConfirm:'歸類有未儲存的修改，儲存這些修改嗎？', remove:'刪除歸類', summary:'此歸類包含 {0} 個項目；刪除後會移動到「{1}」。', lastSummary:'這是最後一個歸類，不能刪除。', deleteConfirm:'確定刪除「{0}」嗎？其中 {1} 個項目會移動到「{2}」。', deleted:'歸類已刪除，相關項目已移動到「{0}」' }
   };
-  Object.assign(classificationMessages.zh, { color:'归类颜色', colorHint:'选择颜色后，侧栏和项目卡片会同步更新。', presets:'预设颜色', updatedToast:'归类已保存', add:'新建归类', addHint:'创建一个新的归类', manageHint:'编辑名称、自定义简称或 Emoji 与颜色', menu:'归类操作', shortName:'自定义简称 / Emoji', shortHint:'输入 1–3 个文字或从右侧选择 Emoji；留空自动生成', shortAuto:'自动生成', emojiPicker:'选择 Emoji', emojiOpen:'打开 Emoji 选择器', managerTitle:'归类管理', editClassification:'编辑归类', listTitle:'归类列表', mobileTitle:'所有归类', listCount:'{0} 个归类', contentTitle:'归类内容', notesTitle:'笔记', todosTitle:'待办', noNotes:'此归类下还没有笔记', noTodos:'此归类下还没有待办', itemCount:'{0} 个内容', close:'关闭', openItem:'打开内容' });
-  Object.assign(classificationMessages.en, { color:'Classification color', colorHint:'The sidebar and item cards update when you choose a color.', presets:'Preset colors', updatedToast:'Classification saved', add:'New classification', addHint:'Create a new classification', manageHint:'Edit names, custom short labels or emoji, and colors', menu:'Classification actions', shortName:'Custom label / Emoji', shortHint:'Enter 1–3 characters or choose an emoji; leave blank to generate one', shortAuto:'Auto', emojiPicker:'Choose an emoji', emojiOpen:'Open emoji picker', managerTitle:'Manage classifications', editClassification:'Edit classification', listTitle:'Classifications', mobileTitle:'All classifications', listCount:'{0} classifications', contentTitle:'Classification contents', notesTitle:'Notes', todosTitle:'Tasks', noNotes:'No notes in this classification', noTodos:'No tasks in this classification', itemCount:'{0} items', close:'Close', openItem:'Open item' });
-  Object.assign(classificationMessages['zh-Hant'], { color:'歸類顏色', colorHint:'選擇顏色後，側欄和項目卡片會同步更新。', presets:'預設顏色', updatedToast:'歸類已儲存', add:'新增歸類', addHint:'建立一個新的歸類', manageHint:'編輯名稱、自訂簡稱或 Emoji 與顏色', menu:'歸類操作', shortName:'自訂簡稱 / Emoji', shortHint:'輸入 1–3 個文字或從右側選擇 Emoji；留空時自動產生', shortAuto:'自動產生', emojiPicker:'選擇 Emoji', emojiOpen:'開啟 Emoji 選擇器', managerTitle:'歸類管理', editClassification:'編輯歸類', listTitle:'歸類列表', mobileTitle:'所有歸類', listCount:'{0} 個歸類', contentTitle:'歸類內容', notesTitle:'筆記', todosTitle:'待辦', noNotes:'此歸類下還沒有筆記', noTodos:'此歸類下還沒有待辦', itemCount:'{0} 個內容', close:'關閉', openItem:'開啟內容' });
+  Object.assign(classificationMessages.zh, { color:'归类颜色', colorHint:'选择颜色后，侧栏和项目卡片会同步更新。', presets:'预设颜色', updatedToast:'归类已保存', add:'新建归类', addHint:'创建一个新的归类', manageHint:'编辑名称、自定义简称或 Emoji 与颜色', dragToReorder:'拖动调整归类顺序', menu:'归类操作', shortName:'自定义简称 / Emoji', shortHint:'输入 1–3 个文字或从右侧选择 Emoji；留空自动生成', shortAuto:'自动生成', emojiPicker:'选择 Emoji', emojiOpen:'打开 Emoji 选择器', managerTitle:'归类管理', editClassification:'编辑归类', listTitle:'归类列表', mobileTitle:'所有归类', listCount:'{0} 个归类', contentTitle:'归类内容', notesTitle:'笔记', todosTitle:'待办', noNotes:'此归类下还没有笔记', noTodos:'此归类下还没有待办', itemCount:'{0} 个内容', close:'关闭', openItem:'打开内容' });
+  Object.assign(classificationMessages.en, { color:'Classification color', colorHint:'The sidebar and item cards update when you choose a color.', presets:'Preset colors', updatedToast:'Classification saved', add:'New classification', addHint:'Create a new classification', manageHint:'Edit names, custom short labels or emoji, and colors', dragToReorder:'Drag to reorder', menu:'Classification actions', shortName:'Custom label / Emoji', shortHint:'Enter 1–3 characters or choose an emoji; leave blank to generate one', shortAuto:'Auto', emojiPicker:'Choose an emoji', emojiOpen:'Open emoji picker', managerTitle:'Manage classifications', editClassification:'Edit classification', listTitle:'Classifications', mobileTitle:'All classifications', listCount:'{0} classifications', contentTitle:'Classification contents', notesTitle:'Notes', todosTitle:'Tasks', noNotes:'No notes in this classification', noTodos:'No tasks in this classification', itemCount:'{0} items', close:'Close', openItem:'Open item' });
+  Object.assign(classificationMessages['zh-Hant'], { color:'歸類顏色', colorHint:'選擇顏色後，側欄和項目卡片會同步更新。', presets:'預設顏色', updatedToast:'歸類已儲存', add:'新增歸類', addHint:'建立一個新的歸類', manageHint:'編輯名稱、自訂簡稱或 Emoji 與顏色', dragToReorder:'拖動調整歸類順序', menu:'歸類操作', shortName:'自訂簡稱 / Emoji', shortHint:'輸入 1–3 個文字或從右側選擇 Emoji；留空時自動產生', shortAuto:'自動產生', emojiPicker:'選擇 Emoji', emojiOpen:'開啟 Emoji 選擇器', managerTitle:'歸類管理', editClassification:'編輯歸類', listTitle:'歸類列表', mobileTitle:'所有歸類', listCount:'{0} 個歸類', contentTitle:'歸類內容', notesTitle:'筆記', todosTitle:'待辦', noNotes:'此歸類下還沒有筆記', noTodos:'此歸類下還沒有待辦', itemCount:'{0} 個內容', close:'關閉', openItem:'開啟內容' });
   const classificationText = () => classificationMessages[uiSettings.language] || classificationMessages.zh;
 
   const classificationManagerDialog = byId('classificationManagerDialog');
@@ -1276,6 +1276,15 @@
       }).join('');
   }
 
+  // 归类列表行：拖柄 + 色点 + 名称计数 + 箭头。渲染与自动保存后的
+  // 局部刷新共用同一模板。
+  const classificationManagerRow = entry => {
+    const itemCount = library.items.filter(item => item.folderId === entry.id && !isTrashed(item)).length;
+    return `<button type="button" data-classification-folder="${escapeHTML(entry.id)}" class="${entry.id === classificationManagerFolderId ? 'active' : ''}" style="--folder-color:${escapeHTML(normalizedClassificationColor(entry.color))}">
+      <i class="classification-manager-grip" data-folder-grip title="${escapeHTML(classificationText().dragToReorder)}" aria-label="${escapeHTML(classificationText().dragToReorder)}"><svg><use href="#i-grip"/></svg></i><i class="folder-dot"></i><span><strong>${escapeHTML(folderName(entry))}</strong><small>${escapeHTML(formatClassificationMessage(classificationText().itemCount, itemCount))}</small></span><svg><use href="#i-chevron"/></svg>
+    </button>`;
+  };
+
   function renderClassificationManager() {
     const copy = classificationText();
     closeClassificationEmojiPicker();
@@ -1311,12 +1320,7 @@
     byId('closeClassificationManager').setAttribute('aria-label', appearanceText('关闭'));
     byId('deleteClassification').querySelector('span').textContent = copy.remove;
     byId('cancelClassificationManager').textContent = copy.close;
-    byId('classificationManagerList').innerHTML = library.folders.map(entry => {
-      const itemCount = library.items.filter(item => item.folderId === entry.id && !isTrashed(item)).length;
-      return `<button type="button" data-classification-folder="${escapeHTML(entry.id)}" class="${entry.id === folder.id ? 'active' : ''}" style="--folder-color:${escapeHTML(normalizedClassificationColor(entry.color))}">
-        <i class="folder-dot"></i><span><strong>${escapeHTML(folderName(entry))}</strong><small>${escapeHTML(formatClassificationMessage(copy.itemCount, itemCount))}</small></span><svg><use href="#i-chevron"/></svg>
-      </button>`;
-    }).join('');
+    byId('classificationManagerList').innerHTML = library.folders.map(classificationManagerRow).join('');
     classificationManagerName.value = folderName(folder);
     classificationManagerShortName.value = normalizedFolderShortName(folder.shortName);
     classificationManagerShortName.placeholder = `${copy.shortAuto} ${folderShortName({ ...folder, shortName:'' })}`;
@@ -1419,12 +1423,7 @@
   function refreshClassificationManagerList() {
     const copy = classificationText();
     byId('classificationManagerListCount').textContent = formatClassificationMessage(copy.listCount, library.folders.length);
-    byId('classificationManagerList').innerHTML = library.folders.map(entry => {
-      const itemCount = library.items.filter(item => item.folderId === entry.id && !isTrashed(item)).length;
-      return `<button type="button" data-classification-folder="${escapeHTML(entry.id)}" class="${entry.id === classificationManagerFolderId ? 'active' : ''}" style="--folder-color:${escapeHTML(normalizedClassificationColor(entry.color))}">
-        <i class="folder-dot"></i><span><strong>${escapeHTML(folderName(entry))}</strong><small>${escapeHTML(formatClassificationMessage(copy.itemCount, itemCount))}</small></span><svg><use href="#i-chevron"/></svg>
-      </button>`;
-    }).join('');
+    byId('classificationManagerList').innerHTML = library.folders.map(classificationManagerRow).join('');
   }
 
   // 是否有未保存的变动：输入框内容与已保存的归类状态不一致。
@@ -1476,7 +1475,9 @@
     if (!isImeComposing(event) && event.key === 'Escape' && folderActionMenu.classList.contains('open')) closeFolderActionMenu();
   });
   byId('manageFolders').addEventListener('click', () => openClassificationManager());
-  byId('classificationManagerList').addEventListener('click', event => {
+  classificationManagerList.addEventListener('click', event => {
+    // 拖柄不吃行点击：点拖柄只拖动，不切换归类。
+    if (event.target.closest('[data-folder-grip]')) { event.stopPropagation(); return; }
     const folderButton = event.target.closest('[data-classification-folder]');
     if (!folderButton) return;
     classificationManagerFolderId = folderButton.dataset.classificationFolder;
@@ -1487,6 +1488,69 @@
       if (matchMedia('(max-width: 760px)').matches) activeFolder?.scrollIntoView({ block:'nearest', inline:'center' });
     });
   });
+  // 拖拽调整归类顺序：拖柄按下捕获指针、行 1:1 跟随，越过相邻行中线即
+  // 换位（与工具栏设置的入口排序同一交互）；松手把 DOM 顺序写回
+  // library.folders 并持久化——侧栏、移动端归类列表与筛选选项全部跟随。
+  const classificationDragState = { row: null, host: null, startY: 0, active: false, moved: false, movedId: '' };
+  classificationManagerList.addEventListener('pointerdown', event => {
+    const handle = event.target.closest('[data-folder-grip]');
+    const row = event.target.closest('[data-classification-folder]');
+    if (!handle || !row) return;
+    event.preventDefault();
+    event.stopPropagation();
+    try { handle.setPointerCapture(event.pointerId); } catch { /* 指针已释放时按普通流处理 */ }
+    classificationDragState.row = row;
+    classificationDragState.host = classificationManagerList;
+    classificationDragState.startY = event.clientY;
+    classificationDragState.active = true;
+    classificationDragState.moved = false;
+    classificationDragState.movedId = row.dataset.classificationFolder;
+    row.classList.add('is-dragging');
+  });
+  document.addEventListener('pointermove', event => {
+    if (!classificationDragState.active || !classificationDragState.row) return;
+    const dy = event.clientY - classificationDragState.startY;
+    classificationDragState.row.style.transform = `translateY(${dy}px)`;
+    // 以「行中线越过邻行中线」为换位判据：找出第一条中线在拖拽行中线
+    // 之后的行插到它之前，没有则落到末尾；落位后重置位移基准，1:1 不跳变。
+    const rect = classificationDragState.row.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    const others = [...classificationDragState.host.querySelectorAll('[data-classification-folder]')].filter(el => el !== classificationDragState.row);
+    let anchor = null;
+    for (const other of others) {
+      const otherRect = other.getBoundingClientRect();
+      if (midY < otherRect.top + otherRect.height / 2) { anchor = other; break; }
+    }
+    const alreadyPlaced = anchor ? classificationDragState.row.nextElementSibling === anchor : !classificationDragState.row.nextElementSibling;
+    if (!alreadyPlaced) {
+      if (anchor) classificationDragState.host.insertBefore(classificationDragState.row, anchor);
+      else classificationDragState.host.appendChild(classificationDragState.row);
+      classificationDragState.startY = event.clientY;
+      classificationDragState.row.style.transform = 'translateY(0)';
+      classificationDragState.moved = true;
+    }
+  });
+  const classificationDragFinish = () => {
+    if (!classificationDragState.active) return;
+    const { row, host, moved, movedId } = classificationDragState;
+    row?.classList.remove('is-dragging');
+    if (row) row.style.transform = '';
+    classificationDragState.row = null;
+    classificationDragState.host = null;
+    classificationDragState.active = false;
+    if (!host || !moved || !movedId) return;
+    const order = [...host.querySelectorAll('[data-classification-folder]')].map(el => el.dataset.classificationFolder);
+    if (order.join() === library.folders.map(entry => entry.id).join()) return;
+    const byId = new Map(library.folders.map(entry => [entry.id, entry]));
+    library.folders = order.map(id => byId.get(id)).filter(Boolean);
+    persist();
+    renderAll();
+    refreshClassificationManagerList();
+    // 重绘后把焦点还给被拖动的行，键盘位置与视觉一致。
+    byId('classificationManagerList').querySelector(`[data-classification-folder="${CSS.escape(movedId)}"]`)?.focus();
+  };
+  document.addEventListener('pointerup', classificationDragFinish);
+  document.addEventListener('pointercancel', classificationDragFinish);
   byId('classificationManagerDialog').addEventListener('cancel', event => {
     event.preventDefault();
     requestCloseClassificationManager();

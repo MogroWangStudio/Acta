@@ -587,8 +587,16 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .classification-manager-list-head strong { font-size: calc(10px * var(--acta-font-scale)); }
 .classification-manager-list-head span { min-width: 23px; height: 20px; padding: 0 7px; border-radius: 10px; background: color-mix(in srgb, var(--white) 72%, transparent); display: grid; place-items: center; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .classification-manager-list { min-height: 0; padding: 2px; display: flex; flex-direction: column; gap: 5px; overflow: hidden auto; }
-.classification-manager-list button { width: 100%; min-height: 54px; padding: 7px 8px 7px 10px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--muted); display: grid; grid-template-columns: 9px minmax(0,1fr) 16px; align-items: center; gap: 10px; text-align: left; cursor: pointer; transition: color .15s ease, background .15s ease, border-color .15s ease; }
+.classification-manager-list button { width: 100%; min-height: 54px; padding: 7px 8px 7px 6px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--muted); display: grid; grid-template-columns: 14px 9px minmax(0,1fr) 16px; align-items: center; gap: 8px; text-align: left; cursor: pointer; transition: color .15s ease, background .15s ease, border-color .15s ease; }
 .classification-manager-list button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 62%, transparent); transform: translateX(3px); }
+/* 拖柄：与图层面板 / 工具栏设置的拖柄同一语言（小、弱化、grab）。
+   触屏同样可拖（touch-action: none 让指针序列不被浏览器接管）。 */
+.classification-manager-grip { width: 14px; height: 28px; margin-left: -2px; border-radius: 7px; display: grid; place-items: center; color: var(--faint); font-style: normal; cursor: grab; touch-action: none; transition: color .14s ease, background .14s ease; }
+.classification-manager-grip svg { width: 11px; height: 11px; }
+.classification-manager-grip:hover { color: var(--muted); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.classification-manager-grip:active { cursor: grabbing; color: var(--ink); }
+/* 拖拽中的行：抬升 + 实底，位移由指针直接驱动（inline transform）。 */
+.classification-manager-list button.is-dragging { position: relative; z-index: 3; border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); box-shadow: 0 4px 14px -6px rgba(24,28,23,.28); background: var(--paper); }
 .classification-manager-list button.active { color: var(--ink); border-color: color-mix(in srgb, var(--folder-color) 25%, var(--line)); background: var(--white); }
 .classification-manager-list .folder-dot { width: 8px; height: 8px; background: var(--folder-color); color: var(--folder-color); }
 .classification-manager-list button > span { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
