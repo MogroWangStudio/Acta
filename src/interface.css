@@ -1677,8 +1677,12 @@ html[data-acta-theme="mono-dark"] .filter-row .clear-list-filters { background: 
 /* —— 左上角 logo 彩蛋：连点五次的盖章回弹与纸屑飘落。
    纸屑走 transform / opacity（合成器友好），落完由 JS 移除整层；
    减少动态效果时整层不渲染、盖章退化为普通脉冲。 —— */
-.brand.brand-stamp { animation: brandStamp .9s var(--ease-out) both; }
-.brand.brand-stamp .brand-logo { animation: none; }
+/* 印章回弹作用在字标上：macOS 的 .brand 带 translateX(-50%) 居中位移
+   （避开交通灯），外层 keyframes 会把它整体替换掉——连按触发彩蛋时
+   logo 横向瞬移半个宽度再跳回来。字标无平台位移，全平台安全；
+   折叠态字标隐藏，回弹交给 mini-logo（其 keyframes 自带 -50% 位移）。 */
+.brand.brand-stamp .brand-logo { animation: brandStamp .9s var(--ease-out) both; }
+body.sidebar-collapsed .brand.brand-stamp .brand-mini-logo { animation: miniLogoBounce .56s cubic-bezier(.2,.72,.2,1) both; }
 @keyframes brandStamp { 0%{transform:scale(1) rotate(0)} 26%{transform:scale(1.18) rotate(-2.4deg)} 52%{transform:scale(.965) rotate(1.1deg)} 76%{transform:scale(1.03) rotate(-.4deg)} 100%{transform:scale(1) rotate(0)} }
 .brand-egg-confetti { position: fixed; inset: 0; z-index: 220; pointer-events: none; overflow: hidden; }
 .brand-egg-confetti i {
