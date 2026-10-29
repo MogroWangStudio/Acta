@@ -23,7 +23,7 @@ const dictionaries = {
     item: '个项目', note: '笔记', todo: '待办', justNow: '刚刚', yesterday: '昨天', noItems: '这里还没有内容', noItemsHint: '新建一则笔记或待办，开始记录。',
     selectItem: '选择一项开始编辑', selectItemHint: '你的想法与行动会在这里展开。', untitledNote: '无标题笔记', untitledTodo: '新的待办',
     created: '创建于', updated: '更新于', dueDate: '截止日期', priority: '优先级', tags: '标签', high: '高', medium: '中', low: '低',
-    progress: '任务进度', done: '已完成', addTask: '添加子任务', taskPlaceholder: '输入一个具体行动…', description: '补充说明',
+    progress: '任务进度', done: '已完成', addTask: '添加子任务', taskPlaceholder: '输入一个具体行动…', description: '补充说明', folderEmojiLabel: '图标 / Emoji', folderColorLabel: '归类颜色',
     checkinTodo: '打卡待办', checkinTodoHint: '每天打卡，养成习惯', checkinToday: '今日打卡', checkinDone: '今日已打卡', checkinTodoYet: '今日未打卡',
     checkinStreak: '连续', checkinTotal: '累计', checkinDays: '天', checkinRecent: '最近 7 天', checkinUndo: '取消打卡', checkinMarkedToast: '打卡成功，继续保持', checkinExpiredDone:'打卡已结束', checkinDurationLabel:'已坚持', checkinDurationSetting:'打卡持续', checkinDurationHint:'设为 0 表示不设期限；超过截止时间后此打卡默认完成',
     orderedTasks: '顺序执行', unorderedTasks: '无序子任务', taskOrderHint: '开启后子任务按顺序执行，可上下移动调整先后',
@@ -91,7 +91,7 @@ const dictionaries = {
     item: 'items', note: 'Note', todo: 'Task', justNow: 'Just now', yesterday: 'Yesterday', noItems: 'Nothing here yet', noItemsHint: 'Create a note or task to get started.',
     selectItem: 'Select something to edit', selectItemHint: 'Your thoughts and actions will unfold here.', untitledNote: 'Untitled note', untitledTodo: 'New task',
     created: 'Created', updated: 'Updated', dueDate: 'Due date', priority: 'Priority', tags: 'Tags', high: 'High', medium: 'Medium', low: 'Low',
-    progress: 'Task progress', done: 'complete', addTask: 'Add subtask', taskPlaceholder: 'Type a concrete action…', description: 'Notes',
+    progress: 'Task progress', done: 'complete', addTask: 'Add subtask', taskPlaceholder: 'Type a concrete action…', description: 'Notes', folderEmojiLabel: 'Icon / Emoji', folderColorLabel: 'Color',
     checkinTodo: 'Check-in task', checkinTodoHint: 'Check in daily to build a habit', checkinToday: "Today's check-in", checkinDone: 'Checked in today', checkinTodoYet: 'Not checked in yet',
     checkinStreak: 'streak', checkinTotal: 'total', checkinDays: 'days', checkinRecent: 'Last 7 days', checkinUndo: 'Undo check-in', checkinMarkedToast: 'Checked in — keep it going', checkinExpiredDone:'Check-in period ended', checkinDurationLabel:'Kept up', checkinDurationSetting:'Check-in length', checkinDurationHint:'0 = no end date; past the end date this check-in counts as done',
     orderedTasks: 'In order', unorderedTasks: 'Any order', taskOrderHint: 'Subtasks run in order; use the arrows to reorder',
@@ -9333,8 +9333,99 @@ function askNameDialog({ title, defaultValue = '', icon = '#i-folder', confirmIc
   });
 }
 
-function askClassificationName(defaultName) {
-  return askNameDialog({ title: t('folderPrompt'), defaultValue: defaultName, icon: '#i-folder' });
+// 创建归类可选的 Emoji 图标（归类管理的选择器与创建对话框共用一份列表）。
+const classificationEmojiList = ['📥','🗓️','✅','📝','💡','💼','🏠','📚','🎯','🚀','❤️','⭐','🔖','🧠','✨','🔧','💰','🛒','✈️','🎵','🎬','🍽️','🏃','🌿','🐾','👨‍👩‍👧‍👦','🎨','💻','📌','🔥','☕','🧭','👩‍💻','🌍','📷','🎁','🧹','💬','🔬','🧘'];
+// 创建归类可选择的预设颜色（与归类管理的预设一致）。
+const classificationColorChoices = ['#526B55', '#4F759B', '#8A6FA8', '#B26B5E', '#B58A3B', '#4F8A7B'];
+
+// 创建归类：名称 + 自定义 Emoji 图标 + 归类颜色，一次设置完成。
+// 返回 { name, shortName, color } 或 null（取消）。
+function askClassificationDetails(defaultName, defaultColor) {
+  return new Promise(resolve => {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'relation-dialog folder-name-dialog';
+    dialog.innerHTML = `
+      <header class="relation-dialog-head"><span><svg><use href="#i-folder"/></svg></span><h3>${escapeHTML(t('folderPrompt'))}</h3><button class="relation-dialog-close" type="button" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></header>
+      <form class="relation-dialog-body folder-name-form" method="dialog" novalidate>
+        <input class="folder-name-input" maxlength="60" autocomplete="off" value="${escapeHTML(defaultName)}"/>
+        <div class="classification-create-extras">
+          <div class="classification-create-row">
+            <span class="classification-create-label">${escapeHTML(t('folderEmojiLabel'))}</span>
+            <button type="button" class="classification-emoji-trigger" data-create-emoji aria-haspopup="dialog">🙂</button>
+          </div>
+          <div class="classification-emoji-picker" data-create-emoji-grid role="listbox" hidden>
+            ${classificationEmojiList.map(emoji => `<button type="button" role="option" data-create-emoji-option="${emoji}" aria-label="${emoji}">${emoji}</button>`).join('')}
+          </div>
+          <div class="classification-create-row">
+            <span class="classification-create-label">${escapeHTML(t('folderColorLabel'))}</span>
+            <span class="classification-color-presets" data-create-color-presets role="group">
+              ${classificationColorChoices.map(color => `<button type="button" data-create-color="${color}" class="${color === defaultColor ? 'on' : ''}" style="--classification-color:${color}" aria-label="${color}"></button>`).join('')}
+              <input type="color" data-create-color-input value="${defaultColor}" aria-label="${escapeHTML(t('folderColorLabel'))}"/>
+            </span>
+          </div>
+        </div>
+        <div class="settings-actions">
+          <button type="button" class="settings-button secondary" data-name-cancel>${escapeHTML(t('cancel'))}</button>
+          <button type="submit" class="settings-button"><svg><use href="#i-plus"/></svg><span>${escapeHTML(t('confirm'))}</span></button>
+        </div>
+      </form>`;
+    const input = dialog.querySelector('.folder-name-input');
+    const emojiTrigger = dialog.querySelector('[data-create-emoji]');
+    const emojiGrid = dialog.querySelector('[data-create-emoji-grid]');
+    const colorInput = dialog.querySelector('[data-create-color-input]');
+    const colorPresets = dialog.querySelector('[data-create-color-presets]');
+    let emoji = '';
+    let color = defaultColor;
+    emojiTrigger.addEventListener('click', event => {
+      event.preventDefault();
+      emojiGrid.hidden = !emojiGrid.hidden;
+      emojiGrid.querySelector('[aria-selected="true"]')?.focus();
+    });
+    emojiGrid.addEventListener('click', event => {
+      const option = event.target.closest('[data-create-emoji-option]');
+      if (!option) return;
+      event.preventDefault();
+      emoji = option.dataset.createEmojiOption;
+      emojiTrigger.textContent = emoji;
+      emojiGrid.querySelectorAll('[data-create-emoji-option]').forEach(entry => entry.setAttribute('aria-selected', String(entry === option)));
+      emojiGrid.hidden = true;
+      emojiTrigger.focus();
+    });
+    colorPresets.addEventListener('click', event => {
+      const preset = event.target.closest('[data-create-color]');
+      if (!preset) return;
+      event.preventDefault();
+      color = preset.dataset.createColor;
+      colorInput.value = color;
+      colorPresets.querySelectorAll('[data-create-color]').forEach(entry => entry.classList.toggle('on', entry === preset));
+    });
+    colorInput.addEventListener('input', () => {
+      color = colorInput.value;
+      colorPresets.querySelectorAll('[data-create-color]').forEach(entry => entry.classList.toggle('on', entry.dataset.createColor.toLowerCase() === color.toLowerCase()));
+    });
+    let settled = false;
+    const finish = value => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+      if (dialog.open) dialog.close();
+      dialog.remove();
+    };
+    dialog.querySelector('[data-name-cancel]').addEventListener('click', () => finish(null));
+    dialog.querySelector('.relation-dialog-close').addEventListener('click', () => finish(null));
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); });
+    dialog.addEventListener('close', () => finish(null));
+    dialog.addEventListener('submit', event => {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (!value) { finish(null); return; }
+      finish({ name: value, shortName: emoji || '', color });
+    });
+    document.body.appendChild(dialog);
+    dialog.showModal();
+    input.focus();
+    input.select();
+  });
 }
 
 function bindShell() {
@@ -9706,10 +9797,11 @@ function bindShell() {
     if (pop && !pop.hidden && !event.target.closest('#calendarJump')) toggleCalendarJump(false);
   });
   $('#addFolder').addEventListener('click', async () => {
-    const name = await askClassificationName(t('folderDefault'));
-    if (!name) return;
     const palette = ['#6f8a72', '#b68b54', '#7a7799', '#a87876', '#668792'];
-    const folder = { id: uid(), name, color: palette[library.folders.length % palette.length] };
+    const details = await askClassificationDetails(t('folderDefault'), palette[library.folders.length % palette.length]);
+    if (!details?.name) return;
+    const folder = { id: uid(), name: details.name, color: details.color };
+    if (details.shortName) folder.shortName = details.shortName;
     library.folders.push(folder);
     logHistory('folder-created', folder.name);
     currentView = `folder:${folder.id}`;

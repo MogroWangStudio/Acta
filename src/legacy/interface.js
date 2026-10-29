@@ -774,7 +774,8 @@
   const classificationEmojiButton = byId('classificationEmojiButton');
   const classificationEmojiPicker = byId('classificationEmojiPicker');
   const classificationEmojiGrid = byId('classificationEmojiGrid');
-  const classificationEmojis = ['📥','🗓️','✅','📝','💡','💼','🏠','📚','🎯','🚀','❤️','⭐','🔖','🧠','✨','🔧','💰','🛒','✈️','🎵','🎬','🍽️','🏃','🌿','🐾','👨‍👩‍👧‍👦','🎨','💻','📌','🔥','☕','🧭','👩‍💻','🌍','📷','🎁','🧹','💬','🔬','🧘'];
+  // Emoji 列表单源在 renderer（classificationEmojiList），归类管理与创建对话框共用。
+  const classificationEmojis = classificationEmojiList;
   const classificationManagerColor = byId('classificationManagerColor');
   const folderActionMenu = byId('folderActionMenu');
   const folderActionsMenu = byId('folderActionsMenu');
