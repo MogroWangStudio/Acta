@@ -2879,6 +2879,13 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 .backup-select-all { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); cursor: pointer; }
 .backup-select-all input, .backup-entry-select input { width: 14px; height: 14px; margin: 0; accent-color: var(--sage); cursor: pointer; }
 .backup-entry-select { flex: 0 0 auto; display: grid; place-items: center; }
+/* 立即备份范围选择：三段分段等宽，描述行随选择更新；指定档案时展开下拉。 */
+.backup-now-dialog .board-import-seg button { flex: 1; }
+.backup-now-target { display: grid; gap: 5px; margin: 12px 0 0; }
+.backup-now-target[hidden] { display: none; }
+.backup-now-target label { color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); }
+.backup-now-target select { width: 100%; height: 32px; padding: 0 26px 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); font: inherit; font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; }
+.backup-now-desc { margin: 12px 0 0; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.55; }
 @keyframes backupEntryIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 .backup-entry-icon { width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9px; display: grid; place-items: center; color: var(--muted); background: color-mix(in srgb, var(--panel) 80%, transparent); }
 .backup-entry-icon svg { width: 14px; height: 14px; }

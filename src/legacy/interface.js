@@ -644,9 +644,9 @@
   Object.assign(profileMessages.en, { backupManager:'Backup manager', backupManagerSubtitle:'Automatic backups created before sync overwrites live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. A backup is created automatically before every sync overwrite or restore.', backupUnavailable:'Backup management is not available on this platform.', backupStats:'{0} notes {1} tasks {2} boards', restoreBackup:'Restore', backupSelectAll:'Select all', backupDeleteSelected:'Delete selected', backupDeleteConfirm:'Delete the {0} selected backups? This cannot be undone.', backupDeleted:'Deleted {0} backups.', backupBeforeRestore:'Backing up current data…', readingBackup:'Reading the backup…', restoreDialogTitle:'Restore backup', restoreDialogHint:'The current data is backed up automatically first, then the selected backup is written in. Review both sides before confirming.', restoreCurrentTitle:'Will be replaced', restoreBackupSideTitle:'Will be restored', backupRestored:'Restored the backup “{0}”.', restoreBackupFailed:'Restore failed: ' });
   Object.assign(profileMessages['zh-Hant'], { backupManager:'備份管理', backupManagerSubtitle:'同步覆寫前的自動備份都儲存在軟體資料資料夾中，可隨時還原', backupEmpty:'還沒有可還原的備份。同步覆寫、還原資料前都會先自動備份一份。', backupUnavailable:'目前平台不支援備份管理。', backupStats:'{0} 則筆記 {1} 個待辦 {2} 塊計劃板', restoreBackup:'還原', backupSelectAll:'全選', backupDeleteSelected:'刪除所選', backupDeleteConfirm:'確定刪除所選的 {0} 份備份嗎？刪除後無法復原。', backupDeleted:'已刪除 {0} 份備份。', backupBeforeRestore:'正在備份目前資料…', readingBackup:'正在讀取備份…', restoreDialogTitle:'還原備份', restoreDialogHint:'確認後會先自動備份目前資料，再寫入所選備份的內容。', restoreCurrentTitle:'將被替換的資料', restoreBackupSideTitle:'將還原的資料', backupRestored:'已還原備份「{0}」。', restoreBackupFailed:'還原失敗：' });
   // 立即备份（行记数据 → 立即备份）：备份管理里同时存在自动备份与手动备份。
-  Object.assign(profileMessages.zh, { createBackup:'立即备份', creatingBackup:'正在创建备份…', backupCreated:'已创建备份「{0}」。', createBackupFailed:'备份失败：', backupManagerSubtitle:'同步覆盖前的自动备份与手动创建的备份都保存在软件数据文件夹中，可随时恢复', backupEmpty:'还没有可恢复的备份。同步覆盖、恢复数据前会自动备份一份，也可以随时手动备份。' });
-  Object.assign(profileMessages.en, { createBackup:'Back up now', creatingBackup:'Creating a backup…', backupCreated:'Created the backup “{0}”.', createBackupFailed:'Backup failed: ', backupManagerSubtitle:'Automatic backups from sync overwrites and manual backups live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. One is created automatically before sync overwrites, and you can back up anytime.' });
-  Object.assign(profileMessages['zh-Hant'], { createBackup:'立即備份', creatingBackup:'正在建立備份…', backupCreated:'已建立備份「{0}」。', createBackupFailed:'備份失敗：', backupManagerSubtitle:'同步覆寫前的自動備份與手動建立的備份都儲存在軟體資料資料夾中，可隨時還原', backupEmpty:'還沒有可還原的備份。同步覆寫、還原資料前會自動備份一份，也可以隨時手動備份。' });
+  Object.assign(profileMessages.zh, { backupNowTitle:'立即备份', backupNowHint:'选择要备份的行记数据范围。', backupScopeCurrent:'仅当前档案', backupScopeSpecific:'指定档案', backupScopeAll:'全面备份', backupNowStart:'开始备份', backupNowCurrentDesc:'将备份当前档案「{0}」。', backupNowSpecificDesc:'将备份档案「{0}」。', backupNowAllDesc:'将备份全部 {0} 个行记数据档案。', backupAllDone:'已备份 {0} 个行记数据档案。', backupAllPartial:'已备份 {0} 个行记数据档案，{1} 个失败。', createBackup:'立即备份', creatingBackup:'正在创建备份…', backupCreated:'已创建备份「{0}」。', createBackupFailed:'备份失败：', backupManagerSubtitle:'同步覆盖前的自动备份与手动创建的备份都保存在软件数据文件夹中，可随时恢复', backupEmpty:'还没有可恢复的备份。同步覆盖、恢复数据前会自动备份一份，也可以随时手动备份。' });
+  Object.assign(profileMessages.en, { backupNowTitle:'Back up now', backupNowHint:'Choose what to back up.', backupScopeCurrent:'Current data', backupScopeSpecific:'Specific data', backupScopeAll:'Everything', backupNowStart:'Start backup', backupNowCurrentDesc:'Backs up the current profile “{0}”.', backupNowSpecificDesc:'Backs up the profile “{0}”.', backupNowAllDesc:'Backs up all {0} profiles.', backupAllDone:'Backed up {0} profiles.', backupAllPartial:'Backed up {0} profiles; {1} failed.', createBackup:'Back up now', creatingBackup:'Creating a backup…', backupCreated:'Created the backup “{0}”.', createBackupFailed:'Backup failed: ', backupManagerSubtitle:'Automatic backups from sync overwrites and manual backups live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. One is created automatically before sync overwrites, and you can back up anytime.' });
+  Object.assign(profileMessages['zh-Hant'], { backupNowTitle:'立即備份', backupNowHint:'選擇要備份的行記資料範圍。', backupScopeCurrent:'僅目前檔案', backupScopeSpecific:'指定檔案', backupScopeAll:'全面備份', backupNowStart:'開始備份', backupNowCurrentDesc:'將備份目前檔案「{0}」。', backupNowSpecificDesc:'將備份檔案「{0}」。', backupNowAllDesc:'將備份全部 {0} 個行記資料檔案。', backupAllDone:'已備份 {0} 個行記資料檔案。', backupAllPartial:'已備份 {0} 個行記資料檔案，{1} 個失敗。', createBackup:'立即備份', creatingBackup:'正在建立備份…', backupCreated:'已建立備份「{0}」。', createBackupFailed:'備份失敗：', backupManagerSubtitle:'同步覆寫前的自動備份與手動建立的備份都儲存在軟體資料資料夾中，可隨時還原', backupEmpty:'還沒有可還原的備份。同步覆寫、還原資料前會自動備份一份，也可以隨時手動備份。' });
   const profileText = (key, ...values) => values.reduce((message, value, index) => message.replace(`{${index}}`, value), (profileMessages[uiSettings.language] || profileMessages.zh)[key]);
 
   const quickCaptureMessages = {
@@ -4235,8 +4235,85 @@
   // 完整备份，只是命名与保留策略跟随同步备份。
   let backupCreating = false;
 
+  // 立即备份范围选择：仅当前档案 / 指定档案（下拉选取）/ 全面备份（全部
+  // 档案逐一备份）。确认后按范围执行，取消不做任何事。
+  function openBackupNowDialog(profile) {
+    return new Promise(resolve => {
+      const dialog = document.createElement('dialog');
+      dialog.className = 'relation-dialog backup-now-dialog';
+      const scopeDescriptions = {
+        current: profileText('backupNowCurrentDesc', profile.name),
+        all: profileText('backupNowAllDesc', dataProfiles.length)
+      };
+      let mode = 'current';
+      dialog.innerHTML = `
+        <header class="relation-dialog-head"><span><svg><use href="#i-database"/></svg></span><div><h3>${escapeHTML(profileText('backupNowTitle'))}</h3><small>${escapeHTML(profileText('backupNowHint'))}</small></div><button class="relation-dialog-close" type="button" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></header>
+        <div class="relation-dialog-body">
+          <div class="board-import-seg" role="group" data-backup-scope>
+            <button type="button" data-scope="current" class="active">${escapeHTML(profileText('backupScopeCurrent'))}</button>
+            <button type="button" data-scope="specific">${escapeHTML(profileText('backupScopeSpecific'))}</button>
+            <button type="button" data-scope="all">${escapeHTML(profileText('backupScopeAll'))}</button>
+          </div>
+          <div class="backup-now-target" hidden>
+            <label for="backupNowProfile">${escapeHTML(profileText('backupScopeSpecific'))}</label>
+            <select id="backupNowProfile" data-backup-profile>
+              ${dataProfiles.map(entry => `<option value="${escapeHTML(entry.id)}"${entry.id === profile.id ? ' selected' : ''}>${escapeHTML(entry.name)}</option>`).join('')}
+            </select>
+          </div>
+          <p class="backup-now-desc" data-backup-desc>${escapeHTML(scopeDescriptions.current)}</p>
+        </div>
+        <footer class="settings-actions">
+          <button type="button" class="settings-button secondary" data-backup-now-cancel>${escapeHTML(t('cancel'))}</button>
+          <button type="button" class="settings-button" data-backup-now-confirm><svg><use href="#i-database"/></svg><span>${escapeHTML(profileText('backupNowStart'))}</span></button>
+        </footer>`;
+      const desc = dialog.querySelector('[data-backup-desc]');
+      const targetRow = dialog.querySelector('.backup-now-target');
+      const syncDesc = () => {
+        const selectedName = dialog.querySelector('[data-backup-profile]')?.selectedOptions?.[0]?.textContent || profile.name;
+        desc.textContent = mode === 'current' ? scopeDescriptions.current
+          : mode === 'specific' ? profileText('backupNowSpecificDesc', selectedName)
+          : scopeDescriptions.all;
+        targetRow.hidden = mode !== 'specific';
+      };
+      dialog.querySelector('[data-backup-scope]').addEventListener('click', event => {
+        const button = event.target.closest('[data-scope]');
+        if (!button || button.dataset.scope === mode) return;
+        mode = button.dataset.scope;
+        dialog.querySelectorAll('[data-scope]').forEach(entry => entry.classList.toggle('active', entry === button));
+        syncDesc();
+      });
+      dialog.querySelector('[data-backup-profile]').addEventListener('change', syncDesc);
+      const finish = value => {
+        dialog.close();
+        dialog.remove();
+        resolve(value);
+      };
+      dialog.querySelector('.relation-dialog-close').addEventListener('click', () => finish(null));
+      dialog.querySelector('[data-backup-now-cancel]').addEventListener('click', () => finish(null));
+      dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); });
+      dialog.querySelector('[data-backup-now-confirm]').addEventListener('click', () => {
+        const profileId = dialog.querySelector('[data-backup-profile]')?.value || profile.id;
+        finish({ mode, profileId });
+      });
+      document.body.appendChild(dialog);
+      dialog.showModal();
+    });
+  }
+
+  // 单个档案的立即备份：快照 → 标准数据档案包 → 桌面专用命令优先，
+  // 移动端 / 未更新桌面退化到 LAN 备份通道。返回备份目录名。
+  const backupOneProfile = async (profile, lanBridge) => {
+    const snapshot = clearLegacyTags(JSON.parse(JSON.stringify(await loadDataProfileSnapshot(profile, false))));
+    const bundle = createPortableDataFolderBundle(snapshot);
+    let created = null;
+    if (window.actaDesktop?.createBackup) {
+      try { created = await window.actaDesktop.createBackup(bundle, profile.name); } catch { created = null; }
+    }
+    if (!created) created = await lanBridge.backupLocal(bundle, profile.name);
+    return String(created?.path || '').split(/[\\/]/).filter(Boolean).pop() || profile.name;
+  };
+
   async function createDataBackupNow(statusNode) {
-    if (backupCreating) return;
     const profile = activeDataProfile();
     const status = statusNode || byId('workspaceStatus');
     if (!profile || !status) return;
@@ -4246,22 +4323,36 @@
       setStatus(status, profileText('backupUnavailable'), '');
       return;
     }
+    const choice = await openBackupNowDialog(profile);
+    if (!choice) return;
+    if (backupCreating) return;
     const buttons = [byId('createDataBackup'), byId('createBackupInline')].filter(Boolean);
     backupCreating = true;
     buttons.forEach(button => { button.disabled = true; button.setAttribute('aria-busy', 'true'); });
     setStatus(status, profileText('creatingBackup'), '');
     try {
-      const snapshot = clearLegacyTags(JSON.parse(JSON.stringify(await loadDataProfileSnapshot(profile, false))));
-      const bundle = createPortableDataFolderBundle(snapshot);
-      let created = null;
-      if (window.actaDesktop?.createBackup) {
-        try { created = await window.actaDesktop.createBackup(bundle, profile.name); } catch { created = null; }
+      if (choice.mode === 'all') {
+        // 全面备份：全部档案逐一快照落盘，逐份计数——部分失败也如实回执。
+        let ok = 0;
+        let failed = 0;
+        for (const entry of dataProfiles) {
+          try {
+            await backupOneProfile(entry, lanBridge);
+            ok += 1;
+          } catch {
+            failed += 1;
+          }
+        }
+        if (byId('backupManagerDialog')?.open) await refreshBackupList();
+        setStatus(status, failed ? profileText('backupAllPartial', ok, failed) : profileText('backupAllDone', ok), failed ? 'error' : 'success');
+      } else {
+        const target = choice.mode === 'specific'
+          ? (dataProfiles.find(entry => entry.id === choice.profileId) || profile)
+          : profile;
+        const name = await backupOneProfile(target, lanBridge);
+        if (byId('backupManagerDialog')?.open) await refreshBackupList();
+        setStatus(status, profileText('backupCreated', name), 'success');
       }
-      if (!created) created = await lanBridge.backupLocal(bundle, profile.name);
-      const name = String(created?.path || '').split(/[\\/]/).filter(Boolean).pop() || profile.name;
-      // 面板开着时先刷新列表，再把「已创建」写回状态行（刷新会先清空状态）。
-      if (byId('backupManagerDialog')?.open) await refreshBackupList();
-      setStatus(status, profileText('backupCreated', name), 'success');
     } catch (error) {
       setStatus(status, `${profileText('createBackupFailed')}${error.message || error}`, 'error');
     } finally {
