@@ -22,11 +22,15 @@
 .splash-line-list { top: 52px; bottom: 0; left: calc(var(--acta-sidebar-width, 248px) + clamp(330px, var(--list-pane-width, 330px), 620px)); width: 1px; transform: scaleY(0); transform-origin: 50% 0; }
 .splash-line-bottom { display: none; left: 0; bottom: calc(70px + env(safe-area-inset-bottom)); width: 100%; height: 1px; }
 /* 安卓端勾勒动画把底部圆形新建按钮的轮廓也勾出来：圆心与真实按钮
-   像素级同位（底栏中央、bottom 4px + 安全区），离场时随底部线一起
-   描出整圆（pathLength 归一化 + dashoffset 描线），随启动层淡出交接。 */
+   像素级同位（底栏中央、bottom 4px + 安全区），直径跟随外观设置的
+   「新建按钮大小」（--acta-new-size，60–96px）——真实按钮多大，勾出的
+   圆就多大，任何尺寸下都严丝合缝。离场时随底部线一起描出整圆
+   （pathLength 归一化 + dashoffset 描线），随启动层淡出交接。 */
 .splash-line-button {
   position: absolute; display: none; left: 50%; bottom: calc(4px + env(safe-area-inset-bottom));
-  width: 70px; height: 70px; margin: 0 0 -1px calc(-35px);
+  width: var(--acta-new-size, var(--mobile-new-button-size));
+  height: var(--acta-new-size, var(--mobile-new-button-size));
+  margin: 0 0 -1px calc(var(--acta-new-size, var(--mobile-new-button-size)) / -2);
   overflow: visible; opacity: 0; transform: rotate(-90deg);
 }
 .splash-line-button circle { fill: none; stroke: var(--sage); stroke-width: 1.5; stroke-dasharray: 100; stroke-dashoffset: 100; }
@@ -2566,7 +2570,7 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 /* —— 图层面板：与个性化面板同位（画布右上），行式列表按 z 序自顶向下 —— */
 .board-layer-pop { max-width: 280px; }
 .board-layer-list { display: grid; gap: 3px; overflow: hidden auto; scrollbar-width: thin; max-height: min(52vh, 420px); padding-right: 2px; }
-.board-layer-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 9px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background .14s ease, border-color .14s ease; }
+.board-layer-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 9px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background .14s ease, border-color .14s ease, transform .18s var(--ease-out); }
 .board-layer-row:hover { background: color-mix(in srgb, var(--white) 62%, transparent); }
 .board-layer-row.is-selected { border-color: color-mix(in srgb, var(--sage) 36%, var(--line)); background: color-mix(in srgb, var(--sage-2) 32%, transparent); }
 .board-layer-row > svg { flex: 0 0 auto; width: 14px; height: 14px; color: var(--faint); }
@@ -2578,8 +2582,9 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-layer-eye:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 70%, transparent); }
 .board-layer-eye svg { width: 13px; height: 13px; }
 .board-layer-eye.is-off { color: var(--faint); opacity: .55; }
-/* 图层拖移：行首拖柄（触摸与鼠标统一走 pointer 捕获），拖动行半透明、
-   目标位置以 sage 色横线指示。 */
+/* 图层拖移：行首拖柄（触摸与鼠标统一走 pointer 捕获）。拖动行 1:1 跟手，
+   其余行以 transform 短过渡实时让位——空出的缝隙即落点，行序变化全程
+   可见（过渡与抬起态由 renderer 的拖移逻辑驱动）。 */
 .board-layer-grip { flex: 0 0 auto; display: grid; place-items: center; width: 18px; height: 24px; margin: -2px 0 -2px -4px; border-radius: 6px; color: var(--faint); font-style: normal; cursor: grab; touch-action: none; transition: color .14s ease, background .14s ease; }
 .board-layer-grip svg { width: 12px; height: 12px; }
 .board-layer-grip:hover { color: var(--muted); background: color-mix(in srgb, var(--ink) 8%, transparent); }
@@ -2588,8 +2593,6 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
    「被拿起」，拖柄保持 100% 不透明并加底色强调。 */
 .board-layer-row.is-dragging { position: relative; z-index: 3; box-shadow: 0 4px 14px -6px rgba(24,28,23,.28); background: var(--paper); }
 .board-layer-row.is-dragging .board-layer-grip { opacity: 1; background: color-mix(in srgb, var(--sage) 22%, transparent); color: var(--sage); }
-.board-layer-row.is-drop-before { box-shadow: 0 -2px 0 var(--sage); }
-.board-layer-row.is-drop-after { box-shadow: 0 2px 0 var(--sage); }
 .board-pop-hint { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); }
 /* 标注样式面板 / 笔绘面板里的分段控件收窄一档，贴合工具条尺度。 */
 .board-style-pop .board-import-seg button, .board-pen-bar .board-import-seg button { height: 22px; padding: 0 8px; font-size: calc(8px * var(--acta-font-scale)); }

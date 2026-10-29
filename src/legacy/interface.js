@@ -9693,6 +9693,22 @@
         selectionRange = selection.rangeCount ? selection.getRangeAt(0) : null;
       }
       const modifier = shortcutIsApple ? '⌘' : 'Ctrl';
+      // 计划板画布：右键即画布操作菜单（桌面端）。右键落在未选中的组件上
+      // 先选中它（与主流画布工具一致），菜单动作作用于当前选中集合；右键
+      // 空白处保留框选与剪贴板动作。全部菜单项都不可用时不出菜单。
+      if (currentView === 'board' && event.target.closest?.('#boardViewport')) {
+        const node = event.target.closest('[data-widget-id]');
+        if (node && !boardSelection.has(node.dataset.widgetId)) boardSetSelection([node.dataset.widgetId]);
+        const boardItems = [
+          { label: t('boardLayerCopy'), shortcut: `${modifier}C`, disabled: !boardSelection.size, run: () => boardLayerCopySelection(false) },
+          { label: t('boardLayerCut'), shortcut: `${modifier}X`, disabled: !boardSelection.size, run: () => boardLayerCopySelection(true) },
+          { label: t('boardLayerPaste'), shortcut: `${modifier}V`, disabled: !boardClipboard.widgets?.length, run: () => boardLayerPaste() },
+          { label: t('boardGroup'), shortcut: `${modifier}G`, disabled: boardSelection.size < 2, run: () => boardGroupSelection() },
+          { label: t('boardUngroup'), shortcut: `${shortcutIsApple ? '⇧' + modifier : modifier + '+Shift+'}G`, disabled: !boardLayoutCache?.board?.widgets.some(widget => boardSelection.has(widget.id) && widget.groupId), run: () => boardUngroupSelection() }
+        ];
+        if (boardItems.some(item => !item.disabled)) openContextMenu(event.clientX, event.clientY, boardItems);
+        return;
+      }
       const removeSelectedText = () => {
         if (editable && !editable.isContentEditable && selectionRange) {
           editable.focus();

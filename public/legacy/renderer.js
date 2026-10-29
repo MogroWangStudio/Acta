@@ -6354,9 +6354,13 @@ function boardLayerRename(entry) {
 }
 
 // —— 图层拖移排序 ——
-// 按住拖柄上下拖动行到目标位置松手：面板行顺序即 z 序（最上 = 最前），
-// 重排按类型段写回（卡片 / 文本 / 标注三段的层叠由画布结构决定，拖移
-// 在段内生效；混合组可跨段移动，成员在各段内同步平移）。组行整组移动。
+// 拖柄按住后拖动行 1:1 跟手（translateY 直接映射指针位移，夹在所在类型
+// 段的首尾槽位之间），其余行按重排模拟实时让位（transform 短过渡）——
+// 空出的缝隙就是落点，行序变化全程可见，不需要额外的指示线。松手即落账
+// （重建面板得到最终行序），再把拖动行从松手位置 FLIP 滑入新槽位；其余
+// 行的让位态与重建后的自然布局逐像素一致，无跳变。重排按类型段写回
+// （卡片 / 文本 / 标注三段的层叠由画布结构决定，拖移在段内生效；混合组
+// 可跨段移动，成员在各段内同步平移）。组行整组移动。
 let boardLayerDragState = null;
 
 function boardBindLayerDrag(pop) {
@@ -6385,9 +6389,41 @@ function boardLayerDragStart(event, pop, handle) {
     : entries.map((candidate, index) => (candidate.mixed || candidate.type === entry.type ? index : -1)).filter(index => index >= 0);
   const minIndex = sameType.length ? Math.min(...sameType) : 0;
   const maxIndex = sameType.length ? Math.max(...sameType) + 1 : entries.length;
+  // 基线：面板行序 = 条目展开序（组行后跟子行）。tops = 条目首行位置，
+  // core = 条目净高（不含与下一行之间的间隙），spans = 条目占用的行数；
+  // 让位模拟与落点 FLIP 都从这套基线推算。行数对不上说明面板与数据失步，
+  // 放弃本次拖动（保持可用，等下一次重建后自然恢复）。
+  const rows = [...pop.querySelectorAll('.board-layer-row')];
+  const spans = entries.map(item => (item.kind === 'group' ? item.ids.length + 1 : 1));
+  if (!rows.length || rows.length !== spans.reduce((sum, count) => sum + count, 0)) return;
+  const gap = parseFloat(getComputedStyle(pop.querySelector('.board-layer-list') || pop).rowGap) || 3;
+  const tops = [];
+  const bottoms = [];
+  let rowCursor = 0;
+  entries.forEach((_, index) => {
+    const firstRow = rows[rowCursor];
+    const lastRow = rows[rowCursor + spans[index] - 1];
+    tops[index] = firstRow.offsetTop;
+    bottoms[index] = lastRow.offsetTop + lastRow.offsetHeight;
+    rowCursor += spans[index];
+  });
+  // 条目净高：非末位条目 = 与下一行的基线距离减去间隙；末位条目 = 自身行高。
+  const core = entries.map((_, index) => (index + 1 < entries.length ? tops[index + 1] - gap : bottoms[index]) - tops[index]);
+  const rowStart = spans.slice(0, from).reduce((sum, count) => sum + count, 0);
+  const dragRows = rows.slice(rowStart, rowStart + spans[from]);
+  const slotTop = index => (index < entries.length
+    ? tops[index]
+    : rows[rows.length - 1].offsetTop + rows[rows.length - 1].offsetHeight + gap);
   event.preventDefault();
   try { handle.setPointerCapture(event.pointerId); } catch { /* 不支持捕获时按普通流处理 */ }
-  boardLayerDragState = { pop, entries, board, from, minIndex, maxIndex, target: from, moved: false, startY: event.clientY, handle };
+  boardLayerDragState = {
+    pop, handle, entries, board, from, minIndex, maxIndex, target: from,
+    moved: false, startY: event.clientY, tops, core, gap, spans, rows, dragRows,
+    dragHeight: core[from],
+    // 指针位移夹在段内首尾槽位之间；所在段最后一位是自己时无法下移。
+    deltaMin: slotTop(minIndex) - tops[from],
+    deltaMax: maxIndex - 1 === from ? 0 : slotTop(maxIndex) - tops[from]
+  };
   handle.addEventListener('pointermove', boardLayerDragMove);
   handle.addEventListener('pointerup', boardLayerDragEnd);
   handle.addEventListener('pointercancel', boardLayerDragEnd);
@@ -6396,30 +6432,59 @@ function boardLayerDragStart(event, pop, handle) {
 function boardLayerDragMove(event) {
   const state = boardLayerDragState;
   if (!state) return;
-  if (!state.moved && Math.abs(event.clientY - state.startY) < 4) return;
-  state.moved = true;
-  const leadRow = entry => entry.kind === 'group'
-    ? state.pop.querySelector(`[data-layer-pick-group="${CSS.escape(entry.id)}"]`)
-    : state.pop.querySelector(`[data-layer-pick="${CSS.escape(entry.id)}"]`);
-  const rows = state.entries.map(leadRow);
-  const rects = rows.map(row => row?.getBoundingClientRect());
-  // 插入位置：指针越过哪一行中点，就插到那一行之前；段末允许拖到末尾之后。
+  // 面板在拖动中被外部重建会换掉全部行：本次手势作废，等下一次重来。
+  if (!state.handle.isConnected || !state.pop.isConnected) {
+    boardLayerDragState = null;
+    return;
+  }
+  if (!state.moved) {
+    if (Math.abs(event.clientY - state.startY) < 4) return;
+    state.moved = true;
+    // 被拿起的行：抬起（阴影 + 实底），位移不过渡、1:1 跟手。
+    state.dragRows.forEach(row => { row.classList.add('is-dragging'); row.style.transition = 'none'; });
+  }
+  state.delta = Math.min(Math.max(event.clientY - state.startY, state.deltaMin), state.deltaMax);
+  // 目标槽位以未让位的基线中点为基准：让位后的行位置随拖动变化，拿它
+  // 做基准会形成反馈回环。拖动行中心越过哪条基线中点，缝隙就开在那行
+  // 之前（越过全部则开在段尾之后），再夹回合法区间。
+  const center = state.tops[state.from] + state.delta + state.dragHeight / 2;
   let target = state.maxIndex;
-  for (let index = 0; index < rects.length; index += 1) {
-    const rect = rects[index];
-    if (rect && event.clientY < rect.top + rect.height / 2) { target = index; break; }
+  for (let index = 0; index < state.entries.length; index += 1) {
+    if (center < state.tops[index] + state.core[index] / 2) { target = index; break; }
   }
-  state.target = Math.min(Math.max(target, state.minIndex), state.maxIndex);
-  const meaningful = state.target !== state.from && state.target !== state.from + 1;
-  rows.forEach((row, index) => {
-    if (!row) return;
-    row.classList.toggle('is-dragging', index === state.from && meaningful);
-    row.classList.remove('is-drop-before', 'is-drop-after');
+  target = Math.min(Math.max(target, state.minIndex), state.maxIndex);
+  if (target !== state.target) {
+    state.target = target;
+    boardLayerApplyShifts(state);
+  }
+  const transform = `translateY(${state.delta.toFixed(1)}px)`;
+  state.dragRows.forEach(row => { row.style.transform = transform; });
+}
+
+// 让位模拟：把拖动条目从 from 挪到 target，按基线推算其余条目的新位置，
+// 位移 = 新基线 − 原基线（组行与子行同移）。settleDelta 记录拖动条目在
+// target 槽位的落点，供 FLIP 的终点使用（终点即重建后的自然位置）。
+function boardLayerApplyShifts(state) {
+  const { entries, from, target, tops, core, gap, rows, spans } = state;
+  const order = entries.map((_, index) => index);
+  order.splice(from, 1);
+  order.splice(target > from ? target - 1 : target, 0, from);
+  let cursor = tops[0];
+  const placed = new Map();
+  order.forEach(index => {
+    placed.set(index, cursor);
+    cursor += core[index] + gap;
   });
-  if (meaningful) {
-    const anchor = rows[state.target >= rows.length ? rows.length - 1 : state.target];
-    if (anchor) anchor.classList.add(state.target >= rows.length ? 'is-drop-after' : 'is-drop-before');
-  }
+  state.settleDelta = placed.get(from) - tops[from];
+  let rowCursor = 0;
+  entries.forEach((_, index) => {
+    for (let k = 0; k < spans[index]; k += 1) {
+      if (index === from) continue;
+      const shift = placed.get(index) - tops[index];
+      rows[rowCursor + k].style.transform = shift ? `translateY(${shift.toFixed(1)}px)` : '';
+    }
+    rowCursor += spans[index];
+  });
 }
 
 function boardLayerDragEnd() {
@@ -6429,11 +6494,36 @@ function boardLayerDragEnd() {
   state.handle.removeEventListener('pointermove', boardLayerDragMove);
   state.handle.removeEventListener('pointerup', boardLayerDragEnd);
   state.handle.removeEventListener('pointercancel', boardLayerDragEnd);
-  state.pop.querySelectorAll('.board-layer-row').forEach(row => row.classList.remove('is-dragging', 'is-drop-before', 'is-drop-after'));
   if (!state.moved) return;
-  const at = state.target;
-  if (at === state.from || at === state.from + 1) return; // 原位，无变化
-  boardLayerReorder(state, at);
+  const noChange = state.target === state.from || state.target === state.from + 1;
+  if (reduceWindowMotion()) {
+    state.rows.forEach(row => { row.style.transition = ''; row.style.transform = ''; row.classList.remove('is-dragging'); });
+    if (!noChange) boardLayerReorder(state, state.target);
+    return;
+  }
+  // 落定即落账：记下松手位置 → 清让位与抬起态 → 重建面板（新行序）→
+  // 把拖动条目的行从松手位置滑进新槽位。无悬空定时器，下一次拖动随时
+  // 可以接管；重建失败（找不到行）则退化为直接就位。
+  const first = state.dragRows[0].getBoundingClientRect();
+  state.rows.forEach(row => { row.style.transition = ''; row.style.transform = ''; row.classList.remove('is-dragging'); });
+  if (!noChange) boardLayerReorder(state, state.target);
+  const landed = state.entries[state.from];
+  const freshRows = (landed.kind === 'group' ? [landed.id, ...landed.ids] : [landed.id])
+    .map(id => $('#boardLayerPop', boardEls?.canvas || document)?.querySelector(`[data-layer-entry="${CSS.escape(id)}"], [data-layer-pick="${CSS.escape(id)}"]`))
+    .filter(Boolean);
+  if (!freshRows.length) return;
+  const dy = first.top - freshRows[0].getBoundingClientRect().top;
+  if (Math.abs(dy) < 1) return;
+  const slide = `translateY(${dy.toFixed(1)}px)`;
+  freshRows.forEach(row => {
+    row.style.transition = 'none';
+    row.style.transform = slide;
+    requestAnimationFrame(() => {
+      row.style.transition = 'transform .18s var(--ease-out)';
+      row.style.transform = '';
+    });
+    row.addEventListener('transitionend', () => { row.style.transition = ''; }, { once: true });
+  });
 }
 
 function boardLayerReorder(state, at) {
@@ -9636,14 +9726,19 @@ function bindShell() {
     if (document.querySelector('dialog[open]')) return;
     if (event.key.toLowerCase() === 'n') { event.preventDefault(); createItem('note'); }
     if (event.key.toLowerCase() === 'k') { event.preventDefault(); $('#searchInput').focus(); }
-    // 计划板：Ctrl/⌘+Z 撤销、Shift+Z 或 Y 重做、G 组合所选、Shift+G 解组
-    // （画布手势专用，不抢编辑器内快捷键）。
+    // 计划板：Ctrl/⌘+Z 撤销、Shift+Z 或 Y 重做、G 组合所选、Shift+G 解组、
+    // C/X/V 复制 / 剪切 / 粘贴所选（画布手势专用，不抢编辑器内快捷键；
+    // C/X 仅在画布有选中时拦截，V 仅在画布剪贴板有内容时拦截，其余放行
+    // 给浏览器原生行为）。
     if (currentView === 'board' && !event.target?.closest?.('.editor-pane, input, textarea, [contenteditable="true"], [contenteditable="plaintext-only"]')) {
       const key = event.key.toLowerCase();
       if (key === 'z' && !event.shiftKey) { event.preventDefault(); boardUndo(); }
       else if ((key === 'z' && event.shiftKey) || key === 'y') { event.preventDefault(); boardRedo(); }
       else if (key === 'g' && event.shiftKey) { event.preventDefault(); boardUngroupSelection(); }
       else if (key === 'g') { event.preventDefault(); boardGroupSelection(); }
+      else if (key === 'c' && boardSelection.size) { event.preventDefault(); boardLayerCopySelection(false); }
+      else if (key === 'x' && boardSelection.size) { event.preventDefault(); boardLayerCopySelection(true); }
+      else if (key === 'v' && boardClipboard.widgets?.length) { event.preventDefault(); boardLayerPaste(); }
     }
   });
 }

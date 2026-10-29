@@ -250,8 +250,11 @@ body.acta-reduce-motion .nav-section button .nav-icon { animation: none !importa
   0% { transform: translateX(-130%); }
   55%, 100% { transform: translateX(130%); }
 }
-/* 用独立的 rotate 属性而非 transform：折叠态导航图标靠 transform 居中，
-   改写 transform 会让图标脱位；rotate 与 transform 各自独立、可叠加。 */
+/* 旋转独立于 transform：侧栏展开态 .nav-icon 静态、无位移，rotate 绕
+   自身中心自转即可；折叠态 .nav-icon 靠 transform: translate(-50%,-50%)
+   居中，合成矩阵里 rotate 作用在位移之后，转起来会绕原点公转——
+   所以旋转目标落在内层 svg（无 transform，中心与外壳一致），主图标
+   与描线层同转保持重合，外壳的居中位移不受任何影响。 */
 @keyframes lanRadarSpin {
   to { rotate: 360deg; }
 }
@@ -261,8 +264,9 @@ body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::after {
   background: linear-gradient(104deg, transparent 34%, color-mix(in srgb, var(--sage) 18%, transparent) 46%, color-mix(in srgb, var(--white) 62%, transparent) 50%, color-mix(in srgb, var(--sage) 18%, transparent) 54%, transparent 66%);
   animation: lanRadarSweep 2.6s cubic-bezier(.4, 0, .2, 1) infinite;
 }
-/* 图标持续旋转 + 按钮高亮：侧栏主图标（描线层一起）与移动端顶栏图标。 */
-body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon,
+/* 图标持续旋转 + 按钮高亮：侧栏内层图标（主图标与描线层一起转）与
+   移动端顶栏图标。 */
+body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon > svg,
 body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { animation: lanRadarSpin 2.4s linear infinite; }
 body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon > svg:not(.nav-icon-trace),
 body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { color: var(--sage); opacity: 1 !important; }
@@ -281,7 +285,7 @@ body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] {
 body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { stroke: var(--sage) !important; }
 body.acta-reduce-motion .smart-nav [data-nav-action="lan"]::after,
 body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"]::after,
-body.acta-reduce-motion .smart-nav [data-nav-action="lan"] .nav-icon,
+body.acta-reduce-motion .smart-nav [data-nav-action="lan"] .nav-icon > svg,
 body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"] > svg { animation: none; }
 
 .folder-section { margin-top: 23px; min-height: 0; overflow: hidden auto; }
