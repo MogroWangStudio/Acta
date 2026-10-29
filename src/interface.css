@@ -2400,6 +2400,10 @@ body.acta-reduce-motion.board-view :is(.board-editor-close, .board-editor-resize
 /* 顶部操作容器：板选择器、图层、个性化成组靠右，与「计划板」大标题平齐。 */
 .board-title-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 0 0 auto; min-width: 0; }
 .board-title-actions .board-pill { margin-left: 0; }
+/* 触发钮共用类的 margin-left:auto / margin-right:8px 在容器内会把
+   「板选择器 ↔ 图层」与「图层 ↔ 个性化」的间距拉成不一致——桌面端与
+   移动端规则一并归零，间距统一交给容器的 gap。 */
+.board-title-actions .board-style-trigger { margin-left: 0; margin-right: 0; }
 /* 计划板：标题行横贯画布顶栏——item-header 默认按内容收缩标题行，
    个性化按钮的 margin-left:auto 会失效并与板选择器相贴，也到不了画布右上。 */
 body.board-view .item-title-row { flex: 1 1 auto; gap: 8px; }
