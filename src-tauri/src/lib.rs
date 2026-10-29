@@ -62,7 +62,7 @@ fn ensure_tray(app: &AppHandle) -> Result<(), String> {
         .map_err(|error| error.to_string())?;
     let tray = tauri::tray::TrayIconBuilder::with_id("acta-background")
         .icon(app.default_window_icon().cloned().ok_or("缺少应用图标")?)
-        .tooltip("Acta · 行记")
+        .tooltip("Acta")
         .menu(&menu)
         .on_menu_event(|app, event| match event.id().as_ref() {
             "show" => reveal_main_window(app),

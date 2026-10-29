@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Acta · 行记",
+  "productName": "Acta",
   "version": "4.2.0",
   "identifier": "com.mws.acta",
   "build": {
