@@ -3738,6 +3738,7 @@ body.acta-reduce-motion .nav-preview-cell, body.acta-reduce-motion .nav-preview-
 /* ===== 关于页 · 工作室字标（参考 Plainstruct 关于页的工作室署名设计）=====
    居中的工作室 logo 可点击跳转官网；悬停 / 聚焦时 logo 模糊变淡，
    「点击前往官网」提示在原位浮现，为点击意图留出确认。 */
+.about-developer-group .about-studio { width: 100%; margin: 4px 0 2px; justify-content: center; display: flex; align-items: center; gap: 10px; }
 .about-studio {
   position: relative; display: block; width: fit-content;
   margin: 14px auto 0; padding: 9px 18px;
