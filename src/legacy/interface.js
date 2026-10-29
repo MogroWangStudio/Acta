@@ -643,6 +643,10 @@
   Object.assign(profileMessages.zh, { backupManager:'备份管理', backupManagerSubtitle:'同步覆盖前的自动备份都保存在软件数据文件夹中，可随时恢复', backupEmpty:'还没有可恢复的备份。同步覆盖、恢复数据前都会先自动备份一份。', backupUnavailable:'当前平台不支持备份管理。', backupStats:'{0} 则笔记 {1} 个待办 {2} 块计划板', restoreBackup:'恢复', backupBeforeRestore:'正在备份当前数据…', readingBackup:'正在读取备份…', restoreBackupConfirm:'用这份备份覆盖当前档案「{0}」？覆盖前会先自动备份当前数据。', backupRestored:'已恢复备份「{0}」。', restoreBackupFailed:'恢复失败：' });
   Object.assign(profileMessages.en, { backupManager:'Backup manager', backupManagerSubtitle:'Automatic backups created before sync overwrites live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. A backup is created automatically before every sync overwrite or restore.', backupUnavailable:'Backup management is not available on this platform.', backupStats:'{0} notes {1} tasks {2} boards', restoreBackup:'Restore', backupBeforeRestore:'Backing up current data…', readingBackup:'Reading the backup…', restoreBackupConfirm:'Overwrite the current profile “{0}” with this backup? The current data is backed up automatically first.', backupRestored:'Restored the backup “{0}”.', restoreBackupFailed:'Restore failed: ' });
   Object.assign(profileMessages['zh-Hant'], { backupManager:'備份管理', backupManagerSubtitle:'同步覆寫前的自動備份都儲存在軟體資料資料夾中，可隨時還原', backupEmpty:'還沒有可還原的備份。同步覆寫、還原資料前都會先自動備份一份。', backupUnavailable:'目前平台不支援備份管理。', backupStats:'{0} 則筆記 {1} 個待辦 {2} 塊計劃板', restoreBackup:'還原', backupBeforeRestore:'正在備份目前資料…', readingBackup:'正在讀取備份…', restoreBackupConfirm:'用這份備份覆蓋目前檔案「{0}」？覆蓋前會先自動備份目前資料。', backupRestored:'已還原備份「{0}」。', restoreBackupFailed:'還原失敗：' });
+  // 立即备份（行记数据 → 立即备份）：备份管理里同时存在自动备份与手动备份。
+  Object.assign(profileMessages.zh, { createBackup:'立即备份', creatingBackup:'正在创建备份…', backupCreated:'已创建备份「{0}」。', createBackupFailed:'备份失败：', backupManagerSubtitle:'同步覆盖前的自动备份与手动创建的备份都保存在软件数据文件夹中，可随时恢复', backupEmpty:'还没有可恢复的备份。同步覆盖、恢复数据前会自动备份一份，也可以随时手动备份。' });
+  Object.assign(profileMessages.en, { createBackup:'Back up now', creatingBackup:'Creating a backup…', backupCreated:'Created the backup “{0}”.', createBackupFailed:'Backup failed: ', backupManagerSubtitle:'Automatic backups from sync overwrites and manual backups live in the Acta data folder and can be restored anytime.', backupEmpty:'No backups to restore yet. One is created automatically before sync overwrites, and you can back up anytime.' });
+  Object.assign(profileMessages['zh-Hant'], { createBackup:'立即備份', creatingBackup:'正在建立備份…', backupCreated:'已建立備份「{0}」。', createBackupFailed:'備份失敗：', backupManagerSubtitle:'同步覆寫前的自動備份與手動建立的備份都儲存在軟體資料資料夾中，可隨時還原', backupEmpty:'還沒有可還原的備份。同步覆寫、還原資料前會自動備份一份，也可以隨時手動備份。' });
   const profileText = (key, ...values) => values.reduce((message, value, index) => message.replace(`{${index}}`, value), (profileMessages[uiSettings.language] || profileMessages.zh)[key]);
 
   const quickCaptureMessages = {
@@ -3634,6 +3638,17 @@
     byId('newDataProfile').querySelector('span').textContent = copy.newProfile;
     byId('readDataProfile').querySelector('span').textContent = copy.readExisting;
     byId('refreshDataProfile').querySelector('span').textContent = copy.refreshData;
+    // 备份入口三件套（页面上的立即备份、面板里的立即备份、备份管理）跟随语言。
+    [byId('createDataBackup'), byId('createBackupInline')].forEach(button => {
+      const label = button?.querySelector('span');
+      if (label) label.textContent = copy.createBackup;
+    });
+    const backupManagerLabel = byId('backupManagerButton')?.querySelector('span');
+    if (backupManagerLabel) backupManagerLabel.textContent = copy.backupManager;
+    const backupManagerTitle = byId('backupManagerTitle');
+    if (backupManagerTitle) backupManagerTitle.textContent = copy.backupManager;
+    const backupManagerSubtitle = byId('backupManagerSubtitle');
+    if (backupManagerSubtitle) backupManagerSubtitle.textContent = copy.backupManagerSubtitle;
     byId('newDataProfileTitle').textContent = copy.newProfile;
     byId('newDataProfileNameLabel').textContent = copy.name;
     byId('newDataProfileStorageLabel').textContent = copy.location;
@@ -3984,6 +3999,49 @@
     }
   }
 
+  // —— 立即备份（行记数据 / 备份管理）：把当前档案写成一份标准数据档案
+  // 文件夹放进 backups/。桌面端走专用命令（落在根目录、不进 LAN 备份的
+  // 轮换清理）；移动端与尚未更新的桌面端退化为 LAN 备份通道，仍是一份
+  // 完整备份，只是命名与保留策略跟随同步备份。
+  let backupCreating = false;
+
+  async function createDataBackupNow(statusNode) {
+    if (backupCreating) return;
+    const profile = activeDataProfile();
+    const status = statusNode || byId('workspaceStatus');
+    if (!profile || !status) return;
+    // 浏览器（纯网页版）没有任何落盘通道：直接说清楚，而不是报「备份失败」。
+    const lanBridge = window.actaDesktop?.lanSync || window.actaMobileLan?.lanSync;
+    if (!window.actaDesktop?.createBackup && !lanBridge?.backupLocal) {
+      setStatus(status, profileText('backupUnavailable'), '');
+      return;
+    }
+    const buttons = [byId('createDataBackup'), byId('createBackupInline')].filter(Boolean);
+    backupCreating = true;
+    buttons.forEach(button => { button.disabled = true; button.setAttribute('aria-busy', 'true'); });
+    setStatus(status, profileText('creatingBackup'), '');
+    try {
+      const snapshot = clearLegacyTags(JSON.parse(JSON.stringify(await loadDataProfileSnapshot(profile, false))));
+      const bundle = createPortableDataFolderBundle(snapshot);
+      let created = null;
+      if (window.actaDesktop?.createBackup) {
+        try { created = await window.actaDesktop.createBackup(bundle, profile.name); } catch { created = null; }
+      }
+      if (!created) created = await lanBridge.backupLocal(bundle, profile.name);
+      const name = String(created?.path || '').split(/[\\/]/).filter(Boolean).pop() || profile.name;
+      // 面板开着时先刷新列表，再把「已创建」写回状态行（刷新会先清空状态）。
+      if (byId('backupManagerDialog')?.open) await refreshBackupList();
+      setStatus(status, profileText('backupCreated', name), 'success');
+    } catch (error) {
+      setStatus(status, `${profileText('createBackupFailed')}${error.message || error}`, 'error');
+    } finally {
+      backupCreating = false;
+      buttons.forEach(button => { button.disabled = false; button.removeAttribute('aria-busy'); });
+    }
+  }
+
+  byId('createDataBackup')?.addEventListener('click', () => { void createDataBackupNow(byId('workspaceStatus')); });
+  byId('createBackupInline')?.addEventListener('click', () => { void createDataBackupNow(byId('backupManagerStatus')); });
   byId('backupManagerButton')?.addEventListener('click', openBackupManager);
   byId('closeBackupManager')?.addEventListener('click', () => byId('backupManagerDialog')?.close());
   byId('backupList')?.addEventListener('click', event => {

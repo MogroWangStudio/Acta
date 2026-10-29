@@ -175,6 +175,11 @@
     readBackup(path) {
       return invoke('read_data_backup', { path });
     },
+    // 立即备份（行记数据 → 立即备份）：写一份手动备份，落在 backups/
+    // 根目录、不参与 LAN 备份的轮换清理。
+    createBackup(bundle, profileName) {
+      return invoke('create_data_backup', { bundle, profileName });
+    },
     // 后台运行：关闭窗口转入系统托盘（Rust 侧拦截 CloseRequested 并隐藏窗口）。
     setRunInBackground(enabled) {
       return invoke('set_background_run', { enabled: Boolean(enabled) });

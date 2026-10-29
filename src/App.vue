@@ -266,7 +266,7 @@
             </section>
 
             <section class="settings-panel" data-settings-panel="workspace">
-              <header class="data-profile-header"><div><h3>行记数据</h3></div><div class="data-profile-header-actions"><button class="settings-button" id="newDataProfile" type="button"><svg><use href="#i-plus"/></svg><span>新建空白档案</span></button><button class="settings-button secondary" id="readDataProfile" type="button"><svg><use href="#i-folder"/></svg><span>读取现有档案</span></button><button class="settings-button secondary" id="backupManagerButton" type="button"><svg><use href="#i-clock"/></svg><span>备份管理</span></button><button class="settings-button secondary" id="refreshDataProfile" type="button"><svg><use href="#i-refresh"/></svg><span>刷新行记数据</span></button></div></header>
+              <header class="data-profile-header"><div><h3>行记数据</h3></div><div class="data-profile-header-actions"><button class="settings-button" id="newDataProfile" type="button"><svg><use href="#i-plus"/></svg><span>新建空白档案</span></button><button class="settings-button secondary" id="readDataProfile" type="button"><svg><use href="#i-folder"/></svg><span>读取现有档案</span></button><button class="settings-button secondary" id="createDataBackup" type="button"><svg><use href="#i-database"/></svg><span>立即备份</span></button><button class="settings-button secondary" id="backupManagerButton" type="button"><svg><use href="#i-clock"/></svg><span>备份管理</span></button><button class="settings-button secondary" id="refreshDataProfile" type="button"><svg><use href="#i-refresh"/></svg><span>刷新行记数据</span></button></div></header>
               <div class="appearance-subsection data-stats-subsection">
                 <header><b>数据统计</b></header>
                 <div class="data-stats-grid">
@@ -654,6 +654,7 @@
         <div class="backup-list" id="backupList" role="list"></div>
         <p class="settings-status" id="backupManagerStatus" role="status"></p>
       </div>
+      <div class="backup-manager-actions"><button class="settings-button" id="createBackupInline" type="button"><svg><use href="#i-database"/></svg><span>立即备份</span></button></div>
     </dialog>
 
     <dialog class="relation-dialog import-data-dialog" id="importDataDialog" aria-labelledby="importDataTitle">

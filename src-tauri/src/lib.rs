@@ -241,6 +241,16 @@ async fn lan_sync_backup_local(
     lan_sync::lan_sync_backup_local(app, bundle, profile_name).await
 }
 
+// 行记数据 → 立即备份：写一份不进 LAN 轮换清理的手动备份。
+#[tauri::command]
+async fn create_data_backup(
+    app: AppHandle,
+    bundle: Value,
+    profile_name: String,
+) -> Result<lan_sync::LanBackupResult, String> {
+    lan_sync::create_data_backup(app, bundle, profile_name).await
+}
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct DataBackupEntry {
@@ -2210,6 +2220,7 @@ pub fn run() {
             lan_sync_confirm_incoming,
             lan_sync_reject_incoming,
             lan_sync_backup_local,
+            create_data_backup,
             list_data_backups,
             read_data_backup,
             import_note,

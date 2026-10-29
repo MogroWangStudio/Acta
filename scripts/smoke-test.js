@@ -1522,6 +1522,9 @@ async function main() {
       const appearanceLayoutFits = appearancePanel.scrollWidth <= document.querySelector('.settings-content').clientWidth;
       document.querySelector('[data-settings-page="workspace"]').click();
       await waitFor(() => document.querySelectorAll('.data-profile-card').length > 0);
+      // 行记数据的「立即备份」：页面按钮与备份管理底栏两个入口共用一套逻辑。
+      const manualBackupEntryPoints = Boolean(document.querySelector('#createDataBackup')?.querySelector('span')?.textContent)
+        && Boolean(document.querySelector('#createBackupInline'));
       const profileCountBefore = document.querySelectorAll('.data-profile-card').length;
       document.querySelector('#newDataProfile').click();
       document.querySelector('#newDataProfileName').value = 'Smoke blank data';
@@ -1852,6 +1855,7 @@ async function main() {
         labeledToolbarWraps,
         appearanceSettingsComplete,
         appearanceLayoutFits,
+        manualBackupEntryPoints,
         dataSyncHeadingZh,
         webDavFieldsVisible,
         dataSyncLabelEn,
@@ -2169,6 +2173,7 @@ async function main() {
     assert.equal(result.labeledToolbarWraps, true);
     assert.equal(result.appearanceSettingsComplete, true);
     assert.equal(result.appearanceLayoutFits, true);
+    assert.equal(result.manualBackupEntryPoints, true);
     assert.equal(result.dataSyncHeadingZh, true);
     assert.equal(result.webDavFieldsVisible, true);
     assert.equal(result.dataSyncLabelEn, true);

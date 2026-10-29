@@ -1630,10 +1630,11 @@ body.acta-reduce-motion.note-focus-mode :is(.editor-pane,.note-editor) { animati
 
 /* —— 行内内容类型分段：列表页唯一的行内控件 ——
    收集箱 / 归类 / 回收站在页内按类型收窄；「全部待办」与「全部笔记」
-   用同一三段切换三个「全部」范围。容器只占内容宽度（不再铺满整行），
-   选中段用 ink 实心，与日历视图切换、设置页分段同一套语言。 */
-.list-type-switch { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid color-mix(in srgb, var(--line) 90%, transparent); border-radius: 9px; background: color-mix(in srgb, var(--white) 62%, transparent); }
-.list-type-switch button { min-width: 58px; height: 26px; padding: 0 12px; }
+   用同一三段切换三个「全部」范围。宽度与上方搜索框一致（都吃满窗格
+   减去左右内边距），三段均分；选中段用 ink 实心，与日历视图切换、
+   设置页分段同一套语言。 */
+.list-type-switch { display: flex; align-items: center; gap: 2px; width: 100%; padding: 2px; border: 1px solid color-mix(in srgb, var(--line) 90%, transparent); border-radius: 9px; background: color-mix(in srgb, var(--white) 62%, transparent); }
+.list-type-switch button { flex: 1 1 0; min-width: 0; height: 26px; padding: 0 12px; }
 .list-type-switch button:hover { color: var(--ink); background: color-mix(in srgb, var(--white) 82%, transparent); }
 .list-type-switch button.active,
 .list-type-switch button.active:hover { color: var(--white); background: var(--ink); }
@@ -2815,6 +2816,9 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
 .backup-entry-copy b { font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .backup-entry-copy small { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .backup-manager-body .settings-status { margin: 0; }
+/* 面板底部的手动备份入口：与历史记录同一条底栏语言（右对齐、细分割线）。 */
+.backup-manager-actions { display: flex; justify-content: flex-end; padding: 12px 20px 18px; border-top: 1px solid color-mix(in srgb, var(--line) 62%, transparent); }
+.backup-manager-actions .settings-button[aria-busy="true"] { opacity: .6; cursor: progress; }
 @media (prefers-reduced-motion: reduce) {
   .backup-entry { animation: none; }
 }
@@ -2918,9 +2922,9 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .mobile-titlebar-action:disabled { opacity: .58; cursor: progress; }
   html[data-acta-theme="mono-dark"] .mobile-titlebar-action { background: #292929; color: #e6e6e6; }
   .search-box { margin-bottom: 6px; }
-  /* 行内只剩一段分段控件：移动端把高度收到 32px，仍左对齐不铺满。 */
+  /* 行内只剩一段分段控件：移动端把高度收到 32px，宽度与搜索框一致。 */
   .filter-row { min-height: 34px; padding-bottom: 7px; }
-  .list-type-switch button { min-width: 62px; height: 28px; }
+  .list-type-switch button { height: 28px; }
   /* 归类入口收进标题：小箭头触发下拉，不再单独占用一行胶囊按钮。 */
   .item-title-row { min-width: 0; }
   .item-title-row h1 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -3018,6 +3022,12 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .settings-content { padding: 25px 18px calc(30px + env(safe-area-inset-bottom)); }
 .settings-panel > header h3 { font-size: calc(25px * var(--acta-font-scale)); }
   .data-profile-header { align-items: stretch; flex-direction: column; }
+  /* 窄屏页头：主操作各占一行；两个备份动作（立即备份 / 备份管理）短且
+     同属一类，并成一行——加上新增的入口仍是 4 行，不再是 5 行一堵墙。 */
+  .data-profile-header-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .data-profile-header-actions .settings-button:nth-child(1),
+  .data-profile-header-actions .settings-button:nth-child(2),
+  .data-profile-header-actions .settings-button:nth-child(5) { grid-column: 1 / -1; }
   .data-profile-header .settings-button { width: 100%; }
   .data-profile-storage { grid-template-columns: 1fr; }
   .data-profile-card-main { grid-template-columns: 34px minmax(0,1fr); }

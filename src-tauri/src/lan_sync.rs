@@ -1324,41 +1324,75 @@ fn prune_old_backups(backups: &Path) -> Result<(), String> {
     Ok(())
 }
 
-// 把当前数据备份成一份标准数据档案文件夹（与"读取现有档案"兼容），
-// 目录位于软件数据文件夹 backups/lan-sync/ 下。
+// 把当前数据备份成一份标准数据档案文件夹（与"读取现有档案"兼容）。
+// LAN 同步的安全备份与用户手动备份共用这一套写法，区别只有落点、命名
+// 前缀与是否参与轮换清理。
+fn write_backup_folder(
+    app: &AppHandle,
+    bundle: &Value,
+    profile_name: &str,
+    subdirectory: Option<&str>,
+    prefix: &str,
+    prune: bool,
+) -> Result<LanBackupResult, String> {
+    if !bundle_shape_valid(bundle) {
+        return Err("这不是有效的 Acta 完整数据档案".into());
+    }
+    let base = match super::resolve_app_data_path(app)? {
+        Some(path) => path,
+        None => app.path().app_data_dir().map_err(|error| error.to_string())?,
+    };
+    let backups = match subdirectory {
+        Some(name) => base.join("backups").join(name),
+        None => base.join("backups"),
+    };
+    fs::create_dir_all(&backups).map_err(|error| format!("无法创建备份文件夹：{error}"))?;
+    let stamp = chrono::Local::now().format("%Y%m%d-%H%M%S");
+    let profile = sanitized_profile_name(profile_name);
+    let mut directory = backups.join(format!("{prefix}{stamp}-{profile}"));
+    let mut suffix = 2;
+    while directory.exists() {
+        directory = backups.join(format!("{prefix}{stamp}-{suffix}-{profile}"));
+        suffix += 1;
+    }
+    super::write_portable_data_folder(&directory, bundle)?;
+    if prune {
+        let _ = prune_old_backups(&backups);
+    }
+    let (notes, todos, _) = bundle_info(bundle);
+    Ok(LanBackupResult {
+        path: directory.to_string_lossy().into_owned(),
+        notes,
+        todos,
+        bytes: directory_size(&directory),
+        created_at: super::timestamp(),
+    })
+}
+
+// LAN 同步覆盖前的安全备份：落在 backups/lan-sync/，命名 lan-<时间戳>-<档案>，
+// 只保留最近 LAN_BACKUP_KEEP 份。
 pub async fn lan_sync_backup_local(
     app: AppHandle,
     bundle: Value,
     profile_name: String,
 ) -> Result<LanBackupResult, String> {
     tauri::async_runtime::spawn_blocking(move || {
-        if !bundle_shape_valid(&bundle) {
-            return Err("这不是有效的 Acta 完整数据档案".into());
-        }
-        let base = match super::resolve_app_data_path(&app)? {
-            Some(path) => path,
-            None => app.path().app_data_dir().map_err(|error| error.to_string())?,
-        };
-        let backups = base.join("backups").join("lan-sync");
-        fs::create_dir_all(&backups).map_err(|error| format!("无法创建备份文件夹：{error}"))?;
-        let stamp = chrono::Local::now().format("%Y%m%d-%H%M%S");
-        let profile = sanitized_profile_name(&profile_name);
-        let mut directory = backups.join(format!("lan-{stamp}-{profile}"));
-        let mut suffix = 2;
-        while directory.exists() {
-            directory = backups.join(format!("lan-{stamp}-{suffix}-{profile}"));
-            suffix += 1;
-        }
-        super::write_portable_data_folder(&directory, &bundle)?;
-        let _ = prune_old_backups(&backups);
-        let (notes, todos, _) = bundle_info(&bundle);
-        Ok(LanBackupResult {
-            path: directory.to_string_lossy().into_owned(),
-            notes,
-            todos,
-            bytes: directory_size(&directory),
-            created_at: super::timestamp(),
-        })
+        write_backup_folder(&app, &bundle, &profile_name, Some("lan-sync"), "lan-", true)
+    })
+    .await
+    .map_err(|error| error.to_string())?
+}
+
+// 手动备份（行记数据 → 立即备份）：落在 backups/ 根目录，命名
+// <时间戳>-<档案>。不参与 LAN 备份的轮换清理——用户主动按下存下的那份
+// 不该被后续的同步悄悄删掉。list_data_backups 两种命名都能列出。
+pub async fn create_data_backup(
+    app: AppHandle,
+    bundle: Value,
+    profile_name: String,
+) -> Result<LanBackupResult, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        write_backup_folder(&app, &bundle, &profile_name, None, "", false)
     })
     .await
     .map_err(|error| error.to_string())?
