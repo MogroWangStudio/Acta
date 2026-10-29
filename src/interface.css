@@ -1757,9 +1757,9 @@ body.sidebar-collapsed .brand.brand-stamp .brand-mini-logo { animation: miniLogo
     position: absolute;
     left: auto;
     right: 16px;
-    top: auto;
-    bottom: 9px;
-    transform: none;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
     transition: none;
   }
   html[data-desktop-platform="darwin"] body.sidebar-collapsed .brand-mini-logo { opacity: 0; }
