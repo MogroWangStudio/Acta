@@ -1269,12 +1269,10 @@ async function main() {
       const mobileNameFieldRect = document.querySelector('#classificationManagerName').closest('.classification-manager-field').getBoundingClientRect();
       const mobileShortFieldRect = document.querySelector('#classificationManagerShortName').closest('.classification-manager-field').getBoundingClientRect();
       const mobileCloseActionRect = document.querySelector('#cancelClassificationManager').getBoundingClientRect();
-      const mobileSaveActionRect = document.querySelector('#saveClassificationManager').getBoundingClientRect();
       const mobileDeleteActionRect = document.querySelector('#deleteClassification').getBoundingClientRect();
       const classificationMobileControlsOptimized = mobileShortFieldRect.top > mobileNameFieldRect.bottom
         && mobileNameFieldRect.left >= mobileManagerDetail.getBoundingClientRect().left
         && mobileShortFieldRect.right <= mobileManagerDetail.getBoundingClientRect().right
-        && Math.abs(mobileCloseActionRect.top - mobileSaveActionRect.top) <= 1
         && mobileDeleteActionRect.bottom <= mobileCloseActionRect.top;
       window.resizeTo(1280, 800);
       await waitFor(() => innerWidth > 1200 && innerHeight > 700);
@@ -1310,7 +1308,8 @@ async function main() {
       const customShortTextLimited = classificationShortName.value === 'ABC';
       classificationEmojiButton.click();
       document.querySelector('#classificationEmojiGrid [data-classification-emoji="👩‍💻"]').click();
-      document.querySelector('#saveClassificationManager').click();
+      // v4.2.0 自动保存：设置调整即持久化，保存按钮已移除——颜色 change 事件即时提交（顺带冲掉拖动去抖）。
+      classificationColor.dispatchEvent(new Event('change'));
       const classificationColorUpdated = library.folders.find(folder => folder.id === managedFolderId)?.color === '#123456';
       const classificationShortNameUpdated = library.folders.find(folder => folder.id === managedFolderId)?.shortName === '👩‍💻';
       const classificationDialogStayedOpen = document.querySelector('#classificationManagerDialog').open;

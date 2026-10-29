@@ -718,7 +718,6 @@
           <div class="settings-actions classification-manager-actions">
             <button class="settings-button danger" id="deleteClassification" type="button"><svg><use href="#i-trash"/></svg><span>删除归类</span></button>
             <button class="settings-button secondary" id="cancelClassificationManager" type="button">关闭</button>
-            <button class="settings-button" id="saveClassificationManager" type="button"><svg><use href="#i-check"/></svg><span>保存修改</span></button>
           </div>
         </section>
       </div>

@@ -743,13 +743,13 @@
   };
 
   const classificationMessages = {
-    zh: { rename:'归类名称', placeholder:'修改当前归类名称', hint:'先点击“编辑名称”，修改后再点击勾选确认；更名会应用到该归类下的全部项目。', updated:'归类名称已更新', edit:'编辑名称', confirm:'确认修改', empty:'归类名称不能为空', duplicate:'已经存在同名归类', manage:'管理归类', managerTitle:'编辑归类', save:'保存名称', cancel:'取消', remove:'删除归类', summary:'此归类包含 {0} 个项目；删除后会移动到“{1}”。', lastSummary:'这是最后一个归类，不能删除。', deleteConfirm:'确定删除“{0}”吗？其中 {1} 个项目会移动到“{2}”。', deleted:'归类已删除，相关项目已移动到“{0}”' },
-    en: { rename:'Classification name', placeholder:'Rename this classification', hint:'Click “Edit name”, make the change, then confirm with the check button. Renaming applies to every item in this classification.', updated:'Classification name updated', edit:'Edit name', confirm:'Confirm change', empty:'Classification name cannot be empty', duplicate:'A classification with this name already exists', manage:'Manage classification', managerTitle:'Edit classification', save:'Save name', cancel:'Cancel', remove:'Delete classification', summary:'This classification contains {0} items. Deleting it moves them to “{1}”.', lastSummary:'This is the last classification and cannot be deleted.', deleteConfirm:'Delete “{0}”? Its {1} items will move to “{2}”.', deleted:'Classification deleted; related items moved to “{0}”' },
-    'zh-Hant': { rename:'歸類名稱', placeholder:'修改目前歸類名稱', hint:'先點擊「編輯名稱」，修改後再點擊勾選確認；更名會套用到該歸類下的全部項目。', updated:'歸類名稱已更新', edit:'編輯名稱', confirm:'確認修改', empty:'歸類名稱不能為空', duplicate:'已經存在同名歸類', manage:'管理歸類', managerTitle:'編輯歸類', save:'儲存名稱', cancel:'取消', remove:'刪除歸類', summary:'此歸類包含 {0} 個項目；刪除後會移動到「{1}」。', lastSummary:'這是最後一個歸類，不能刪除。', deleteConfirm:'確定刪除「{0}」嗎？其中 {1} 個項目會移動到「{2}」。', deleted:'歸類已刪除，相關項目已移動到「{0}」' }
+    zh: { rename:'归类名称', placeholder:'修改当前归类名称', hint:'先点击“编辑名称”，修改后再点击勾选确认；更名会应用到该归类下的全部项目。', edit:'编辑名称', confirm:'确认修改', empty:'归类名称不能为空', duplicate:'已经存在同名归类', manage:'管理归类', managerTitle:'编辑归类', cancel:'取消', remove:'删除归类', unsavedConfirm:'归类有未保存的修改，保存这些修改吗？', summary:'此归类包含 {0} 个项目；删除后会移动到“{1}”。', lastSummary:'这是最后一个归类，不能删除。', deleteConfirm:'确定删除“{0}”吗？其中 {1} 个项目会移动到“{2}”。', deleted:'归类已删除，相关项目已移动到“{0}”' },
+    en: { rename:'Classification name', placeholder:'Rename this classification', hint:'Click “Edit name”, make the change, then confirm with the check button. Renaming applies to every item in this classification.', edit:'Edit name', confirm:'Confirm change', empty:'Classification name cannot be empty', duplicate:'A classification with this name already exists', manage:'Manage classification', managerTitle:'Edit classification', cancel:'Cancel', remove:'Delete classification', unsavedConfirm:'This classification has unsaved changes. Save them?', summary:'This classification contains {0} items. Deleting it moves them to “{1}”.', lastSummary:'This is the last classification and cannot be deleted.', deleteConfirm:'Delete “{0}”? Its {1} items will move to “{2}”.', deleted:'Classification deleted; related items moved to “{0}”' },
+    'zh-Hant': { rename:'歸類名稱', placeholder:'修改目前歸類名稱', hint:'先點擊「編輯名稱」，修改後再點擊勾選確認；更名會套用到該歸類下的全部項目。', edit:'編輯名稱', confirm:'確認修改', empty:'歸類名稱不能為空', duplicate:'已經存在同名歸類', manage:'管理歸類', managerTitle:'編輯歸類', cancel:'取消', unsavedConfirm:'歸類有未儲存的修改，儲存這些修改嗎？', remove:'刪除歸類', summary:'此歸類包含 {0} 個項目；刪除後會移動到「{1}」。', lastSummary:'這是最後一個歸類，不能刪除。', deleteConfirm:'確定刪除「{0}」嗎？其中 {1} 個項目會移動到「{2}」。', deleted:'歸類已刪除，相關項目已移動到「{0}」' }
   };
-  Object.assign(classificationMessages.zh, { color:'归类颜色', colorHint:'选择颜色后，侧栏和项目卡片会同步更新。', presets:'预设颜色', save:'保存修改', updated:'归类名称、自定义简称或 Emoji 与颜色已更新', add:'新建归类', addHint:'创建一个新的归类', manageHint:'编辑名称、自定义简称或 Emoji 与颜色', menu:'归类操作', shortName:'自定义简称 / Emoji', shortHint:'输入 1–3 个文字或从右侧选择 Emoji；留空自动生成', shortAuto:'自动生成', emojiPicker:'选择 Emoji', emojiOpen:'打开 Emoji 选择器', managerTitle:'归类管理', editClassification:'编辑归类', listTitle:'归类列表', mobileTitle:'所有归类', listCount:'{0} 个归类', contentTitle:'归类内容', notesTitle:'笔记', todosTitle:'待办', noNotes:'此归类下还没有笔记', noTodos:'此归类下还没有待办', itemCount:'{0} 个内容', close:'关闭', openItem:'打开内容' });
-  Object.assign(classificationMessages.en, { color:'Classification color', colorHint:'The sidebar and item cards update when you choose a color.', presets:'Preset colors', save:'Save changes', updated:'Classification name, custom short label or emoji, and color updated', add:'New classification', addHint:'Create a new classification', manageHint:'Edit names, custom short labels or emoji, and colors', menu:'Classification actions', shortName:'Custom label / Emoji', shortHint:'Enter 1–3 characters or choose an emoji; leave blank to generate one', shortAuto:'Auto', emojiPicker:'Choose an emoji', emojiOpen:'Open emoji picker', managerTitle:'Manage classifications', editClassification:'Edit classification', listTitle:'Classifications', mobileTitle:'All classifications', listCount:'{0} classifications', contentTitle:'Classification contents', notesTitle:'Notes', todosTitle:'Tasks', noNotes:'No notes in this classification', noTodos:'No tasks in this classification', itemCount:'{0} items', close:'Close', openItem:'Open item' });
-  Object.assign(classificationMessages['zh-Hant'], { color:'歸類顏色', colorHint:'選擇顏色後，側欄和項目卡片會同步更新。', presets:'預設顏色', save:'儲存修改', updated:'歸類名稱、自訂簡稱或 Emoji 與顏色已更新', add:'新增歸類', addHint:'建立一個新的歸類', manageHint:'編輯名稱、自訂簡稱或 Emoji 與顏色', menu:'歸類操作', shortName:'自訂簡稱 / Emoji', shortHint:'輸入 1–3 個文字或從右側選擇 Emoji；留空時自動產生', shortAuto:'自動產生', emojiPicker:'選擇 Emoji', emojiOpen:'開啟 Emoji 選擇器', managerTitle:'歸類管理', editClassification:'編輯歸類', listTitle:'歸類列表', mobileTitle:'所有歸類', listCount:'{0} 個歸類', contentTitle:'歸類內容', notesTitle:'筆記', todosTitle:'待辦', noNotes:'此歸類下還沒有筆記', noTodos:'此歸類下還沒有待辦', itemCount:'{0} 個內容', close:'關閉', openItem:'開啟內容' });
+  Object.assign(classificationMessages.zh, { color:'归类颜色', colorHint:'选择颜色后，侧栏和项目卡片会同步更新。', presets:'预设颜色', updatedToast:'归类已保存', add:'新建归类', addHint:'创建一个新的归类', manageHint:'编辑名称、自定义简称或 Emoji 与颜色', menu:'归类操作', shortName:'自定义简称 / Emoji', shortHint:'输入 1–3 个文字或从右侧选择 Emoji；留空自动生成', shortAuto:'自动生成', emojiPicker:'选择 Emoji', emojiOpen:'打开 Emoji 选择器', managerTitle:'归类管理', editClassification:'编辑归类', listTitle:'归类列表', mobileTitle:'所有归类', listCount:'{0} 个归类', contentTitle:'归类内容', notesTitle:'笔记', todosTitle:'待办', noNotes:'此归类下还没有笔记', noTodos:'此归类下还没有待办', itemCount:'{0} 个内容', close:'关闭', openItem:'打开内容' });
+  Object.assign(classificationMessages.en, { color:'Classification color', colorHint:'The sidebar and item cards update when you choose a color.', presets:'Preset colors', updatedToast:'Classification saved', add:'New classification', addHint:'Create a new classification', manageHint:'Edit names, custom short labels or emoji, and colors', menu:'Classification actions', shortName:'Custom label / Emoji', shortHint:'Enter 1–3 characters or choose an emoji; leave blank to generate one', shortAuto:'Auto', emojiPicker:'Choose an emoji', emojiOpen:'Open emoji picker', managerTitle:'Manage classifications', editClassification:'Edit classification', listTitle:'Classifications', mobileTitle:'All classifications', listCount:'{0} classifications', contentTitle:'Classification contents', notesTitle:'Notes', todosTitle:'Tasks', noNotes:'No notes in this classification', noTodos:'No tasks in this classification', itemCount:'{0} items', close:'Close', openItem:'Open item' });
+  Object.assign(classificationMessages['zh-Hant'], { color:'歸類顏色', colorHint:'選擇顏色後，側欄和項目卡片會同步更新。', presets:'預設顏色', updatedToast:'歸類已儲存', add:'新增歸類', addHint:'建立一個新的歸類', manageHint:'編輯名稱、自訂簡稱或 Emoji 與顏色', menu:'歸類操作', shortName:'自訂簡稱 / Emoji', shortHint:'輸入 1–3 個文字或從右側選擇 Emoji；留空時自動產生', shortAuto:'自動產生', emojiPicker:'選擇 Emoji', emojiOpen:'開啟 Emoji 選擇器', managerTitle:'歸類管理', editClassification:'編輯歸類', listTitle:'歸類列表', mobileTitle:'所有歸類', listCount:'{0} 個歸類', contentTitle:'歸類內容', notesTitle:'筆記', todosTitle:'待辦', noNotes:'此歸類下還沒有筆記', noTodos:'此歸類下還沒有待辦', itemCount:'{0} 個內容', close:'關閉', openItem:'開啟內容' });
   const classificationText = () => classificationMessages[uiSettings.language] || classificationMessages.zh;
 
   const classificationManagerDialog = byId('classificationManagerDialog');
@@ -1311,7 +1311,6 @@
     byId('closeClassificationManager').setAttribute('aria-label', appearanceText('关闭'));
     byId('deleteClassification').querySelector('span').textContent = copy.remove;
     byId('cancelClassificationManager').textContent = copy.close;
-    byId('saveClassificationManager').querySelector('span').textContent = copy.save;
     byId('classificationManagerList').innerHTML = library.folders.map(entry => {
       const itemCount = library.items.filter(item => item.folderId === entry.id && !isTrashed(item)).length;
       return `<button type="button" data-classification-folder="${escapeHTML(entry.id)}" class="${entry.id === folder.id ? 'active' : ''}" style="--folder-color:${escapeHTML(normalizedClassificationColor(entry.color))}">
@@ -1383,20 +1382,24 @@
     });
   }
 
-  function commitClassificationManagerName() {
+  // 归类管理：调整即自动保存（名称 / 简称在提交时机生效——失焦、Enter、
+  // Emoji 选择；颜色拖动去抖 280ms、预设即时）。校验不过（空名 / 重名）
+  // 的变动不会被保存，留在输入框上标错；关闭时若有这类未保存变动，询问
+  // 用户是否保存。
+  function autoSaveClassificationManager() {
     const folder = getFolder(classificationManagerFolderId);
-    if (!folder) return;
+    if (!folder) return false;
     const copy = classificationText();
     const nextName = classificationManagerName.value.trim();
     if (!nextName) {
       classificationManagerName.setCustomValidity(copy.empty);
       classificationManagerName.reportValidity();
-      return;
+      return false;
     }
     if (library.folders.some(entry => entry.id !== folder.id && folderName(entry).trim().toLocaleLowerCase() === nextName.toLocaleLowerCase())) {
       classificationManagerName.setCustomValidity(copy.duplicate);
       classificationManagerName.reportValidity();
-      return;
+      return false;
     }
     classificationManagerName.setCustomValidity('');
     folder.name = nextName;
@@ -1407,10 +1410,51 @@
     delete folder.nameKey;
     persist();
     renderAll();
-    renderClassificationManager();
-    closeAnimatedDialog(classificationManagerDialog);
-    showToast(copy.updated);
+    refreshClassificationManagerList();
+    return true;
   }
+
+  // 左侧归类列表的名称与计数随自动保存同步：只重绘列表本身，不动
+  // 输入框——正在编辑的内容与焦点不被打断。
+  function refreshClassificationManagerList() {
+    const copy = classificationText();
+    byId('classificationManagerListCount').textContent = formatClassificationMessage(copy.listCount, library.folders.length);
+    byId('classificationManagerList').innerHTML = library.folders.map(entry => {
+      const itemCount = library.items.filter(item => item.folderId === entry.id && !isTrashed(item)).length;
+      return `<button type="button" data-classification-folder="${escapeHTML(entry.id)}" class="${entry.id === classificationManagerFolderId ? 'active' : ''}" style="--folder-color:${escapeHTML(normalizedClassificationColor(entry.color))}">
+        <i class="folder-dot"></i><span><strong>${escapeHTML(folderName(entry))}</strong><small>${escapeHTML(formatClassificationMessage(copy.itemCount, itemCount))}</small></span><svg><use href="#i-chevron"/></svg>
+      </button>`;
+    }).join('');
+  }
+
+  // 是否有未保存的变动：输入框内容与已保存的归类状态不一致。
+  const classificationManagerDirty = () => {
+    const folder = getFolder(classificationManagerFolderId);
+    if (!folder) return false;
+    return classificationManagerName.value.trim() !== folderName(folder)
+      || normalizedFolderShortName(classificationManagerShortName.value) !== normalizedFolderShortName(folder.shortName)
+      || normalizedClassificationColor(classificationManagerColor.value) !== normalizedClassificationColor(folder.color);
+  };
+
+  // 关闭统一入口：无未保存变动直接关；有则询问——保存成功即关（保存
+  // 仍被校验拦下则留在对话框，错误已在输入框上标出），放弃则把输入框
+  // 回退到已保存状态再关。
+  const requestCloseClassificationManager = () => {
+    if (!classificationManagerDirty()) {
+      closeAnimatedDialog(classificationManagerDialog);
+      return;
+    }
+    const copy = classificationText();
+    if (confirm(copy.unsavedConfirm)) {
+      if (autoSaveClassificationManager()) {
+        showToast(copy.updatedToast);
+        closeAnimatedDialog(classificationManagerDialog);
+      }
+    } else {
+      renderClassificationManager();
+      closeAnimatedDialog(classificationManagerDialog);
+    }
+  };
 
   folderActionsMenu.addEventListener('click', event => {
     event.preventDefault();
@@ -1445,7 +1489,7 @@
   });
   byId('classificationManagerDialog').addEventListener('cancel', event => {
     event.preventDefault();
-    closeAnimatedDialog(classificationManagerDialog);
+    requestCloseClassificationManager();
   });
   byId('classificationManagerDialog').addEventListener('click', event => {
     const itemButton = event.target.closest('[data-classification-item]');
@@ -1458,9 +1502,12 @@
     closeAnimatedDialog(classificationManagerDialog);
     renderAll();
   });
-  byId('closeClassificationManager').addEventListener('click', () => closeAnimatedDialog(classificationManagerDialog));
-  byId('cancelClassificationManager').addEventListener('click', () => closeAnimatedDialog(classificationManagerDialog));
-  byId('saveClassificationManager').addEventListener('click', commitClassificationManagerName);
+  byId('closeClassificationManager').addEventListener('click', requestCloseClassificationManager);
+  byId('cancelClassificationManager').addEventListener('click', requestCloseClassificationManager);
+  // 自动保存的提交时机：名称 / 简称失焦或 Enter 即保存；颜色拖动去抖、
+  // 预设与 Emoji 选择即时保存。
+  classificationManagerName.addEventListener('change', () => autoSaveClassificationManager());
+  classificationManagerShortName.addEventListener('change', () => autoSaveClassificationManager());
   classificationManagerName.addEventListener('input', () => classificationManagerName.setCustomValidity(''));
   classificationManagerName.addEventListener('input', () => {
     const folder = getFolder(classificationManagerFolderId);
@@ -1483,11 +1530,13 @@
     if (!option) return;
     classificationManagerShortName.value = normalizedFolderShortName(option.dataset.classificationEmoji);
     classificationManagerShortName.dispatchEvent(new Event('input', { bubbles:true }));
+    autoSaveClassificationManager();
     closeClassificationEmojiPicker(true);
   });
   byId('classificationEmojiAuto').addEventListener('click', () => {
     classificationManagerShortName.value = '';
     classificationManagerShortName.dispatchEvent(new Event('input', { bubbles:true }));
+    autoSaveClassificationManager();
     closeClassificationEmojiPicker(true);
   });
   classificationEmojiGrid.addEventListener('keydown', event => {
@@ -1513,22 +1562,34 @@
     event.stopPropagation();
     closeClassificationEmojiPicker(true);
   }, true);
-  classificationManagerColor.addEventListener('input', syncClassificationManagerColor);
+  let classificationColorSaveTimer = 0;
+  classificationManagerColor.addEventListener('input', () => {
+    syncClassificationManagerColor();
+    // 拖动取色器时 input 连续触发：去抖保存，预览即时。
+    clearTimeout(classificationColorSaveTimer);
+    classificationColorSaveTimer = setTimeout(() => autoSaveClassificationManager(), 280);
+  });
+  classificationManagerColor.addEventListener('change', () => {
+    clearTimeout(classificationColorSaveTimer);
+    autoSaveClassificationManager();
+  });
   byId('classificationColorPresets').addEventListener('click', event => {
     const preset = event.target.closest('[data-classification-color]');
     if (!preset) return;
     classificationManagerColor.value = normalizedClassificationColor(preset.dataset.classificationColor);
     syncClassificationManagerColor();
+    clearTimeout(classificationColorSaveTimer);
+    autoSaveClassificationManager();
   });
   classificationManagerName.addEventListener('keydown', event => {
     if (isImeComposing(event)) return;
-    if (event.key === 'Enter') { event.preventDefault(); commitClassificationManagerName(); }
-    if (event.key === 'Escape') { event.preventDefault(); closeAnimatedDialog(classificationManagerDialog); }
+    if (event.key === 'Enter') { event.preventDefault(); autoSaveClassificationManager(); }
+    if (event.key === 'Escape') { event.preventDefault(); requestCloseClassificationManager(); }
   });
   classificationManagerShortName.addEventListener('keydown', event => {
     if (isImeComposing(event)) return;
-    if (event.key === 'Enter') { event.preventDefault(); commitClassificationManagerName(); }
-    if (event.key === 'Escape') { event.preventDefault(); closeAnimatedDialog(classificationManagerDialog); }
+    if (event.key === 'Enter') { event.preventDefault(); autoSaveClassificationManager(); }
+    if (event.key === 'Escape') { event.preventDefault(); requestCloseClassificationManager(); }
   });
   byId('deleteClassification').addEventListener('click', () => {
     const folder = getFolder(classificationManagerFolderId);
