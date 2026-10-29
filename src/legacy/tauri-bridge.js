@@ -292,8 +292,8 @@
       button.addEventListener('click', () => { currentWindow.toggleMaximize().catch(() => {}); });
     });
     document.querySelectorAll('[data-window-action="close"]').forEach(button => {
-      // 设置页头部的关闭按钮只关闭设置页（interface.js 单独接线），不关窗口。
-      if (button.closest('#settingsWindowControls')) return;
+      // 设置页头部的关闭按钮与主标题栏同义：直接退出 Acta（关闭主窗口；
+      // 「关闭窗口时转入后台」开启时由 Rust 侧按既有行为转托盘）。
       button.addEventListener('click', () => { currentWindow.close().catch(() => {}); });
     });
     // 最大化状态实时反映到 <html data-window-maximized>，窗口控件据此切换

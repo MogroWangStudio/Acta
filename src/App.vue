@@ -279,7 +279,7 @@
           <div class="settings-window-controls" id="settingsWindowControls" hidden>
             <button type="button" data-window-action="minimize" aria-label="最小化"><svg><use href="#i-window-minimize"/></svg></button>
             <button type="button" data-window-action="maximize" aria-label="最大化"><svg><use href="#i-window-maximize"/></svg></button>
-            <button type="button" class="settings-control-close" data-window-action="close" aria-label="关闭设置"><svg><use href="#i-close"/></svg></button>
+            <button type="button" class="settings-control-close" data-window-action="close" aria-label="退出 Acta"><svg><use href="#i-close"/></svg></button>
           </div>
         </header>
         <div class="settings-layout">
