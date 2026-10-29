@@ -1872,6 +1872,7 @@ function resetListFilters(context = 'all') {
     todoFolderFilter = 'all';
     noteFolderFilter = 'all';
     noteUpdatedFilter = 'all';
+    noteRelationFilter = 'all';
   }
   if (context === 'all' || context === 'todo') {
     todoPriorityFilter = 'all';
@@ -1914,12 +1915,15 @@ function syncListFilterUI() {
 
   row.dataset.filterContext = context;
   row.dataset.filterView = viewContext;
+  // 收集箱 / 归类（mixed）：行内不再显示任何筛选选项——类型 / 排序 /
+  // 清除都已并入筛选面板，整行隐藏；回收站与待办 / 笔记的上下文筛选行保留。
+  row.hidden = context === 'mixed';
   $$('[data-filter-context]', row).forEach(group => {
     group.hidden = group.dataset.filterContext === 'mixed'
       ? viewContext !== 'mixed'
       : group.dataset.filterContext !== context;
   });
-  $$('[data-filter]', row).forEach(button => button.classList.toggle('active', button.dataset.filter === currentFilter));
+  $$('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === currentFilter));
   $$('[data-trash-filter]', row).forEach(button => button.classList.toggle('active', button.dataset.trashFilter === trashTypeFilter));
   if (context === 'trash') {
     const trashFolderSelect = $('#trashFolderFilter');
@@ -1974,12 +1978,7 @@ function syncListFilterUI() {
     if (box) box.checked = settings.showCompletedTodos;
   }
 
-  const clearButton = $('#clearListFilters');
-  if (clearButton) {
-    clearButton.hidden = !hasActiveListFilters(context);
-    clearButton.title = t('clearFilters');
-    clearButton.setAttribute('aria-label', t('clearFilters'));
-  }
+  // 行内清除按钮已并入筛选面板（#listFilterPanelClear）。
 
   syncListFilterPanel(viewContext);
 }
@@ -1994,10 +1993,10 @@ function syncListFilterPanel(viewContext = listViewContext()) {
   const panel = $('#listFilterPanel');
   const toggle = $('#listFilterToggle');
   if (!panel || !toggle) return;
-  // 筛选按钮覆盖全部列表视图：收集箱 / 归类页 / 所有待办 / 所有笔记——
+  // 筛选按钮覆盖全部列表视图（含回收站——排序仍从面板调整）：
   // 「按优先级」只在面板里出现，外部筛选行不再重复展示。
   const showToggle = currentView === 'inbox' || currentView.startsWith('folder:')
-    || currentView === 'todos' || currentView === 'notes';
+    || currentView === 'todos' || currentView === 'notes' || currentView === 'trash';
   if (viewContext !== listFilterPanelView) { listFilterPanelView = viewContext; listFilterPanelOpen = false; }
   toggle.hidden = !showToggle;
   toggle.setAttribute('aria-expanded', String(listFilterPanelOpen));
@@ -2018,6 +2017,21 @@ function syncListFilterPanel(viewContext = listViewContext()) {
   });
   const completedBox = $('#panelShowCompleted');
   if (completedBox) completedBox.checked = settings.showCompletedTodos;
+  // 类型段只在收集箱 / 归类（mixed）出现；与上下文无关的筛选行按视图
+  // 显隐（回收站只保留排序），排序随面板状态同步。
+  const typeGroup = panel.querySelector('[data-panel-type]');
+  if (typeGroup) typeGroup.hidden = viewContext !== 'mixed';
+  const panelContextHidden = { panelPriorityFilter: viewContext === 'note' || viewContext === 'trash', panelDueFilter: viewContext === 'note' || viewContext === 'trash', panelFolderFilter: viewContext === 'trash', panelUpdatedFilter: viewContext === 'todo' || viewContext === 'trash', panelCompletedToggle: viewContext === 'trash' };
+  Object.entries(panelContextHidden).forEach(([id, hidden]) => {
+    const el = panel.querySelector(`#${id}`);
+    if (el) el.closest('.filter-select').hidden = hidden;
+  });
+  const sortSelect = $('#listSortOrder');
+  if (sortSelect) {
+    sortSelect.value = listSortMode;
+    sortSelect.closest('.filter-select')?.classList.toggle('is-active', listSortMode !== 'updated');
+    sortSelect.setAttribute('aria-label', t('sortBy'));
+  }
   const clearButton = $('#listFilterPanelClear');
   if (clearButton) {
     clearButton.hidden = !hasActiveListFilters(currentView === 'notes' ? 'note' : currentView === 'todos' ? 'todo' : 'mixed');
@@ -8992,7 +9006,7 @@ function openItem(id) {
   searchQuery = '';
   mobileEditorOpen = true;
   $('#searchInput').value = '';
-  $$('.filter-row [data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+  $$('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
   renderAll();
 }
 
@@ -9169,7 +9183,7 @@ async function importNoteFromFile() {
     searchQuery = '';
     mobileEditorOpen = true;
     $('#searchInput').value = '';
-    $$('.filter-row [data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+    $$('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
     persist(); renderAll(); showToast(t('noteImported'));
   } catch (error) {
     showToast(`${t('importFailed')}: ${error?.message || t('invalidNoteFile')}`);
@@ -9479,9 +9493,9 @@ function bindShell() {
     const visible = getVisibleItems();
     if (!visible.some(item => item.id === selectedId)) { selectedId = visible[0]?.id || null; renderEditor(); }
   };
-  $$('.filter-row [data-filter]').forEach(button => button.addEventListener('click', () => {
+  $$('[data-filter]').forEach(button => button.addEventListener('click', () => {
     currentFilter = button.dataset.filter;
-    $$('.filter-row [data-filter]').forEach(entry => entry.classList.toggle('active', entry === button));
+    $$('[data-filter]').forEach(entry => entry.classList.toggle('active', entry === button));
     refreshFilteredList();
   }));
   $$('.filter-row [data-trash-filter]').forEach(button => button.addEventListener('click', () => {
@@ -9529,6 +9543,10 @@ function bindShell() {
   // —— 筛选面板（收集箱 / 归类页）：开关、四个筛选、显示已完成与清除 ——
   $('#listFilterToggle')?.addEventListener('click', event => {
     event.stopPropagation();
+    // 视图切换后的首次打开：先把视图锚记对齐，避免 syncListFilterPanel
+    // 的「视图变更即收起」把刚置真开态又抹掉（点按钮没反应的第二个根因）。
+    const toggleContext = listViewContext();
+    if (toggleContext !== listFilterPanelView) listFilterPanelView = toggleContext;
     listFilterPanelOpen = !listFilterPanelOpen;
     syncListFilterPanel();
   });

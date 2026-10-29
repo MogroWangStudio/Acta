@@ -1136,7 +1136,7 @@ html[data-acta-theme="mono-dark"] .classification-emoji-picker > header button {
 .list-filter-toggle:hover { color: var(--ink); background: var(--panel); transform: scale(1.05); }
 .list-filter-toggle[aria-expanded="true"] { color: var(--ink); background: var(--panel); }
 .list-filter-panel {
-  position: absolute; top: calc(100% + 6px); right: 18px; z-index: 40; width: max(min(268px, calc(100vw - 40px)), 200px);
+  position: absolute; top: calc(100% + 6px); right: 18px; z-index: 40; width: max(min(280px, calc(100vw - 40px)), 220px);
   padding: 12px; display: grid; gap: 8px;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 14px;
   background: var(--paper);
@@ -3772,3 +3772,10 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 .board-export-dialog .board-style-check { cursor: pointer; }
 .board-export-dialog .board-style-check input { width: 15px; height: 15px; accent-color: var(--sage); }
 .board-export-dialog [data-bg-image] button { flex: 0 0 auto; }
+
+/* 筛选面板内的类型段与排序（自 .filter-row 迁入）。 */
+.list-filter-panel .type-filter-group { display: flex; gap: 6px; }
+.list-filter-panel .type-filter-group button { flex: 1; min-width: 0; height: 32px; padding: 0 8px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 62%, transparent); color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: color .16s ease, background .16s ease, border-color .16s ease; }
+.list-filter-panel .type-filter-group button:hover { color: var(--ink); border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); }
+.list-filter-panel .type-filter-group button.active { color: #fff; background: var(--sage); border-color: var(--sage); }
+.list-filter-panel .type-filter-group[hidden] { display: none; }

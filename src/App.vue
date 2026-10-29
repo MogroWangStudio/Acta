@@ -127,6 +127,18 @@
                   <b data-i18n="filterPanelTitle">筛选</b>
                   <button type="button" class="list-filter-panel-clear" id="listFilterPanelClear" hidden><svg><use href="#i-close"/></svg><span data-i18n="clearFilters">清除</span></button>
                 </div>
+                <div class="filter-group type-filter-group" data-filter-context="mixed" data-panel-type hidden>
+                  <button class="active" data-filter="all" data-i18n="all">全部</button>
+                  <button data-filter="todo" data-i18n="todos">待办</button>
+                  <button data-filter="note" data-i18n="notes">笔记</button>
+                </div>
+                <label class="filter-select"><svg><use href="#i-sliders"/></svg><select id="listSortOrder" aria-label="排序方式">
+                  <option value="updated" data-i18n="sortUpdated">最近更新</option>
+                  <option value="created" data-i18n="sortCreated">最近创建</option>
+                  <option value="due" data-i18n="sortDue">按截止时间</option>
+                  <option value="priority" data-i18n="sortPriority">按优先级</option>
+                  <option value="title" data-i18n="sortTitle">按标题</option>
+                </select></label>
                 <label class="filter-select"><svg><use href="#i-spark"/></svg><select id="panelPriorityFilter">
                   <option value="all" data-i18n="allPriorities">全部优先级</option>
                   <option value="high" data-i18n="high">优先处理</option>
@@ -184,11 +196,6 @@
             <kbd class="shortcut-search" aria-hidden="true"></kbd>
           </label>
           <div class="filter-row" id="listFilterRow">
-            <div class="filter-group type-filter-group" data-filter-context="mixed">
-              <button class="active" data-filter="all" data-i18n="all">全部</button>
-              <button data-filter="todo" data-i18n="todos">待办</button>
-              <button data-filter="note" data-i18n="notes">笔记</button>
-            </div>
             <div class="filter-group contextual-filter-group" data-filter-context="trash" hidden>
               <div class="type-filter-group" role="group" aria-label="类型">
                 <button class="active" data-trash-filter="all" data-i18n="all">全部</button>
@@ -238,19 +245,6 @@
                 </select>
               </label>
             </div>
-            <label class="filter-select list-sort-field">
-              <svg><use href="#i-sliders"/></svg>
-              <select id="listSortOrder" aria-label="排序方式">
-                <option value="updated" data-i18n="sortUpdated">最近更新</option>
-                <option value="created" data-i18n="sortCreated">最近创建</option>
-                <option value="due" data-i18n="sortDue">按截止时间</option>
-                <option value="priority" data-i18n="sortPriority">按优先级</option>
-                <option value="title" data-i18n="sortTitle">按标题</option>
-              </select>
-            </label>
-            <button class="clear-list-filters" id="clearListFilters" type="button" hidden>
-              <svg><use href="#i-close"/></svg><span data-i18n="clearFilters">清除</span>
-            </button>
           </div>
           <div class="item-list-frame">
             <div class="pull-refresh-indicator" id="pullRefreshIndicator" aria-hidden="true"><svg><use href="#i-refresh"/></svg></div>
