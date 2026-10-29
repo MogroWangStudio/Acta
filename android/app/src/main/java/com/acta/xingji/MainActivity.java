@@ -35,14 +35,14 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         getBridge().getWebView().setWebChromeClient(new ActaWebChromeClient(getBridge()));
         applySavedSystemBars();
-        applyPredictiveBack(null);
+        applyPredictiveBack(null, null);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         applySavedSystemBars();
-        applyPredictiveBack(null);
+        applyPredictiveBack(null, null);
     }
 
     // —— 预见式返回（Android 13+）——

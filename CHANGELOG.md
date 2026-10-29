@@ -20,6 +20,7 @@
 
 ### 修复
 
+- **安卓 CI 构建失败（applyPredictiveBack 重载消歧）**：根层级返回适配给 `applyPredictiveBack` 增加了第二个参数后，`onCreate` / `onResume` 里的单参调用 `applyPredictiveBack(null)` 无法在 `(Boolean)` 与 `(Boolean, Boolean)` 两个重载间消歧，`assembleRelease` 编译失败——CI 的 Windows / macOS 构建不受影响，安卓包发布中断。调用点改为 `applyPredictiveBack(null, null)`（两个参数都从偏好读回当前设置），本地 `gradlew assembleRelease` 复现并确认通过
 - **macOS 红绿灯控件垂直居中于顶栏**：红绿灯的原生定位（`trafficLightPosition`）此前 y=18——按钮组（高 12px）在 52px 的顶栏中偏上，中心落在 24 对 26。现在改为 y=20（(52 − 12) / 2），按钮组垂直居中于顶栏，与居中的 logo、版本号胶囊同一水平线；左侧 18px 边距保持
 - **macOS 顶栏的版本号垂直居中**：macOS 的版本号胶囊此前以 `bottom: 9px` 贴着顶栏底缘定位，与居中的 logo、原生红绿灯不在一条水平线上。现在改为垂直居中于顶栏（`top: 50%` + `translateY(-50%)`），与交通灯、logo 同一水平线
 - **macOS 连按 logo 的瞬移**：macOS 的左上角 logo 为避开交通灯采用居中位移布局（`translateX(-50%)`），而连按彩蛋的印章回弹动画作用在按钮外层、keyframes 只写了缩放与旋转——动画期间 transform 被整体替换，居中位移丢失，logo 横向瞬移半个宽度、动画结束又跳回来。现在印章回弹改为作用在无平台位移的字标层（全平台安全）；折叠态字标隐藏，回弹交给自带位移的 mini-logo 动画
