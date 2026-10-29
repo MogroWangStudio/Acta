@@ -391,6 +391,19 @@ async fn delete_data_backups(app: AppHandle, paths: Vec<String>) -> Result<Vec<S
     .map_err(|error| error.to_string())?
 }
 
+// 备份管理：返回备份文件夹路径（不存在则创建），供「打开备份文件夹」
+// 在系统文件管理器中直接定位。
+#[tauri::command]
+async fn resolve_backups_dir(app: AppHandle) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let backups_root = resolve_backups_root(&app)?;
+        fs::create_dir_all(&backups_root).map_err(|error| error.to_string())?;
+        Ok(backups_root.to_string_lossy().into_owned())
+    })
+    .await
+    .map_err(|error| error.to_string())?
+}
+
 const SYNC_FILE: &str = "acta-library.json";
 const DATA_MANIFEST_FILE: &str = "acta-manifest.json";
 const CLASSIFICATIONS_FILE: &str = "classifications.json";
@@ -2253,6 +2266,7 @@ pub fn run() {
             lan_sync_backup_local,
             create_data_backup,
             delete_data_backups,
+            resolve_backups_dir,
             list_data_backups,
             read_data_backup,
             import_note,

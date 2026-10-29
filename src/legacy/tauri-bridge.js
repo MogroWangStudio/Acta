@@ -194,6 +194,10 @@
     resolveAppData() {
       return invoke('resolve_app_data_dir');
     },
+    // 备份管理：备份文件夹路径（不存在则创建）。
+    resolveBackupsDir() {
+      return invoke('resolve_backups_dir');
+    },
     prepareAppData(path) {
       return invoke('prepare_app_data_dir', { path });
     },

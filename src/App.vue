@@ -658,7 +658,7 @@
         <div class="backup-list" id="backupList" role="list"></div>
         <p class="settings-status" id="backupManagerStatus" role="status"></p>
       </div>
-      <div class="backup-manager-actions"><button class="settings-button" id="createBackupInline" type="button"><svg><use href="#i-database"/></svg><span>立即备份</span></button></div>
+      <div class="backup-manager-actions"><button class="settings-button secondary" id="backupOpenFolder" type="button" hidden><svg><use href="#i-folder"/></svg><span>打开备份文件夹</span></button><button class="settings-button" id="createBackupInline" type="button"><svg><use href="#i-database"/></svg><span>立即备份</span></button></div>
     </dialog>
 
     <dialog class="relation-dialog import-data-dialog" id="importDataDialog" aria-labelledby="importDataTitle">
