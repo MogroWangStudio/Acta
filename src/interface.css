@@ -2139,11 +2139,11 @@ body.stats-view .list-footer { background: transparent; }
 .stats-empty p { margin: 0; font-size: calc(10px * var(--acta-font-scale)); max-width: 320px; line-height: 1.7; }
 
 /* --- Trash view --- */
-/* 回收站有类型与归类筛选：筛选行不再隐藏，只收起列宽拖拽条。 */
+/* 回收站有类型与归类筛选：筛选行不再隐藏，只收起列宽拖拽条。
+   背景跟随主题（继承 --panel），不再混入笔记色调——与其他视图同源。 */
 body.trash-view .list-resizer { display: none; }
-body.trash-view .item-pane { border-right: 0; background: color-mix(in srgb, var(--note-soft) 12%, var(--panel)); }
+body.trash-view .item-pane { border-right: 0; }
 body.trash-view .editor-pane { display: none; }
-body.trash-view .list-footer { background: color-mix(in srgb, var(--note-soft) 10%, var(--panel)); }
 @media (min-width: 801px) {
   body.trash-view main.workspace { grid-template-columns: var(--acta-sidebar-width) minmax(0,1fr) 0px !important; }
 }
