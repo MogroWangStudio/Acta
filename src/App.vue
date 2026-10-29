@@ -454,6 +454,7 @@
                 </div>
               </div>
               <div class="settings-group">
+                <div class="settings-row"><span><b>WebDAV 同步</b></span></div>
                 <div class="cloud-mode-fields" id="webDavModeFields">
                   <label class="settings-row"><span><b>服务器地址</b></span><input id="webDavServer" type="url" inputmode="url" autocomplete="url" placeholder="https://dav.example.com/Acta/"/></label>
                   <label class="settings-row"><span><b>账号</b></span><input id="webDavUsername" type="text" autocomplete="username" maxlength="180"/></label>
@@ -462,14 +463,14 @@
                 </div>
                 <label class="settings-row"><span><b>自动同步</b></span><input id="autoSyncSetting" type="checkbox"/></label>
                 <label class="settings-row" id="autoSyncIntervalRow"><span><b>检查频率</b></span><select id="autoSyncInterval"><option value="1">每 1 分钟</option><option value="5">每 5 分钟</option><option value="15">每 15 分钟</option></select></label>
+                <div class="settings-actions">
+                  <button class="settings-button secondary" id="downloadOneDrive" type="button" disabled><svg><use href="#i-download"/></svg>下载完整数据文件夹</button>
+                  <button class="settings-button" id="uploadOneDrive" type="button" disabled><svg><use href="#i-upload"/></svg>上传完整数据文件夹</button>
+                  <button class="settings-button secondary" id="disconnectOneDrive" type="button" disabled><svg><use href="#i-close"/></svg>断开同步位置</button>
+                </div>
+                <p class="settings-status" id="oneDriveStatus">请先选择同步模式并完成连接。</p>
+                <p class="settings-status" id="cloudSyncHint">密码仅保存在本机；网页版需服务器允许跨域。</p>
               </div>
-              <div class="settings-actions">
-                <button class="settings-button secondary" id="downloadOneDrive" type="button" disabled><svg><use href="#i-download"/></svg>下载完整数据文件夹</button>
-                <button class="settings-button" id="uploadOneDrive" type="button" disabled><svg><use href="#i-upload"/></svg>上传完整数据文件夹</button>
-                <button class="settings-button secondary" id="disconnectOneDrive" type="button" disabled><svg><use href="#i-close"/></svg>断开同步位置</button>
-              </div>
-              <p class="settings-status" id="oneDriveStatus">请先选择同步模式并完成连接。</p>
-              <p class="settings-status" id="cloudSyncHint">密码仅保存在本机；网页版需服务器允许跨域。</p>
             </section>
 
             <section class="settings-panel" data-settings-panel="about">
