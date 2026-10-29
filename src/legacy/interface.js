@@ -195,7 +195,7 @@
     exportFormatChecklist:'任务清单', exportFormatChecklistHint:'Markdown 任务语法，保留完成状态',
     exportCopyClipboard:'复制到剪贴板', exportTasksTxt:'导出 TXT', exportTasksMd:'导出 Markdown',
     tasksExported:'子任务已导出', tasksExportEmpty:'还没有可导出的子任务',
-    exportIncludeDone:'包含已完成的子任务', exportIncludeDoneHint:'关闭后只导出未完成的子任务',
+    exportScope:'子待办范围', exportScopeAll:'已完成 + 未完成', exportScopeDone:'仅已完成', exportScopeUndone:'仅未完成',
     exportNumbering:'序号样式', exportNumberingNone:'不加序号', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
   });
   Object.assign(dictionaries.en, {
@@ -206,7 +206,7 @@
     exportFormatChecklist:'Task list', exportFormatChecklistHint:'Markdown task syntax, keeps states',
     exportCopyClipboard:'Copy to clipboard', exportTasksTxt:'Export TXT', exportTasksMd:'Export Markdown',
     tasksExported:'Subtasks exported', tasksExportEmpty:'No subtasks to export',
-    exportIncludeDone:'Include completed subtasks', exportIncludeDoneHint:'Turn off to export open subtasks only',
+    exportScope:'Subtask scope', exportScopeAll:'Completed + open', exportScopeDone:'Completed only', exportScopeUndone:'Open only',
     exportNumbering:'Numbering', exportNumberingNone:'No numbering', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
   });
   Object.assign(dictionaries['zh-Hant'], {
@@ -217,7 +217,7 @@
     exportFormatChecklist:'任務清單', exportFormatChecklistHint:'Markdown 任務語法，保留完成狀態',
     exportCopyClipboard:'複製到剪貼簿', exportTasksTxt:'匯出 TXT', exportTasksMd:'匯出 Markdown',
     tasksExported:'子任務已匯出', tasksExportEmpty:'還沒有可匯出的子任務',
-    exportIncludeDone:'包含已完成的子任務', exportIncludeDoneHint:'關閉後只匯出未完成的子任務',
+    exportScope:'子任務範圍', exportScopeAll:'已完成 + 未完成', exportScopeDone:'僅已完成', exportScopeUndone:'僅未完成',
     exportNumbering:'序號樣式', exportNumberingNone:'不加序號', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
   });
 
@@ -2548,9 +2548,11 @@
     return '';
   };
   const taskExportContent = (item, format, options = {}) => {
-    const includeDone = options.includeDone !== false;
+    // scope：'all' 全部 / 'done' 仅已完成 / 'undone' 仅未完成；
+    // 旧调用传的 includeDone 布尔仍被接住（false ≙ 仅未完成）。
+    const scope = options.scope || (options.includeDone === false ? 'undone' : 'all');
     const numbering = options.numbering || 'none';
-    const tasks = (item.tasks || []).filter(task => includeDone || !task.done);
+    const tasks = (item.tasks || []).filter(task => scope === 'all' || (scope === 'done' ? Boolean(task.done) : !task.done));
     const render = (task, index) => {
       const text = `${exportNumberPrefix(numbering, index)}${taskExportText(task)}`;
       if (format !== 'checklist') return text;
@@ -2587,7 +2589,14 @@
           <label><input type="radio" name="taskExportFormat" value="checklist"/><span><b>${escapeHTML(t('exportFormatChecklist'))}</b><small>${escapeHTML(t('exportFormatChecklistHint'))}</small></span></label>
         </div>
         <div class="export-tasks-options">
-          <label class="export-tasks-switch" title="${escapeHTML(t('exportIncludeDoneHint'))}"><input type="checkbox" name="taskExportIncludeDone" checked/><span>${escapeHTML(t('exportIncludeDone'))}</span></label>
+          <div class="export-tasks-scope" role="group" aria-label="${escapeHTML(t('exportScope'))}">
+            <span>${escapeHTML(t('exportScope'))}</span>
+            <div class="board-import-seg">
+              <button type="button" data-task-scope="all" class="active">${escapeHTML(t('exportScopeAll'))}</button>
+              <button type="button" data-task-scope="done">${escapeHTML(t('exportScopeDone'))}</button>
+              <button type="button" data-task-scope="undone">${escapeHTML(t('exportScopeUndone'))}</button>
+            </div>
+          </div>
           <label class="export-tasks-numbering"><span>${escapeHTML(t('exportNumbering'))}</span><select name="taskExportNumbering">
             <option value="none">${escapeHTML(t('exportNumberingNone'))}</option>
             <option value="dot">${escapeHTML(t('exportNumberingDot'))}</option>
@@ -2604,7 +2613,7 @@
       </form>`;
     const currentFormat = () => dialog.querySelector('input[name="taskExportFormat"]:checked')?.value || 'lines';
     const currentOptions = () => ({
-      includeDone: Boolean(dialog.querySelector('input[name="taskExportIncludeDone"]')?.checked),
+      scope: dialog.querySelector('[data-task-scope].active')?.dataset.taskScope || 'all',
       numbering: dialog.querySelector('select[name="taskExportNumbering"]')?.value || 'none'
     });
     let exportFinished = false;
@@ -2617,6 +2626,9 @@
     };
     dialog.querySelector('.relation-dialog-close').addEventListener('click', finish);
     dialog.addEventListener('cancel', event => { event.preventDefault(); finish(); });
+    dialog.querySelectorAll('[data-task-scope]').forEach(button => button.addEventListener('click', () => {
+      dialog.querySelectorAll('[data-task-scope]').forEach(entry => entry.classList.toggle('active', entry === button));
+    }));
     dialog.querySelector('[data-export-copy]').addEventListener('click', async () => {
       await contextClipboardWrite(taskExportContent(item, currentFormat(), currentOptions()));
       showToast(t('copied'));

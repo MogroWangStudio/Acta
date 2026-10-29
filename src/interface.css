@@ -690,8 +690,9 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .relation-dialog-body { padding: 17px; }
 .relation-dialog-body .link-picker { display: grid !important; }
 .export-tasks-options { display: grid; gap: 9px; margin: 12px 0 4px; }
-.export-tasks-switch { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; }
-.export-tasks-switch input { width: 15px; height: 15px; margin: 0; accent-color: var(--sage); cursor: pointer; }
+.export-tasks-scope { display: grid; gap: 5px; }
+.export-tasks-scope > span { color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); }
+.export-tasks-scope .board-import-seg button { flex: 1; height: 30px; }
 .export-tasks-numbering { display: grid; gap: 5px; }
 .export-tasks-numbering > span { color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); }
 .export-tasks-numbering select { width: 100%; height: 32px; padding: 0 26px 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); font: inherit; font-size: calc(10px * var(--acta-font-scale)); cursor: pointer; }
