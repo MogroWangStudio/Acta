@@ -1812,7 +1812,7 @@ body.sidebar-collapsed { --acta-sidebar-width: 72px; }
   body.sidebar-collapsed .nav-section button svg, body.sidebar-collapsed .nav-section button .nav-icon { width: 18px; height: 18px; }
   body.sidebar-collapsed .folder-section { max-width: 44px; width: auto; margin-top: 17px; align-self: center; overflow-x: hidden; padding-bottom: 14px; }
   body.sidebar-collapsed .folder-section::-webkit-scrollbar { display: none; }
-  body.sidebar-collapsed .section-label { max-width: 44px; width: auto; padding: 0; justify-content: center; }
+  body.sidebar-collapsed .section-label { max-width: 44px; width: auto; height: auto; min-height: 36px; padding: 0; justify-content: center; align-items: center; }
   body.sidebar-collapsed .section-label-actions { width: 44px; display: block; }
   body.sidebar-collapsed .section-label-actions #addFolder, body.sidebar-collapsed .section-label-actions #manageFolders { display: none; }
   body.sidebar-collapsed .section-label-actions #folderActionsMenu { width: 44px; height: 32px; border-radius: 9px; display: grid; place-items: center; }
