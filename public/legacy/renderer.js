@@ -3343,7 +3343,10 @@ function boardFrame(now) {
     } else active = true;
   }
   boardApplyCamera();
-  boardScheduleSync();
+  // 收束帧直接同步重算可见集合：相机已到最终值，不等下一帧的 rAF 延迟，
+  // 缩放 / 取景结束后所见区域的元素集合与最终视野同帧一致。
+  if (!active && boardMotion.mode === 'idle' && !boardMotion.anchor) boardSyncNodes();
+  else boardScheduleSync();
   if (active || boardMotion.mode !== 'idle' || boardMotion.anchor) boardEnsureFrame();
   else persistBoardState();
 }
@@ -5585,6 +5588,9 @@ function boardFitCameraToRect(rect) {
   boardCam.x = (w - rect.w * scale) / 2 - rect.x * scale;
   boardCam.y = (h - rect.h * scale) / 2 - rect.y * scale;
   boardApplyCamera();
+  // 临时取景一次跨出原可见范围（如导出框选的整板入镜）：按新相机重算
+  // 可见集合，把此前被虚拟化裁掉的元素补渲染出来，所见区域永远完整。
+  boardScheduleSync();
 }
 
 function boardSelectExportRegion() {
@@ -5656,6 +5662,7 @@ function boardSelectExportRegion() {
       canvas.classList.remove('is-export-region');
       Object.assign(boardCam, savedCam);
       boardApplyCamera();
+      boardScheduleSync();
       resolve(null);
     });
     observer.observe(canvas, { childList: true });
@@ -5666,6 +5673,7 @@ function boardSelectExportRegion() {
       canvas.classList.remove('is-export-region');
       Object.assign(boardCam, savedCam);
       boardApplyCamera();
+      boardScheduleSync();
       resolve(value);
     };
     layer.addEventListener('pointerdown', event => {
