@@ -9685,23 +9685,25 @@
     // 返回层级（window.__actaHandleBackButton 的主体）：物理返回键
     // （App 插件 backButton 事件）与预见式系统回调（MainActivity 桥接，
     // 见常规设置的「预见式返回」开关）共用这一套层级逻辑。
+    // 返回值区分「应用内消费」与「最小化退出」：前者在表面不可见时完成
+    // 切换后还要淡入落位，后者由系统接管窗口动画、不再落位。
     const runBackHierarchy = async () => {
       if (document.body.classList.contains('note-focus-mode')) {
         byId('exitFocusNoteEditor')?.click();
-        return;
+        return 'handled';
       }
       const relationDialog = document.querySelector('.relation-dialog[open]');
       if (relationDialog) {
         closeAnimatedDialog(relationDialog);
-        return;
+        return 'handled';
       }
-      if (settingsModal.classList.contains('open')) { closeSettings(); return; }
+      if (settingsModal.classList.contains('open')) { closeSettings(); return 'handled'; }
       // 只在放射菜单真的开着时才消费返回：这个分支若按「函数是否存在」
       // 判断会无条件 return，后面的编辑器 / 收集箱层级永远不可达——
       // 打开待办或笔记后返回操作就会失灵。
       const mobileCreateLayer = byId('mobileCreateLayer');
-      if (mobileCreateLayer && !mobileCreateLayer.hidden) { window.__actaCloseMobileCreate(); return; }
-      if (byId('createMenu').classList.contains('open')) { byId('createMenu').classList.remove('open'); return; }
+      if (mobileCreateLayer && !mobileCreateLayer.hidden) { window.__actaCloseMobileCreate(); return 'handled'; }
+      if (byId('createMenu').classList.contains('open')) { byId('createMenu').classList.remove('open'); return 'handled'; }
       if (byId('editorPane').classList.contains('mobile-open')) {
         mobileEditorOpen = false;
         if (skipNextCloseAnimation) {
@@ -9711,28 +9713,40 @@
           byId('editorPane').style.transition = 'none';
           byId('editorPane').classList.remove('mobile-open');
           requestAnimationFrame(() => byId('editorPane').style.removeProperty('transition'));
-          return;
+          return 'handled';
         }
         byId('editorPane').classList.remove('mobile-open');
-        return;
+        return 'handled';
       }
       // 移动端日历：年/月/周/日 的切换可被侧滑逐级回退（有历史才消费，
       // 没有则继续走收集箱 / 最小化层级）。
-      if (currentView === 'calendar' && window.__actaCalendarModeBack?.()) return;
+      if (currentView === 'calendar' && window.__actaCalendarModeBack?.()) return 'handled';
       if (currentView !== 'inbox') {
         document.querySelector('[data-view="inbox"]')?.click();
-        return;
+        return 'handled';
       }
       if (nativeApp.minimizeApp) await nativeApp.minimizeApp();
+      return 'minimized';
     };
     // 预见式返回提交时，层级动作等「沿手势进度继续退出」的动画播完再
     // 执行：原生侧在同一次 JS 求值里先 commit 再调这里，gate 负责把这里
     // 挂起到动画结束，避免「缩小态 → 跳回全尺寸 → 默认关闭动画」的闪跳。
     let backGestureGate = false;
     let backGateQueued = false;
+    let backExitRunning = false;
     window.__actaHandleBackButton = async () => {
       if (backGestureGate) { backGateQueued = true; return; }
-      await runBackHierarchy();
+      // 收拢淡出进行中：这一次返回已被同一次手势消费，不再叠加。
+      if (backExitRunning) return;
+      // 关掉「预见式返回」时保持原行为：各层级自己播默认关闭动画。
+      const exitAnimation = uiSettings.predictiveBack !== false;
+      // 没有前置手势（API 33 的提交回调、物理返回键、或关闭了预见式开关）
+      // 时，层级动作会直接播默认动画——这里补上同一段「收拢淡出 → 动作 →
+      // 落位」，让返回在任何触发方式下都是缩小淡出，而不是各层级各自的
+      // 默认关闭 / 瞬时替换。根层级（收集箱且无浮层）不播：窗口由系统
+      // 最小化，应用内的收拢会与系统动画叠加。
+      if (!exitAnimation || (!backGestureTarget() && currentView === 'inbox')) { await runBackHierarchy(); return; }
+      await runBackWithExit();
     };
     nativeApp.addListener('backButton', () => window.__actaHandleBackButton());
 
@@ -9818,6 +9832,103 @@
     const BACK_GESTURE_RADIUS = 32;
     const BACK_COMMIT_RADIUS = 42;
     const backGestureRadiusFor = v => BACK_GESTURE_RADIUS * v;
+
+    // —— 收拢淡出 / 落位：手势提交与非手势返回共用的进出场 ——
+    // 系统预见式返回的进出场是一对：退出的表面沿手势方向缩小淡出，目标
+    // 表面再淡入落位。此前只有「有浮层要关」才播退出动画，视图切换
+    // （归类 / 全部待办 / 日历 → 收集箱）走的是先弹回满尺寸、再被瞬时
+    // 替换；API 33 的提交回调更是没有任何手势末态可延续，层级动作直接
+    // 播默认关闭动画。两条路径现在都走这里。
+    let backExitTimer = 0;
+    let backSettleTimer = 0;
+    let backSettleToken = 0;
+    const backExitEndScale = (fromScale, isPage) =>
+      Math.max(Math.min(fromScale, backGestureScaleFor(1, isPage)) - .05, .55);
+    // 从 fromScale（手势末态 / 非手势时的 1）收拢到更小、同时淡出到全透明。
+    // 起始态显式落一次并强制回流，否则浏览器会把「起始 + 末态」合并成
+    // 一次样式计算，过渡不会触发。
+    const playBackExit = (surface, isPage, fromScale, fromOffsetX, fromRadius) => {
+      clearTimeout(backExitTimer);
+      clearTimeout(backSettleTimer);
+      backSettleToken += 1;   // 作废还没落位的上一次收尾
+      const endScale = backExitEndScale(fromScale, isPage);
+      surface.style.transition = 'none';
+      surface.style.setProperty('transform', `translateX(${fromOffsetX.toFixed(1)}px) scale(${Math.min(fromScale, 1).toFixed(4)})`, 'important');
+      if (isPage) {
+        surface.style.setProperty('border-radius', `${Math.max(fromRadius, 0).toFixed(1)}px`, 'important');
+        surface.style.setProperty('overflow', 'hidden', 'important');
+      }
+      surface.style.setProperty('opacity', '1', 'important');
+      void surface.offsetWidth;
+      surface.style.transition = 'transform .24s cubic-bezier(.5,0,.8,.4), border-radius .24s cubic-bezier(.5,0,.8,.4), opacity .2s cubic-bezier(.3,0,.7,.3)';
+      surface.style.setProperty('transform', `translateX(${(fromOffsetX * 1.3).toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important');
+      surface.style.setProperty('opacity', '0', 'important');
+      if (isPage) surface.style.setProperty('border-radius', `${BACK_COMMIT_RADIUS}px`, 'important');
+    };
+    // 动作完成后的落位：表面从当前（不可见的）末态回到原位并淡入。
+    // 延后两帧再落位：沉浸编辑退出时面板要从 fixed 全屏改回常规布局，同一
+    // 帧内改 opacity 会被这次重新排版吞掉过渡，看起来就是「啪」地出现。
+    const settleBackSurface = surface => {
+      clearTimeout(backSettleTimer);
+      const token = ++backSettleToken;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (token !== backSettleToken) return;
+        // 显式复位到起点再落过渡，保证起点这一帧已经被渲染过。
+        surface.style.transition = 'none';
+        surface.style.setProperty('opacity', '0', 'important');
+        void surface.offsetWidth;
+        surface.style.transition = 'transform .22s cubic-bezier(.2,.8,.3,1), border-radius .22s cubic-bezier(.2,.8,.3,1), opacity .2s ease-out';
+        surface.style.removeProperty('transform');
+        surface.style.removeProperty('border-radius');
+        surface.style.removeProperty('overflow');
+        surface.style.setProperty('opacity', '1', 'important');
+        backSettleTimer = setTimeout(() => clearBackGestureStyles(surface), 240);
+      }));
+    };
+    // 动作完成后表面是否还在页面上：沉浸编辑退出后仍是常规编辑器、视图
+    // 切换落在 app-shell 上——这两类要做淡入落位；设置 / 弹窗 / 放射菜单
+    // / 移动端编辑器在动作后自身就消失了，落位没有意义。
+    const backSurfaceSurvives = layerToClose =>
+      !layerToClose || document.body.classList.contains('note-focus-mode');
+    // 执行层级动作，随后按需落位。各层级的默认关闭动画都已由
+    // skipNextCloseAnimation 让位（含沉浸编辑的 leaving），这里只剩「表面
+    // 不可见时替换，再淡入」这一步。
+    const finishBackAction = async (surface, survives) => {
+      if (!survives) clearBackGestureStyles(surface);
+      let outcome = 'handled';
+      // 层级动作抛错也要把表面复位，否则页面会永远停在透明态。
+      try { outcome = await runBackHierarchy(); } catch { outcome = 'handled'; }
+      // 最小化：窗口交给系统，透明态会在回到前台时露馅，直接复位。
+      if (outcome === 'minimized') { clearBackGestureStyles(surface); return; }
+      if (!survives) return;
+      settleBackSurface(surface);
+    };
+    // 非手势路径（API 33 提交回调 / 物理返回键）的完整一遍：定位表面 →
+    // 收拢淡出 → 表面不可见时执行层级动作 → 落位。
+    const runBackWithExit = async () => {
+      const target = backGestureTarget();
+      const page = target || document.querySelector('.app-shell');
+      if (!page || document.body.classList.contains('acta-reduce-motion')) { await runBackHierarchy(); return; }
+      const surface = backGestureSurfaceOf(page);
+      const isPage = backGestureIsPageSurface(page);
+      const layerToClose = target != null;
+      const survives = backSurfaceSurvives(layerToClose);
+      if (backGestureEl && backGestureEl !== surface) clearBackGestureStyles(backGestureEl);
+      backGestureEl = null;
+      backGesturePageSurface = isPage;
+      setBackGestureBackdrop(page === settingsModal);
+      // 浮层：自身的关闭过渡要让位给这段收拢——否则会重播一次默认动画。
+      if (layerToClose) skipNextCloseAnimation = true;
+      backExitRunning = true;
+      try {
+        playBackExit(surface, isPage, 1, 0, 0);
+        await new Promise(resolve => { backExitTimer = setTimeout(resolve, 250); });
+        await finishBackAction(surface, survives);
+      } finally {
+        backExitRunning = false;
+      }
+    };
+
     window.__actaBackGesture = (phase, value, edge) => {
       if (phase === 'start' || phase === 'progress') {
         if (document.body.classList.contains('acta-reduce-motion')) return;
@@ -9832,6 +9943,9 @@
         setBackGestureBackdrop(page === settingsModal);
         if (phase === 'start') {
           clearTimeout(backGestureTransitionTimer);
+          // 上一次返回的落位收尾定时器也要取消：它到点会清掉内联样式，
+          // 正好落在这次手势中途就会把跟手的变换抹掉。
+          clearTimeout(backSettleTimer);
           surface.style.transition = 'none';
         }
         const gestureProgress = phase === 'progress' ? value : 0;
@@ -9868,28 +9982,30 @@
         return;
       }
       // commit：沿手势末态继续收拢退出——缩放与偏移延续、页面级表面
-      // 圆角收满（28 → 34px 有过渡）、整体淡出；动画结束才复位样式并
-      // 执行层级返回（gate 已挂起提交帧到达的动作）。层级自身的默认
-      // 关闭动画由 skipNextCloseAnimation 压制——预见式返回全程只有
-      // 这一段专用动画，不再重播默认动画。
-      if (hasLayerToClose) {
+      // 圆角收满、整体淡出；动画结束才执行层级返回（gate 已挂起提交帧
+      // 到达的动作）。
+      // 没有浮层可关时同样是这段退出：下一次返回会切换视图（归类 / 全部
+      // 待办 / 日历 → 收集箱）或最小化，此前的写法是直接把样式复位——
+      // 缩小态瞬间弹回满尺寸、再播默认的切换动画，看起来就像「手势白做
+      // 了」。现在视图在表面不可见时才替换，随后淡入落位；最小化交给
+      // 系统窗口动画，不落位。
+      const willAct = hasLayerToClose || currentView !== 'inbox';
+      if (willAct) {
+        const survives = backSurfaceSurvives(hasLayerToClose);
         backGestureGate = true;
-        skipNextCloseAnimation = true;
-        const endScale = Math.max(backGestureLastScale - .05, .55);
-        const endOffsetX = backGestureLastOffsetX * 1.3;
-        el.style.transition = 'transform .24s cubic-bezier(.5,0,.8,.4), border-radius .24s cubic-bezier(.5,0,.8,.4), opacity .22s cubic-bezier(.3,0,.7,.3)';
-        el.style.setProperty('transform', `translateX(${endOffsetX.toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important');
-        el.style.setProperty('opacity', '0', 'important');
-        if (pageSurface) {
-          el.style.setProperty('border-radius', `${BACK_COMMIT_RADIUS}px`, 'important');
-          el.style.setProperty('overflow', 'hidden', 'important');
-        }
-        clearTimeout(backGestureTransitionTimer);
-        backGestureTransitionTimer = setTimeout(() => {
-          clearBackGestureStyles(el);
+        if (hasLayerToClose) skipNextCloseAnimation = true;
+        playBackExit(el, pageSurface, backGestureLastScale, backGestureLastOffsetX, backGestureLastRadius);
+        backExitTimer = setTimeout(async () => {
           backGestureGate = false;
-          if (backGateQueued) { backGateQueued = false; void window.__actaHandleBackButton(); }
-        }, 260);
+          const queued = backGateQueued;
+          backGateQueued = false;
+          // 没有人排队执行层级动作时（异常路径）至少把表面复位，不能留在
+          // 透明态。
+          if (!queued) { clearBackGestureStyles(el); return; }
+          // 直接走层级：这次提交的动作用同一次收拢承载，不能再经
+          // __actaHandleBackButton（那会给它补一遍非手势路径的退出）。
+          await finishBackAction(el, survives);
+        }, 250);
         return;
       }
       clearBackGestureStyles(el);

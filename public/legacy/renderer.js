@@ -8758,14 +8758,20 @@ function bindNoteEditor(item) {
       return;
     }
     if (!document.body.classList.contains('note-focus-mode')) return;
-    document.body.classList.add('note-focus-leaving');
     const finish = () => {
       document.body.classList.remove('note-focus-mode', 'note-focus-leaving');
       article?.classList.remove('note-focus-active');
       (markdownMode ? source : body).focus();
     };
-    if (document.body.classList.contains('acta-reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
-    else focusExitTimer = setTimeout(finish, 210);
+    // 预见式返回提交后的退出：手势 / 收拢淡出已经是退出动画，这里的
+    // leaving 动画不再重播（window.__actaSkipNextCloseAnimation 由
+    // interface.js 设置，跨文件全局读取；置位而不消费会漏到下一次
+    // 不相关的关闭上）。
+    const skipExit = window.__actaSkipNextCloseAnimation === true;
+    if (skipExit) window.__actaSkipNextCloseAnimation = false;
+    if (skipExit || document.body.classList.contains('acta-reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
+    document.body.classList.add('note-focus-leaving');
+    focusExitTimer = setTimeout(finish, 210);
   };
   // 模式切换保真：进入源码模式时暂存可视化 DOM，若源码未被修改，
   // 退出时直接恢复原文（零转换）；只有真正改过源码才走 MD→HTML 转换。
