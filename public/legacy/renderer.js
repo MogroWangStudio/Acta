@@ -1802,6 +1802,7 @@ function syncCalendarShell() {
     boardRenderedCards.clear();
   }
   document.dispatchEvent(new CustomEvent('acta:view-changed', { detail: currentView }));
+  syncFolderTitleMark();
   const toolbar = $('#calendarToolbar');
   if (toolbar) {
     toolbar.hidden = !active;
@@ -1842,6 +1843,24 @@ function translateStaticUI() {
 function viewTitle() {
   if (currentView.startsWith('folder:')) return folderName(getFolder(currentView.split(':')[1]));
   return ({ inbox: t('inbox'), today: t('viewToday'), todos: t('viewTodos'), notes: t('viewNotes'), calendar: t('calendar'), trash: t('trash'), stats: t('stats'), board: t('board') })[currentView];
+}
+
+// 归类页标题左上角的身份标记：归类自定义 emoji（没设 emoji 时退回简称），
+// 以 50% 不透明度压在归类主题色的柔光上。非归类页清空内容，元素不占位。
+function syncFolderTitleMark() {
+  const mark = $('#viewFolderMark');
+  const glyph = $('#viewFolderMarkGlyph');
+  if (!mark || !glyph) return;
+  const folder = currentView.startsWith('folder:') ? getFolder(currentView.split(':')[1]) : null;
+  if (!folder) {
+    mark.style.removeProperty('--folder-mark-color');
+    if (glyph.textContent) glyph.textContent = '';
+    return;
+  }
+  const shortName = folderShortName(folder);
+  mark.style.setProperty('--folder-mark-color', folderColor(folder.color));
+  if (glyph.textContent !== shortName) glyph.textContent = shortName;
+  glyph.classList.toggle('is-emoji', folderShortNameUsesEmoji(shortName));
 }
 
 function listViewContext() {
@@ -2185,9 +2204,11 @@ function renderSidebar() {
   $('#folderNav').innerHTML = library.folders.map(folder => {
     const count = activeItems().filter(item => item.folderId === folder.id).length;
     const shortName = folderShortName(folder);
+    const color = folderColor(folder.color);
     const shortNameClasses = ['folder-short-name', folderShortNameUsesEmoji(shortName) ? 'is-emoji' : '', folderShortSegments(shortName).length > 2 ? 'is-long' : ''].filter(Boolean).join(' ');
-    return `<button data-view="folder:${escapeHTML(folder.id)}" class="${currentView === `folder:${folder.id}` ? 'active' : ''}" title="${escapeHTML(folderName(folder))}" aria-label="${escapeHTML(folderName(folder))}">
-      <span><i class="folder-dot" style="background:${escapeHTML(folder.color)};color:${escapeHTML(folder.color)}"><b class="${shortNameClasses}">${escapeHTML(shortName)}</b></i><span>${escapeHTML(folderName(folder))}</span></span><em>${count}</em>
+    // --folder-color 供折叠态圆形描边取色：选中环与归类色同步，不跟随全局强调色。
+    return `<button data-view="folder:${escapeHTML(folder.id)}" class="${currentView === `folder:${folder.id}` ? 'active' : ''}" style="--folder-color:${escapeHTML(color)}" title="${escapeHTML(folderName(folder))}" aria-label="${escapeHTML(folderName(folder))}">
+      <span><i class="folder-dot" style="background:${escapeHTML(color)};color:${escapeHTML(color)}"><b class="${shortNameClasses}">${escapeHTML(shortName)}</b></i><span>${escapeHTML(folderName(folder))}</span></span><em>${count}</em>
     </button>`;
   }).join('');
 

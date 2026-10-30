@@ -1857,9 +1857,16 @@ body.sidebar-collapsed { --acta-sidebar-width: 72px; }
   body:not(.sidebar-collapsed) .section-label-actions #addFolder,
   body:not(.sidebar-collapsed) .section-label-actions #manageFolders { animation: sidebarDockTextIn .34s var(--ease-out) .16s both; }
   body.sidebar-collapsed #folderNav button > span { position: absolute; left: 50%; top: 50%; width: 32px; height: 32px; flex: 0 0 32px; transform: translate(-50%,-50%); }
-  body.sidebar-collapsed #folderNav .folder-dot { width: 30px; height: 30px; display: grid; place-items: center; color: #fff !important; box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 10%, transparent), 0 5px 12px rgba(32,36,31,.12); transition: transform .36s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
+  /* 折叠态归类入口就是那枚圆色块本身：按钮的圆角底板与投影不再绘制。
+     悬停也不做横向位移——居中的圆横挪 2px 只会显得跳，反馈留给圆自身的缩放。 */
+  body.sidebar-collapsed #folderNav button,
+  body.sidebar-collapsed #folderNav button:hover,
+  body.sidebar-collapsed #folderNav button:active,
+  body.sidebar-collapsed #folderNav button.active { background: transparent; box-shadow: none; transform: none; }
+  body.sidebar-collapsed #folderNav .folder-dot { width: 30px; height: 30px; display: grid; place-items: center; color: #fff !important; box-shadow: 0 5px 12px rgba(32,36,31,.12); transition: transform .36s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
   body.sidebar-collapsed #folderNav button:hover .folder-dot { transform: scale(1.06); }
-  body.sidebar-collapsed #folderNav button.active .folder-dot { box-shadow: 0 0 0 2px var(--sidebar), 0 0 0 4px color-mix(in srgb, var(--sage) 55%, transparent), 0 7px 15px rgba(32,36,31,.16); }
+  /* 选中环绕一圈归类主题色：与圆块同色系，描边成为归类身份的延伸，不再另起强调色。 */
+  body.sidebar-collapsed #folderNav button.active .folder-dot { box-shadow: 0 0 0 2px var(--sidebar), 0 0 0 4px var(--folder-color, var(--sage)), 0 7px 15px rgba(32,36,31,.16); }
 body.sidebar-collapsed #folderNav .folder-short-name { max-width: 28px; overflow: hidden; display: block; color: #fff; font: 750 calc(11px * var(--acta-font-scale))/1 "Segoe UI", "PingFang SC", sans-serif; letter-spacing: -.02em; text-align: center; text-overflow: clip; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,.28); }
 body.sidebar-collapsed #folderNav .folder-short-name.is-long { font-size: calc(9px * var(--acta-font-scale)); letter-spacing: -.06em; }
 body.sidebar-collapsed #folderNav .folder-short-name.is-emoji { max-width: 30px; overflow: visible; font: 400 calc(17px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; letter-spacing: 0; text-shadow: none; }

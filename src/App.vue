@@ -116,6 +116,9 @@
         <section class="item-pane">
           <div class="item-header">
             <div class="item-title-row">
+              <!-- 归类页标题的身份标记：归类自定义 emoji（无 emoji 用简称），
+                   由 renderer 在切换视图时填充，其余视图不占位。 -->
+              <span class="view-folder-mark" id="viewFolderMark" aria-hidden="true"><span class="view-folder-mark-glyph" id="viewFolderMarkGlyph"></span></span>
               <h1 id="viewTitle">收集箱</h1>
               <button class="view-title-menu" id="viewTitleMenu" type="button" aria-label="查看归类" aria-haspopup="true" aria-expanded="false"><svg class="view-title-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
             </div>

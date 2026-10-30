@@ -324,6 +324,13 @@ body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"] > svg { a
 .item-header { height: 66px; padding: 15px 18px 10px 21px; display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
 .item-header h1 { margin: 0; font: 600 calc(23px * var(--acta-font-scale))/1.15 var(--acta-font-display); letter-spacing: -.03em; }
 .item-title-row { display: flex; align-items: center; gap: 4px; min-width: 0; }
+/* 归类页标题标记：归类自定义 emoji（没设 emoji 时退回简称），不透明度 50%，
+   背后的光是贴着圆角实心的径向渐变——不外泛、不加描边、不做动效，
+   只作为"这一页属于哪个归类"的底纹，不与标题抢层级。 */
+.view-folder-mark { display: none; flex: 0 0 auto; width: 26px; height: 26px; margin-right: 6px; border-radius: 9px; place-items: center; overflow: hidden; background: radial-gradient(120% 120% at 50% 42%, color-mix(in srgb, var(--folder-mark-color, var(--sage)) 30%, transparent), color-mix(in srgb, var(--folder-mark-color, var(--sage)) 11%, transparent) 58%, transparent 100%); }
+body.folder-view .view-folder-mark { display: grid; }
+.view-folder-mark-glyph { opacity: .5; color: var(--folder-mark-color, var(--ink)); font: 400 calc(15px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+.view-folder-mark-glyph:not(.is-emoji) { font: 800 calc(10px * var(--acta-font-scale))/1 var(--acta-font-display); letter-spacing: -.02em; text-transform: uppercase; }
 .view-title-menu { display: none; }
 .icon-button { width: 32px; height: 32px; border: 0; border-radius: 9px; display: grid; place-items: center; background: transparent; color: var(--muted); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
 .icon-button:hover { background: rgba(255,255,255,.8); color: var(--ink); transform: scale(1.07); }
