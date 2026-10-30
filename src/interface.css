@@ -160,8 +160,17 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
    字号统一：设置页与小字弹窗在各自作用域把字号系数覆盖为 base × 放大
    系数（只放大文字，布局尺寸不动，按视口封顶的弹窗不会被撑出屏幕），
    所有 calc(Npx * var(--acta-font-scale)) 仍跟随「界面字体大小」缩放；
-   速记弹窗（quick-capture-dialog）排除：其字号本就与主界面同档。 */
-.settings-window { --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.12); }
+   速记弹窗（quick-capture-dialog）排除：其字号本就与主界面同档。
+   设置窗的正文系数取 1.4：设置页普通文本基准是 10px，×1.4 后与主页面
+   普通文本（body / 任务行 14px 基准）严格同尺——同一滑杆值在设置页与
+   主页面渲染出相同的普通字号，不再一边大一边小。
+   展示级标题（设置页大标题）保留历史系数 1.12：它们不是「普通文本」，
+   跟随正文一起 ×1.4 会让标题凭空涨 25%、比主页面大标题高出六成——
+   用独立的 --settings-display-scale 让标题尺寸与改动前逐值一致。 */
+.settings-window {
+  --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.4);
+  --settings-display-scale: calc(var(--acta-font-scale-base, 1) * 1.12);
+}
 dialog.relation-dialog:not(.quick-capture-dialog), dialog.note-export-dialog, dialog.history-dialog, dialog.classification-manager-dialog { --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.1); }
 .settings-backdrop { position: fixed; inset: 0; z-index: 110; background: var(--paper); opacity: 0; pointer-events: none; transition: opacity .24s ease; }
 .settings-backdrop.open { opacity: 1; pointer-events: auto; }
@@ -209,7 +218,7 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-header .settings-back:active { transform: scale(.94); transition-duration: .08s; }
 .settings-header .settings-back svg { width: 17px; }
 /* 主标题收在返回钮的 38px 高度之内。 */
-.settings-header h2 { margin: 0; font: 650 calc(16px * var(--acta-font-scale))/1.2 var(--acta-font-display); letter-spacing: -.01em; }
+.settings-header h2 { margin: 0; font: 650 calc(16px * var(--settings-display-scale, var(--acta-font-scale)))/1.2 var(--acta-font-display); letter-spacing: -.01em; }
 .settings-layout { min-height: 0; display: grid; grid-template-columns: 210px minmax(0,1fr); }
 .settings-nav { padding: 16px 11px; border-right: 1px solid var(--line); background: var(--panel); overflow: hidden auto; }
 /* 功能组之间留出间隙：active / hover 的背景层不再上下相贴。 */
@@ -225,7 +234,7 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-panel { display: none; animation: editorReveal .35s var(--ease-out) both; }
 .settings-panel.active { display: block; }
 .settings-panel > header { margin-bottom: 25px; }
-.settings-panel > header h3 { margin: 0 0 7px; font: 600 calc(28px * var(--acta-font-scale))/1.2 var(--acta-font-display); }
+.settings-panel > header h3 { margin: 0 0 7px; font: 600 calc(28px * var(--settings-display-scale, var(--acta-font-scale)))/1.2 var(--acta-font-display); }
 .settings-panel > header p { margin: 0; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.65; }
 .settings-group { margin: 0 0 22px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.4); overflow: hidden; }
 .settings-row { min-height: 58px; padding: 12px 15px; display: flex; align-items: center; gap: 14px; }
@@ -422,7 +431,9 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .about-meta div { padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.4); }
 .about-meta small, .about-meta b { display: block; }
 .about-meta small { margin-bottom: 4px; color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
-.about-meta b { font-size: calc(10px * var(--acta-font-scale)); }
+/* 值里没有空格（如「Tauri（Windows/macOS），Capacitor（Android）」）时
+   默认规则无处可断：允许任意位置折行，字号放大或窄屏下不再撑破卡片。 */
+.about-meta b { font-size: calc(10px * var(--acta-font-scale)); overflow-wrap: anywhere; }
 .about-update { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
 .about-update .about-update-status { margin: 0; min-height: 0; padding: 0; background: transparent; flex: 1; min-width: 0; }
 .about-update-status[hidden] { display: none; }
@@ -433,7 +444,10 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .data-profile-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
 .data-profile-header > div { min-width: 0; }
 .data-profile-header .settings-button { flex: 0 0 auto; }
-.data-profile-header-actions { display: flex; gap: 10px; flex-wrap: wrap; flex: 0 0 auto; }
+/* 行记数据页头动作行：允许收缩，内部换行才真正生效——flex: 0 0 auto
+   会让这行保持 max-content 宽度（按钮永不换行），字号放大或窗口变窄时
+   整行溢出页头。 */
+.data-profile-header-actions { display: flex; gap: 10px; flex-wrap: wrap; flex: 0 1 auto; min-width: 0; justify-content: flex-end; }
 .browser-storage-notice { margin: -8px 0 18px; padding: 11px 13px; border: 1px solid color-mix(in srgb, var(--amber) 28%, var(--line)); border-radius: 12px; background: color-mix(in srgb, var(--amber-soft) 58%, var(--white)); color: color-mix(in srgb, var(--amber) 74%, var(--ink)); display: flex; align-items: flex-start; gap: 10px; }
 .browser-storage-notice[hidden] { display: none; }
 .browser-storage-notice > svg { width: 16px; height: 16px; flex: 0 0 auto; margin-top: 1px; }
@@ -1027,7 +1041,7 @@ body { font-size: calc(14px * var(--acta-font-scale)); }
 .empty-list h3 { font-size: calc(16px * var(--acta-font-scale)); }
 .empty-editor h2 { font-size: calc(22px * var(--acta-font-scale)); }
 .settings-nav button, .settings-panel > header p, .settings-row b, .settings-row select, .language-option strong, .theme-option b, .settings-status, .about-meta b { font-size: calc(10px * var(--acta-font-scale)); }
-.settings-panel > header h3 { font-size: calc(28px * var(--acta-font-scale)); }
+.settings-panel > header h3 { font-size: calc(28px * var(--settings-display-scale, var(--acta-font-scale))); }
 .note-body h2 { font-size: calc(24px * var(--acta-font-scale)); }
 .note-body h3 { font-size: calc(19px * var(--acta-font-scale)); }
 body.acta-compact .item-card { min-height: 82px; padding-top: 9px; padding-bottom: 8px; }
@@ -3097,7 +3111,7 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .settings-nav button i { display: none; }
   .settings-nav svg { width: 17px; flex: 0 0 auto; }
   .settings-content { padding: 25px 18px calc(30px + env(safe-area-inset-bottom)); }
-.settings-panel > header h3 { font-size: calc(25px * var(--acta-font-scale)); }
+.settings-panel > header h3 { font-size: calc(25px * var(--settings-display-scale, var(--acta-font-scale))); }
   .data-profile-header { align-items: stretch; flex-direction: column; }
   /* 窄屏页头：主操作各占一行；两个备份动作（立即备份 / 备份管理）短且
      同属一类，并成一行——加上新增的入口仍是 4 行，不再是 5 行一堵墙。 */
@@ -3756,7 +3770,9 @@ body.acta-reduce-motion .nav-preview-cell, body.acta-reduce-motion .nav-preview-
 .about-studio-hint {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   color: var(--ink); font-size: calc(9px * var(--acta-font-scale)); font-weight: 650;
-  white-space: nowrap; opacity: 0; pointer-events: none;
+  /* 卡内折行而非 nowrap：窄屏 / 大字号的提示文字不再横向溢出卡片。 */
+  padding: 0 12px; text-align: center; line-height: 1.3;
+  opacity: 0; pointer-events: none;
   transition: opacity .2s ease;
 }
 .about-studio:hover .about-studio-hint, .about-studio:focus-visible .about-studio-hint { opacity: 1; }
