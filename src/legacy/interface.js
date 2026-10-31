@@ -9728,27 +9728,47 @@
       if (nativeApp.minimizeApp) await nativeApp.minimizeApp();
       return 'minimized';
     };
-    // 预见式返回提交时，层级动作等「沿手势进度继续退出」的动画播完再
-    // 执行：原生侧在同一次 JS 求值里先 commit 再调这里，gate 负责把这里
-    // 挂起到动画结束，避免「缩小态 → 跳回全尺寸 → 默认关闭动画」的闪跳。
-    let backGestureGate = false;
-    let backGateQueued = false;
-    let backExitRunning = false;
+    // 返回动作的唯一入口：一次返回 = 一次「收拢淡出 → 层级动作 → 落位」。
+    // 同一时刻只允许一个在跑（busy 闸），重复触发（原生在同一帧调了
+    // commit 又调 handleBackButton、或 Capacitor 的 backButton 事件与
+    // 应用的动画回调同时到达）一律忽略，不会再出现两段动画互相打架。
+    let backActionBusy = false;
     window.__actaHandleBackButton = async () => {
-      if (backGestureGate) { backGateQueued = true; return; }
-      // 收拢淡出进行中：这一次返回已被同一次手势消费，不再叠加。
-      if (backExitRunning) return;
+      if (backActionBusy) return;
       // 关掉「预见式返回」时保持原行为：各层级自己播默认关闭动画。
-      const exitAnimation = uiSettings.predictiveBack !== false;
-      // 没有前置手势（API 33 的提交回调、物理返回键、或关闭了预见式开关）
-      // 时，层级动作会直接播默认动画——这里补上同一段「收拢淡出 → 动作 →
-      // 落位」，让返回在任何触发方式下都是缩小淡出，而不是各层级各自的
-      // 默认关闭 / 瞬时替换。根层级（收集箱且无浮层）不播：窗口由系统
-      // 最小化，应用内的收拢会与系统动画叠加。
-      if (!exitAnimation || (!backGestureTarget() && currentView === 'inbox')) { await runBackHierarchy(); return; }
-      await runBackWithExit();
+      if (uiSettings.predictiveBack === false) { await runBackHierarchy(); return; }
+      // 没有前置手势（API 33 的提交回调、物理返回键、Capacitor 的
+      // backButton 事件）时从满尺寸起手，补上同一段进出场——包括根层级：
+      // 那里返回最终是最小化，也要先收拢淡出，而不是让窗口直接滑走。
+      const target = backGestureTarget();
+      const page = target || document.querySelector('.app-shell');
+      if (!page) { await runBackHierarchy(); return; }
+      const surface = backGestureSurfaceOf(page);
+      const isPage = backGestureIsPageSurface(page);
+      const layerToClose = target != null;
+      if (layerToClose) skipNextCloseAnimation = true;
+      setBackGestureBackdrop(page === settingsModal);
+      await runBackAction({
+        surface,
+        isPage,
+        fromScale: 1,
+        fromOffsetX: 0,
+        fromRadius: 0,
+        survives: backSurfaceSurvives(layerToClose),
+        layerToClose
+      });
     };
     nativeApp.addListener('backButton', () => window.__actaHandleBackButton());
+    // 最小化前留下的收拢态：回到前台时复位（WebView 的 visibilitychange
+    // 与原生 resume 双保险，任一先到即可）。
+    let backPendingRestore = null;
+    const restoreBackSurface = () => {
+      if (!backPendingRestore) return;
+      clearBackGestureStyles(backPendingRestore);
+      backPendingRestore = null;
+    };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) restoreBackSurface(); });
+    try { nativeApp.addListener('resume', restoreBackSurface); } catch { /* 旧桥没有 resume */ }
 
     // —— 预见式返回的手势进度（Android 14+，MainActivity 桥接）——
     // 手势进度实时作用在「下一次返回会关闭的那一层」上，目标选择与
@@ -9838,16 +9858,18 @@
     // 表面再淡入落位。此前只有「有浮层要关」才播退出动画，视图切换
     // （归类 / 全部待办 / 日历 → 收集箱）走的是先弹回满尺寸、再被瞬时
     // 替换；API 33 的提交回调更是没有任何手势末态可延续，层级动作直接
-    // 播默认关闭动画。两条路径现在都走这里。
+    // 播默认关闭动画。所有路径现在都走 runBackAction。
     let backExitTimer = 0;
     let backSettleTimer = 0;
     let backSettleToken = 0;
     const backExitEndScale = (fromScale, isPage) =>
       Math.max(Math.min(fromScale, backGestureScaleFor(1, isPage)) - .05, .55);
-    // 从 fromScale（手势末态 / 非手势时的 1）收拢到更小、同时淡出到全透明。
+    // 从 fromScale（手势末态 / 非手势时的 1）收拢到更小、同时淡出。
     // 起始态显式落一次并强制回流，否则浏览器会把「起始 + 末态」合并成
     // 一次样式计算，过渡不会触发。
-    const playBackExit = (surface, isPage, fromScale, fromOffsetX, fromRadius) => {
+    // fadeTo：内容就地替换时淡到全透明（换页不能被看见）；最小化时留一点
+    // 亮度——窗口随后被系统收走，全透明的窗口在最近任务里是一块空白。
+    const playBackExit = (surface, isPage, fromScale, fromOffsetX, fromRadius, fadeTo) => {
       clearTimeout(backExitTimer);
       clearTimeout(backSettleTimer);
       backSettleToken += 1;   // 作废还没落位的上一次收尾
@@ -9862,7 +9884,7 @@
       void surface.offsetWidth;
       surface.style.transition = 'transform .24s cubic-bezier(.5,0,.8,.4), border-radius .24s cubic-bezier(.5,0,.8,.4), opacity .2s cubic-bezier(.3,0,.7,.3)';
       surface.style.setProperty('transform', `translateX(${(fromOffsetX * 1.3).toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important');
-      surface.style.setProperty('opacity', '0', 'important');
+      surface.style.setProperty('opacity', String(fadeTo), 'important');
       if (isPage) surface.style.setProperty('border-radius', `${BACK_COMMIT_RADIUS}px`, 'important');
     };
     // 动作完成后的落位：表面从当前（不可见的）末态回到原位并淡入。
@@ -9890,42 +9912,33 @@
     // / 移动端编辑器在动作后自身就消失了，落位没有意义。
     const backSurfaceSurvives = layerToClose =>
       !layerToClose || document.body.classList.contains('note-focus-mode');
-    // 执行层级动作，随后按需落位。各层级的默认关闭动画都已由
-    // skipNextCloseAnimation 让位（含沉浸编辑的 leaving），这里只剩「表面
-    // 不可见时替换，再淡入」这一步。
-    const finishBackAction = async (surface, survives) => {
-      if (!survives) clearBackGestureStyles(surface);
-      let outcome = 'handled';
-      // 层级动作抛错也要把表面复位，否则页面会永远停在透明态。
-      try { outcome = await runBackHierarchy(); } catch { outcome = 'handled'; }
-      // 最小化：窗口交给系统，透明态会在回到前台时露馅，直接复位。
-      if (outcome === 'minimized') { clearBackGestureStyles(surface); return; }
-      if (!survives) return;
-      settleBackSurface(surface);
-    };
-    // 非手势路径（API 33 提交回调 / 物理返回键）的完整一遍：定位表面 →
-    // 收拢淡出 → 表面不可见时执行层级动作 → 落位。
-    const runBackWithExit = async () => {
-      const target = backGestureTarget();
-      const page = target || document.querySelector('.app-shell');
-      if (!page || document.body.classList.contains('acta-reduce-motion')) { await runBackHierarchy(); return; }
-      const surface = backGestureSurfaceOf(page);
-      const isPage = backGestureIsPageSurface(page);
-      const layerToClose = target != null;
-      const survives = backSurfaceSurvives(layerToClose);
-      if (backGestureEl && backGestureEl !== surface) clearBackGestureStyles(backGestureEl);
-      backGestureEl = null;
-      backGesturePageSurface = isPage;
-      setBackGestureBackdrop(page === settingsModal);
-      // 浮层：自身的关闭过渡要让位给这段收拢——否则会重播一次默认动画。
-      if (layerToClose) skipNextCloseAnimation = true;
-      backExitRunning = true;
+    // 一次完整的返回：收拢淡出 → （表面不可见时）执行层级动作 → 落位。
+    // 只走这一条路，commit 与 handleBackButton 都调它，busy 闸保证不重叠。
+    const runBackAction = async ({ surface, isPage, fromScale, fromOffsetX, fromRadius, survives, layerToClose }) => {
+      if (backActionBusy) return;
+      backActionBusy = true;
       try {
-        playBackExit(surface, isPage, 1, 0, 0);
+        // 根层级（收集箱且无浮层）的下一步是最小化：窗口随后由系统收走，
+        // 淡到全透明会在最近任务里留下一块空白，所以只压到 15%。
+        const willMinimize = !layerToClose && currentView === 'inbox';
+        playBackExit(surface, isPage, fromScale, fromOffsetX, fromRadius, willMinimize ? .15 : 0);
         await new Promise(resolve => { backExitTimer = setTimeout(resolve, 250); });
-        await finishBackAction(surface, survives);
+        // 浮层自身要在动作里消失，先把内联样式摘掉（动作同帧执行，无闪帧）。
+        if (!survives) clearBackGestureStyles(surface);
+        let outcome = 'handled';
+        // 层级动作抛错也要把表面复位，否则页面会永远停在透明态。
+        try { outcome = await runBackHierarchy(); } catch { outcome = 'handled'; }
+        if (outcome === 'minimized') {
+          // 窗口正在被系统收走：保持收拢态作为离开前的最后一帧（同时是
+          // 最近任务里的快照），回到前台时再复位——这里若立刻复位，正在
+          // 滑走的窗口会「弹」回满尺寸，正是要消灭的观感。
+          backPendingRestore = surface;
+          return;
+        }
+        if (survives) settleBackSurface(surface);
+        else clearBackGestureStyles(surface);
       } finally {
-        backExitRunning = false;
+        backActionBusy = false;
       }
     };
 
@@ -9934,11 +9947,10 @@
         if (document.body.classList.contains('acta-reduce-motion')) return;
         if (phase === 'start') backGestureEdge = Number(value) === 0 ? -1 : 1;
         const target = backGestureTarget();
-        // 根层级（收集箱且无浮层）：这一步返回最终是「退出到桌面」，窗口
-        // 动画归系统管。此时若应用侧回调仍被触发（桥接 120ms 去抖未回落、
-        // 或设置页刚切换过来），一律不要起手位移——否则松手后只能把缩小
-        // 态弹回原尺寸，正是「回弹放大一下再被系统收回」的观感。
-        if (!target && backHierarchyAtRoot()) return;
+        // 根层级同样允许跟手预览：正常情况下这个回调已在根层级被原生注销
+        // （返回交给系统），这里覆盖的是桥接通知尚未落地的那一小段——此时
+        // 宁可有预览、松手后由 runBackAction 收拢再最小化，也不要让步势
+        // 完全没有反馈、或者缩小态被弹回原尺寸。
         const page = target || document.querySelector('.app-shell');
         if (!page) return;
         const surface = backGestureSurfaceOf(page);
@@ -9987,33 +9999,21 @@
         return;
       }
       // commit：沿手势末态继续收拢退出——缩放与偏移延续、页面级表面
-      // 圆角收满、整体淡出；动画结束才执行层级返回（gate 已挂起提交帧
-      // 到达的动作）。
-      // 没有浮层可关时同样是这段退出：下一次返回会切换视图（归类 / 全部
-      // 待办 / 日历 → 收集箱）或最小化，此前的写法是直接把样式复位——
-      // 缩小态瞬间弹回满尺寸、再播默认的切换动画，看起来就像「手势白做
-      // 了」。现在视图在表面不可见时才替换，随后淡入落位；最小化交给
-      // 系统窗口动画，不落位。
-      const willAct = hasLayerToClose || currentView !== 'inbox';
-      if (willAct) {
-        const survives = backSurfaceSurvives(hasLayerToClose);
-        backGestureGate = true;
-        if (hasLayerToClose) skipNextCloseAnimation = true;
-        playBackExit(el, pageSurface, backGestureLastScale, backGestureLastOffsetX, backGestureLastRadius);
-        backExitTimer = setTimeout(async () => {
-          backGestureGate = false;
-          const queued = backGateQueued;
-          backGateQueued = false;
-          // 没有人排队执行层级动作时（异常路径）至少把表面复位，不能留在
-          // 透明态。
-          if (!queued) { clearBackGestureStyles(el); return; }
-          // 直接走层级：这次提交的动作用同一次收拢承载，不能再经
-          // __actaHandleBackButton（那会给它补一遍非手势路径的退出）。
-          await finishBackAction(el, survives);
-        }, 250);
-        return;
-      }
-      clearBackGestureStyles(el);
+      // 圆角收满、整体淡出；表面不可见时才执行层级动作，随后落位。
+      // 提交不再等原生的 handleBackButton 来「补一刀」：这里直接把动作做完
+      // （busy 闸会忽略紧随其后的那次调用）。此前的写法要靠队列，队列没
+      // 到时只把样式复位——缩小态弹回满尺寸，正是「回弹放大」。
+      const survives = backSurfaceSurvives(hasLayerToClose);
+      if (hasLayerToClose) skipNextCloseAnimation = true;
+      void runBackAction({
+        surface: el,
+        isPage: pageSurface,
+        fromScale: backGestureLastScale,
+        fromOffsetX: backGestureLastOffsetX,
+        fromRadius: backGestureLastRadius,
+        survives,
+        layerToClose: hasLayerToClose
+      });
     };
 
     // —— 根层级同步：收集箱且无任何浮层 / 编辑器时，返回交给系统 ——
