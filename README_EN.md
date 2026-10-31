@@ -74,6 +74,8 @@ Common commands:
 
 Android builds require JDK 21, Android SDK 36, and Node.js 22 (Capacitor 8 requirements). The debug APK is generated at `android/app/build/outputs/apk/debug/app-debug.apk` and is not committed to the source repository.
 
+Note: **building or running straight from Android Studio does not copy the web assets** — the app keeps whatever page `cap sync` last copied into `android/app/src/main/assets/public`. After changing web code, run `npm run android:sync` (or just `npm run android:build`) before building the APK.
+
 ## Architecture
 
 Acta follows a “shared web core + platform adapters” design. Notes, tasks, views, and most synchronization logic have a single implementation. Platform layers only provide system capabilities such as windows, file pickers, directory access, network proxying, and notifications.

@@ -9934,6 +9934,11 @@
         if (document.body.classList.contains('acta-reduce-motion')) return;
         if (phase === 'start') backGestureEdge = Number(value) === 0 ? -1 : 1;
         const target = backGestureTarget();
+        // 根层级（收集箱且无浮层）：这一步返回最终是「退出到桌面」，窗口
+        // 动画归系统管。此时若应用侧回调仍被触发（桥接 120ms 去抖未回落、
+        // 或设置页刚切换过来），一律不要起手位移——否则松手后只能把缩小
+        // 态弹回原尺寸，正是「回弹放大一下再被系统收回」的观感。
+        if (!target && backHierarchyAtRoot()) return;
         const page = target || document.querySelector('.app-shell');
         if (!page) return;
         const surface = backGestureSurfaceOf(page);

@@ -79,6 +79,8 @@ npm start          # Tauri 桌面应用（自动拉起 Vite dev server）
 
 Android 构建需要 JDK 21、Android SDK 36 和 Node.js 22（Capacitor 8 要求）。生成的 debug APK 位于 `android/app/build/outputs/apk/debug/app-debug.apk`，不会提交到源码仓库。
 
+注意：**在 Android Studio 里直接 Build / Run 不会复制 Web 资源**，装上去的仍是上一次 `cap sync` 复制进 `android/app/src/main/assets/public` 的旧页面。改完 Web 代码务必先跑 `npm run android:sync`（或直接用 `npm run android:build`），再构建 APK。
+
 ## 项目架构
 
 Acta 采用“共享 Web 核心 + 平台适配层”的结构。笔记、待办、视图和大部分同步逻辑只维护一份；平台层仅负责系统能力，例如窗口、文件选择、目录访问、网络代理和通知。
