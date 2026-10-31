@@ -4545,7 +4545,27 @@
       settingsCloseTimer = 0;
       settingsModal.classList.remove('open', 'is-closing');
     };
-    if (reduceWindowMotion() || skipNextCloseAnimation) { skipNextCloseAnimation = false; finish(); return; }
+    if (reduceWindowMotion() || skipNextCloseAnimation) {
+      const predicted = skipNextCloseAnimation;
+      skipNextCloseAnimation = false;
+      // 预见式返回：收拢淡出已是退出动画。遮罩与窗口的过渡都挂在基类上
+      // （backdrop 的 opacity .24s、window 的 transform .32s），移除 open
+      // 时若不先把「无过渡」刷进计算样式，它们会当着用户的面再播一遍。
+      if (predicted) {
+        const win = settingsModal.querySelector('.settings-window');
+        settingsModal.style.transition = 'none';
+        if (win) win.style.transition = 'none';
+        finish();
+        void settingsModal.offsetWidth;
+        requestAnimationFrame(() => {
+          settingsModal.style.removeProperty('transition');
+          if (win) win.style.removeProperty('transition');
+        });
+        return;
+      }
+      finish();
+      return;
+    }
     settingsModal.classList.add('is-closing');
     settingsCloseTimer = setTimeout(finish, 250);
   }
@@ -9709,10 +9729,17 @@
         if (skipNextCloseAnimation) {
           // 预见式返回：手势的收拢淡出已是退出动画，面板自身的滑出过渡
           // 不再重播——直接归位，下一次打开的过渡照常。
+          // 「先落一帧」是必须的：样式表里 .editor-pane 自带 .42s 过渡，
+          // 若不在移除 mobile-open 之前把「无过渡」刷进计算样式，那次类别
+          // 变化会被样式表的过渡接管——面板当着用户的面滑出 420px 再淡回
+          // .6，正是「收起动画」。rAF 回调在下一帧的样式计算之前执行，
+          // 单靠它压不住，必须先强制一次样式落定。
           skipNextCloseAnimation = false;
-          byId('editorPane').style.transition = 'none';
-          byId('editorPane').classList.remove('mobile-open');
-          requestAnimationFrame(() => byId('editorPane').style.removeProperty('transition'));
+          const pane = byId('editorPane');
+          pane.style.transition = 'none';
+          pane.classList.remove('mobile-open');
+          void pane.offsetWidth;
+          requestAnimationFrame(() => pane.style.removeProperty('transition'));
           return 'handled';
         }
         byId('editorPane').classList.remove('mobile-open');
