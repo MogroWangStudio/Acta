@@ -879,6 +879,15 @@ html[data-acta-theme="candy-pop"] { --ink:#422c36; --muted:#846874; --faint:#b09
 html[data-acta-theme="mws-light"] { --ink:#33272a; --muted:#8c7076; --faint:#b7a3a8; --paper:#fffbfa; --panel:#fbeeea; --sidebar:#ffe5e1; --white:#ffffff; --line:rgba(150,62,70,.13); --sage:#ff6666; --sage-2:#ffe1de; --violet:#3fa765; --violet-soft:#d8f2e2; --amber:#c47a35; --amber-soft:#f6e5cd; color-scheme:light; }
 /* MWS 浅色品牌铺装：侧边栏 #FF6666、标题栏 #66CC66 严格取值，文字与控件用白色系。 */
 html[data-acta-theme="mws-light"] .titlebar { background: #66cc66; border-bottom-color: rgba(31,74,38,.16); }
+/* 顶栏绿底与侧栏红底上的品牌元素用白色：品牌字标、粒子射线与选中
+   功能图标的勾勒描线（默认取 --sage，MWS 浅色下 --sage 是品牌红，
+   在红底侧栏上与底色同色——勾勒等于隐形）。 */
+html[data-acta-theme="mws-light"] .brand-logo { color: #fff; }
+html[data-acta-theme="mws-light"] .logo-particles i { background: #fff; }
+html[data-acta-theme="mws-light"] .nav-icon-trace,
+html[data-acta-theme="mws-light"] .nav-section button.active .nav-icon-trace { color: #fff; }
+/* 选中项的白底略提亮：白描线在更高不透明度的白底上仍清晰可辨。 */
+html[data-acta-theme="mws-light"] .nav-section button.active { background: rgba(255,255,255,.32); }
 html[data-acta-theme="mws-light"] .titlebar-center { border-left-color: rgba(255,255,255,.32); }
 html[data-acta-theme="mws-light"] .titlebar-center span { color: rgba(255,255,255,.9); }
 html[data-acta-theme="mws-light"] .titlebar-center span.saving { color: #fff; }
