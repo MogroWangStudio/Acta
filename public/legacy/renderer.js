@@ -6706,6 +6706,27 @@ function boardLayerDragEnd(event) {
   });
 }
 
+// 图层换序的轻量上屏：按新数组序把已渲染的组件节点重新 append 进
+// world（appendChild 即重排，不重建画布）——入场动画不重播、相机不闪，
+// 关联曲线层保持在最底。world 里非组件节点（绘制草稿等）追加到末尾。
+function boardRestackWorldNodes(board) {
+  const world = boardEls?.world;
+  if (!world) return;
+  const links = $('.board-links', world);
+  if (links) world.appendChild(links);
+  board.widgets.forEach(widget => {
+    const element = boardRenderedCards.get(widget.id)
+      || world.querySelector(`[data-widget-id="${CSS.escape(widget.id)}"]`);
+    if (!element) return;
+    // appendChild 移动 = 重新插入 DOM，会重置并重播 CSS 入场动画——
+    // 摘掉入场标记（元素早已入场完毕）并取消运行中的动画，移动才是
+    // 纯粹的层叠变化。
+    element.removeAttribute('data-enter');
+    element.getAnimations().forEach(animation => animation.cancel());
+    world.appendChild(element);
+  });
+}
+
 function boardLayerReorder(state, at) {
   const { board } = state;
   const entries = [...state.entries];
@@ -6725,7 +6746,9 @@ function boardLayerReorder(state, at) {
   });
   touchBoard(board);
   persist();
-  renderList();
+  // 不走 renderList：它会把画布整个重建，入场动画重播、相机闪烁——
+  // 换序只改层叠，轻量重排已渲染节点即可。
+  boardRestackWorldNodes(board);
   boardRenderLayerPop();
 }
 
