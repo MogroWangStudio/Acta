@@ -3936,10 +3936,12 @@ function boardSyncMultiFrame() {
   if (!bounds) { frame.hidden = true; return; }
   const scale = boardCam.scale;
   frame.hidden = false;
-  frame.style.left = `${bounds.x * scale + boardCam.x}px`;
-  frame.style.top = `${bounds.y * scale + boardCam.y}px`;
-  frame.style.width = `${bounds.w * scale}px`;
-  frame.style.height = `${bounds.h * scale}px`;
+  // world 域视觉偏移 → canvas 布局（除以界面缩放），同 boardSyncToolbar。
+  const frameZoom = actaZoom();
+  frame.style.left = `${(bounds.x * scale + boardCam.x) / frameZoom}px`;
+  frame.style.top = `${(bounds.y * scale + boardCam.y) / frameZoom}px`;
+  frame.style.width = `${bounds.w * scale / frameZoom}px`;
+  frame.style.height = `${bounds.h * scale / frameZoom}px`;
 }
 
 function boardWidgetById(id) {
@@ -3975,8 +3977,9 @@ function boardEnsureEditorChrome() {
   });
   boardEditorResizer.addEventListener('pointermove', event => {
     if (!drag) return;
+    // rect.right 与 clientX 都是视觉坐标，宽度写入布局值前除以界面缩放。
     const rect = workspace.getBoundingClientRect();
-    const width = Math.min(760, Math.max(340, Math.round(rect.right - event.clientX)));
+    const width = Math.min(760, Math.max(340, Math.round((rect.right - event.clientX) / actaZoom())));
     document.documentElement.style.setProperty('--board-editor-w', `${width}px`);
     boardFocusSelection();
   });
@@ -4297,10 +4300,13 @@ function boardCloseBgPop() {
 function boardUpdateMarquee(gesture) {
   const element = boardEls?.marquee;
   if (!element) return;
-  element.style.left = `${Math.min(gesture.originX, gesture.currentX)}px`;
-  element.style.top = `${Math.min(gesture.originY, gesture.currentY)}px`;
-  element.style.width = `${Math.abs(gesture.currentX - gesture.originX)}px`;
-  element.style.height = `${Math.abs(gesture.currentY - gesture.originY)}px`;
+  // gesture 坐标是 viewport 视觉偏移（= world 视觉，1:1），marquee 挂在
+  // canvas 上：落到 canvas 布局要除以界面缩放。
+  const marqueeZoom = actaZoom();
+  element.style.left = `${Math.min(gesture.originX, gesture.currentX) / marqueeZoom}px`;
+  element.style.top = `${Math.min(gesture.originY, gesture.currentY) / marqueeZoom}px`;
+  element.style.width = `${Math.abs(gesture.currentX - gesture.originX) / marqueeZoom}px`;
+  element.style.height = `${Math.abs(gesture.currentY - gesture.originY) / marqueeZoom}px`;
 }
 
 function boardApplyMarquee(gesture) {
@@ -4379,9 +4385,15 @@ function boardSyncToolbar() {
   }
   bar.style.opacity = '';
   bar.style.pointerEvents = '';
-  bar.style.left = `${Math.min(Math.max(screenX, 150), Math.max(w - 150, 160))}px`;
+  // screenX/Y 是 world 域的视觉偏移（world 反缩放后 1:1），落到 canvas
+  // 布局要除以界面缩放（clamp 的 w 与 viewportSize.h 是 client* 布局域，
+  // 同步换算保持同一坐标系）。
+  const chromeZoom = actaZoom();
+  bar.style.left = `${Math.min(Math.max(screenX / chromeZoom, 150), Math.max(w / chromeZoom - 150, 160))}px`;
   // 组件上方放不下（贴近视口顶部）时，工具条移到组件下方，不再整体隐藏。
-  bar.style.top = screenY - 46 >= 10 ? `${screenY - 46}px` : `${Math.min(screenY + height * boardCam.scale + 14, viewportSize.h - 52)}px`;
+  bar.style.top = screenY / chromeZoom - 46 >= 10
+    ? `${screenY / chromeZoom - 46}px`
+    : `${Math.min((screenY + height * boardCam.scale) / chromeZoom + 14, viewportSize.h / chromeZoom - 52)}px`;
 }
 
 // —— 撤销 / 重做：以板组件快照为粒度（样式类操作 800ms 内合并为一步）。 ——
@@ -5650,23 +5662,28 @@ function boardSelectExportRegion() {
     const MIN_SCREEN = 80;
     const paint = () => {
       const s = boardCam.scale;
-      frame.style.left = `${boardCam.x + state.world.x * s}px`;
-      frame.style.top = `${boardCam.y + state.world.y * s}px`;
-      frame.style.width = `${state.world.w * s}px`;
-      frame.style.height = `${state.world.h * s}px`;
+      // world 域视觉偏移 → frame（canvas 布局）除以界面缩放，同 boardSyncToolbar。
+      const pz = actaZoom();
+      frame.style.left = `${(boardCam.x + state.world.x * s) / pz}px`;
+      frame.style.top = `${(boardCam.y + state.world.y * s) / pz}px`;
+      frame.style.width = `${state.world.w * s / pz}px`;
+      frame.style.height = `${state.world.h * s / pz}px`;
     };
     // 屏幕空间夹取：框始终留在画布可视区内（手柄够得着），最小 80px。
     const clampWorld = () => {
       const { w, h } = viewportSize();
       const s = boardCam.scale;
+      const pz = actaZoom(); // 布局视口 = 视觉 / 缩放，与 paint 同域
+      const vw = w / pz, vh = h / pz;
       let left = boardCam.x + state.world.x * s;
       let top = boardCam.y + state.world.y * s;
       let width = state.world.w * s;
       let height = state.world.h * s;
-      width = Math.min(Math.max(width, MIN_SCREEN), Math.max(MIN_SCREEN, w));
-      height = Math.min(Math.max(height, MIN_SCREEN), Math.max(MIN_SCREEN, h));
-      left = Math.min(Math.max(left, 0), Math.max(0, w - width));
-      top = Math.min(Math.max(top, 0), Math.max(0, h - height));
+      // width/height/left/top 都是视觉域，夹取边界用布局视口 vw/vh（同域）。
+      width = Math.min(Math.max(width, MIN_SCREEN), Math.max(MIN_SCREEN, vw));
+      height = Math.min(Math.max(height, MIN_SCREEN), Math.max(MIN_SCREEN, vh));
+      left = Math.min(Math.max(left, 0), Math.max(0, vw - width));
+      top = Math.min(Math.max(top, 0), Math.max(0, vh - height));
       state.world = {
         x: (left - boardCam.x) / s,
         y: (top - boardCam.y) / s,
@@ -6433,6 +6450,12 @@ let boardLayerDragState = null;
 
 const boardLayerBuzz = pattern => { try { navigator.vibrate?.(pattern); } catch { /* 无振动能力的环境静默跳过 */ } };
 
+// 界面整体缩放（root zoom）：指针事件坐标是视觉 px，offset*/scrollTop/
+// transform 是布局 px，两者相差 zoom 倍。图层拖拽里所有 client 域的量
+// 先除以 zoom 再进布局运算；画布内容层（#boardWorld）已做反缩放，其
+// 手势保持 1:1，无需修正。
+const actaZoom = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acta-ui-scale')) || 1;
+
 // 画布联动高亮：拖动哪一行，画布上对应的元素就亮起来（sage 描边）——
 // 面板行与画布内容的对应不用靠图标和名字猜，组行亮起全部成员。
 function boardLayerSetGhosts(state, on) {
@@ -6521,9 +6544,12 @@ function boardLayerDragTick() {
   if (!state || !state.moved) return;
   const rect = state.list.getBoundingClientRect();
   const span = Math.min(44, rect.height / 2);
+  // lastY 与 rect 同为视觉坐标，边缘判定一致；速度换算成布局滚动步长
+  // （scrollTop 是布局值）需要除以界面缩放。
+  const zoom = actaZoom();
   let speed = 0;
-  if (state.lastY < rect.top + span) speed = -Math.ceil((rect.top + span - state.lastY) / span * 9);
-  else if (state.lastY > rect.bottom - span) speed = Math.ceil((state.lastY - (rect.bottom - span)) / span * 9);
+  if (state.lastY < rect.top + span) speed = -Math.ceil((rect.top + span - state.lastY) / span * 9 / zoom);
+  else if (state.lastY > rect.bottom - span) speed = Math.ceil((state.lastY - (rect.bottom - span)) / span * 9 / zoom);
   if (speed) {
     const before = state.list.scrollTop;
     state.list.scrollTop = Math.min(Math.max(before + speed, 0), state.list.scrollHeight - state.list.clientHeight);
@@ -6545,7 +6571,9 @@ function boardLayerRubberband(over, dimension) {
 
 function boardLayerDragUpdate(state, clientY) {
   const scrollShift = state.list.scrollTop - state.scrollStart;
-  const raw = clientY - state.startY + scrollShift;
+  // 指针位移是视觉 px，除以界面缩放进入布局域（tops/deltaMin/Max 都是
+  // 布局值），跟手与落点在全布局域计算后再交给 transform。
+  const raw = (clientY - state.startY) / actaZoom() + scrollShift;
   state.delta = Math.min(Math.max(raw, state.deltaMin), state.deltaMax);
   const over = raw > state.deltaMax ? raw - state.deltaMax : raw < state.deltaMin ? raw - state.deltaMin : 0;
   const visual = state.delta + (over ? boardLayerRubberband(over, state.dragHeight * 2.5) : 0);
@@ -6646,7 +6674,9 @@ function boardLayerDragEnd(event) {
     .map(id => $('#boardLayerPop', boardEls?.canvas || document)?.querySelector(`[data-layer-entry="${CSS.escape(id)}"], [data-layer-pick="${CSS.escape(id)}"]`))
     .filter(Boolean);
   if (!freshRows.length) return;
-  const dy = first.top - freshRows[0].getBoundingClientRect().top;
+  // 两个 rect 都是视觉坐标，差值是视觉位移；transform 是布局值，除以
+  // 界面缩放（zoom=1 时恒等）。
+  const dy = (first.top - freshRows[0].getBoundingClientRect().top) / actaZoom();
   if (Math.abs(dy) < 1) return;
   const slide = `translateY(${dy.toFixed(1)}px)`;
   freshRows.forEach(row => {
@@ -7414,19 +7444,21 @@ function bindBoardScene() {
   function boardPositionMarkerMenu(menu, canvas) {
     const button = $('#boardAddMarker', canvas);
     if (!button) return;
+    // rect 差是视觉偏移，menu 挂在 canvas 上（布局域）：除以界面缩放。
+    const menuZoom = actaZoom();
     const btn = button.getBoundingClientRect();
     const box = canvas.getBoundingClientRect();
     const width = menu.offsetWidth || 128;
     const height = menu.offsetHeight || 216;
-    const maxLeft = Math.max(8, box.width - width - 8);
-    const left = Math.min(Math.max(8, btn.left - box.left + btn.width / 2 - width / 2), maxLeft);
+    const maxLeft = Math.max(8, box.width / menuZoom - width - 8);
+    const left = Math.min(Math.max(8, (btn.left - box.left) / menuZoom + btn.width / menuZoom / 2 - width / 2), maxLeft);
     menu.style.left = `${Math.round(left)}px`;
-    if (btn.top - box.top < height + 10) {
-      menu.style.top = `${Math.round(btn.bottom - box.top + 8)}px`;
+    if ((btn.top - box.top) / menuZoom < height + 10) {
+      menu.style.top = `${Math.round((btn.bottom - box.top) / menuZoom + 8)}px`;
       menu.style.bottom = 'auto';
       menu.classList.add('is-below');
     } else {
-      menu.style.bottom = `${Math.round(box.bottom - btn.top + 8)}px`;
+      menu.style.bottom = `${Math.round((box.bottom - btn.top) / menuZoom + 8)}px`;
       menu.style.top = 'auto';
       menu.classList.remove('is-below');
     }
@@ -8156,8 +8188,9 @@ function playCompletedSinkMotion(list, previousCards) {
     const previous = previousCards.get(card.dataset.id);
     if (!previous) return;
     const current = card.getBoundingClientRect();
-    const dx = previous.left - current.left;
-    const dy = previous.top - current.top;
+    // rect 差是视觉位移，transform 是布局值（除以界面缩放）。
+    const dx = (previous.left - current.left) / actaZoom();
+    const dy = (previous.top - current.top) / actaZoom();
     if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return;
     card.animate(
       [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0, 0)' }],
@@ -9110,8 +9143,9 @@ function addTask(item) {
   // 从同一视角位置接力平移过去，保持空间连续性（视线不跳动）。
   const pane = $('#editorPane');
   const activeRow = document.activeElement instanceof Element ? document.activeElement.closest('.task-row') : null;
+  // 视觉差 → 布局值（focusNewTaskRow 里与 offsetTop/clientHeight 同域比较）。
   const anchorTop = activeRow && pane?.contains(activeRow)
-    ? activeRow.getBoundingClientRect().top - pane.getBoundingClientRect().top
+    ? (activeRow.getBoundingClientRect().top - pane.getBoundingClientRect().top) / actaZoom()
     : null;
   touchItem(item); renderEditor(); renderList();
   requestAnimationFrame(() => focusNewTaskRow(task.id, anchorTop));

@@ -711,12 +711,14 @@
     if (!dateEl || !dateEl.dataset.time) { hideTaskDateTip(); return; }
     taskDateTip.textContent = formatDateTimeSeconds(dateEl.dataset.time);
     taskDateTip.hidden = false;
+    // 视觉坐标 → fixed 布局坐标（除以界面缩放）。
+    const z = actaZoom();
     const rect = dateEl.getBoundingClientRect();
     const tipRect = taskDateTip.getBoundingClientRect();
-    let x = rect.left + rect.width / 2 - tipRect.width / 2;
-    let y = rect.top - tipRect.height - 8;
-    if (y < 8) y = rect.bottom + 8;
-    x = Math.max(8, Math.min(x, window.innerWidth - tipRect.width - 8));
+    let x = (rect.left + rect.width / 2) / z - tipRect.width / z / 2;
+    let y = rect.top / z - tipRect.height / z - 8;
+    if (y < 8) y = rect.bottom / z + 8;
+    x = Math.max(8, Math.min(x, window.innerWidth / z - tipRect.width / z - 8));
     taskDateTip.style.left = `${x}px`;
     taskDateTip.style.top = `${y}px`;
   });
@@ -1249,9 +1251,11 @@
   function toggleFolderActionMenu() {
     if (!document.body.classList.contains('sidebar-collapsed')) return;
     if (folderActionMenu.classList.contains('open')) { closeFolderActionMenu(); return; }
+    // 视觉差 → sidebar 内 absolute 布局值（除以界面缩放）。
+    const z = actaZoom();
     const triggerRect = folderActionsMenu.getBoundingClientRect();
     const sidebarRect = byId('primarySidebar').getBoundingClientRect();
-    const top = Math.max(8, Math.min(triggerRect.top - sidebarRect.top - 4, sidebarRect.height - 126));
+    const top = Math.max(8, Math.min((triggerRect.top - sidebarRect.top) / z - 4, sidebarRect.height / z - 126));
     folderActionMenu.style.setProperty('--folder-menu-top', `${top}px`);
     folderActionMenu.classList.add('open');
     folderActionMenu.setAttribute('aria-hidden', 'false');
@@ -1510,7 +1514,9 @@
   });
   document.addEventListener('pointermove', event => {
     if (!classificationDragState.active || !classificationDragState.row) return;
-    const dy = event.clientY - classificationDragState.startY;
+    // dy 是视觉位移，transform 是布局值：除以界面缩放才是 1:1 跟手
+    // （zoom=1 时恒等，下同）。
+    const dy = (event.clientY - classificationDragState.startY) / actaZoom();
     classificationDragState.row.style.transform = `translateY(${dy}px)`;
     // 以「行中线越过邻行中线」为换位判据：找出第一条中线在拖拽行中线
     // 之后的行插到它之前，没有则落到末尾；落位后重置位移基准，1:1 不跳变。
@@ -2340,8 +2346,9 @@
                 const previous = previousRects.get(entry);
                 if (!previous) return;
                 const current = entry.getBoundingClientRect();
-                const dx = previous.left - current.left;
-                const dy = previous.top - current.top;
+                // rect 差是视觉位移，animate 的 transform 是布局值。
+                const dx = (previous.left - current.left) / actaZoom();
+                const dy = (previous.top - current.top) / actaZoom();
                 if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return;
                 try { entry.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0, 0)' }], { duration: 480, easing: 'cubic-bezier(.16, 1, .3, 1)' }); } catch { /* 动画失败不影响落位 */ }
               });
@@ -2474,7 +2481,7 @@
           [...doneGroup.children].forEach(entry => {
             const previous = previousRects.get(entry);
             if (!previous) return;
-            const dy = previous.top - entry.getBoundingClientRect().top;
+            const dy = (previous.top - entry.getBoundingClientRect().top) / actaZoom(); // 视觉差 → 布局值
             if (Math.abs(dy) < 2) return;
             try { entry.animate([{ transform: `translateY(${dy}px)` }, { transform: 'translate(0, 0)' }], { duration: 420, easing: 'cubic-bezier(.16, 1, .3, 1)' }); } catch { /* 动画失败不影响落位 */ }
           });
@@ -2520,7 +2527,8 @@
         });
         taskList.addEventListener('pointermove', event => {
           if (!drag) return;
-          drag.row.style.transform = `translateY(${event.clientY - drag.startY}px)`;
+          // 视觉位移 → 布局值（除以界面缩放），保证 1:1 跟手。
+          drag.row.style.transform = `translateY(${(event.clientY - drag.startY) / actaZoom()}px)`;
           const rows = [...taskList.querySelectorAll('.task-row')];
           // 拖动行自身随指针位移（transform 影响其矩形），必须排除，
           // 否则指针永远命中自己、永远无法标记其他行的插入位置。
@@ -4883,7 +4891,7 @@
     const palette = ['#526b55', '#a8c3a5', '#daa03c', '#b96051', '#efe9d8'];
     for (let index = 0; index < 26; index += 1) {
       const piece = document.createElement('i');
-      piece.style.setProperty('--x', `${Math.round(origin.x + (Math.random() - 0.5) * 260)}px`);
+      piece.style.setProperty('--x', `${Math.round((origin.x + (Math.random() - 0.5) * 260) / actaZoom())}px`); // 视觉 → 布局
       piece.style.setProperty('--fall', `${(1.7 + Math.random() * 1.5).toFixed(2)}s`);
       piece.style.setProperty('--drift', `${Math.round((Math.random() - 0.5) * 130)}px`);
       piece.style.setProperty('--spin', `${Math.round((Math.random() - 0.5) * 720)}deg`);
@@ -5091,7 +5099,7 @@
     };
     const pullPaint = () => {
       pullFrame = 0;
-      pullIndicator.style.setProperty('--pull-shift', `${pullShift.toFixed(1)}px`);
+      pullIndicator.style.setProperty('--pull-shift', `${(pullShift / actaZoom()).toFixed(1)}px`); // 视觉 → 布局
       pullIndicator.style.setProperty('--pull-spin', `${(pullShift * 3.4).toFixed(1)}deg`);
       pullIndicator.style.setProperty('--pull-grow', (0.88 + 0.12 * Math.min(1, pullShift / PULL_TRIGGER)).toFixed(3));
       pullIndicator.style.opacity = Math.min(1, pullShift / 40).toFixed(3);
@@ -5165,7 +5173,7 @@
     const bottomBody = () => pullList.querySelector('.list-body') || pullList;
     const bottomPaint = () => {
       bottomFrame = 0;
-      bottomBody().style.transform = `translateY(${(-bottomShift).toFixed(1)}px)`;
+      bottomBody().style.transform = `translateY(${(-bottomShift / actaZoom()).toFixed(1)}px)`; // 视觉 → 布局
     };
     const bottomRelease = () => {
       if (!bottomEngaged) return;
@@ -5223,7 +5231,7 @@
       if (atBottom && bottomVelocity > 0.55) {
         const shift = Math.min(56, Math.max(12, Math.round(bottomVelocity * 80)));
         bottomVelocity = 0;
-        pullList.style.setProperty('--bottom-bounce', `${-shift}px`);
+        pullList.style.setProperty('--bottom-bounce', `${(-shift / actaZoom()).toFixed(1)}px`); // 视觉 → 布局
         pullList.classList.add('bottom-bounce');
         setTimeout(() => pullList.classList.remove('bottom-bounce'), 470);
       }
@@ -5569,7 +5577,7 @@
     listResizer.classList.add('dragging');
     const startX = event.clientX;
     const startWidth = uiSettings.listPaneWidth;
-    const move = moveEvent => applyListWidth(startWidth + moveEvent.clientX - startX);
+    const move = moveEvent => applyListWidth(startWidth + (moveEvent.clientX - startX) / actaZoom()); // 视觉 → 布局
     const end = () => {
       listResizer.classList.remove('dragging');
       listResizer.removeEventListener('pointermove', move);
@@ -5790,7 +5798,8 @@
   });
   document.addEventListener('pointermove', event => {
     if (!navDragState.active || !navDragState.row) return;
-    const dy = event.clientY - navDragState.startY;
+    // dy 是视觉位移，transform 是布局值：除以界面缩放才是 1:1 跟手。
+    const dy = (event.clientY - navDragState.startY) / actaZoom();
     navDragState.row.style.transform = `translateY(${dy}px)`;
     // 以「行中线越过邻行中线」为交换判据（苹果式 1:1 跟随 + 半程吸附）：
     // 找出第一个中线在拖拽行中线以下的行，插到它之前；没有则落到末尾。
@@ -6812,10 +6821,17 @@
     customFontRow.classList.toggle('show', uiSettings.appFont === 'custom');
   }
 
-  // —— 界面整体缩放（外观设置）：85%–125%，写入根元素 --acta-ui-scale。
-  // 几何骨架（顶栏 / 底栏 / 列表卡片等）直接乘该变量，文字经由
-  // --acta-font-scale = base × ui-scale 跟随，整个界面等比缩放；安全区
-  // insets 是物理值不参与缩放。存储值为整数百分比（100 = 默认）。
+  // —— 界面整体缩放（外观设置）：85%–125%，真正的全局缩放——
+  // 根级 zoom（styles.css html { zoom: var(--acta-ui-scale) }）缩放整个
+  // 视口内容。这里负责三件配套变量：
+  // · --acta-ui-scale：zoom 值本身（styles.css html 规则消费）；
+  // · --acta-ui-scale-inverse = 1 / zoom：计划板 #boardWorld 反缩放用
+  //   （画布有自己的相机体系，内容不随界面缩放，画布内指针换算保持 1:1）；
+  // · --acta-vh = innerHeight / zoom：root zoom 下 vh 的解析不随 zoom
+  //   调整（100vh 元素视觉溢出，Chromium 128+ 与 WebKit 实测一致），
+  //   全项目的视口高度一律走这个变量；resize 时随窗口刷新。
+  // 「界面字体大小」--acta-font-scale 只跟 base，不再乘 ui-scale（zoom
+  // 已缩放文字，乘第二遍会双重放大）。存储值为整数百分比（100 = 默认）。
   const uiScaleSetting = byId('uiScaleSetting');
   const uiScaleValue = byId('uiScaleValue');
   const uiScaleRange = Object.freeze({ min: 85, max: 125, default: 100, step: 5 });
@@ -6825,15 +6841,27 @@
     const snapped = Math.round(requested / uiScaleRange.step) * uiScaleRange.step;
     return Math.min(uiScaleRange.max, Math.max(uiScaleRange.min, snapped));
   };
+  // 手势换算约定：指针位移是视觉 px（clientX/Y 所在坐标系），写入布局值
+  // （transform / 宽高 / 定位）要除以 zoom——视觉差 × zoom 才是布局差。
+  // zoom = 1 时全部为恒等，不影响默认状态。
+  const actaZoom = () => (Number(uiSettings.uiScale) || 100) / 100;
+  window.actaZoom = actaZoom;
   function applyUiScale() {
     uiSettings.uiScale = normalizeUiScale();
-    document.documentElement.style.setProperty('--acta-ui-scale', String(uiSettings.uiScale / 100));
+    const scale = uiSettings.uiScale / 100;
+    document.documentElement.style.setProperty('--acta-ui-scale', String(scale));
+    document.documentElement.style.setProperty('--acta-ui-scale-inverse', (1 / scale).toFixed(4));
+    document.documentElement.style.setProperty('--acta-vh', `${(innerHeight / scale).toFixed(2)}px`);
     if (uiScaleSetting && uiScaleValue) {
       uiScaleSetting.value = String(uiSettings.uiScale);
       uiScaleValue.textContent = `${uiSettings.uiScale}%`;
       uiScaleSetting.setAttribute('aria-valuetext', `${uiSettings.uiScale}%`);
     }
   }
+  window.addEventListener('resize', () => {
+    const scale = (Number(uiSettings.uiScale) || 100) / 100;
+    document.documentElement.style.setProperty('--acta-vh', `${(innerHeight / scale).toFixed(2)}px`);
+  });
   if (uiScaleSetting && uiScaleValue) {
     uiScaleSetting.min = String(uiScaleRange.min);
     uiScaleSetting.max = String(uiScaleRange.max);
@@ -9741,7 +9769,7 @@
       if (height > baseViewportHeight) baseViewportHeight = height;
       const keyboard = Math.max(0, baseViewportHeight - height);
       if (sidebarForKeyboard) {
-        if (keyboard > 0) sidebarForKeyboard.style.setProperty('transform', `translateY(${keyboard}px)`);
+        if (keyboard > 0) sidebarForKeyboard.style.setProperty('transform', `translateY(${(keyboard / actaZoom()).toFixed(1)}px)`); // 视觉 → 布局
         else sidebarForKeyboard.style.removeProperty('transform');
       }
     };
@@ -9946,7 +9974,7 @@
       backSettleToken += 1;   // 作废还没落位的上一次收尾
       const endScale = backExitEndScale(fromScale, isPage);
       surface.style.transition = 'none';
-      surface.style.setProperty('transform', `translateX(${fromOffsetX.toFixed(1)}px) scale(${Math.min(fromScale, 1).toFixed(4)})`, 'important');
+      surface.style.setProperty('transform', `translateX(${(fromOffsetX / actaZoom()).toFixed(1)}px) scale(${Math.min(fromScale, 1).toFixed(4)})`, 'important'); // 视觉 → 布局
       if (isPage) {
         surface.style.setProperty('border-radius', `${Math.max(fromRadius, 0).toFixed(1)}px`, 'important');
         surface.style.setProperty('overflow', 'hidden', 'important');
@@ -9954,7 +9982,7 @@
       surface.style.setProperty('opacity', '1', 'important');
       void surface.offsetWidth;
       surface.style.transition = 'transform .24s cubic-bezier(.5,0,.8,.4), border-radius .24s cubic-bezier(.5,0,.8,.4), opacity .2s cubic-bezier(.3,0,.7,.3)';
-      surface.style.setProperty('transform', `translateX(${(fromOffsetX * 1.3).toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important');
+      surface.style.setProperty('transform', `translateX(${(fromOffsetX * 1.3 / actaZoom()).toFixed(1)}px) scale(${endScale.toFixed(4)})`, 'important'); // 视觉 → 布局
       surface.style.setProperty('opacity', String(fadeTo), 'important');
       if (isPage) surface.style.setProperty('border-radius', `${BACK_COMMIT_RADIUS}px`, 'important');
     };
@@ -10044,7 +10072,7 @@
         backGestureLastScale = scale;
         backGestureLastOffsetX = offsetX;
         backGestureLastRadius = backGestureRadiusFor(v);
-        surface.style.setProperty('transform', `translateX(${offsetX.toFixed(1)}px) scale(${scale.toFixed(4)})`, 'important');
+        surface.style.setProperty('transform', `translateX(${(offsetX / actaZoom()).toFixed(1)}px) scale(${scale.toFixed(4)})`, 'important'); // 视觉 → 布局
         if (backGesturePageSurface) {
           surface.style.setProperty('border-radius', `${backGestureLastRadius.toFixed(1)}px`, 'important');
           surface.style.setProperty('overflow', 'hidden', 'important');
@@ -10222,9 +10250,12 @@
     contextMenu.setAttribute('aria-hidden', 'false');
     contextMenu.style.left = '0px';
     contextMenu.style.top = '0px';
+    // 传入的 x/y 与 rect 都是视觉坐标，fixed 的 left/top 是布局值：统一
+    // 除以界面缩放落到布局域再夹取（菜单尺寸 rect.width 亦同）。
+    const z = actaZoom();
     const rect = contextMenu.getBoundingClientRect();
-    contextMenu.style.left = `${Math.max(8, Math.min(x, window.innerWidth - rect.width - 8))}px`;
-    contextMenu.style.top = `${Math.max(8, Math.min(y, window.innerHeight - rect.height - 8))}px`;
+    contextMenu.style.left = `${Math.max(8, Math.min(x / z, window.innerWidth / z - rect.width / z - 8))}px`;
+    contextMenu.style.top = `${Math.max(8, Math.min(y / z, window.innerHeight / z - rect.height / z - 8))}px`;
   }
 
   contextMenu?.addEventListener('click', async event => {

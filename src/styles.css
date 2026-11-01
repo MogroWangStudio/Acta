@@ -19,14 +19,25 @@
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --acta-font-display: Georgia, "Songti SC", serif;
   --list-pane-width: 330px;
-  /* 「界面整体缩放」（外观设置滑杆，85%–125%）：几何骨架尺寸直接乘在
-     --acta-ui-scale 上（顶栏、底栏、列表卡片等，见各处的
-     calc(Npx * var(--acta-ui-scale, 1))）；字号不单独乘——文字统一走
-     --acta-font-scale，由这里把「界面字体大小」的 base 与 ui-scale 合成，
-     两套设置的放大效果自然叠加。设置页与小弹窗的作用域覆写
-     （interface.css）同样以 base × ui-scale 为基底。 */
+  /* 「界面整体缩放」（外观设置滑杆，85%–125%）：真正的全局缩放——
+     html { zoom: var(--acta-ui-scale) } 让整个视口内容（布局、控件、
+     文字、弹窗）等比缩放，与浏览器页面缩放同源。配套约定：
+     · --acta-font-scale 只跟「界面字体大小」（base），不再乘 ui-scale——
+       zoom 已缩放文字，乘第二遍会双重放大；
+     · --acta-vh 由 JS 维护 = innerHeight / zoom，替代 vh（root zoom 下
+       vh 的解析不随 zoom 调整，var(--acta-vh) 元素会视觉溢出，实测 Chromium 与
+       WebKit 一致）；
+     · --acta-ui-scale-inverse = 1 / zoom，供画布反缩放与手势换算使用；
+     · 计划板 #boardWorld 用 inverse 反缩放：画布有自己的相机体系，
+       内容不随界面缩放（同 Figma 的界面/画布分离），画布内的指针
+       换算因此保持 1:1，无需逐处修正。
+     · 自定义手势里「指针位移（视觉 px）→ 写入布局值（transform /
+       宽高 / 定位）」的地方都要除以 zoom（视觉差 × zoom 才是布局差），
+       见 interface.js 的 actaZoom() 调用点。 */
   --acta-ui-scale: 1;
-  --acta-font-scale: calc(var(--acta-font-scale-base, 1) * var(--acta-ui-scale, 1));
+  --acta-ui-scale-inverse: 1;
+  --acta-vh: var(--acta-vh);
+  --acta-font-scale: var(--acta-font-scale-base, 1);
   /* 移动端底栏的圆形「新建」按钮：按正方形占位（直径 + 两侧净空），
      底栏网格据此留出中列，入口按钮不与圆形交叉。圆形略高于底栏上缘，
      形成悬浮的主操作按钮；占位同步加大，避免压住两侧入口。 */
@@ -43,7 +54,18 @@ html, body {
   overflow: hidden;
 }
 
-html { -webkit-tap-highlight-color: transparent; }
+html {
+  -webkit-tap-highlight-color: transparent;
+  /* 「界面整体缩放」的挂载点：根级 zoom 缩放整个视口内容（布局、控件、
+     文字、弹窗一视同仁），与浏览器页面缩放同源。配套：
+     · --acta-vh 由 JS 维护（innerHeight / zoom）——root zoom 下 vh 的
+       解析不随 zoom 调整，100vh 会视觉溢出（Chromium 128+ 与 WebKit
+       实测一致），全项目的视口高度一律走 --acta-vh；
+     · position:fixed 与 height:100% 在根级 zoom 下语义正确（实验确认），
+       安全区 env() 保持物理值、不做补偿（偏差只影响刘海设备的边距）；
+     · 手势换算的约定见 :root 注释与 interface.js 的 actaZoom()。 */
+  zoom: var(--acta-ui-scale, 1);
+}
 
 body {
   color: var(--ink);
@@ -108,10 +130,10 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 ::selection { background: color-mix(in srgb, var(--sage) 30%, transparent); }
 .note-body ::selection, .note-body::selection, .note-markdown-source::selection, .editor-title::selection, .task-text::selection, .todo-notes::selection { background: color-mix(in srgb, var(--note-accent, var(--sage)) 28%, transparent); }
 
-.app-shell { height: 100vh; width: 100vw; }
+.app-shell { height: var(--acta-vh); width: 100vw; }
 
 .titlebar {
-  height: calc(52px * var(--acta-ui-scale, 1));
+  height: 52px;
   background: var(--sidebar);
   border-bottom: 1px solid rgba(42, 48, 41, .08);
   display: grid;
@@ -129,12 +151,12 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 .desktop-window-controls {
   display: none;
   align-self: stretch;
-  height: calc(52px * var(--acta-ui-scale, 1));
+  height: 52px;
   -webkit-app-region: no-drag;
 }
 .desktop-window-controls button {
-  width: calc(46px * var(--acta-ui-scale, 1));
-  height: calc(52px * var(--acta-ui-scale, 1));
+  width: 46px;
+  height: 52px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -159,7 +181,7 @@ html[data-desktop-platform="win32"] .titlebar-center { padding-right: 8px; }
 html[data-desktop-platform="win32"] .desktop-window-controls { display: flex; }
 html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 
-.workspace { height: calc(100vh - 52px * var(--acta-ui-scale, 1)); display: grid; grid-template-columns: 248px clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr); }
+.workspace { height: calc(var(--acta-vh) - 52px * var(--acta-ui-scale, 1)); display: grid; grid-template-columns: 248px clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr); }
 
 .sidebar {
   background: var(--sidebar);
@@ -171,7 +193,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 }
 
 .new-button {
-  width: 100%; height: calc(45px * var(--acta-ui-scale, 1)); border: 0; border-radius: 12px;
+  width: 100%; height: 45px; border: 0; border-radius: 12px;
   background: var(--ink); color: var(--white);
   display: flex; align-items: center; padding: 0 13px; gap: 9px;
   cursor: pointer; box-shadow: 0 1px 2px rgba(33,38,32,.1);
@@ -328,7 +350,7 @@ body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"] > svg { a
 .list-resizer:hover::after, .list-resizer.dragging::after { opacity:.45; }
 /* 移除大标题上方的小标题后收紧头部（83→66px），标题上移填补空缺，
    列表与编辑器的起点相应上移。 */
-.item-header { height: calc(66px * var(--acta-ui-scale, 1)); padding: calc(15px * var(--acta-ui-scale, 1)) 18px calc(10px * var(--acta-ui-scale, 1)) 21px; display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
+.item-header { height: 66px; padding: 15px 18px 10px 21px; display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
 .item-header h1 { margin: 0; font: 600 calc(23px * var(--acta-font-scale))/1.15 var(--acta-font-display); letter-spacing: -.03em; }
 .item-title-row { display: flex; align-items: center; gap: 4px; min-width: 0; }
 /* 归类页标题标记：归类自定义 emoji（没设 emoji 时退回简称），不透明度 50%，
@@ -339,10 +361,10 @@ body.folder-view .view-folder-mark { display: grid; }
 .view-folder-mark-glyph { opacity: .5; color: var(--folder-mark-color, var(--ink)); font: 400 calc(15px * var(--acta-font-scale))/1 "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
 .view-folder-mark-glyph:not(.is-emoji) { font: 800 calc(10px * var(--acta-font-scale))/1 var(--acta-font-display); letter-spacing: -.02em; text-transform: uppercase; }
 .view-title-menu { display: none; }
-.icon-button { width: calc(32px * var(--acta-ui-scale, 1)); height: calc(32px * var(--acta-ui-scale, 1)); border: 0; border-radius: 9px; display: grid; place-items: center; background: transparent; color: var(--muted); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
+.icon-button { width: 32px; height: 32px; border: 0; border-radius: 9px; display: grid; place-items: center; background: transparent; color: var(--muted); cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
 .icon-button:hover { background: rgba(255,255,255,.8); color: var(--ink); transform: scale(1.07); }
 .icon-button svg { width: 17px; }
-.search-box { margin: 9px 18px 12px; height: calc(38px * var(--acta-ui-scale, 1)); border: 1px solid rgba(42,48,41,.08); border-radius: 10px; background: rgba(255,255,255,.66); display: flex; align-items: center; padding: 0 10px; gap: 8px; transition: background .2s, box-shadow .25s, border-color .25s; }
+.search-box { margin: 9px 18px 12px; height: 38px; border: 1px solid rgba(42,48,41,.08); border-radius: 10px; background: rgba(255,255,255,.66); display: flex; align-items: center; padding: 0 10px; gap: 8px; transition: background .2s, box-shadow .25s, border-color .25s; }
 .search-box:focus-within { background: var(--white); border-color: rgba(82,107,85,.28); box-shadow: 0 0 0 3px rgba(82,107,85,.07); }
 .search-box svg { width: 15px; color: var(--faint); }
 .search-box input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); }
@@ -352,7 +374,7 @@ body.folder-view .view-folder-mark { display: grid; }
    排序、优先级、截止时间、归类、关联、更新时间与「显示已完成」都在
    标题行的筛选面板里。行按内容宽度左对齐，不再铺满列表窗格——
    回收站与移动端全宽列表下，分段曾被拉成三条巨型按钮。 */
-.filter-row { min-height: calc(38px * var(--acta-ui-scale, 1)); padding: 0 18px 9px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); }
+.filter-row { min-height: 38px; padding: 0 18px 9px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); }
 .filter-row[hidden] { display: none; }
 .filter-group { min-width: 0; display: flex; align-items: center; gap: 6px; }
 .filter-group[hidden] { display: none; }
@@ -404,7 +426,7 @@ body.folder-view .view-folder-mark { display: grid; }
 .pull-refresh-indicator.is-refreshing svg { animation: pull-refresh-spin .92s cubic-bezier(.55,.08,.45,.92) infinite; }
 @keyframes pull-refresh-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .item-card {
-  position: relative; width: 100%; min-height: calc(101px * var(--acta-ui-scale, 1)); padding: calc(13px * var(--acta-ui-scale, 1)) calc(13px * var(--acta-ui-scale, 1)) calc(11px * var(--acta-ui-scale, 1)); border: 1px solid transparent; border-radius: 12px;
+  position: relative; width: 100%; min-height: 101px; padding: 13px 13px 11px; border: 1px solid transparent; border-radius: 12px;
   background: transparent; text-align: left; cursor: pointer; display: flex; flex-direction: column;
   transition: background .16s ease, border-color .16s ease, box-shadow .2s var(--ease-out), transform .2s var(--ease-out);
   animation: cardIn .34s var(--ease-out) both;
@@ -668,7 +690,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   body { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
   .app-shell { height: 100%; width: 100%; }
   .titlebar {
-    height: calc(48px * var(--acta-ui-scale, 1) + env(safe-area-inset-top));
+    height: calc(48px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
     grid-template-columns: 1fr;
     border-bottom-color: var(--line);
@@ -681,7 +703,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   html[data-desktop-platform="win32"] .titlebar { grid-template-columns: 1fr; }
   html[data-desktop-platform="darwin"] .brand { padding-left: 16px; }
   .workspace {
-    height: calc(100vh - 48px * var(--acta-ui-scale, 1) - env(safe-area-inset-top));
+    height: calc(var(--acta-vh) - 48px * var(--acta-ui-scale, 1) - env(safe-area-inset-top));
     display: block;
   }
   /* 安卓端：WebView 上报的安全区上缘略宽于状态栏的视觉高度，顶栏内容
@@ -690,16 +712,16 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
      定义处同样补偿。安全区 insets 是物理值，不随界面缩放——只有固定
      分量乘 --acta-ui-scale，避免放大后按钮离系统栏越来越远。 */
   html.acta-native-mobile .titlebar {
-    height: calc(43px * var(--acta-ui-scale, 1) + max(0px, env(safe-area-inset-top) - 5px));
+    height: calc(43px + max(0px, env(safe-area-inset-top) - 5px));
     padding-top: max(0px, env(safe-area-inset-top) - 5px);
   }
   html.acta-native-mobile .workspace {
-    height: calc(100vh - 43px * var(--acta-ui-scale, 1) - max(0px, env(safe-area-inset-top) - 5px));
+    height: calc(var(--acta-vh) - 43px * var(--acta-ui-scale, 1) - max(0px, env(safe-area-inset-top) - 5px));
   }
   .sidebar {
     position: fixed; z-index: 45; left: 0; right: 0; bottom: 0;
-    height: calc(76px * var(--acta-ui-scale, 1) + env(safe-area-inset-bottom));
-    padding: calc(7px * var(--acta-ui-scale, 1)) 10px env(safe-area-inset-bottom);
+    height: calc(76px + env(safe-area-inset-bottom));
+    padding: 7px 10px env(safe-area-inset-bottom);
     border-top: 1px solid var(--line);
     background: color-mix(in srgb, var(--sidebar) 94%, transparent);
     backdrop-filter: blur(18px) saturate(1.25);
@@ -709,14 +731,14 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
      收集箱 | 日历 | [新建] | 可替换槽位一 | 可替换槽位二；
      中列之外的单元格与圆形方块没有交叠，任何屏宽下都排得齐。 */
   .smart-nav {
-    width: 100%; height: calc(62px * var(--acta-ui-scale, 1)); margin: 0;
+    width: 100%; height: 62px; margin: 0;
     display: grid;
     grid-template-columns: minmax(0,1fr) minmax(0,1fr)
       calc(var(--acta-new-size, var(--mobile-new-button-size)) + 2 * var(--mobile-new-button-clearance))
       minmax(0,1fr) minmax(0,1fr);
     gap: 2px;
   }
-  .smart-nav button { height: calc(58px * var(--acta-ui-scale, 1)); padding: 5px 2px; justify-content: center; border-radius: 12px; display: none; }
+  .smart-nav button { height: 58px; padding: 5px 2px; justify-content: center; border-radius: 12px; display: none; }
   /* 四个槽位显式钉在第 1 行。只写 grid-column 时，按钮在 DOM 中的先后
      顺序与列序相反（例如槽位一选了 DOM 靠后的「总结」、槽位二选了靠前
      的「回收站」）会让后放置的按钮按稀疏流排进隐式第 2 行，掉出 70px
@@ -762,26 +784,26 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .new-button svg { width: 26px; height: 26px; }
   .create-menu {
     position: fixed; z-index: 60; top: auto; left: 14px; right: 14px;
-    bottom: calc(82px * var(--acta-ui-scale, 1) + env(safe-area-inset-bottom));
+    bottom: calc(82px + env(safe-area-inset-bottom));
     padding: 8px; border-radius: 18px; transform-origin: 50% 100%;
   }
   .folder-section, .sidebar-bottom { display: none; }
   .list-resizer { display: none; }
-  .item-pane { width: 100%; height: 100%; border: 0; padding-bottom: calc(84px * var(--acta-ui-scale, 1) + env(safe-area-inset-bottom)); }
-  .item-header { height: calc(48px * var(--acta-ui-scale, 1)); padding: calc(6px * var(--acta-ui-scale, 1)) 14px calc(4px * var(--acta-ui-scale, 1)) 16px; }
+  .item-pane { width: 100%; height: 100%; border: 0; padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  .item-header { height: 48px; padding: 6px 14px 4px 16px; }
   .item-header h1 { font-size: calc(24px * var(--acta-font-scale)); }
-  .search-box { height: calc(38px * var(--acta-ui-scale, 1)); margin: 2px 14px 6px; }
+  .search-box { height: 38px; margin: 2px 14px 6px; }
   .search-box kbd { display: none; }
   .filter-row { padding: 0 14px 7px; }
   .item-list { padding: 9px; }
-  .item-card { min-height: calc(108px * var(--acta-ui-scale, 1)); padding: calc(14px * var(--acta-ui-scale, 1)); }
+  .item-card { min-height: 108px; padding: 14px; }
   .item-card h3 { font-size: calc(14px * var(--acta-font-scale)); }
   .item-card p { font-size: calc(11px * var(--acta-font-scale)); }
   .list-footer { display: none; }
-  .toast { bottom: calc(94px * var(--acta-ui-scale, 1) + env(safe-area-inset-bottom)); }
+  .toast { bottom: calc(94px + env(safe-area-inset-bottom)); }
   .editor-pane {
     position: fixed; z-index: 35;
-    inset: calc(48px * var(--acta-ui-scale, 1) + env(safe-area-inset-top)) 0 0;
+    inset: calc(48px + env(safe-area-inset-top)) 0 0;
     width: 100%; height: auto;
     padding-bottom: env(safe-area-inset-bottom);
     transform: translateX(102%);
@@ -792,7 +814,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .editor-pane.mobile-open { transform: translateX(0); opacity: 1; }
   /* 安卓端：顶栏上移 5px 后编辑器全屏面板同步补偿，不露缝。 */
   html.acta-native-mobile .editor-pane {
-    inset: calc(43px * var(--acta-ui-scale, 1) + max(0px, env(safe-area-inset-top) - 5px)) 0 0;
+    inset: calc(43px + max(0px, env(safe-area-inset-top) - 5px)) 0 0;
   }
   .editor-wrap { width: 100%; padding: 18px 18px 40px; }
   .mobile-back {
@@ -810,7 +832,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .task-row { min-height: 49px; }
   .remove-task { opacity: .7; }
   .note-toolbar { bottom: 8px; margin-top: 10px; overflow: visible; }
-  .note-body { min-height: 60vh; padding-top: 22px; font-size: calc(var(--note-body-size, 17px) * var(--acta-font-scale)); }
+  .note-body { min-height: calc(var(--acta-vh) * 0.6); padding-top: 22px; font-size: calc(var(--note-body-size, 17px) * var(--acta-font-scale)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
