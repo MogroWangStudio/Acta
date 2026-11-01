@@ -240,7 +240,7 @@
             <button type="button" data-settings-page="cloud"><svg><use href="#i-cloud"/></svg><span>数据同步</span></button>
             <button type="button" data-settings-page="note-editor"><svg><use href="#i-note"/></svg><span>编辑器</span></button>
             <button type="button" data-settings-page="todo"><svg><use href="#i-check"/></svg><span>待办设置</span></button>
-            <button type="button" data-settings-page="appearance"><svg><use href="#i-palette"/></svg><span>外观设置</span></button>
+            <button type="button" data-settings-page="appearance"><svg><use href="#i-palette"/></svg><span>个性化</span></button>
             <button type="button" data-settings-page="about"><svg><use href="#i-info"/></svg><span>关于</span></button>
           </nav>
           <div class="settings-content">
@@ -385,7 +385,7 @@
             </section>
 
             <section class="settings-panel" data-settings-panel="appearance">
-              <header><h3>外观设置</h3></header>
+              <header><h3>个性化</h3></header>
               <div class="theme-grid">
                 <label class="theme-option"><input type="radio" name="actaTheme" value="eye-yellow"/><span><span class="theme-mini" data-t="eye-yellow"><i class="tm-side"><i></i><i></i><i></i></i><span class="tm-main"><i class="tm-bar"></i><span class="tm-card"><i class="tm-dot"></i><i class="tm-line"></i><i class="tm-line short"></i></span><span class="tm-card"><i class="tm-dot alt"></i><i class="tm-line"></i><i class="tm-line short"></i></span></span></span><b>纸色护眼</b></span></label>
                 <label class="theme-option"><input type="radio" name="actaTheme" value="mws-light"/><span><span class="theme-mini" data-t="mws-light"><i class="tm-side"><i></i><i></i><i></i></i><span class="tm-main"><i class="tm-bar"></i><span class="tm-card"><i class="tm-dot"></i><i class="tm-line"></i><i class="tm-line short"></i></span><span class="tm-card"><i class="tm-dot alt"></i><i class="tm-line"></i><i class="tm-line short"></i></span></span></span><b>MWS 浅色</b></span></label>
@@ -883,7 +883,7 @@
           </section>
           <section class="oobe-step" data-oobe-step="appearance">
             <h3>选择主题、字体与大小</h3>
-            <p>效果实时预览；之后可以在「设置 → 外观设置」中随时更改。</p>
+            <p>效果实时预览；之后可以在「设置 → 个性化」中随时更改。</p>
             <div class="oobe-theme-grid" id="oobeThemeGrid">
               <label class="theme-option"><input type="radio" name="oobeTheme" value="eye-yellow"/><span><span class="theme-mini" data-t="eye-yellow"><i class="tm-side"><i></i><i></i><i></i></i><span class="tm-main"><i class="tm-bar"></i><span class="tm-card"><i class="tm-dot"></i><i class="tm-line"></i><i class="tm-line short"></i></span><span class="tm-card"><i class="tm-dot alt"></i><i class="tm-line"></i><i class="tm-line short"></i></span></span></span><b>纸色护眼</b><small>默认</small></span></label>
               <label class="theme-option"><input type="radio" name="oobeTheme" value="mws-light"/><span><span class="theme-mini" data-t="mws-light"><i class="tm-side"><i></i><i></i><i></i></i><span class="tm-main"><i class="tm-bar"></i><span class="tm-card"><i class="tm-dot"></i><i class="tm-line"></i><i class="tm-line short"></i></span><span class="tm-card"><i class="tm-dot alt"></i><i class="tm-line"></i><i class="tm-line short"></i></span></span></span><b>MWS 浅色</b><small>品牌主题</small></span></label>

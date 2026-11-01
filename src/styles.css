@@ -19,7 +19,7 @@
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --acta-font-display: Georgia, "Songti SC", serif;
   --list-pane-width: 330px;
-  /* 「界面整体缩放」（外观设置滑杆，85%–125%）：真正的全局缩放——zoom
+  /* 「界面整体缩放」（个性化滑杆，85%–125%）：真正的全局缩放——zoom
      挂在 .app-shell 与各顶层弹层上（不挂根元素，媒体查询按真实视口判定，
      缩放不改变页面宽度的断点行为），布局、控件、文字、弹窗等比缩放。
      配套约定（完整版见 .app-shell 处注释）：
@@ -40,7 +40,7 @@
   /* 移动端底栏的圆形「新建」按钮：按正方形占位（直径 + 两侧净空），
      底栏网格据此留出中列，入口按钮不与圆形交叉。圆形略高于底栏上缘，
      形成悬浮的主操作按钮；占位同步加大，避免压住两侧入口。 */
-  --mobile-new-button-size: 76px; /* 外观设置「新建按钮大小」可调（60–96px），经 --acta-new-size 覆盖 */
+  --mobile-new-button-size: 76px; /* 个性化「新建按钮大小」可调（60–96px），经 --acta-new-size 覆盖 */
   --mobile-new-button-clearance: 12px;
 }
 
@@ -73,7 +73,7 @@ body {
 
 button, input, textarea { font: inherit; }
 
-/* 输入框选中动画：焦点进入时光环从零展开、边框平滑过渡（外观设置可关）。
+/* 输入框选中动画：焦点进入时光环从零展开、边框平滑过渡（个性化可关）。
    动画只覆盖进场一瞬，稳态焦点样式仍由各组件自己的 :focus 规则定义。 */
 html:not([data-input-focus-animation="off"]) input:not([type="checkbox"]):not([type="range"]):not([type="color"]),
 html:not([data-input-focus-animation="off"]) textarea,
@@ -125,7 +125,7 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 ::selection { background: color-mix(in srgb, var(--sage) 30%, transparent); }
 .note-body ::selection, .note-body::selection, .note-markdown-source::selection, .editor-title::selection, .task-text::selection, .todo-notes::selection { background: color-mix(in srgb, var(--note-accent, var(--sage)) 28%, transparent); }
 
-/* 「界面整体缩放」（外观设置滑杆，85%–125%）：zoom 挂在应用内容与各顶层
+/* 「界面整体缩放」（个性化滑杆，85%–125%）：zoom 挂在应用内容与各顶层
    弹层上，而不是根元素——媒体查询按真实视口判定（缩放不改变断点、不改变
    「页面宽度」），放大的只是元素与排版。配套约定（Chromium 128+ 与
    WebKit 双引擎实测）：
@@ -269,7 +269,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .nav-icon { position: relative; display: inline-flex; flex: 0 0 auto; width: 16px; height: 16px; }
 /* 主图标不参与收缩：一旦被压扁，与绝对定位的描线层尺寸失配就会错位重影。 */
 .nav-icon > svg { flex: none; width: 100%; height: 100%; transition: color .26s ease, opacity .26s ease; }
-/* 主图标默认状态的明度随外观设置（--nav-icon-dim，30%–100%）；
+/* 主图标默认状态的明度随个性化（--nav-icon-dim，30%–100%）；
    描线层是选中态的强调层，不随明度变淡。 */
 .nav-icon > svg:not(.nav-icon-trace) { opacity: var(--nav-icon-dim, 1); }
 /* 主图标瞬时切换：亮起的过程感交给描线动画，不做颜色/透明度过渡。 */
@@ -284,7 +284,7 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
   0% { stroke-dasharray: 220; stroke-dashoffset: 220; }
   100% { stroke-dasharray: 220; stroke-dashoffset: 0; }
 }
-/* 选中态效果随外观设置切换（html[data-nav-effect]）：
+/* 选中态效果随个性化切换（html[data-nav-effect]）：
    trace 线条勾勒（默认，描线层以强调色重绘）；
    accent 强调色亮起（主图标着强调色、描线层不用）；
    pop 缩放弹跳（主图标着强调色并弹性放大一拍）。 */
@@ -691,7 +691,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 
 @keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-/* 移动端页面转场（外观设置「页面转场」）：切换视图时列表容器的入场。
+/* 移动端页面转场（个性化「页面转场」）：切换视图时列表容器的入场。
    淡入是默认档；滑动档带方向（新视图在页面序中靠后 → 从右滑入，
    靠前 → 从左），data-transition-dir 由 renderer 的 activateView 写入。
    动画挂在 #itemList 的 .page-transition 类上，由 JS 在切换时加挂并在

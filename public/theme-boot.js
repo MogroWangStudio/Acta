@@ -25,7 +25,7 @@
   if (stored.pageTransition === 'slide' || stored.pageTransition === 'none') root.dataset.actaTransition = String(stored.pageTransition);
   if (stored.splashAnimationEnabled === false) root.dataset.actaSplashOff = 'true';
   // 「界面整体缩放」同样要在首帧前落地：根级 zoom 驱动 html 的缩放，
-  // 晚一帧应用会看到整页从 100% 跳到目标值。与外观设置的 applyUiScale()
+  // 晚一帧应用会看到整页从 100% 跳到目标值。与个性化的 applyUiScale()
   // 同一套夹取（85–125，5% 步进），三个变量（zoom、inverse、--acta-vh）
   // 同步预置。
   const clampUiScale = value => {
