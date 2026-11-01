@@ -6822,18 +6822,21 @@
   }
 
   // —— 界面整体缩放（外观设置）：85%–125%，真正的全局缩放——
-  // 根级 zoom（styles.css html { zoom: var(--acta-ui-scale) }）缩放整个
-  // 视口内容。这里负责三件配套变量：
-  // · --acta-ui-scale：zoom 值本身（styles.css html 规则消费）；
+  // zoom 挂在 .app-shell 与各顶层弹层上（不挂根元素，媒体查询按真实
+  // 视口判定，缩放不改变断点行为）。这里负责四件配套变量：
+  // · --acta-ui-scale：zoom 值本身；
   // · --acta-ui-scale-inverse = 1 / zoom：计划板 #boardWorld 反缩放用
   //   （画布有自己的相机体系，内容不随界面缩放，画布内指针换算保持 1:1）；
-  // · --acta-vh = innerHeight / zoom：root zoom 下 vh 的解析不随 zoom
-  //   调整（100vh 元素视觉溢出，Chromium 128+ 与 WebKit 实测一致），
-  //   全项目的视口高度一律走这个变量；resize 时随窗口刷新。
+  // · --acta-vh / --acta-vw = 初始包含块尺寸 / zoom：zoom 容器内 vh/vw
+  //   的解析不随 zoom 调整（100vh 元素视觉溢出，双引擎实测一致），全项目
+  //   的视口尺寸一律走这对变量；resize 时随窗口刷新。
   // 「界面字体大小」--acta-font-scale 只跟 base，不再乘 ui-scale（zoom
   // 已缩放文字，乘第二遍会双重放大）。存储值为整数百分比（100 = 默认）。
-  const uiScaleSetting = byId('uiScaleSetting');
+  // 控件是加减步进按钮（±5%，边界禁用，长按连发），步进档位让缩放结果
+  // 可预期，也免去拖动滑杆时的连续整页重排。
   const uiScaleValue = byId('uiScaleValue');
+  const uiScaleDown = byId('uiScaleDown');
+  const uiScaleUp = byId('uiScaleUp');
   const uiScaleRange = Object.freeze({ min: 85, max: 125, default: 100, step: 5 });
   const normalizeUiScale = () => {
     const requested = Math.round(Number(uiSettings.uiScale));
@@ -6856,10 +6859,11 @@
     // 而非 innerWidth/Height（视觉视口）：缩放设置不应跟随捏合手势漂移。
     root.setProperty('--acta-vh', `${(document.documentElement.clientHeight / scale).toFixed(2)}px`);
     root.setProperty('--acta-vw', `${(document.documentElement.clientWidth / scale).toFixed(2)}px`);
-    if (uiScaleSetting && uiScaleValue) {
-      uiScaleSetting.value = String(uiSettings.uiScale);
+    if (uiScaleValue) {
       uiScaleValue.textContent = `${uiSettings.uiScale}%`;
-      uiScaleSetting.setAttribute('aria-valuetext', `${uiSettings.uiScale}%`);
+      uiScaleValue.setAttribute('aria-valuetext', `${uiSettings.uiScale}%`);
+      if (uiScaleDown) uiScaleDown.disabled = uiSettings.uiScale <= uiScaleRange.min;
+      if (uiScaleUp) uiScaleUp.disabled = uiSettings.uiScale >= uiScaleRange.max;
     }
   }
   window.addEventListener('resize', () => {
@@ -6868,24 +6872,59 @@
     root.setProperty('--acta-vh', `${(document.documentElement.clientHeight / scale).toFixed(2)}px`);
     root.setProperty('--acta-vw', `${(document.documentElement.clientWidth / scale).toFixed(2)}px`);
   });
-  if (uiScaleSetting && uiScaleValue) {
-    uiScaleSetting.min = String(uiScaleRange.min);
-    uiScaleSetting.max = String(uiScaleRange.max);
-    uiScaleSetting.step = String(uiScaleRange.step);
-    // 拖动即改即存；变量落在 rAF 里合并——缩放触发整页重排，一帧最多
-    // 应用一次，滑杆连续拖动时界面实时跟手又不掉帧。
-    let uiScaleFrame = 0;
-    uiScaleSetting.addEventListener('input', () => {
-      uiSettings.uiScale = Number(uiScaleSetting.value);
-      if (!uiScaleFrame) {
-        uiScaleFrame = requestAnimationFrame(() => {
-          uiScaleFrame = 0;
-          applyUiScale();
-        });
-      }
-      uiScaleValue.textContent = `${normalizeUiScale()}%`;
+  if (uiScaleValue && uiScaleDown && uiScaleUp) {
+    // 边界态：到 85% / 125% 时对应按钮禁用（视觉与语义同步）。
+    const syncStepperState = () => {
+      const value = normalizeUiScale();
+      uiScaleValue.textContent = `${value}%`;
+      uiScaleDown.disabled = value <= uiScaleRange.min;
+      uiScaleUp.disabled = value >= uiScaleRange.max;
+    };
+    // 长按连发：按下立即步进一步，按住 420ms 后每 110ms 重复——
+    // 连续跨多档时不用连点；松手 / 移出 / 系统打断即停。
+    let repeatTimer = 0, repeatInterval = 0;
+    const stopRepeat = () => {
+      clearTimeout(repeatTimer);
+      clearInterval(repeatInterval);
+      repeatTimer = 0;
+      repeatInterval = 0;
+    };
+    const stepUiScale = direction => {
+      const current = normalizeUiScale();
+      const next = Math.min(uiScaleRange.max, Math.max(uiScaleRange.min, current + direction * uiScaleRange.step));
+      if (next === current) return;
+      uiSettings.uiScale = next;
+      applyUiScale();
+      syncStepperState();
       saveUISettings();
-    });
+    };
+    const bindStepper = (button, direction) => {
+      // 单击（含键盘 Enter/Space）走 click 步进一步；pointerdown 长按
+      // 420ms 起连发，连发期间置起的 repeating 标志让随后那次 click
+      // （长按松手派发）直接跳过，避免多走一步。pointerup / 移出 /
+      // 系统打断即停，repeating 在宏任务里复位，不影响下一次单击。
+      let repeating = false;
+      button.addEventListener('click', () => { if (!repeating) stepUiScale(direction); });
+      button.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        repeating = false;
+        stopRepeat();
+        repeatTimer = setTimeout(() => {
+          repeating = true;
+          stepUiScale(direction);
+          repeatInterval = setInterval(() => stepUiScale(direction), 110);
+        }, 420);
+      });
+      const finish = () => {
+        stopRepeat();
+        setTimeout(() => { repeating = false; }, 0);
+      };
+      button.addEventListener('pointerup', finish);
+      button.addEventListener('pointerleave', finish);
+      button.addEventListener('pointercancel', finish);
+    };
+    bindStepper(uiScaleDown, -1);
+    bindStepper(uiScaleUp, 1);
   }
   applyUiScale();
 

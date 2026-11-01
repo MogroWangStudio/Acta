@@ -550,6 +550,15 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .font-preview { margin-top: 12px; min-height: 70px; padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: var(--white); display: flex; align-items: center; }
 .font-preview p { margin: 0; color: var(--ink); font-size: calc(14px * var(--acta-font-scale, 1)); line-height: 1.65; }
 .font-size-control { display: flex; align-items: center; gap: 10px; }
+/* 界面整体缩放的加减步进器：与分段控件同一语言（浅底胶囊 + 内按钮），
+   步进档位（±5%）让缩放结果可预期；到边界时对应按钮禁用。 */
+.ui-scale-stepper { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--white) 55%, transparent); }
+.ui-scale-stepper button { width: 30px; height: 28px; padding: 0; border: 0; border-radius: 7px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: background .15s ease, color .15s ease, transform .18s var(--ease-out); }
+.ui-scale-stepper button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.ui-scale-stepper button:active { transform: scale(.94); transition-duration: .08s; }
+.ui-scale-stepper button:disabled { opacity: .35; cursor: default; pointer-events: none; }
+.ui-scale-stepper button svg { width: 14px; height: 14px; }
+.ui-scale-stepper output { min-width: 52px; text-align: center; color: var(--ink); font: 650 calc(14px * var(--acta-font-scale))/1 inherit; font-variant-numeric: tabular-nums; }
 .font-size-control input { width: 150px; }
 .font-size-control output { min-width: 44px; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); font-weight: 700; text-align: right; }
 

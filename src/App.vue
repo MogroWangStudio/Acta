@@ -439,7 +439,7 @@
                 <label class="settings-row"><span><b>输入框选中动画</b></span><input id="focusAnimationSetting" type="checkbox" checked/></label>
               </div>
               <div class="settings-group" style="margin-top:18px">
-                <label class="settings-row"><span><b>界面整体缩放</b></span><span class="font-size-control"><input id="uiScaleSetting" type="range" min="85" max="125" step="5"/><output id="uiScaleValue">100%</output></span></label>
+                <label class="settings-row"><span><b>界面整体缩放</b></span><span class="ui-scale-stepper" role="group" aria-label="界面整体缩放"><button type="button" id="uiScaleDown" aria-label="减小界面缩放"><svg><use href="#i-minus"/></svg></button><output id="uiScaleValue" aria-live="polite">100%</output><button type="button" id="uiScaleUp" aria-label="增大界面缩放"><svg><use href="#i-plus"/></svg></button></span></label>
                 <label class="settings-row"><span><b>界面字体</b></span><select id="appFontSetting"><option value="system">系统默认</option><option value="serif">衬线字体</option><option value="rounded">圆体</option><option value="mono">等宽字体</option><option value="custom">自定义字体</option></select></label>
                 <label class="settings-row conditional-font" id="customFontRow"><span><b>字体家族</b></span><span class="font-input-wrap"><input id="customFontFamily" type="text" value="Inter" placeholder="Inter, Microsoft YaHei" maxlength="120"/><button type="button" class="font-browse-button" id="browseAppFonts" data-font-target="customFontFamily">浏览系统字体</button></span></label>
                 <label class="settings-row"><span><b>字体大小</b></span><span class="font-size-control"><input id="appFontSizeSetting" type="range" min="12" max="18" step="1"/><output id="appFontSizeValue">14 px</output></span></label>

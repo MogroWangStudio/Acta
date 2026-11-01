@@ -1008,22 +1008,35 @@ async function main() {
         // fontScalingUnified 用真实渲染字号校验过）。
         && Math.abs(parseFloat(document.documentElement.style.getPropertyValue('--acta-font-scale-base')) - expectedFontScale) < 1e-9
         && readAppearanceSettings().appFontSize === 18;
-      // 界面整体缩放：滑杆改变 --acta-ui-scale，顶栏等骨架几何随动（rAF 落值）。
-      const uiScaleSetting = document.querySelector('#uiScaleSetting');
+      // 界面整体缩放：加减步进按钮（±5%）改变 --acta-ui-scale，顶栏等
+      // 骨架几何随动；到边界时对应按钮禁用。
+      const uiScaleDown = document.querySelector('#uiScaleDown');
+      const uiScaleUp = document.querySelector('#uiScaleUp');
       const uiScaleBaselineTitlebar = document.querySelector('.titlebar').getBoundingClientRect().height;
-      uiScaleSetting.value = '120';
-      uiScaleSetting.dispatchEvent(new Event('input'));
+      // 从 100% 连点两次「＋」到 110%
+      uiScaleUp.click();
+      uiScaleUp.click();
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const uiScaleTitlebar = document.querySelector('.titlebar').getBoundingClientRect().height;
-      const uiScaleWorks = uiScaleSetting.min === '85'
-        && uiScaleSetting.max === '125'
-        && uiScaleSetting.step === '5'
-        && document.querySelector('#uiScaleValue').textContent === '120%'
-        && Math.abs(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acta-ui-scale')) - 1.2) < 1e-9
-        && Math.abs(uiScaleTitlebar - uiScaleBaselineTitlebar * 1.2) < 2
-        && readAppearanceSettings().uiScale === 120;
-      uiScaleSetting.value = '100';
-      uiScaleSetting.dispatchEvent(new Event('input'));
+      const uiScaleWorks = document.querySelector('#uiScaleValue').textContent === '110%'
+        && Math.abs(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acta-ui-scale')) - 1.1) < 1e-9
+        && Math.abs(uiScaleTitlebar - uiScaleBaselineTitlebar * 1.1) < 2
+        && readAppearanceSettings().uiScale === 110
+        && !uiScaleDown.disabled && !uiScaleUp.disabled;
+      // 连点到边界 125%：「＋」禁用；再退回 100% 复位
+      for (let i = 0; i < 5; i++) uiScaleUp.click();
+      const uiScaleMaxReached = document.querySelector('#uiScaleValue').textContent === '125%'
+        && uiScaleUp.disabled && !uiScaleDown.disabled;
+      uiScaleDown.click();
+      uiScaleDown.click();
+      uiScaleDown.click();
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const uiScaleRestored = document.querySelector('#uiScaleValue').textContent === '110%'
+        && readAppearanceSettings().uiScale === 110
+        && !uiScaleDown.disabled && !uiScaleUp.disabled;
+      // 回到 100%（两次「−」），恢复后续测试的基线
+      uiScaleDown.click();
+      uiScaleDown.click();
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const fontSizeLayoutMetrics = fontLayoutSelectors.map((selector, index) => {
         const node = document.querySelector(selector);
@@ -1632,6 +1645,8 @@ async function main() {
         fontScalingUnified,
         fontSizeRangeIsReasonable,
         uiScaleWorks,
+        uiScaleMaxReached,
+        uiScaleRestored,
         fontSizeLayoutFits,
         fontSizeLayoutMetrics,
         mobileFontSizeLayoutFits,
@@ -1973,6 +1988,8 @@ async function main() {
     assert.equal(result.fontScalingUnified, true);
     assert.equal(result.fontSizeRangeIsReasonable, true);
     assert.equal(result.uiScaleWorks, true);
+    assert.equal(result.uiScaleMaxReached, true);
+    assert.equal(result.uiScaleRestored, true);
     assert.equal(result.fontSizeLayoutFits, true, JSON.stringify(result.fontSizeLayoutMetrics));
     assert.equal(result.mobileFontSizeLayoutFits, true, JSON.stringify(result.mobileFontSizeLayoutMetrics));
     assert.equal(result.presetAppIconWorks, true);
