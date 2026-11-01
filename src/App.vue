@@ -341,16 +341,13 @@
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端底栏</b></span></div>
-                <label class="settings-row"><span><b>槽位一</b></span><select id="mobileSlotOne"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
-                <label class="settings-row"><span><b>槽位二</b></span><select id="mobileSlotTwo"><option value="inbox">收集箱</option><option value="calendar">日历</option><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option></select></label>
-                <div class="nav-preview-bar" id="navPreviewBottom"></div>
+                <div class="nav-preview-bar nav-preview-drag" id="navPreviewBottom"></div>
+                <small class="nav-preview-hint">拖动换位置，点击换入口；收集箱、日历与新建按钮固定不动</small>
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端顶栏</b></span></div>
-                <label class="settings-row"><span><b>顶栏槽位一</b></span><select id="mobileTitleOne"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
-                <label class="settings-row"><span><b>顶栏槽位二</b></span><select id="mobileTitleTwo"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
-                <label class="settings-row"><span><b>顶栏槽位三</b></span><select id="mobileTitleThree"><option value="board" data-i18n="board">计划板</option><option value="todos">所有待办</option><option value="notes">所有笔记</option><option value="trash">回收站</option><option value="stats">总结</option><option value="refresh">刷新数据</option><option value="history">历史记录</option><option value="lan">局域网雷达</option></select></label>
-                <div class="nav-preview-bar" id="navPreviewTop"></div>
+                <div class="nav-preview-bar nav-preview-drag" id="navPreviewTop"></div>
+                <small class="nav-preview-hint">拖动换位置，点击换入口；设置按钮固定不动</small>
               </div>
               <p class="settings-status" id="navSettingsStatus">设置会自动保存在当前设备。</p>
             </section>

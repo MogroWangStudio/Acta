@@ -2,9 +2,10 @@
   <!-- 太极旗：按官方制图比例绘制。
        太极直径 = 旗高 1/2（r=5，圆心 15,10）；分割线沿对角方向 rotate(-33.69°)
        （tan⁻¹⅔，左低右高）；S 弧半径 = 太极半径 1/2；鱼眼半径 = S 弧 1/2，
-       红眼嵌蓝鱼头（左上）、蓝眼嵌红鱼头（右下）；四卦在对角线上按
-       건곤감리 布置：左上 ☰ 乾（全）、右上 ☷ 坤（断）、左下 ☵ 坎（断全断）、
-       右下 ☲ 离（全断全），爻序自旗角向中心。 -->
+       红眼嵌蓝鱼头（左上）、蓝眼嵌红鱼头（右下）；四卦长轴沿对角线指向
+       太极中心（爻线垂直于对角线，爻序自旗角向中心），按官方 건좌상 /
+       리우상 / 감좌하 / 곤우하 布置：左上 ☰ 乾（全）、右上 ☲ 离（全断全）、
+       左下 ☵ 坎（断全断）、右下 ☷ 坤（断）。 -->
   <rect width="30" height="20" fill="#fff"/>
   <g transform="translate(15 10) rotate(-33.69)">
     <circle r="5" fill="#0047a0"/>
@@ -13,25 +14,29 @@
     <circle cx="2.5" cy="0" r="1.25" fill="#0047a0"/>
   </g>
   <g fill="#000">
-    <g transform="translate(5.4 3.6) rotate(-33.69)">
+    <!-- 左上 건（☰，三全）：长轴沿 +33.69° 对角（指向太极中心） -->
+    <g transform="translate(5.4 3.6) rotate(33.69)">
       <rect x="-2.3" y="-1.6" width="4.6" height="0.8"/>
       <rect x="-2.3" y="-0.4" width="4.6" height="0.8"/>
       <rect x="-2.3" y="0.8" width="4.6" height="0.8"/>
     </g>
-    <g transform="translate(24.6 3.6) rotate(33.69)">
-      <rect x="-2.3" y="-1.6" width="1.8" height="0.8"/><rect x="0.5" y="-1.6" width="1.8" height="0.8"/>
+    <!-- 右上 리（☲，全断全）：长轴沿 -33.69° 对角 -->
+    <g transform="translate(24.6 3.6) rotate(-33.69)">
+      <rect x="-2.3" y="-1.6" width="4.6" height="0.8"/>
       <rect x="-2.3" y="-0.4" width="1.8" height="0.8"/><rect x="0.5" y="-0.4" width="1.8" height="0.8"/>
-      <rect x="-2.3" y="0.8" width="1.8" height="0.8"/><rect x="0.5" y="0.8" width="1.8" height="0.8"/>
+      <rect x="-2.3" y="0.8" width="4.6" height="0.8"/>
     </g>
-    <g transform="translate(5.4 16.4) rotate(33.69)">
+    <!-- 左下 감（☵，断全断）：长轴沿 -33.69° 对角 -->
+    <g transform="translate(5.4 16.4) rotate(-33.69)">
       <rect x="-2.3" y="-1.6" width="1.8" height="0.8"/><rect x="0.5" y="-1.6" width="1.8" height="0.8"/>
       <rect x="-2.3" y="-0.4" width="4.6" height="0.8"/>
       <rect x="-2.3" y="0.8" width="1.8" height="0.8"/><rect x="0.5" y="0.8" width="1.8" height="0.8"/>
     </g>
-    <g transform="translate(24.6 16.4) rotate(-33.69)">
-      <rect x="-2.3" y="-1.6" width="4.6" height="0.8"/>
+    <!-- 右下 곤（☷，三断）：长轴沿 +33.69° 对角 -->
+    <g transform="translate(24.6 16.4) rotate(33.69)">
+      <rect x="-2.3" y="-1.6" width="1.8" height="0.8"/><rect x="0.5" y="-1.6" width="1.8" height="0.8"/>
       <rect x="-2.3" y="-0.4" width="1.8" height="0.8"/><rect x="0.5" y="-0.4" width="1.8" height="0.8"/>
-      <rect x="-2.3" y="0.8" width="4.6" height="0.8"/>
+      <rect x="-2.3" y="0.8" width="1.8" height="0.8"/><rect x="0.5" y="0.8" width="1.8" height="0.8"/>
     </g>
   </g>
 </svg>

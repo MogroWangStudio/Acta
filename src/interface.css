@@ -5,7 +5,7 @@
    与主界面保持同一缩放档。 */
 .splash-screen, .settings-backdrop, .oobe-backdrop, .mobile-create-layer,
 .task-date-tip, .sync-notice, .todo-burst, .brand-egg-confetti, .brand-egg-seal,
-.context-menu, .toast, .acdt-panel, .acx-menu, dialog { zoom: var(--acta-ui-scale, 1); }
+.context-menu, .toast, .acdt-panel, .acx-menu, .nav-slot-menu, dialog { zoom: var(--acta-ui-scale, 1); }
 
 /* Boot splash: full-screen layer in the body's own background color (primed by
    theme-boot.js before first paint; --sidebar instead of --paper so the fade
@@ -3787,6 +3787,28 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 .nav-preview-cell.is-slot { cursor: pointer; transition: background .15s ease, box-shadow .15s ease, transform .15s var(--ease-out); }
 .nav-preview-cell.is-slot:hover { background: var(--white); }
 .nav-preview-cell.is-picked { box-shadow: 0 0 0 2px var(--sage); transform: scale(1.04); color: var(--ink); }
+/* 槽格拖拽换序：整个槽格是指针目标（grab），拖动中抬起并停用过渡，1:1 跟手。 */
+.nav-preview-drag .nav-preview-cell.is-slot { cursor: grab; touch-action: none; }
+.nav-preview-cell.is-slot.is-dragging { position: relative; z-index: 3; cursor: grabbing; background: var(--white); box-shadow: 0 4px 14px -6px rgba(24,28,23,.3); transition: none; }
+/* 槽位候选菜单：挂在预览条内的轻量弹层，候选入口纵向排列，
+   当前占用的入口打勾；点击菜单外 / Esc 关闭。 */
+.nav-slot-menu {
+  position: fixed; z-index: 220; display: grid; min-width: 148px; padding: 5px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--paper); box-shadow: 0 4px 12px -2px rgba(24,28,23,.16), 0 14px 32px -10px rgba(24,28,23,.22);
+}
+.nav-slot-menu button {
+  display: flex; align-items: center; gap: 9px; min-height: 36px; padding: 0 9px;
+  border: 0; border-radius: 8px; background: transparent; color: var(--ink);
+  font: inherit; text-align: left; cursor: pointer;
+  transition: background .14s ease, color .14s ease;
+}
+.nav-slot-menu button:hover { background: color-mix(in srgb, var(--sage) 10%, transparent); }
+.nav-slot-menu button svg { width: 17px; height: 17px; flex: 0 0 auto; color: var(--muted); }
+.nav-slot-menu button.is-active svg { color: var(--sage); }
+.nav-slot-menu button em { flex: 1; font-style: normal; font-weight: 600; font-size: calc(12.6px * var(--acta-font-scale)); }
+.nav-slot-menu button i { font-style: normal; color: var(--sage); font-weight: 700; }
+.nav-preview-bar { position: relative; }
 .nav-preview-chip {
   display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px;
   border: 1px solid var(--line); border-radius: 999px;
@@ -3830,36 +3852,46 @@ body.acta-reduce-motion .nav-preview-cell, body.acta-reduce-motion .nav-preview-
   .checkin-calendar { background: var(--paper); }
 }
 
-/* ===== 关于页 · 工作室字标（参考 Plainstruct 关于页的工作室署名设计）=====
-   居中的工作室 logo 可点击跳转官网；悬停 / 聚焦时 logo 模糊变淡，
-   「点击前往官网」提示在原位浮现，为点击意图留出确认。 */
-.about-developer-group .about-studio { width: 100%; margin: 4px 0 2px; justify-content: center; display: flex; align-items: center; gap: 10px; }
-.about-studio {
-  position: relative; display: block; width: fit-content;
-  margin: 14px auto 0; padding: 9px 18px;
-  border: 1px solid var(--line); border-radius: 12px;
-  background: color-mix(in srgb, var(--white) 55%, transparent);
-  cursor: pointer;
-  transition: background .16s ease, border-color .16s ease;
+/* ===== 关于页 · 工作室署名（参考 Plainstruct 关于页的工作室署名设计）=====
+   「开发者」组内的一行：不再内嵌第二张卡片（双层卡片观感、间距失衡），
+   融入组的行语言——满宽、transparent 背景、与相邻行以 border-top 分隔，
+   内边距与 settings-row 对齐。工作室 logo 居中可点击跳转官网；悬停 /
+   聚焦时 logo 模糊变淡，「点击前往官网」提示在原位浮现，为点击意图留出
+   确认；触屏（无 hover）时提示作为副行常显，不再永远不可见。 */
+.about-developer-group .about-studio {
+  position: relative; width: 100%; margin: 0;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 15px; border: 0; border-top: 1px solid var(--line); border-radius: 0;
+  background: transparent; cursor: pointer;
+  transition: background .16s ease;
 }
-.about-studio:hover { background: var(--white); border-color: color-mix(in srgb, var(--faint) 40%, var(--line)); }
+.about-developer-group .settings-row + .about-studio { border-top: 1px solid var(--line); }
+.about-studio:hover, .about-studio:focus-visible { background: color-mix(in srgb, var(--white) 55%, transparent); }
 .about-studio img {
-  display: block; height: 20px; width: auto; user-select: none;
+  display: block; height: 20px; max-width: 100%; user-select: none;
   transition: opacity .2s ease, filter .2s ease;
 }
 .about-studio:hover img, .about-studio:focus-visible img { opacity: .62; filter: blur(2.5px); }
 .about-studio-hint {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-color: var(--ink); font-size: calc(12.6px * var(--acta-font-scale)); font-weight: 650;
+  color: var(--ink); font-size: calc(12.6px * var(--acta-font-scale)); font-weight: 650;
   /* 卡内折行而非 nowrap：窄屏 / 大字号的提示文字不再横向溢出卡片。 */
   padding: 0 12px; text-align: center; line-height: 1.3;
   opacity: 0; pointer-events: none;
   transition: opacity .2s ease;
 }
 .about-studio:hover .about-studio-hint, .about-studio:focus-visible .about-studio-hint { opacity: 1; }
-.about-studio:focus-visible { outline: 2px solid color-mix(in srgb, var(--sage) 55%, transparent); outline-offset: 2px; }
-html[data-acta-theme="mono-dark"] .about-studio { background: color-mix(in srgb, #ffffff 6%, transparent); }
-html[data-acta-theme="mono-dark"] .about-studio:hover { background: color-mix(in srgb, #ffffff 12%, transparent); }
+.about-studio:focus-visible { outline: 2px solid color-mix(in srgb, var(--sage) 55%, transparent); outline-offset: -2px; }
+/* 触屏（无 hover 能力）：提示从悬浮层改为副行常显，logo 上、提示下。 */
+@media (hover: none) {
+  .about-studio { flex-direction: column; gap: 7px; padding: 14px 15px 13px; }
+  .about-studio-hint {
+    position: static; opacity: 1; pointer-events: none;
+    color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-weight: 550;
+  }
+  .about-studio:hover img { opacity: 1; filter: none; }
+}
+html[data-acta-theme="mono-dark"] .about-studio:hover, html[data-acta-theme="mono-dark"] .about-studio:focus-visible { background: color-mix(in srgb, #ffffff 8%, transparent); }
 @media (prefers-reduced-transparency: reduce) {
   .about-studio { background: var(--paper); }
   .about-studio:hover img { filter: none; opacity: .5; }
