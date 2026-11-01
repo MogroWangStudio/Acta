@@ -10083,8 +10083,21 @@ function getSyncBridge() {
     downloadLibrary: (folder) => nativeSync.downloadLibrary({ folder }),
     inspectFolder: (folder) => nativeSync.inspectFolder({ folder }),
     // 备份管理：原生实现位于 ActaLanPlugin（备份由 LAN 同步写入同一目录）。
+    // readBackup 走「会话 + 分块」拉取：bundle 动辄数 MB，单次跨桥会失败；
+    // 桌面桥（actaDesktop）返回完整 bundle，非分块结果原样透传。
     listBackups: () => window.Capacitor?.Plugins?.ActaLan?.listBackups?.() || Promise.reject(new Error('备份管理不可用')),
-    readBackup: (path) => window.Capacitor?.Plugins?.ActaLan?.readBackup?.({ path }) || Promise.reject(new Error('备份管理不可用')),
+    readBackup: async (path) => {
+      const native = window.Capacitor?.Plugins?.ActaLan;
+      if (!native?.readBackup) throw new Error('备份管理不可用');
+      const start = await native.readBackup({ path });
+      if (!start?.chunked) return start;
+      const parts = [];
+      for (let index = 0; index < start.total; index++) {
+        const { chunk } = await native.readBackupChunk({ sessionId: start.sessionId, index });
+        parts.push(chunk);
+      }
+      return JSON.parse(parts.join(''));
+    },
     deleteBackups: (paths) => (window.Capacitor?.Plugins?.ActaLan?.deleteBackups ? window.Capacitor.Plugins.ActaLan.deleteBackups({ paths }).then(result => result?.deleted || []) : Promise.reject(new Error('备份管理不可用')))
   };
 }

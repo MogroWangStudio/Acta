@@ -838,7 +838,15 @@
     const mode = ['none', 'single', 'double'].includes(uiSettings.backdropClose) ? uiSettings.backdropClose : 'double';
     if (mode === 'none') return;
     const dismiss = () => {
-      if (surface instanceof HTMLDialogElement) surface.dispatchEvent(new Event('cancel', { cancelable: true }));
+      if (surface instanceof HTMLDialogElement) {
+        // 合成派发的 cancel 不会触发浏览器原生的「取消即关闭」：只有
+        // 已经挂了 cancel 守卫（传输锁定等）的弹窗会 preventDefault 并
+        // 自行处理；没有守卫的弹窗（如备份管理）在这里手动 close，
+        // 否则双击永远关不掉（Esc 走原生路径不受影响）。
+        const cancelEvent = new Event('cancel', { cancelable: true });
+        surface.dispatchEvent(cancelEvent);
+        if (!cancelEvent.defaultPrevented && surface.open) surface.close();
+      }
       else if (surface.classList.contains('oobe-backdrop')) {
         // 二次进入的 OOBE：空白点击退出；首次启动静默（防止跳过初始化）。
         if (oobeDismissible) closeOobe();

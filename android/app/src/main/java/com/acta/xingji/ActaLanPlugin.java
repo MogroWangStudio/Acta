@@ -1264,6 +1264,12 @@ public class ActaLanPlugin extends Plugin {
         worker.start();
     }
 
+    // 备份 bundle 经 WebView 桥传输：完整 JSON 动辄数 MB，单次 resolve
+    // 大 payload 在安卓桥上会失败（列表正常、读取失败的根因）。改为
+    // 「会话 + 分块拉取」：读取一次缓存分块，JS 端逐块取回后拼接。
+    private static final java.util.Map<String, String[]> BACKUP_CHUNKS = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final int BACKUP_CHUNK_CHARS = 300000;
+
     @PluginMethod
     public void readBackup(final PluginCall call) {
         String path = call.getString("path");
@@ -1280,13 +1286,42 @@ public class ActaLanPlugin extends Plugin {
                     throw new Exception("只能恢复软件数据文件夹内的备份");
                 }
                 if (!directory.isDirectory()) throw new Exception("备份不存在或已被删除");
-                call.resolve(JSObject.fromJSONObject(readBackupBundle(directory)));
+                String json = JSObject.fromJSONObject(readBackupBundle(directory)).toString();
+                int total = (json.length() + BACKUP_CHUNK_CHARS - 1) / BACKUP_CHUNK_CHARS;
+                String[] chunks = new String[total];
+                for (int index = 0; index < total; index++) {
+                    int from = index * BACKUP_CHUNK_CHARS;
+                    chunks[index] = json.substring(from, Math.min(from + BACKUP_CHUNK_CHARS, json.length()));
+                }
+                String sessionId = java.util.UUID.randomUUID().toString();
+                BACKUP_CHUNKS.put(sessionId, chunks);
+                JSObject response = new JSObject();
+                response.put("chunked", true);
+                response.put("sessionId", sessionId);
+                response.put("total", total);
+                call.resolve(response);
             } catch (Exception error) {
                 call.reject("读取备份失败：" + error.getMessage());
             }
         }, "acta-backup-read");
         worker.setDaemon(true);
         worker.start();
+    }
+
+    @PluginMethod
+    public void readBackupChunk(final PluginCall call) {
+        String sessionId = call.getString("sessionId");
+        int index = call.getInt("index", -1);
+        String[] chunks = sessionId == null ? null : BACKUP_CHUNKS.get(sessionId);
+        if (chunks == null || index < 0 || index >= chunks.length) {
+            call.reject("读取会话已失效，请重新选择备份");
+            return;
+        }
+        JSObject response = new JSObject();
+        response.put("index", index);
+        response.put("chunk", chunks[index]);
+        if (index == chunks.length - 1) BACKUP_CHUNKS.remove(sessionId); // 最后一块取完即清理
+        call.resolve(response);
     }
 
     // 把备份文件夹组装回标准数据档案包（与读取现有档案同一格式）：
@@ -1349,6 +1384,7 @@ public class ActaLanPlugin extends Plugin {
     }
 
     private static String readBackupFileText(File file) throws Exception {
+        if (!file.isFile()) throw new Exception("备份缺少文件：" + file.getName());
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (InputStream input = new java.io.FileInputStream(file)) {
             byte[] buffer = new byte[8192];
