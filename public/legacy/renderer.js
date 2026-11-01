@@ -4204,6 +4204,7 @@ function boardRenderStylePop() {
   const style = board.style || { pattern: 'dots', color: '', gridColor: '', gridOpacity: 10, snap: false, gridSize: 26 };
   // 浮层互斥：个性化面板打开时收起图层面板。
   $('#boardLayerPop', boardEls?.canvas || document)?.remove();
+  boardLayerScrollMemo = 0;
   let pop = $('#boardStylePop', boardEls?.canvas || document);
   if (!pop) {
     pop = document.createElement('div');
@@ -6175,7 +6176,7 @@ function boardEnsureLayerTrigger() {
   boardEnsureTitleActions()?.insertBefore(boardLayerTriggerEl, boardStyleTriggerEl);
   boardLayerTriggerEl.addEventListener('click', () => {
     const pop = $('#boardLayerPop', boardEls?.canvas || document);
-    if (pop && !pop.hidden) { pop.hidden = true; boardSyncBoardTriggers(); return; }
+    if (pop && !pop.hidden) { pop.hidden = true; boardLayerScrollMemo = 0; boardSyncBoardTriggers(); return; }
     boardRenderLayerPop();
   });
   return boardLayerTriggerEl;
@@ -6183,6 +6184,7 @@ function boardEnsureLayerTrigger() {
 
 function boardRemoveLayerTrigger() {
   $('#boardLayerPop', boardEls?.canvas || document)?.remove();
+  boardLayerScrollMemo = 0;
   if (boardStyleTriggerEl) boardStyleTriggerEl.style.marginLeft = '';
   boardLayerTriggerEl?.remove();
   boardLayerTriggerEl = null;
@@ -6242,6 +6244,13 @@ function boardSyncBoardTriggers() {
   boardStyleTriggerEl?.classList.toggle('is-open', styleOpen && !layerOpen);
 }
 
+// 面板滚动位置记忆：计划板的画布随 renderList() 整体重建（#itemList 的
+// innerHTML 换成新 shell），挂在画布上的图层面板会连带被拆掉、由操作链
+// 尾部的 boardRenderLayerPop 重新竖起——列表滚到中段时这一拆一建会把
+// 视图弹回顶部。滚动时把位置记在这里，每次重建后原样恢复；只有真正
+// 重新打开（面板此前关闭或不存在）才清零、从顶部开始浏览。
+let boardLayerScrollMemo = 0;
+
 function boardRenderLayerPop() {
   const board = boardLayoutCache?.board || activeBoard();
   // 浮层互斥：图层面板打开时收起个性化与标注样式面板。
@@ -6278,6 +6287,12 @@ function boardRenderLayerPop() {
     </div>
     <div class="board-layer-list">${rows || `<div class="board-import-empty">${escapeHTML(t('boardEmptyHint'))}</div>`}</div>`;
   pop.hidden = false;
+  const layerList = pop.querySelector('.board-layer-list');
+  // 恢复滚动并持续记忆：列表元素随每次重建更换，监听器随旧节点一起废弃。
+  if (layerList) {
+    if (boardLayerScrollMemo) layerList.scrollTop = boardLayerScrollMemo;
+    layerList.addEventListener('scroll', () => { boardLayerScrollMemo = layerList.scrollTop; }, { passive: true });
+  }
   boardBindLayerDrag(pop);
   boardSyncBoardTriggers();
   pop.querySelector('[data-layer-rename]')?.addEventListener('click', () => {
@@ -6393,7 +6408,13 @@ function boardLayerRename(entry) {
 // 行的让位态与重建后的自然布局逐像素一致，无跳变。重排按类型段写回
 // （卡片 / 文本 / 标注三段的层叠由画布结构决定，拖移在段内生效；混合组
 // 可跨段移动，成员在各段内同步平移）。组行整组移动。
+// 触屏补全：列表超出面板高度时，拖到上下边缘自动加速滚动（滚动量并入
+// 跟手位移，缝隙跟着内容一起走，够得着段内所有行）；系统手势打断
+// （pointercancel：来电、下拉通知等）视为取消——回滚不落账，顺序只由
+// 显式松手决定；越过槽位缝与落账各给一次轻触觉（无振动能力时静默）。
 let boardLayerDragState = null;
+
+const boardLayerBuzz = pattern => { try { navigator.vibrate?.(pattern); } catch { /* 无振动能力的环境静默跳过 */ } };
 
 function boardBindLayerDrag(pop) {
   pop.querySelectorAll('[data-layer-drag], [data-layer-drag-group]').forEach(handle => {
@@ -6448,9 +6469,11 @@ function boardLayerDragStart(event, pop, handle) {
     : rows[rows.length - 1].offsetTop + rows[rows.length - 1].offsetHeight + gap);
   event.preventDefault();
   try { handle.setPointerCapture(event.pointerId); } catch { /* 不支持捕获时按普通流处理 */ }
+  const list = pop.querySelector('.board-layer-list') || pop;
   boardLayerDragState = {
     pop, handle, entries, board, from, minIndex, maxIndex, target: from,
-    moved: false, startY: event.clientY, tops, core, gap, spans, rows, dragRows,
+    moved: false, startY: event.clientY, lastY: event.clientY,
+    tops, core, gap, spans, rows, dragRows, list, scrollStart: list.scrollTop,
     dragHeight: core[from],
     // 指针位移夹在段内首尾槽位之间；所在段最后一位是自己时无法下移。
     deltaMin: slotTop(minIndex) - tops[from],
@@ -6461,24 +6484,33 @@ function boardLayerDragStart(event, pop, handle) {
   handle.addEventListener('pointercancel', boardLayerDragEnd);
 }
 
-function boardLayerDragMove(event) {
+// 拖动中的每帧自动滚动：指针进入列表上/下边缘 44px 内时按接近程度加速
+// 滚动（越贴边越快，最高约每帧 9px），滚动后用最后指针位置重算跟手位移
+// 与落点——指针停着不动、内容持续经过，长列表也能排到段内任意一行。
+function boardLayerDragTick() {
   const state = boardLayerDragState;
-  if (!state) return;
-  // 面板在拖动中被外部重建会换掉全部行：本次手势作废，等下一次重来。
-  if (!state.handle.isConnected || !state.pop.isConnected) {
-    boardLayerDragState = null;
-    return;
+  if (!state || !state.moved) return;
+  const rect = state.list.getBoundingClientRect();
+  const span = Math.min(44, rect.height / 2);
+  let speed = 0;
+  if (state.lastY < rect.top + span) speed = -Math.ceil((rect.top + span - state.lastY) / span * 9);
+  else if (state.lastY > rect.bottom - span) speed = Math.ceil((state.lastY - (rect.bottom - span)) / span * 9);
+  if (speed) {
+    const before = state.list.scrollTop;
+    state.list.scrollTop = Math.min(Math.max(before + speed, 0), state.list.scrollHeight - state.list.clientHeight);
+    if (state.list.scrollTop !== before) boardLayerDragUpdate(state);
   }
-  if (!state.moved) {
-    if (Math.abs(event.clientY - state.startY) < 4) return;
-    state.moved = true;
-    // 被拿起的行：抬起（阴影 + 实底），位移不过渡、1:1 跟手。
-    state.dragRows.forEach(row => { row.classList.add('is-dragging'); row.style.transition = 'none'; });
-  }
-  state.delta = Math.min(Math.max(event.clientY - state.startY, state.deltaMin), state.deltaMax);
-  // 目标槽位以未让位的基线中点为基准：让位后的行位置随拖动变化，拿它
-  // 做基准会形成反馈回环。拖动行中心越过哪条基线中点，缝隙就开在那行
-  // 之前（越过全部则开在段尾之后），再夹回合法区间。
+  state.raf = requestAnimationFrame(boardLayerDragTick);
+}
+
+// 跟手与落点计算：位移 = 指针位移 + 拖动期间的列表滚动量（列表滚动时
+// 行跟着内容一起走，把滚动量补回位移才是对指针真正的 1:1）。落点仍以
+// 未让位的基线中点为基准——基线（tops）是布局坐标、不随滚动变化，让位
+// 后的行位置随拖动变化，拿它做基准会形成反馈回环。拖动行中心越过哪条
+// 基线中点，缝隙就开在那行之前（越过全部则开在段尾之后），再夹回区间。
+function boardLayerDragUpdate(state, clientY) {
+  const scrollShift = state.list.scrollTop - state.scrollStart;
+  state.delta = Math.min(Math.max(clientY - state.startY + scrollShift, state.deltaMin), state.deltaMax);
   const center = state.tops[state.from] + state.delta + state.dragHeight / 2;
   let target = state.maxIndex;
   for (let index = 0; index < state.entries.length; index += 1) {
@@ -6488,9 +6520,30 @@ function boardLayerDragMove(event) {
   if (target !== state.target) {
     state.target = target;
     boardLayerApplyShifts(state);
+    boardLayerBuzz(8); // 吸到新槽位：轻点一下确认落点缝变化
   }
   const transform = `translateY(${state.delta.toFixed(1)}px)`;
   state.dragRows.forEach(row => { row.style.transform = transform; });
+}
+
+function boardLayerDragMove(event) {
+  const state = boardLayerDragState;
+  if (!state) return;
+  // 面板在拖动中被外部重建会换掉全部行：本次手势作废，等下一次重来。
+  if (!state.handle.isConnected || !state.pop.isConnected) {
+    if (state.raf) cancelAnimationFrame(state.raf);
+    boardLayerDragState = null;
+    return;
+  }
+  state.lastY = event.clientY;
+  if (!state.moved) {
+    if (Math.abs(event.clientY - state.startY) < 4) return;
+    state.moved = true;
+    // 被拿起的行：抬起（阴影 + 实底），位移不过渡、1:1 跟手。
+    state.dragRows.forEach(row => { row.classList.add('is-dragging'); row.style.transition = 'none'; });
+    state.raf = requestAnimationFrame(boardLayerDragTick);
+  }
+  boardLayerDragUpdate(state, event.clientY);
 }
 
 // 让位模拟：把拖动条目从 from 挪到 target，按基线推算其余条目的新位置，
@@ -6519,15 +6572,23 @@ function boardLayerApplyShifts(state) {
   });
 }
 
-function boardLayerDragEnd() {
+function boardLayerDragEnd(event) {
   const state = boardLayerDragState;
   if (!state) return;
   boardLayerDragState = null;
+  if (state.raf) cancelAnimationFrame(state.raf);
   state.handle.removeEventListener('pointermove', boardLayerDragMove);
   state.handle.removeEventListener('pointerup', boardLayerDragEnd);
   state.handle.removeEventListener('pointercancel', boardLayerDragEnd);
   if (!state.moved) return;
+  // 系统手势打断（来电、下拉通知、多任务手势等）= 取消：回滚让位与
+  // 抬起态、不落账。用户没有明确说「放这里」，顺序就不该变。
+  if (event?.type === 'pointercancel') {
+    state.rows.forEach(row => { row.style.transition = ''; row.style.transform = ''; row.classList.remove('is-dragging'); });
+    return;
+  }
   const noChange = state.target === state.from || state.target === state.from + 1;
+  if (!noChange) boardLayerBuzz(14); // 落账确认：与槽位吸附不同的第二拍
   if (reduceWindowMotion()) {
     state.rows.forEach(row => { row.style.transition = ''; row.style.transform = ''; row.classList.remove('is-dragging'); });
     if (!noChange) boardLayerReorder(state, state.target);
@@ -7782,8 +7843,8 @@ function bindBoardScene() {
   canvas.addEventListener('click', event => {
     const pop = $('#boardLayerPop', canvas);
     if (!pop || pop.hidden) return;
-    if (event.target.closest('[data-layer-close]')) { pop.hidden = true; boardSyncBoardTriggers(); return; }
-    if (!event.target.closest('#boardLayerPop, #boardLayerTrigger')) { pop.hidden = true; boardSyncBoardTriggers(); return; }
+    if (event.target.closest('[data-layer-close]')) { pop.hidden = true; boardLayerScrollMemo = 0; boardSyncBoardTriggers(); return; }
+    if (!event.target.closest('#boardLayerPop, #boardLayerTrigger')) { pop.hidden = true; boardLayerScrollMemo = 0; boardSyncBoardTriggers(); return; }
     const toggleGroup = event.target.closest('[data-layer-toggle-group]');
     if (toggleGroup) {
       const board = boardLayoutCache.board;

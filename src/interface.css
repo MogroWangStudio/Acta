@@ -17,15 +17,25 @@
 .splash-lines { position: absolute; inset: 0; pointer-events: none; }
 .splash-logo { width: min(300px, 52vw); height: auto; aspect-ratio: 659 / 190; fill: var(--ink); stroke: none; animation: actaSplashLogoIn calc(.8s * var(--splash-speed, 1)) var(--ease-out) both; }
 .splash-line { position: absolute; background: var(--sage); transform: scaleX(0); transform-origin: 0 50%; }
-.splash-line-top { left: 0; top: 52px; width: 100%; height: 1px; }
-.splash-line-sidebar { top: 52px; bottom: 0; left: var(--acta-sidebar-width, 248px); width: 1px; transform: scaleY(0); transform-origin: 50% 0; }
-.splash-line-list { top: 52px; bottom: 0; left: calc(var(--acta-sidebar-width, 248px) + clamp(330px, var(--list-pane-width, 330px), 620px)); width: 1px; transform: scaleY(0); transform-origin: 50% 0; }
-.splash-line-bottom { display: none; left: 0; bottom: calc(70px + env(safe-area-inset-bottom)); width: 100%; height: 1px; }
+/* 分隔线镜像工作区的真实边界：顶线对齐顶栏底缘（52px × 界面缩放），
+   竖线对齐侧栏 / 列表面板的列边界，底线对齐移动端底栏上缘。 */
+.splash-line-top { left: 0; top: calc(52px * var(--acta-ui-scale, 1)); width: 100%; height: 1px; }
+.splash-line-sidebar { top: calc(52px * var(--acta-ui-scale, 1)); bottom: 0; left: var(--acta-sidebar-width, 248px); width: 1px; transform: scaleY(0); transform-origin: 50% 0; }
+.splash-line-list { top: calc(52px * var(--acta-ui-scale, 1)); bottom: 0; left: calc(var(--acta-sidebar-width, 248px) + clamp(330px, var(--list-pane-width, 330px), 620px)); width: 1px; transform: scaleY(0); transform-origin: 50% 0; }
+.splash-line-bottom { display: none; left: 0; bottom: calc(70px * var(--acta-ui-scale, 1) + env(safe-area-inset-bottom)); width: 100%; height: 1px; }
 /* 安卓端勾勒动画把底部圆形新建按钮的轮廓也勾出来：圆心与真实按钮
    像素级同位（底栏中央、bottom 4px + 安全区），直径跟随外观设置的
    「新建按钮大小」（--acta-new-size，60–96px）——真实按钮多大，勾出的
    圆就多大，任何尺寸下都严丝合缝。离场时随底部线一起描出整圆
-   （pathLength 归一化 + dashoffset 描线），随启动层淡出交接。 */
+   （pathLength 归一化 + dashoffset 描线），随启动层淡出交接。
+   圆的几何用 SVG2 的 CSS 几何属性（cx/cy/r）按 CSS 像素直接定义，
+   svg 不带 viewBox：用户单位 = CSS 像素、缩放比恒为 1。此前
+   viewBox(0 0 68 68) + vector-effect:non-scaling-stroke 的组合在
+   Chromium（安卓 WebView）里会让 dash 图案落到设备空间、pathLength
+   的周长归一化被忽略——stroke-dasharray:100 只覆盖真实周长（≈204）
+   的一半，圆从起笔起就只剩一条来回滑动的半弧。去掉这两个属性后
+   归一化在任何内核都可靠，勾勒动画重新画出完整闭环；r 取半径减
+   半线宽（0.75px），描边外缘恰好贴住按钮边缘。 */
 .splash-line-button {
   position: absolute; display: none; left: 50%; bottom: calc(4px + env(safe-area-inset-bottom));
   width: var(--acta-new-size, var(--mobile-new-button-size));
@@ -33,7 +43,12 @@
   margin: 0 0 -1px calc(var(--acta-new-size, var(--mobile-new-button-size)) / -2);
   overflow: visible; opacity: 0; transform: rotate(-90deg);
 }
-.splash-line-button circle { fill: none; stroke: var(--sage); stroke-width: 1.5; stroke-dasharray: 100; stroke-dashoffset: 100; }
+.splash-line-button circle {
+  fill: none; stroke: var(--sage); stroke-width: 1.5;
+  cx: 50%; cy: 50%;
+  r: calc(var(--acta-new-size, var(--mobile-new-button-size)) / 2 - 0.75px);
+  stroke-dasharray: 100; stroke-dashoffset: 100;
+}
 .splash-screen.is-leaving .splash-line-button { opacity: 1; }
 .splash-screen.is-leaving .splash-line-button circle {
   animation: actaSplashDrawCircle calc(.5s * var(--splash-speed, 1)) var(--ease-out) calc(.3s * var(--splash-speed, 1)) both;
@@ -44,7 +59,7 @@
 }
 @media (max-width: 800px) {
   .splash-line-sidebar, .splash-line-list { display: none; }
-  .splash-line-top { top: calc(48px + env(safe-area-inset-top)); }
+  .splash-line-top { top: calc(48px * var(--acta-ui-scale, 1) + env(safe-area-inset-top)); }
   .splash-line-bottom { display: block; }
   .splash-line-button { display: block; }
 }
@@ -157,9 +172,10 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
 /* 桌面端设置页占满整个窗口：不再有模糊遮罩与四周留白，设置窗口就是当前
    页面本身；macOS 红绿灯浮在左上角，由 darwin 分支让出空间，Windows 的
    最小化 / 最大化按钮放进设置头部（settingsWindowControls）。
-   字号统一：设置页与小字弹窗在各自作用域把字号系数覆盖为 base × 放大
-   系数（只放大文字，布局尺寸不动，按视口封顶的弹窗不会被撑出屏幕），
-   所有 calc(Npx * var(--acta-font-scale)) 仍跟随「界面字体大小」缩放；
+   字号统一：设置页与小字弹窗在各自作用域把字号系数覆盖为
+   base × ui-scale × 放大系数（文字跟随「界面字体大小」与「界面整体
+   缩放」两个滑杆，布局尺寸不动，按视口封顶的弹窗不会被撑出屏幕），
+   所有 calc(Npx * var(--acta-font-scale)) 仍跟随两个滑杆缩放；
    速记弹窗（quick-capture-dialog）排除：其字号本就与主界面同档。
    设置窗的正文系数取 1.4：设置页普通文本基准是 10px，×1.4 后与主页面
    普通文本（body / 任务行 14px 基准）严格同尺——同一滑杆值在设置页与
@@ -168,10 +184,10 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
    跟随正文一起 ×1.4 会让标题凭空涨 25%、比主页面大标题高出六成——
    用独立的 --settings-display-scale 让标题尺寸与改动前逐值一致。 */
 .settings-window {
-  --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.4);
-  --settings-display-scale: calc(var(--acta-font-scale-base, 1) * 1.12);
+  --acta-font-scale: calc(var(--acta-font-scale-base, 1) * var(--acta-ui-scale, 1) * 1.4);
+  --settings-display-scale: calc(var(--acta-font-scale-base, 1) * var(--acta-ui-scale, 1) * 1.12);
 }
-dialog.relation-dialog:not(.quick-capture-dialog), dialog.note-export-dialog, dialog.history-dialog, dialog.classification-manager-dialog { --acta-font-scale: calc(var(--acta-font-scale-base, 1) * 1.1); }
+dialog.relation-dialog:not(.quick-capture-dialog), dialog.note-export-dialog, dialog.history-dialog, dialog.classification-manager-dialog { --acta-font-scale: calc(var(--acta-font-scale-base, 1) * var(--acta-ui-scale, 1) * 1.1); }
 .settings-backdrop { position: fixed; inset: 0; z-index: 110; background: var(--paper); opacity: 0; pointer-events: none; transition: opacity .24s ease; }
 .settings-backdrop.open { opacity: 1; pointer-events: auto; }
 /* 预见式返回手势中：遮罩临时透明，收缩中的设置窗口底下露出工作区，
@@ -2649,8 +2665,12 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-swatch.is-none { background: var(--paper); border: 1.5px dashed color-mix(in srgb, var(--faint) 60%, transparent); position: relative; }
 .board-swatch.is-none::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: linear-gradient(to top right, transparent 44%, var(--danger-accent, #b96051) 44%, var(--danger-accent, #b96051) 56%, transparent 56%); }
 
-/* —— 图层面板：与个性化面板同位（画布右上），行式列表按 z 序自顶向下 —— */
-.board-layer-pop { max-width: 280px; }
+/* —— 图层面板：与个性化面板同位（画布右上），行式列表按 z 序自顶向下 ——
+   入场从触发钮方向（右上）轻微缩放浮现，与按钮的「打开」态同帧呼应；
+   关闭是瞬时收起不给退场动画（关闭要干脆）。动画挂在面板元素上，面板
+   常驻时 innerHTML 重建不重放，只有 hidden 切换（真正开合）才重播。 */
+.board-layer-pop { max-width: 280px; transform-origin: 100% 0; animation: boardLayerPopIn .2s var(--ease-out) both; }
+@keyframes boardLayerPopIn { from { opacity: 0; transform: translateY(-5px) scale(.975); } to { opacity: 1; transform: none; } }
 .board-layer-list { display: grid; gap: 3px; overflow: hidden auto; scrollbar-width: thin; max-height: min(52vh, 420px); padding-right: 2px; }
 .board-layer-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 9px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: background .14s ease, border-color .14s ease, transform .18s var(--ease-out); }
 .board-layer-row:hover { background: color-mix(in srgb, var(--white) 62%, transparent); }
@@ -2778,13 +2798,19 @@ html[data-acta-theme="mono-dark"] .board-pill-menu, html[data-acta-theme="mono-d
 html[data-acta-theme="mono-dark"] .board-widget-toolbar, html[data-acta-theme="mono-dark"] .board-pen-bar { background: color-mix(in srgb, #1d1f1c 84%, transparent); box-shadow: 0 2px 6px rgba(0,0,0,.3), 0 14px 34px -12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
 html[data-acta-theme="mono-dark"] .board-text.is-editing { background: color-mix(in srgb, #242622 72%, transparent); }
 
-/* 减少动态效果：入场与级联退化为短淡入，卡片不再上浮悬停。 */
+/* 减少动态效果：入场与级联退化为短淡入，卡片不再上浮悬停。图层面板
+   的开合动画与拖拽让位过渡一并退场（JS 侧同步跳过 FLIP），只保留
+   背景 / 边框的即时反馈。 */
 body.acta-reduce-motion .board-chrome, body.acta-reduce-motion .board-pill-button, body.acta-reduce-motion .board-node, body.acta-reduce-motion .board-widget, body.acta-reduce-motion .board-pen-bar { animation-duration: .01ms; animation-delay: 0ms; }
 body.acta-reduce-motion .board-node:hover { transform: none; }
+body.acta-reduce-motion .board-layer-pop { animation: none; }
+body.acta-reduce-motion .board-layer-row { transition: background .14s ease, border-color .14s ease; }
 @media (prefers-reduced-motion: reduce) {
   .board-chrome, .board-pill-button, .board-node, .board-node[data-enter="1"] { animation-duration: .01ms; animation-delay: 0ms; }
   .board-node { transition: none; }
   .board-node:hover { transform: none; }
+  .board-layer-pop { animation: none; }
+  .board-layer-row { transition: background .14s ease, border-color .14s ease; }
 }
 /* 减少透明度：玻璃层加实、撤掉模糊，保留同一层次结构。 */
 @media (prefers-reduced-transparency: reduce) {
@@ -2806,6 +2832,16 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .board-pill-button { height: 38px; }
   .board-handle { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
   .board-handle.is-resize { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+  /* 图层面板整体按手指尺寸放大：18×24px 的拖柄在拇指下几乎不可点，
+     行内命中区统一抬到 ≥38px（拖柄 38×44、眼睛 30px、行 padding 加高），
+     负 margin 抵消加大的盒子，行内图标位置不变。入口触发钮与工具条
+     按钮同高（38px）。 */
+  .board-style-trigger { width: 38px; height: 38px; }
+  .board-layer-row { padding: 9px 10px; }
+  .board-layer-grip { width: 38px; height: 44px; margin: -10px 0 -10px -12px; border-radius: 9px; }
+  .board-layer-eye { width: 30px; height: 30px; margin-right: -5px; }
+  .board-layer-eye svg { width: 15px; height: 15px; }
+  .board-layer-list { max-height: min(58vh, 460px); }
 }
 
 /* 移动端：板胶囊与工具条让出画布顶部，工具条筛选部分横向滚动；
@@ -2827,6 +2863,9 @@ body.acta-reduce-motion .board-node:hover { transform: none; }
   .board-style-trigger { margin-left: 0; margin-right: 0; }
   .board-pill-button { max-width: 148px; }
   .board-style-pop-lg { right: 4px; top: 56px; bottom: auto; }
+  /* 图层面板在窄屏放宽到几乎满宽（留 24px 屏缘）：行内拖柄 / 图标 /
+     文字 / 眼睛四段内容不再挤在一起，拖拽目标也更宽。 */
+  .board-layer-pop { max-width: min(320px, calc(100vw - 24px)); }
   .board-widget-toolbar { max-width: calc(100% - 16px); flex-wrap: wrap; justify-content: center; }
   /* 320px 档再收紧间距：标注菜单已移出滚动容器，工具条本身不必横向滚动，
      缩小间隙后全部控件（含适配视图）都能落在可视区里。 */

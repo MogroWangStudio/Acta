@@ -22,6 +22,14 @@
   root.style.setProperty('--splash-speed', String(clampSplashSpeed(stored.splashAnimationSpeed)));
   if (['calm-fade', 'focus-zoom', 'ink-write', 'curtain-up', 'breathe'].includes(String(stored.splashAnimationPreset))) root.dataset.actaSplashPreset = String(stored.splashAnimationPreset);
   if (stored.splashAnimationEnabled === false) root.dataset.actaSplashOff = 'true';
+  // 「界面整体缩放」同样要在首帧前落地：顶栏高度与启动分隔线的对齐、
+  // 列表卡片的几何都乘 --acta-ui-scale，晚一帧应用会看到整页跳一下。
+  // 与外观设置的 applyUiScale() 同一套夹取（85–125，5% 步进）。
+  const clampUiScale = value => {
+    const snapped = Math.round(Number(value) / 5) * 5;
+    return Number.isFinite(snapped) && snapped > 0 ? Math.min(125, Math.max(85, snapped)) : 100;
+  };
+  root.style.setProperty('--acta-ui-scale', String(clampUiScale(stored.uiScale) / 100));
   // 移动端底栏「仅图标」也在首帧前生效，避免文字先闪一下再消失。
   if (String(stored.mobileNavStyle) === 'icon') root.dataset.mobileNav = 'icon';
   if (!theme) return;

@@ -1003,8 +1003,28 @@ async function main() {
       const fontSizeRangeIsReasonable = fontSizeSetting.min === '12'
         && fontSizeSetting.max === '18'
         && document.querySelector('#appFontSizeValue').textContent === '18 px'
-        && document.documentElement.style.getPropertyValue('--acta-font-scale') === String(expectedFontScale)
+        // --acta-font-scale 由 styles.css 按 base × ui-scale（界面整体缩放）合成，
+        // JS 只写 base；这里断言 base 写入值与预期系数一致（字号比例已由
+        // fontScalingUnified 用真实渲染字号校验过）。
+        && Math.abs(parseFloat(document.documentElement.style.getPropertyValue('--acta-font-scale-base')) - expectedFontScale) < 1e-9
         && readAppearanceSettings().appFontSize === 18;
+      // 界面整体缩放：滑杆改变 --acta-ui-scale，顶栏等骨架几何随动（rAF 落值）。
+      const uiScaleSetting = document.querySelector('#uiScaleSetting');
+      const uiScaleBaselineTitlebar = document.querySelector('.titlebar').getBoundingClientRect().height;
+      uiScaleSetting.value = '120';
+      uiScaleSetting.dispatchEvent(new Event('input'));
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const uiScaleTitlebar = document.querySelector('.titlebar').getBoundingClientRect().height;
+      const uiScaleWorks = uiScaleSetting.min === '85'
+        && uiScaleSetting.max === '125'
+        && uiScaleSetting.step === '5'
+        && document.querySelector('#uiScaleValue').textContent === '120%'
+        && Math.abs(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acta-ui-scale')) - 1.2) < 1e-9
+        && Math.abs(uiScaleTitlebar - uiScaleBaselineTitlebar * 1.2) < 2
+        && readAppearanceSettings().uiScale === 120;
+      uiScaleSetting.value = '100';
+      uiScaleSetting.dispatchEvent(new Event('input'));
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const fontSizeLayoutMetrics = fontLayoutSelectors.map((selector, index) => {
         const node = document.querySelector(selector);
         const bounds = node.getBoundingClientRect();
@@ -1611,6 +1631,7 @@ async function main() {
         glowThemeWorks,
         fontScalingUnified,
         fontSizeRangeIsReasonable,
+        uiScaleWorks,
         fontSizeLayoutFits,
         fontSizeLayoutMetrics,
         mobileFontSizeLayoutFits,
@@ -1951,6 +1972,7 @@ async function main() {
     assert.equal(result.glowThemeWorks, true);
     assert.equal(result.fontScalingUnified, true);
     assert.equal(result.fontSizeRangeIsReasonable, true);
+    assert.equal(result.uiScaleWorks, true);
     assert.equal(result.fontSizeLayoutFits, true, JSON.stringify(result.fontSizeLayoutMetrics));
     assert.equal(result.mobileFontSizeLayoutFits, true, JSON.stringify(result.mobileFontSizeLayoutMetrics));
     assert.equal(result.presetAppIconWorks, true);

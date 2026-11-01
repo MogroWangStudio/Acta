@@ -14,7 +14,7 @@
     mobileSlots: ['trash', 'stats'], mobileTitleActions: ['trash', 'stats', 'refresh'], mobileNavStyle: 'labeled',
     runInBackground: false,
     lanDeviceName: '', lanDeviceIcon: '', lanPort: 0, lanAutomations: [], lanAutomationRuns: {},
-    appFont: 'system', customFont: 'Inter', appFontSize: 14,
+    appFont: 'system', customFont: 'Inter', appFontSize: 14, uiScale: 100,
     noteHeadingH1Size: 32, noteHeadingH2Size: 24, noteHeadingH3Size: 19, noteBaseSize: 17, noteHeadingFont: 'serif', noteHeadingCustomFont: '', noteLineHeight: 1.6, noteParagraphGap: 1,
     noteToolbarPosition: 'bottom', noteToolbarShowLabels: false,
     oneDriveFolder: '', oneDriveLabel: '', workspaceLabel: '',
@@ -492,7 +492,7 @@
   // 设置文案翻译的根节点：设置面板本体 + 独立的局域网同步页（它在设置
   // 弹窗之外，但同样使用中文原文做翻译键）。
   const settingsTranslationRoots = [settingsModal, byId('lanSyncPage')].filter(Boolean);
-  const settingsDynamicSelector = '#workspaceSettingsTitle,#workspaceFolderPath,#workspaceStatus,#generalStatus,#oneDriveStatus,#appFontSizeValue,#splashSpeedValue,#completedTodoSinkDelayValue,#lanSyncState,#lanSyncStatus,#lanPeersHint,#lanRadarSelfName,#lanRadarCount,#lanRadarPhase,#lanAutomationList';
+  const settingsDynamicSelector = '#workspaceSettingsTitle,#workspaceFolderPath,#workspaceStatus,#generalStatus,#oneDriveStatus,#appFontSizeValue,#uiScaleValue,#splashSpeedValue,#completedTodoSinkDelayValue,#lanSyncState,#lanSyncStatus,#lanPeersHint,#lanRadarSelfName,#lanRadarCount,#lanRadarPhase,#lanAutomationList';
   const settingsTextEntries = [];
   settingsTranslationRoots.forEach(root => {
     const settingsWalker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -6800,16 +6800,60 @@
       custom:`${safeCustomFont}, "Segoe UI", "Microsoft YaHei", sans-serif`
     }[uiSettings.appFont] || '"Segoe UI Variable", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif';
     document.documentElement.style.setProperty('--acta-app-font', editorFont);
-    // base 是「界面字体大小」的原始系数；设置页与小字弹窗在自己作用域里把
-    // --acta-font-scale 覆盖为 base × 放大系数（只放大文字、不动布局尺寸，
-    // 不会像 zoom 那样把按视口封顶的弹窗撑出屏幕）。
+    // base 是「界面字体大小」的原始系数；--acta-font-scale 本身不再由 JS
+    // 直接写数值，而是由 styles.css 按 base × ui-scale（「界面整体缩放」）
+    // 合成，两个滑杆的放大效果自然叠加。设置页与小字弹窗在自己作用域里把
+    // --acta-font-scale 覆盖为 base × ui-scale × 放大系数（只放大文字、
+    // 不动布局尺寸，不会像 zoom 那样把按视口封顶的弹窗撑出屏幕）。
     document.documentElement.style.setProperty('--acta-font-scale-base', String(uiSettings.appFontSize / fontSizeRange.default));
-    document.documentElement.style.setProperty('--acta-font-scale', String(uiSettings.appFontSize / fontSizeRange.default));
     appFontSizeSetting.value = String(uiSettings.appFontSize);
     appFontSizeValue.textContent = `${uiSettings.appFontSize} px`;
     appFontSizeSetting.setAttribute('aria-valuetext', `${uiSettings.appFontSize} px`);
     customFontRow.classList.toggle('show', uiSettings.appFont === 'custom');
   }
+
+  // —— 界面整体缩放（外观设置）：85%–125%，写入根元素 --acta-ui-scale。
+  // 几何骨架（顶栏 / 底栏 / 列表卡片等）直接乘该变量，文字经由
+  // --acta-font-scale = base × ui-scale 跟随，整个界面等比缩放；安全区
+  // insets 是物理值不参与缩放。存储值为整数百分比（100 = 默认）。
+  const uiScaleSetting = byId('uiScaleSetting');
+  const uiScaleValue = byId('uiScaleValue');
+  const uiScaleRange = Object.freeze({ min: 85, max: 125, default: 100, step: 5 });
+  const normalizeUiScale = () => {
+    const requested = Math.round(Number(uiSettings.uiScale));
+    if (!Number.isFinite(requested) || requested <= 0) return uiScaleRange.default;
+    const snapped = Math.round(requested / uiScaleRange.step) * uiScaleRange.step;
+    return Math.min(uiScaleRange.max, Math.max(uiScaleRange.min, snapped));
+  };
+  function applyUiScale() {
+    uiSettings.uiScale = normalizeUiScale();
+    document.documentElement.style.setProperty('--acta-ui-scale', String(uiSettings.uiScale / 100));
+    if (uiScaleSetting && uiScaleValue) {
+      uiScaleSetting.value = String(uiSettings.uiScale);
+      uiScaleValue.textContent = `${uiSettings.uiScale}%`;
+      uiScaleSetting.setAttribute('aria-valuetext', `${uiSettings.uiScale}%`);
+    }
+  }
+  if (uiScaleSetting && uiScaleValue) {
+    uiScaleSetting.min = String(uiScaleRange.min);
+    uiScaleSetting.max = String(uiScaleRange.max);
+    uiScaleSetting.step = String(uiScaleRange.step);
+    // 拖动即改即存；变量落在 rAF 里合并——缩放触发整页重排，一帧最多
+    // 应用一次，滑杆连续拖动时界面实时跟手又不掉帧。
+    let uiScaleFrame = 0;
+    uiScaleSetting.addEventListener('input', () => {
+      uiSettings.uiScale = Number(uiScaleSetting.value);
+      if (!uiScaleFrame) {
+        uiScaleFrame = requestAnimationFrame(() => {
+          uiScaleFrame = 0;
+          applyUiScale();
+        });
+      }
+      uiScaleValue.textContent = `${normalizeUiScale()}%`;
+      saveUISettings();
+    });
+  }
+  applyUiScale();
 
   // —— 导航图标明度与选中效果（侧栏 / 移动底栏共用同一组按钮） ——
   // 明度落在 --nav-icon-dim（0.3–1）控制默认状态的图标淡深；效果以
@@ -10268,6 +10312,7 @@
     applyTheme();
     applySplashSettings();
     applyFontSettings();
+    applyUiScale();
     void applyAppIcon();
     defaultViewSetting.value = uiSettings.defaultView;
     todoDensitySetting.value = ['compact', 'extreme'].includes(uiSettings.todoListDensity) ? uiSettings.todoListDensity : 'standard';
