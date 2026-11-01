@@ -325,7 +325,6 @@
                 <div class="nav-desktop-layout">
                   <div class="nav-desktop-preview">
                     <div class="nav-preview-sidebar" id="navPreviewSidebar"></div>
-                    <small class="nav-preview-hint">预览：点击入口切换显示与隐藏，拖动把手调整顺序</small>
                   </div>
                   <div class="nav-page-grid" id="navPageGrid">
                     <label><input type="checkbox" data-nav-page="inbox"/><span>收集箱</span></label>
@@ -342,14 +341,11 @@
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端底栏</b></span></div>
                 <div class="nav-preview-bar nav-preview-drag" id="navPreviewBottom"></div>
-                <small class="nav-preview-hint">拖动换位置，点击换入口；收集箱、日历与新建按钮固定不动</small>
               </div>
               <div class="settings-group nav-mobile-settings-only">
                 <div class="settings-row"><span><b>移动端顶栏</b></span></div>
                 <div class="nav-preview-bar nav-preview-drag" id="navPreviewTop"></div>
-                <small class="nav-preview-hint">拖动换位置，点击换入口；设置按钮固定不动</small>
               </div>
-              <p class="settings-status" id="navSettingsStatus">设置会自动保存在当前设备。</p>
             </section>
 
             <section class="settings-panel" data-settings-panel="note-editor">
