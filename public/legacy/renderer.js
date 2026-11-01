@@ -9839,7 +9839,8 @@ function bindShell() {
   // 下不播（后者由全局降级规则兜底，这里直接跳过更省一次重排）。
   const pageTransitionOrder = ['inbox', 'calendar', 'board', 'todos', 'notes', 'trash', 'stats', 'lan'];
   const playPageTransition = (fromView, toView) => {
-    const itemList = document.getElementById('itemList');
+    // 转场对象是整个页面（.item-pane：顶栏大标题行 + 列表 + 页脚）。
+    const itemList = document.querySelector('.item-pane');
     if (!itemList) return;
     const root = document.documentElement;
     if (root.dataset.actaTransition === 'none') return;
