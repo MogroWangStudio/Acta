@@ -9873,6 +9873,9 @@ function bindShell() {
     if (currentView === 'board') selectedId = null;
     else if (!visible.some(item => item.id === selectedId)) selectedId = visible[0]?.id || null;
     if (currentView !== 'calendar') renderEditor();
+    // 移动端顶栏功能区的选中药丸：当前视图对应的入口高亮（刷新 / 历史 /
+    // 局域网雷达等动作入口无视图态，不亮）。
+    $$('#mobileTitlebarActions [data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === view));
     if (previousView !== view) playPageTransition(previousView, view);
   };
   document.addEventListener('click', event => {
