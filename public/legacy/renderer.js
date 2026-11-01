@@ -77,7 +77,7 @@ const dictionaries = {
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
     boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardShowBody:'完整内容', boardShowDoneOnly:'仅显示已完成', boardBodyLargeConfirm:'这篇笔记超过一万字符，完整显示可能影响流畅度。仍要开启完整内容显示吗？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardPatternLines:'横线', boardPatternCross:'交叉点', boardGridColor:'网格颜色', boardGridOpacity:'网格不透明度', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
-    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerDrag:'拖动排序', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合', boardLayerRename:'重命名', boardLayerCopy:'复制', boardLayerCut:'剪切', boardLayerPaste:'粘贴', boardLayerRenamed:'已重命名', boardLayerPasted:'已粘贴 {0} 个元素', brandEgg:'行记不辍 —— 这是 Acta 给好奇心的回礼', historyAlmostFull:'История почти заполнена (450 / 500) — старые записи постепенно будут заменяться', historyAlmostFull:'El historial está casi lleno (450 / 500) — las entradas antiguas se irán reemplazando', historyAlmostFull:'Der Verlauf ist fast voll (450 / 500) — ältere Einträge werden nach und nach ersetzt', historyAlmostFull:'L’historique est presque plein (450 / 500) — les anciennes entrées seront progressivement remplacées', historyAlmostFull:'历史记录将满（450 / 500）——更早的记录会随新记录逐渐被替代',
+    boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardSectionCards:'卡片', boardSectionTexts:'文本', boardSectionMarkers:'标注', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerDrag:'拖动排序', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合', boardLayerRename:'重命名', boardLayerCopy:'复制', boardLayerCut:'剪切', boardLayerPaste:'粘贴', boardLayerRenamed:'已重命名', boardLayerPasted:'已粘贴 {0} 个元素', brandEgg:'行记不辍 —— 这是 Acta 给好奇心的回礼', historyAlmostFull:'История почти заполнена (450 / 500) — старые записи постепенно будут заменяться', historyAlmostFull:'El historial está casi lleno (450 / 500) — las entradas antiguas se irán reemplazando', historyAlmostFull:'Der Verlauf ist fast voll (450 / 500) — ältere Einträge werden nach und nach ersetzt', historyAlmostFull:'L’historique est presque plein (450 / 500) — les anciennes entrées seront progressivement remplacées', historyAlmostFull:'历史记录将满（450 / 500）——更早的记录会随新记录逐渐被替代',
     boardExportOptionsHint:'选择分辨率与图片格式；JPG 可调节压缩程度', boardExportScale:'分辨率', boardExportFormat:'图片格式', boardExportQuality:'JPG 质量', boardExportConfirm:'导出', boardExportPlan:'导出计划板文件 (.actaplan)', boardExportImage:'导出为图片', boardExportPdf:'导出为 PDF', boardExportDone:'计划板已导出', boardExportWorking:'正在渲染并导出，请稍候…', boardExportFailed:'导出失败', boardExportEmpty:'这块板还是空的，先加点内容再导出', boardImportPlan:'导入计划板文件 (.actaplan)', boardImported:'计划板已导入', boardImportInvalid:'这不是有效的 Acta 计划板文件', boardExportRegionTitle:'选择导出区域', boardExportRegionHint:'拖动边框或角点调整范围，导出框内内容', boardExportRegionAll:'全部元素', boardExportRegionView:'当前视图', boardExportRegionNext:'下一步',
     boardEmptyTitle:'这块板还是空的', boardEmptyHint:'用下方工具添加文本与标注，或导入想展示在这块板上的待办与笔记，自由摆放成你的计划板。'
   },
@@ -145,7 +145,7 @@ const dictionaries = {
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
     boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardShowBody:'Full content', boardShowDoneOnly:'Completed only', boardBodyLargeConfirm:'This note exceeds 10,000 characters — showing it in full may affect smoothness. Enable full content anyway?', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardPatternLines:'Ruled', boardPatternCross:'Crosses', boardGridColor:'Grid color', boardGridOpacity:'Grid opacity', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
-    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerDrag:'Drag to restack', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup', boardLayerRename:'Rename', boardLayerCopy:'Copy', boardLayerCut:'Cut', boardLayerPaste:'Paste', boardLayerRenamed:'Renamed', boardLayerPasted:'Pasted {0} items', brandEgg:'Keep journaling — Acta thanks the curious', historyAlmostFull:'History is nearly full (450 / 500) — older entries will gradually be replaced',
+    boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardSectionCards:'Cards', boardSectionTexts:'Texts', boardSectionMarkers:'Markers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerDrag:'Drag to restack', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup', boardLayerRename:'Rename', boardLayerCopy:'Copy', boardLayerCut:'Cut', boardLayerPaste:'Paste', boardLayerRenamed:'Renamed', boardLayerPasted:'Pasted {0} items', brandEgg:'Keep journaling — Acta thanks the curious', historyAlmostFull:'History is nearly full (450 / 500) — older entries will gradually be replaced',
     boardExportOptionsHint:'Pick resolution and image format; JPG compression is adjustable', boardExportScale:'Resolution', boardExportFormat:'Image format', boardExportQuality:'JPG quality', boardExportConfirm:'Export', boardExportPlan:'Export plan board file (.actaplan)', boardExportImage:'Export as image', boardExportPdf:'Export as PDF', boardExportDone:'Plan board exported', boardExportWorking:'Rendering and exporting — hang on…', boardExportFailed:'Export failed', boardExportEmpty:'This board is empty — add something before exporting', boardImportPlan:'Import plan board file (.actaplan)', boardImported:'Plan board imported', boardImportInvalid:'This is not a valid Acta plan board file', boardExportRegionTitle:'Choose export area', boardExportRegionHint:'Drag the frame or handles to adjust; the framed area is exported', boardExportRegionAll:'All elements', boardExportRegionView:'Current view', boardExportRegionNext:'Next',
     boardEmptyTitle:'This board is empty', boardEmptyHint:'Add text and markers with the toolbar below, or import tasks and notes to arrange freely into your plan board.'
   },
@@ -212,7 +212,7 @@ const dictionaries = {
     boardDeleteArm:'もう一度タップで削除', boardUndo:'元に戻す', boardRedo:'やり直す', boardMarqueeClear:'選択を解除', boardMarqueeDelete:'選択中を削除', boardSelectedCount:'{0} 件を選択中',
     boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardShowBody:'全文表示', boardShowDoneOnly:'完了のみ表示', boardBodyLargeConfirm:'このノートは1万文字を超えています。全文表示は動作に影響する可能性があります。それでも有効にしますか？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardPatternLines:'罫線', boardPatternCross:'交差ポイント', boardGridColor:'グリッドの色', boardGridOpacity:'グリッドの不透明度', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
-    boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenCap:'ペン先', boardCapRound:'丸', boardCapFlat:'平', boardCapSquare:'角', boardBrushEraser:'消しゴム', boardPenMode:'フリーハンドモード：何筆でも描けます。消しゴムはパネルで切り替え、完了または Esc で終了', boardLayers:'レイヤー', boardLayerShow:'レイヤーを表示', boardLayerHide:'レイヤーを非表示', boardLayerDrag:'ドラッグで並べ替え', boardLayerGroup:'グループ', boardGroup:'選択をグループ化', boardUngroup:'グループ解除', brandEgg:'筆を絶たず —— 好奇心に、Acta からの贈りもの', historyAlmostFull:'履歴がまもなく上限（450 / 500）— 古い履歴から置き換えられていきます',
+    boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenCap:'ペン先', boardCapRound:'丸', boardCapFlat:'平', boardCapSquare:'角', boardBrushEraser:'消しゴム', boardPenMode:'フリーハンドモード：何筆でも描けます。消しゴムはパネルで切り替え、完了または Esc で終了', boardLayers:'レイヤー', boardSectionCards:'カード', boardSectionTexts:'テキスト', boardSectionMarkers:'マーカー', boardLayerShow:'レイヤーを表示', boardLayerHide:'レイヤーを非表示', boardLayerDrag:'ドラッグで並べ替え', boardLayerGroup:'グループ', boardGroup:'選択をグループ化', boardUngroup:'グループ解除', brandEgg:'筆を絶たず —— 好奇心に、Acta からの贈りもの', historyAlmostFull:'履歴がまもなく上限（450 / 500）— 古い履歴から置き換えられていきます',
     boardExportOptionsHint:'解像度と画像形式を選択。JPG は圧縮率を調整できます', boardExportScale:'解像度', boardExportFormat:'画像形式', boardExportQuality:'JPG 画質', boardExportConfirm:'書き出す', boardExportPlan:'プランボードファイルを書き出す(.actaplan)', boardExportImage:'画像として書き出す', boardExportPdf:'PDF として書き出す', boardExportDone:'プランボードを書き出しました', boardExportWorking:'レンダリングして書き出し中です。しばらくお待ちください…', boardExportFailed:'書き出しに失敗しました', boardExportEmpty:'このボードは空です。何か追加してから書き出してください', boardImportPlan:'プランボードファイルを読み込む(.actaplan)', boardImported:'プランボードを読み込みました', boardImportInvalid:'有効な Acta プランボードファイルではありません', boardExportRegionTitle:'書き出し範囲を選択', boardExportRegionHint:'枠やハンドルをドラッグして調整。枠内が書き出されます', boardExportRegionAll:'すべての要素', boardExportRegionView:'現在のビュー', boardExportRegionNext:'次へ',
     boardEmptyTitle:'このボードは空です', boardEmptyHint:'下のツールでテキストとマーカーを追加したり、タスクとノートを読み込んで、自由にプランボードを組み立てましょう。'
   },
@@ -279,7 +279,7 @@ const dictionaries = {
     boardDeleteArm:'한 번 더 누르면 삭제', boardUndo:'실행 취소', boardRedo:'다시 실행', boardMarqueeClear:'선택 해제', boardMarqueeDelete:'선택 항목 삭제', boardSelectedCount:'{0}개 선택됨',
     boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardShowBody:'전체 내용', boardShowDoneOnly:'완료된 항목만', boardBodyLargeConfirm:'이 노트는 1만 자를 넘습니다. 전체 표시가 성능에 영향을 줄 수 있어요. 그래도 켜시겠어요?', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardPatternLines:'줄선', boardPatternCross:'교차점', boardGridColor:'격자 색', boardGridOpacity:'격자 불투명도', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
-    boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenCap:'펜촉', boardCapRound:'둥근 촉', boardCapFlat:'평평한 촉', boardCapSquare:'각진 촉', boardBrushEraser:'지우개', boardPenMode:'자유 곡선 모드: 여러 번 그릴 수 있어요. 지우개는 패널에서 전환하고 완료 또는 Esc로 종료', boardLayers:'레이어', boardLayerShow:'레이어 보이기', boardLayerHide:'레이어 숨기기', boardLayerDrag:'드래그하여 재배치', boardLayerGroup:'그룹', boardGroup:'선택 항목 그룹화', boardUngroup:'그룹 해제', brandEgg:'꾸준히 기록하기 — 호기심 깊은 당신에게, Acta 드림', historyAlmostFull:'기록이 거의 찼어요 (450 / 500) — 오래된 기록부터 서서히 대체돼요',
+    boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenCap:'펜촉', boardCapRound:'둥근 촉', boardCapFlat:'평평한 촉', boardCapSquare:'각진 촉', boardBrushEraser:'지우개', boardPenMode:'자유 곡선 모드: 여러 번 그릴 수 있어요. 지우개는 패널에서 전환하고 완료 또는 Esc로 종료', boardLayers:'레이어', boardSectionCards:'카드', boardSectionTexts:'텍스트', boardSectionMarkers:'마커', boardLayerShow:'레이어 보이기', boardLayerHide:'레이어 숨기기', boardLayerDrag:'드래그하여 재배치', boardLayerGroup:'그룹', boardGroup:'선택 항목 그룹화', boardUngroup:'그룹 해제', brandEgg:'꾸준히 기록하기 — 호기심 깊은 당신에게, Acta 드림', historyAlmostFull:'기록이 거의 찼어요 (450 / 500) — 오래된 기록부터 서서히 대체돼요',
     boardExportOptionsHint:'해상도와 이미지 형식을 선택하세요. JPG는 압축 수준을 조절할 수 있어요', boardExportScale:'해상도', boardExportFormat:'이미지 형식', boardExportQuality:'JPG 품질', boardExportConfirm:'내보내기', boardExportPlan:'플랜 보드 파일 내보내기(.actaplan)', boardExportImage:'이미지로 내보내기', boardExportPdf:'PDF로 내보내기', boardExportDone:'플랜 보드를 내보냈어요', boardExportWorking:'렌더링 후 내보내는 중이에요. 잠시만 기다려 주세요…', boardExportFailed:'내보내기 실패', boardExportEmpty:'이 보드는 비어 있어요. 먼저 내용을 추가하세요', boardImportPlan:'플랜 보드 파일 가져오기(.actaplan)', boardImported:'플랜 보드를 가져왔어요', boardImportInvalid:'유효한 Acta 플랜 보드 파일이 아니에요', boardExportRegionTitle:'내보낼 영역 선택', boardExportRegionHint:'테두리나 핸들을 드래그해 조정하면 프레임 안이 내보내져요', boardExportRegionAll:'모든 요소', boardExportRegionView:'현재 보기', boardExportRegionNext:'다음',
     boardEmptyTitle:'이 보드는 비어 있어요', boardEmptyHint:'아래 도구로 텍스트와 마커를 추가하거나 할 일과 노트를 가져와 자유롭게 플랜 보드를 꾸며 보세요.'
   },
@@ -346,7 +346,7 @@ const dictionaries = {
     boardDeleteArm:'Touchez encore pour supprimer', boardUndo:'Annuler', boardRedo:'Rétablir', boardMarqueeClear:'Effacer la sélection', boardMarqueeDelete:'Supprimer la sélection', boardSelectedCount:'{0} sélectionnés',
     boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardShowBody:'Contenu complet', boardShowDoneOnly:'Terminées uniquement', boardBodyLargeConfirm:'Cette note dépasse 10 000 caractères — l’affichage complet peut nuire à la fluidité. Activer quand même ?', boardWidgetOpacity:'Opacité',
     boardPersonalize:'Personnaliser le tableau', boardBgPattern:'Motif de fond', boardPatternDots:'Points', boardPatternGrid:'Grille', boardPatternNone:'Aucun', boardPatternLines:'Lignes', boardPatternCross:'Croix', boardGridColor:'Couleur du quadrillage', boardGridOpacity:'Opacité du quadrillage', boardBoardBgColor:'Couleur de fond', boardBgColorTheme:'Suivre le thème', boardSnapGrid:'Aimanter à la grille', boardGridSize:'Taille de la grille',
-    boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenCap:'Pointe', boardCapRound:'Ronde', boardCapFlat:'Plate', boardCapSquare:'Carrée', boardBrushEraser:'Gomme', boardPenMode:'Mode dessin : tracez autant de traits que voulu ; la gomme se trouve dans le panneau ; terminez ou Échap pour sortir', boardLayers:'Calques', boardLayerShow:'Afficher le calque', boardLayerHide:'Masquer le calque', boardLayerDrag:'Glisser pour réorganiser', boardLayerGroup:'Groupe', boardGroup:'Grouper la sélection', boardUngroup:'Dissocier', brandEgg:'Tenir son journal — le cadeau d’Acta aux curieux',
+    boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenCap:'Pointe', boardCapRound:'Ronde', boardCapFlat:'Plate', boardCapSquare:'Carrée', boardBrushEraser:'Gomme', boardPenMode:'Mode dessin : tracez autant de traits que voulu ; la gomme se trouve dans le panneau ; terminez ou Échap pour sortir', boardLayers:'Calques', boardSectionCards:'Cartes', boardSectionTexts:'Textes', boardSectionMarkers:'Annotations', boardLayerShow:'Afficher le calque', boardLayerHide:'Masquer le calque', boardLayerDrag:'Glisser pour réorganiser', boardLayerGroup:'Groupe', boardGroup:'Grouper la sélection', boardUngroup:'Dissocier', brandEgg:'Tenir son journal — le cadeau d’Acta aux curieux',
     boardExportOptionsHint:'Choisissez la résolution et le format ; la compression JPG est réglable', boardExportScale:'Résolution', boardExportFormat:'Format d’image', boardExportQuality:'Qualité JPG', boardExportConfirm:'Exporter', boardExportPlan:'Exporter le fichier du tableau (.actaplan)', boardExportImage:'Exporter en image', boardExportPdf:'Exporter en PDF', boardExportDone:'Tableau exporté', boardExportWorking:'Rendu et export en cours — veuillez patienter…', boardExportFailed:'Échec de l’export', boardExportEmpty:'Ce tableau est vide — ajoutez du contenu avant d’exporter', boardImportPlan:'Importer le fichier du tableau (.actaplan)', boardImported:'Tableau importé', boardImportInvalid:'Ce fichier n’est pas un tableau Acta valide', boardExportRegionTitle:'Choisir la zone à exporter', boardExportRegionHint:'Faites glisser le cadre ou les poignées ; la zone encadrée est exportée', boardExportRegionAll:'Tous les éléments', boardExportRegionView:'Vue actuelle', boardExportRegionNext:'Suivant',
     boardEmptyTitle:'Ce tableau est vide', boardEmptyHint:'Ajoutez du texte et des annotations avec la barre d’outils, ou importez tâches et notes pour composer librement votre tableau.'
   },
@@ -413,7 +413,7 @@ const dictionaries = {
     boardDeleteArm:'Nochmal tippen zum Löschen', boardUndo:'Widerrufen', boardRedo:'Wiederholen', boardMarqueeClear:'Auswahl aufheben', boardMarqueeDelete:'Auswahl löschen', boardSelectedCount:'{0} ausgewählt',
     boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardShowBody:'Vollständiger Inhalt', boardShowDoneOnly:'Nur erledigte', boardBodyLargeConfirm:'Diese Notiz überschreitet 10.000 Zeichen — die vollständige Anzeige kann die Flüssigkeit beeinträchtigen. Trotzdem aktivieren?', boardWidgetOpacity:'Deckkraft',
     boardPersonalize:'Board gestalten', boardBgPattern:'Hintergrundmuster', boardPatternDots:'Punkte', boardPatternGrid:'Gitter', boardPatternNone:'Keine', boardPatternLines:'Linien', boardPatternCross:'Kreuze', boardGridColor:'Rasterfarbe', boardGridOpacity:'Rasterdeckkraft', boardBoardBgColor:'Hintergrundfarbe', boardBgColorTheme:'Wie Thema', boardSnapGrid:'Am Raster ausrichten', boardGridSize:'Rastergröße',
-    boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenCap:'Spitze', boardCapRound:'Rund', boardCapFlat:'Flach', boardCapSquare:'Quadratisch', boardBrushEraser:'Radierer', boardPenMode:'Zeichenmodus: so viele Striche wie du willst; der Radierer ist im Panel; mit Fertig oder Esc beenden', boardLayers:'Ebenen', boardLayerShow:'Ebene einblenden', boardLayerHide:'Ebene ausblenden', boardLayerDrag:'Zum Umsortieren ziehen', boardLayerGroup:'Gruppe', boardGroup:'Auswahl gruppieren', boardUngroup:'Gruppierung aufheben', brandEgg:'Weiter im Journal — Actas Geschenk an Neugierige',
+    boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenCap:'Spitze', boardCapRound:'Rund', boardCapFlat:'Flach', boardCapSquare:'Quadratisch', boardBrushEraser:'Radierer', boardPenMode:'Zeichenmodus: so viele Striche wie du willst; der Radierer ist im Panel; mit Fertig oder Esc beenden', boardLayers:'Ebenen', boardSectionCards:'Karten', boardSectionTexts:'Texte', boardSectionMarkers:'Marker', boardLayerShow:'Ebene einblenden', boardLayerHide:'Ebene ausblenden', boardLayerDrag:'Zum Umsortieren ziehen', boardLayerGroup:'Gruppe', boardGroup:'Auswahl gruppieren', boardUngroup:'Gruppierung aufheben', brandEgg:'Weiter im Journal — Actas Geschenk an Neugierige',
     boardExportOptionsHint:'Auflösung und Bildformat wählen; JPG-Komprimierung ist einstellbar', boardExportScale:'Auflösung', boardExportFormat:'Bildformat', boardExportQuality:'JPG-Qualität', boardExportConfirm:'Exportieren', boardExportPlan:'Planboard-Datei exportieren (.actaplan)', boardExportImage:'Als Bild exportieren', boardExportPdf:'Als PDF exportieren', boardExportDone:'Planboard exportiert', boardExportWorking:'Wird gerendert und exportiert — bitte warten…', boardExportFailed:'Export fehlgeschlagen', boardExportEmpty:'Dieses Board ist leer — füge zuerst Inhalte hinzu', boardImportPlan:'Planboard-Datei importieren (.actaplan)', boardImported:'Planboard importiert', boardImportInvalid:'Dies ist keine gültige Acta-Planboard-Datei', boardExportRegionTitle:'Exportbereich wählen', boardExportRegionHint:'Rahmen oder Griffe ziehen, um den Bereich anzupassen; der Rahmeninhalt wird exportiert', boardExportRegionAll:'Alle Elemente', boardExportRegionView:'Aktuelle Ansicht', boardExportRegionNext:'Weiter',
     boardEmptyTitle:'Dieses Board ist leer', boardEmptyHint:'Füge über die Leiste unten Text und Marker hinzu oder importiere Aufgaben und Notizen und gestalte dein Planboard frei.'
   },
@@ -480,7 +480,7 @@ const dictionaries = {
     boardDeleteArm:'Toca otra vez para eliminar', boardUndo:'Deshacer', boardRedo:'Rehacer', boardMarqueeClear:'Quitar selección', boardMarqueeDelete:'Eliminar selección', boardSelectedCount:'{0} seleccionados',
     boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardShowBody:'Contenido completo', boardShowDoneOnly:'Solo completadas', boardBodyLargeConfirm:'Esta nota supera los 10.000 caracteres; mostrarla completa puede afectar la fluidez. ¿Activar de todos modos?', boardWidgetOpacity:'Opacidad',
     boardPersonalize:'Personalizar tablero', boardBgPattern:'Patrón de fondo', boardPatternDots:'Puntos', boardPatternGrid:'Cuadrícula', boardPatternNone:'Ninguno', boardPatternLines:'Líneas', boardPatternCross:'Cruces', boardGridColor:'Color de cuadrícula', boardGridOpacity:'Opacidad de cuadrícula', boardBoardBgColor:'Color de fondo', boardBgColorTheme:'Según el tema', boardSnapGrid:'Ajustar a la cuadrícula', boardGridSize:'Tamaño de cuadrícula',
-    boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenCap:'Punta', boardCapRound:'Redonda', boardCapFlat:'Plana', boardCapSquare:'Cuadrada', boardBrushEraser:'Borrador', boardPenMode:'Modo dibujo: traza tantos trazos como quieras; el borrador está en el panel; termina o pulsa Esc para salir', boardLayers:'Capas', boardLayerShow:'Mostrar capa', boardLayerHide:'Ocultar capa', boardLayerDrag:'Arrastra para reordenar', boardLayerGroup:'Grupo', boardGroup:'Agrupar selección', boardUngroup:'Desagrupar', brandEgg:'Sigue escribiendo — el regalo de Acta para los curiosos',
+    boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenCap:'Punta', boardCapRound:'Redonda', boardCapFlat:'Plana', boardCapSquare:'Cuadrada', boardBrushEraser:'Borrador', boardPenMode:'Modo dibujo: traza tantos trazos como quieras; el borrador está en el panel; termina o pulsa Esc para salir', boardLayers:'Capas', boardSectionCards:'Tarjetas', boardSectionTexts:'Textos', boardSectionMarkers:'Anotaciones', boardLayerShow:'Mostrar capa', boardLayerHide:'Ocultar capa', boardLayerDrag:'Arrastra para reordenar', boardLayerGroup:'Grupo', boardGroup:'Agrupar selección', boardUngroup:'Desagrupar', brandEgg:'Sigue escribiendo — el regalo de Acta para los curiosos',
     boardExportOptionsHint:'Elige resolución y formato de imagen; la compresión JPG es ajustable', boardExportScale:'Resolución', boardExportFormat:'Formato de imagen', boardExportQuality:'Calidad JPG', boardExportConfirm:'Exportar', boardExportPlan:'Exportar archivo del tablero (.actaplan)', boardExportImage:'Exportar como imagen', boardExportPdf:'Exportar como PDF', boardExportDone:'Tablero exportado', boardExportWorking:'Renderizando y exportando; espera un momento…', boardExportFailed:'Fallo al exportar', boardExportEmpty:'Este tablero está vacío — añade contenido antes de exportar', boardImportPlan:'Importar archivo del tablero (.actaplan)', boardImported:'Tablero importado', boardImportInvalid:'No es un archivo de tablero Acta válido', boardExportRegionTitle:'Elegir área de exportación', boardExportRegionHint:'Arrastra el marco o las asas para ajustarlo; se exporta el área marcada', boardExportRegionAll:'Todos los elementos', boardExportRegionView:'Vista actual', boardExportRegionNext:'Siguiente',
     boardEmptyTitle:'Este tablero está vacío', boardEmptyHint:'Añade texto y anotaciones con la barra de abajo, o importa tareas y notas para componer tu tablero con libertad.'
   },
@@ -547,7 +547,7 @@ const dictionaries = {
     boardDeleteArm:'Нажмите ещё раз для удаления', boardUndo:'Отменить', boardRedo:'Повторить', boardMarqueeClear:'Снять выделение', boardMarqueeDelete:'Удалить выбранное', boardSelectedCount:'Выбрано: {0}',
     boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardShowBody:'Полное содержимое', boardShowDoneOnly:'Только выполненные', boardBodyLargeConfirm:'Эта заметка больше 10 000 символов — полное отображение может снизить плавность. Всё равно включить?', boardWidgetOpacity:'Непрозрачность',
     boardPersonalize:'Оформить планшет', boardBgPattern:'Фоновый узор', boardPatternDots:'Точки', boardPatternGrid:'Сетка', boardPatternNone:'Нет', boardPatternLines:'Линии', boardPatternCross:'Перекрестия', boardGridColor:'Цвет сетки', boardGridOpacity:'Непрозрачность сетки', boardBoardBgColor:'Цвет фона', boardBgColorTheme:'Как в теме', boardSnapGrid:'Привязка к сетке', boardGridSize:'Шаг сетки',
-    boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenCap:'Перо', boardCapRound:'Круглое', boardCapFlat:'Плоское', boardCapSquare:'Квадратное', boardBrushEraser:'Ластик', boardPenMode:'Режим рисования: рисуйте сколько угодно штрихов; ластик — в панели; «Готово» или Esc — выход', boardLayers:'Слои', boardLayerShow:'Показать слой', boardLayerHide:'Скрыть слой', boardLayerDrag:'Перетащите, чтобы изменить порядок', boardLayerGroup:'Группа', boardGroup:'Сгруппировать выбранное', boardUngroup:'Разгруппировать', brandEgg:'Записывайте не останавливаясь — подарок Acta любопытным',
+    boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenCap:'Перо', boardCapRound:'Круглое', boardCapFlat:'Плоское', boardCapSquare:'Квадратное', boardBrushEraser:'Ластик', boardPenMode:'Режим рисования: рисуйте сколько угодно штрихов; ластик — в панели; «Готово» или Esc — выход', boardLayers:'Слои', boardSectionCards:'Карточки', boardSectionTexts:'Текст', boardSectionMarkers:'Аннотации', boardLayerShow:'Показать слой', boardLayerHide:'Скрыть слой', boardLayerDrag:'Перетащите, чтобы изменить порядок', boardLayerGroup:'Группа', boardGroup:'Сгруппировать выбранное', boardUngroup:'Разгруппировать', brandEgg:'Записывайте не останавливаясь — подарок Acta любопытным',
     boardExportOptionsHint:'Выберите разрешение и формат; сжатие JPG настраивается', boardExportScale:'Разрешение', boardExportFormat:'Формат изображения', boardExportQuality:'Качество JPG', boardExportConfirm:'Экспортировать', boardExportPlan:'Экспортировать файл планшета (.actaplan)', boardExportImage:'Экспортировать как изображение', boardExportPdf:'Экспортировать в PDF', boardExportDone:'Планшет экспортирован', boardExportWorking:'Рендеринг и экспорт — подождите…', boardExportFailed:'Не удалось экспортировать', boardExportEmpty:'Этот планшет пуст — сначала добавьте содержимое', boardImportPlan:'Импортировать файл планшета (.actaplan)', boardImported:'Планшет импортирован', boardImportInvalid:'Это не действительный файл планшета Acta', boardExportRegionTitle:'Выбрать область экспорта', boardExportRegionHint:'Потяните рамку или маркеры, чтобы изменить область; экспортируется содержимое рамки', boardExportRegionAll:'Все элементы', boardExportRegionView:'Текущий вид', boardExportRegionNext:'Далее',
     boardEmptyTitle:'Этот планшет пуст', boardEmptyHint:'Добавьте текст и пометки панелью снизу или импортируйте задачи и заметки и свободно соберите свой планшет.'
   }
@@ -6266,17 +6266,34 @@ function boardRenderLayerPop() {
   }
   const { entries } = boardLayerEntries(board);
   const widgetById = new Map(board.widgets.map(widget => [widget.id, widget]));
+  // 段标签行：卡片 / 文本 / 标注三段的层叠由画布结构决定、拖移只能在段内
+  // 进行——把这条规则画出来（段与段之间插入小标签分隔），用户不用再猜
+  // 「为什么拖不到那里」。分隔行不参与行基线与拖拽（querySelector 只取
+  // .board-layer-row），段内拖动不会改变段边界，分隔线无需实时跟随。
+  const sectionOf = entry => entry.mixed ? null
+    : (entry.type === 'note' || entry.type === 'todo') ? t('boardSectionCards')
+    : entry.type === 'text' ? t('boardSectionTexts')
+    : t('boardSectionMarkers');
+  const sepHTML = label => `<div class="board-layer-sep" role="presentation"><span>${escapeHTML(label)}</span></div>`;
+  let lastSection = null;
   const rows = entries.map(entry => {
-    if (entry.kind === 'widget') return boardLayerRow(widgetById.get(entry.id));
-    const members = entry.ids.map(id => widgetById.get(id));
-    const selected = members.every(entry => boardSelection.has(entry.id));
-    const allHidden = members.every(entry => entry.hidden);
-    const childRows = members.map(entry => boardLayerRow(entry, true)).join('');
-    return `<button type="button" class="board-layer-row is-group${selected ? ' is-selected' : ''}" data-layer-pick-group="${escapeHTML(entry.id)}" data-layer-entry="${escapeHTML(entry.id)}">
+    const section = sectionOf(entry);
+    const sep = section && lastSection && section !== lastSection ? sepHTML(section) : '';
+    if (section) lastSection = section;
+    let chunk;
+    if (entry.kind === 'widget') chunk = boardLayerRow(widgetById.get(entry.id));
+    else {
+      const members = entry.ids.map(id => widgetById.get(id));
+      const selected = members.every(entry => boardSelection.has(entry.id));
+      const allHidden = members.every(entry => entry.hidden);
+      const childRows = members.map(entry => boardLayerRow(entry, true)).join('');
+      chunk = `<button type="button" class="board-layer-row is-group${selected ? ' is-selected' : ''}" data-layer-pick-group="${escapeHTML(entry.id)}" data-layer-entry="${escapeHTML(entry.id)}">
       <i class="board-layer-grip" data-layer-drag-group="${escapeHTML(entry.id)}" title="${escapeHTML(t('boardLayerDrag'))}" aria-label="${escapeHTML(t('boardLayerDrag'))}"><svg><use href="#i-grip"/></svg></i>
       <svg><use href="#i-layers"/></svg><span>${escapeHTML(boardLayerNames()[entry.id] || `${t('boardLayerGroup')} ${members.length}`)}</span>
       <i class="board-layer-eye${allHidden ? ' is-off' : ''}" data-layer-toggle-group="${escapeHTML(entry.id)}" title="${escapeHTML(allHidden ? t('boardLayerShow') : t('boardLayerHide'))}"><svg><use href="#${allHidden ? 'i-eye-off' : 'i-eye'}"/></svg></i>
     </button>${childRows}`;
+    }
+    return sep + chunk;
   }).join('');
   pop.innerHTML = `<div class="board-style-pop-head"><b>${escapeHTML(t('boardLayers'))}</b><button type="button" data-layer-close title="${escapeHTML(t('cancel'))}" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></div>
     <div class="board-layer-tools-row">
@@ -6416,6 +6433,18 @@ let boardLayerDragState = null;
 
 const boardLayerBuzz = pattern => { try { navigator.vibrate?.(pattern); } catch { /* 无振动能力的环境静默跳过 */ } };
 
+// 画布联动高亮：拖动哪一行，画布上对应的元素就亮起来（sage 描边）——
+// 面板行与画布内容的对应不用靠图标和名字猜，组行亮起全部成员。
+function boardLayerSetGhosts(state, on) {
+  if (on && !state.ghosts) {
+    state.ghosts = state.entries[state.from].ids
+      .map(id => boardEls?.world?.querySelector(`[data-widget-id="${CSS.escape(id)}"]`))
+      .filter(Boolean);
+  }
+  state.ghosts?.forEach(el => el.classList.toggle('is-layer-dragging', on));
+  if (!on) state.ghosts = null;
+}
+
 function boardBindLayerDrag(pop) {
   pop.querySelectorAll('[data-layer-drag], [data-layer-drag-group]').forEach(handle => {
     // 拖柄不吃行点击：点拖柄只拖动，不选中。
@@ -6508,9 +6537,18 @@ function boardLayerDragTick() {
 // 未让位的基线中点为基准——基线（tops）是布局坐标、不随滚动变化，让位
 // 后的行位置随拖动变化，拿它做基准会形成反馈回环。拖动行中心越过哪条
 // 基线中点，缝隙就开在那行之前（越过全部则开在段尾之后），再夹回区间。
+// 类型段的边界用橡皮筋阻力表达：拖出合法区间行还能被拉过去一些
+// （越拉越紧），松手回弹——「这里到头了」是摸出来的，不是猜的。
+function boardLayerRubberband(over, dimension) {
+  return (over * dimension * 0.55) / (dimension + 0.55 * Math.abs(over));
+}
+
 function boardLayerDragUpdate(state, clientY) {
   const scrollShift = state.list.scrollTop - state.scrollStart;
-  state.delta = Math.min(Math.max(clientY - state.startY + scrollShift, state.deltaMin), state.deltaMax);
+  const raw = clientY - state.startY + scrollShift;
+  state.delta = Math.min(Math.max(raw, state.deltaMin), state.deltaMax);
+  const over = raw > state.deltaMax ? raw - state.deltaMax : raw < state.deltaMin ? raw - state.deltaMin : 0;
+  const visual = state.delta + (over ? boardLayerRubberband(over, state.dragHeight * 2.5) : 0);
   const center = state.tops[state.from] + state.delta + state.dragHeight / 2;
   let target = state.maxIndex;
   for (let index = 0; index < state.entries.length; index += 1) {
@@ -6522,7 +6560,7 @@ function boardLayerDragUpdate(state, clientY) {
     boardLayerApplyShifts(state);
     boardLayerBuzz(8); // 吸到新槽位：轻点一下确认落点缝变化
   }
-  const transform = `translateY(${state.delta.toFixed(1)}px)`;
+  const transform = `translateY(${visual.toFixed(1)}px)`;
   state.dragRows.forEach(row => { row.style.transform = transform; });
 }
 
@@ -6532,6 +6570,7 @@ function boardLayerDragMove(event) {
   // 面板在拖动中被外部重建会换掉全部行：本次手势作废，等下一次重来。
   if (!state.handle.isConnected || !state.pop.isConnected) {
     if (state.raf) cancelAnimationFrame(state.raf);
+    boardLayerSetGhosts(state, false);
     boardLayerDragState = null;
     return;
   }
@@ -6541,6 +6580,7 @@ function boardLayerDragMove(event) {
     state.moved = true;
     // 被拿起的行：抬起（阴影 + 实底），位移不过渡、1:1 跟手。
     state.dragRows.forEach(row => { row.classList.add('is-dragging'); row.style.transition = 'none'; });
+    boardLayerSetGhosts(state, true);
     state.raf = requestAnimationFrame(boardLayerDragTick);
   }
   boardLayerDragUpdate(state, event.clientY);
@@ -6580,6 +6620,7 @@ function boardLayerDragEnd(event) {
   state.handle.removeEventListener('pointermove', boardLayerDragMove);
   state.handle.removeEventListener('pointerup', boardLayerDragEnd);
   state.handle.removeEventListener('pointercancel', boardLayerDragEnd);
+  boardLayerSetGhosts(state, false);
   if (!state.moved) return;
   // 系统手势打断（来电、下拉通知、多任务手势等）= 取消：回滚让位与
   // 抬起态、不落账。用户没有明确说「放这里」，顺序就不该变。
