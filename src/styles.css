@@ -690,6 +690,23 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 @keyframes toastSpin { to { transform: rotate(360deg); } }
 
 @keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 移动端页面转场（外观设置「页面转场」）：切换视图时列表容器的入场。
+   淡入是默认档；滑动档带方向（新视图在页面序中靠后 → 从右滑入，
+   靠前 → 从左），data-transition-dir 由 renderer 的 activateView 写入。
+   动画挂在 #itemList 的 .page-transition 类上，由 JS 在切换时加挂并在
+   animationend 摘除——renderList 的日常重建（数据刷新、编辑返回）不播。
+   「减少动态效果」的全局降级规则会把时长压到 0.01ms，无需单独分支。 */
+@media (max-width: 800px) {
+  /* 默认档是淡入（属性缺省即 fade，applyPageTransition 在默认档不写属性）；
+     滑动档的属性选择器特异性更高，自然覆盖默认档。 */
+  #itemList.page-transition { animation: pageTransitionFade .22s var(--ease-out); }
+  html[data-acta-transition="slide"] #itemList.page-transition { animation: pageTransitionSlide .27s var(--ease-out); }
+  html[data-acta-transition="slide"][data-transition-dir="back"] #itemList.page-transition { animation-name: pageTransitionSlideBack; }
+}
+@keyframes pageTransitionFade { from { opacity: 0; } }
+@keyframes pageTransitionSlide { from { opacity: 0; transform: translateX(24px); } }
+@keyframes pageTransitionSlideBack { from { opacity: 0; transform: translateX(-24px); } }
 @keyframes editorReveal { 0% { opacity: 0; transform: translateY(15px) scale(.99); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes taskIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pulse { 0%,100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.35); } }

@@ -436,6 +436,7 @@
                 <label class="settings-row"><span><b>启动动画</b></span><input id="splashAnimationSetting" type="checkbox" checked/></label>
                 <div class="settings-row splash-preset-row"><span><b>动画预设</b></span><span class="splash-preset-controls"><select id="splashPresetSetting"><option value="acta-lines">Acta 线构（默认）</option><option value="calm-fade">静谧淡入</option><option value="focus-zoom">聚焦缩放</option><option value="ink-write">墨迹书写</option><option value="curtain-up">幕布上滑</option><option value="breathe">呼吸呈现</option></select><button class="icon-button splash-preview-button" id="previewSplashAnimation" type="button" title="预览启动动画" aria-label="预览启动动画"><svg><use href="#i-spark"/></svg></button></span></div>
                 <label class="settings-row"><span><b>动画速度</b></span><span class="font-size-control"><input id="splashSpeedSetting" type="range" min="0.5" max="2" step="0.1"/><output id="splashSpeedValue">1.0×</output></span></label>
+                <label class="settings-row"><span><b>页面转场</b></span><select id="pageTransitionSetting"><option value="fade">淡入（默认）</option><option value="slide">滑动切换</option><option value="none">无</option></select></label>
                 <label class="settings-row"><span><b>输入框选中动画</b></span><input id="focusAnimationSetting" type="checkbox" checked/></label>
               </div>
               <div class="settings-group" style="margin-top:18px">

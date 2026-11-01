@@ -9833,7 +9833,33 @@ function bindShell() {
   });
   // 视图切换的唯一入口：侧栏 / 移动端导航与行内类型分段都走这里，
   // 保证切换后的选中项回落、日历入场与编辑器刷新完全一致。
+  // 移动端页面转场：外观设置「页面转场」预设（淡入 / 滑动 / 无）。
+  // 方向按视图序判定（新视图靠后 → 从右滑入，靠前 → 从左），归类视图
+  // 归到收集箱位（与底栏的空间顺序一致）。桌面端与「减少动态效果」
+  // 下不播（后者由全局降级规则兜底，这里直接跳过更省一次重排）。
+  const pageTransitionOrder = ['inbox', 'calendar', 'board', 'todos', 'notes', 'trash', 'stats', 'lan'];
+  const playPageTransition = (fromView, toView) => {
+    const itemList = document.getElementById('itemList');
+    if (!itemList) return;
+    const root = document.documentElement;
+    if (root.dataset.actaTransition === 'none') return;
+    if (!boardMobileQuery.matches || reduceWindowMotion()) return;
+    const norm = value => {
+      const key = String(value);
+      return pageTransitionOrder.includes(key) ? key : 'inbox';
+    };
+    const back = pageTransitionOrder.indexOf(norm(toView)) < pageTransitionOrder.indexOf(norm(fromView));
+    if (back) root.dataset.transitionDir = 'back';
+    else delete root.dataset.transitionDir;
+    itemList.classList.remove('page-transition');
+    void itemList.offsetWidth; // 连续切换时重启动画
+    itemList.classList.add('page-transition');
+    const cleanup = () => itemList.classList.remove('page-transition');
+    itemList.addEventListener('animationend', cleanup, { once: true });
+    setTimeout(cleanup, 420);
+  };
   const activateView = view => {
+    const previousView = currentView;
     currentView = view;
     // 切换视图即重置日历模式历史：每次进入日历都是新的回退起点。
     calendarModeHistory.length = 0;
@@ -9846,6 +9872,7 @@ function bindShell() {
     if (currentView === 'board') selectedId = null;
     else if (!visible.some(item => item.id === selectedId)) selectedId = visible[0]?.id || null;
     if (currentView !== 'calendar') renderEditor();
+    if (previousView !== view) playPageTransition(previousView, view);
   };
   document.addEventListener('click', event => {
     const navigation = event.target.closest('[data-view]');

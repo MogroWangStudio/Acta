@@ -21,6 +21,8 @@
   // and switching mid-load. interface.js re-applies them on change.
   root.style.setProperty('--splash-speed', String(clampSplashSpeed(stored.splashAnimationSpeed)));
   if (['calm-fade', 'focus-zoom', 'ink-write', 'curtain-up', 'breathe'].includes(String(stored.splashAnimationPreset))) root.dataset.actaSplashPreset = String(stored.splashAnimationPreset);
+  // 页面转场预设同样首帧前落地（fade 为默认不写属性，与 applyPageTransition 一致）。
+  if (stored.pageTransition === 'slide' || stored.pageTransition === 'none') root.dataset.actaTransition = String(stored.pageTransition);
   if (stored.splashAnimationEnabled === false) root.dataset.actaSplashOff = 'true';
   // 「界面整体缩放」同样要在首帧前落地：根级 zoom 驱动 html 的缩放，
   // 晚一帧应用会看到整页从 100% 跳到目标值。与外观设置的 applyUiScale()
