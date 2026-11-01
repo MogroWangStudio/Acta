@@ -9549,7 +9549,8 @@
   // ===== Acta 局域网同步结束 =====
 
   function enhanceRelationEditor() {
-    const article = byId('editorPane')?.querySelector('[data-editor-id]');
+    const pane = byId('editorPane');
+    const article = pane?.querySelector('[data-editor-id]');
     if (!article || article.dataset.relationUi === 'ready') return;
     const section = article.querySelector('.linked-section');
     const actions = article.querySelector('.editor-actions');
@@ -9559,8 +9560,6 @@
 
     const relationCopy = { title: uiText('linkTitle'), close: uiText('close'), hint: uiText('linkHint') };
     const linkedRows = section.querySelectorAll('.linked-row');
-    section.classList.add('relation-summary');
-    section.hidden = linkedRows.length === 0;
 
     const trigger = document.createElement('button');
     trigger.type = 'button';
@@ -9570,16 +9569,32 @@
     trigger.innerHTML = '<svg><use href="#i-link"/></svg>';
     actions.insertBefore(trigger, actions.querySelector('#deleteItem'));
 
-    const dialog = document.createElement('dialog');
-    dialog.className = 'relation-dialog';
-    dialog.innerHTML = `<header class="relation-dialog-head"><span><svg><use href="#i-link"/></svg></span><h3>${relationCopy.title}</h3><button class="relation-dialog-close" type="button" aria-label="${relationCopy.close}"><svg><use href="#i-close"/></svg></button></header><div class="relation-dialog-body"><p class="relation-dialog-hint">${relationCopy.hint}</p></div>`;
-    dialog.querySelector('.relation-dialog-body').appendChild(picker);
-    article.appendChild(dialog);
+    // 窗口挂 body（renderEditor 重建 editorPane 内容时不会把它移除）：
+    // 在窗口里移除一条关联后，编辑器重建触发增强，内容原位更新而窗口
+    // 保持打开——关联的新建、查看与移除都在窗口内一次完成。
+    let dialog = document.body.querySelector(':scope > .relation-dialog');
+    let body;
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.className = 'relation-dialog';
+      dialog.innerHTML = `<header class="relation-dialog-head"><span><svg><use href="#i-link"/></svg></span><h3>${relationCopy.title}</h3><button class="relation-dialog-close" type="button" aria-label="${relationCopy.close}"><svg><use href="#i-close"/></svg></button></header><div class="relation-dialog-body"><p class="relation-dialog-hint">${relationCopy.hint}</p></div>`;
+      document.body.appendChild(dialog);
+      dialog.querySelector('.relation-dialog-close').addEventListener('click', () => closeAnimatedDialog(dialog));
+      // 弹出窗口不因点击空白处而关闭（设计约定），关闭只通过关闭按钮或 Esc。
+      dialog.addEventListener('cancel', event => { event.preventDefault(); closeAnimatedDialog(dialog); });
+    }
+    body = dialog.querySelector('.relation-dialog-body');
+    // 内容随编辑器重建原位更新：新 picker 移入、已关联列表移入（编辑器
+    // 内不再重复显示一份摘要）。移除摘要模式的样式钩子，窗口内选择器
+    // 与空态（还没有关联项目）都正常呈现。
+    section.classList.remove('relation-summary');
+    section.hidden = false;
+    const hint = body.querySelector('.relation-dialog-hint');
+    body.replaceChildren(hint, picker, section);
+    const list = section.querySelector('.linked-list');
+    if (list) list.classList.add('relation-window-list');
 
     trigger.addEventListener('click', () => { if (!dialog.open) openAnimatedDialog(dialog); });
-    dialog.querySelector('.relation-dialog-close').addEventListener('click', () => closeAnimatedDialog(dialog));
-    // 弹出窗口不因点击空白处而关闭（设计约定），关闭只通过关闭按钮或 Esc。
-    dialog.addEventListener('cancel', event => { event.preventDefault(); closeAnimatedDialog(dialog); });
   }
 
   const editorObserver = new MutationObserver(enhanceRelationEditor);
