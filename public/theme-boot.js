@@ -33,7 +33,8 @@
   const uiScale = clampUiScale(stored.uiScale) / 100;
   root.style.setProperty('--acta-ui-scale', String(uiScale));
   root.style.setProperty('--acta-ui-scale-inverse', (1 / uiScale).toFixed(4));
-  root.style.setProperty('--acta-vh', `${(innerHeight / uiScale).toFixed(2)}px`);
+  root.style.setProperty('--acta-vh', `${(document.documentElement.clientHeight / uiScale).toFixed(2)}px`);
+  root.style.setProperty('--acta-vw', `${(document.documentElement.clientWidth / uiScale).toFixed(2)}px`);
   // 移动端底栏「仅图标」也在首帧前生效，避免文字先闪一下再消失。
   if (String(stored.mobileNavStyle) === 'icon') root.dataset.mobileNav = 'icon';
   if (!theme) return;

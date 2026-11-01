@@ -6849,9 +6849,13 @@
   function applyUiScale() {
     uiSettings.uiScale = normalizeUiScale();
     const scale = uiSettings.uiScale / 100;
-    document.documentElement.style.setProperty('--acta-ui-scale', String(scale));
-    document.documentElement.style.setProperty('--acta-ui-scale-inverse', (1 / scale).toFixed(4));
-    document.documentElement.style.setProperty('--acta-vh', `${(innerHeight / scale).toFixed(2)}px`);
+    const root = document.documentElement.style;
+    root.setProperty('--acta-ui-scale', String(scale));
+    root.setProperty('--acta-ui-scale-inverse', (1 / scale).toFixed(4));
+    // 视口尺寸基准用 clientWidth/Height（初始包含块，不受 pinch 缩放影响）
+    // 而非 innerWidth/Height（视觉视口）：缩放设置不应跟随捏合手势漂移。
+    root.setProperty('--acta-vh', `${(document.documentElement.clientHeight / scale).toFixed(2)}px`);
+    root.setProperty('--acta-vw', `${(document.documentElement.clientWidth / scale).toFixed(2)}px`);
     if (uiScaleSetting && uiScaleValue) {
       uiScaleSetting.value = String(uiSettings.uiScale);
       uiScaleValue.textContent = `${uiSettings.uiScale}%`;
@@ -6860,7 +6864,9 @@
   }
   window.addEventListener('resize', () => {
     const scale = (Number(uiSettings.uiScale) || 100) / 100;
-    document.documentElement.style.setProperty('--acta-vh', `${(innerHeight / scale).toFixed(2)}px`);
+    const root = document.documentElement.style;
+    root.setProperty('--acta-vh', `${(document.documentElement.clientHeight / scale).toFixed(2)}px`);
+    root.setProperty('--acta-vw', `${(document.documentElement.clientWidth / scale).toFixed(2)}px`);
   });
   if (uiScaleSetting && uiScaleValue) {
     uiScaleSetting.min = String(uiScaleRange.min);

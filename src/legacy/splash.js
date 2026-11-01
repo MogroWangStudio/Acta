@@ -112,8 +112,11 @@
         const to = flyTarget.getBoundingClientRect();
         if (from.width > 0 && to.width > 0) {
           const rootStyle = document.documentElement.style;
-          rootStyle.setProperty('--splash-fly-x', `${(to.left + to.width / 2 - (from.left + from.width / 2)).toFixed(1)}px`);
-          rootStyle.setProperty('--splash-fly-y', `${(to.top + to.height / 2 - (from.top + from.height / 2)).toFixed(1)}px`);
+          // 两个 rect 都是视觉坐标，差值是视觉位移；--splash-fly-* 进
+          // transform（布局值），除以界面缩放（zoom=1 时恒等）。
+          const flyZoom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acta-ui-scale')) || 1;
+          rootStyle.setProperty('--splash-fly-x', `${((to.left + to.width / 2 - (from.left + from.width / 2)) / flyZoom).toFixed(1)}px`);
+          rootStyle.setProperty('--splash-fly-y', `${((to.top + to.height / 2 - (from.top + from.height / 2)) / flyZoom).toFixed(1)}px`);
           rootStyle.setProperty('--splash-fly-scale', `${(to.width / from.width).toFixed(4)}`);
         }
       }

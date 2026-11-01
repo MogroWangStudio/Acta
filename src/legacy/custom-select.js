@@ -81,32 +81,35 @@ select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30
     const rect = select.getBoundingClientRect();
     if (!menu.isConnected) return;
     const dialogRect = dialog ? dialog.getBoundingClientRect() : null;
-    const width = Math.max(rect.width, 128);
+    // rect 与 dialogRect 都是视觉坐标，menu 的 left/top/尺寸是宿主
+    // （dialog 或视口）布局坐标：除以界面缩放（zoom=1 时恒等）。
+    const pz = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acta-ui-scale')) || 1;
+    const width = Math.max(rect.width / pz, 128);
     // 弹层必须完整落在容器（宿主 dialog 或视口）内：dialog 常带
     // overflow:hidden，超出部分会被裁剪成「看得见边缘、点不到选项」。
     // 先按选中侧的剩余空间收紧 max-height，再把位置夹取进容器内。
     const bounds = dialogRect
-      ? { top: dialogRect.top, height: dialogRect.height }
-      : { top: 0, height: window.innerHeight };
+      ? { top: dialogRect.top / pz, height: dialogRect.height / pz }
+      : { top: 0, height: window.innerHeight / pz };
     const margin = 6;
-    const spaceBelow = bounds.top + bounds.height - margin - rect.bottom;
-    const spaceAbove = rect.top - bounds.top - margin;
+    const spaceBelow = bounds.top + bounds.height - margin - rect.bottom / pz;
+    const spaceAbove = rect.top / pz - bounds.top - margin;
     const preferredHeight = Math.min(menu.scrollHeight + 12, 264);
     const flip = spaceBelow < Math.min(preferredHeight, 180) && spaceAbove > spaceBelow;
     const availableHeight = Math.max(96, Math.min(264, flip ? spaceAbove : spaceBelow));
     menu.style.maxHeight = `${availableHeight}px`;
     const popupHeight = Math.min(menu.scrollHeight + 12, availableHeight);
-    let left = rect.left - (dialogRect ? dialogRect.left : 0);
+    let left = rect.left / pz - (dialogRect ? dialogRect.left / pz : 0);
     let top = flip
-      ? rect.top - (dialogRect ? dialogRect.top : 0) - popupHeight - margin
-      : rect.bottom - (dialogRect ? dialogRect.top : 0) + margin;
+      ? rect.top / pz - (dialogRect ? dialogRect.top / pz : 0) - popupHeight - margin
+      : rect.bottom / pz - (dialogRect ? dialogRect.top / pz : 0) + margin;
     const maxTop = Math.max(margin, bounds.height - popupHeight - margin);
     top = Math.min(Math.max(top, margin), maxTop);
     const viewportWidth = dialogRect ? dialogRect.width : window.innerWidth;
     if (dialogRect) {
-      left = Math.min(Math.max(left, 6), dialogRect.width - width - 6);
+      left = Math.min(Math.max(left, 6), dialogRect.width / pz - width - 6);
     } else {
-      left = Math.min(Math.max(left, 8), Math.max(8, window.innerWidth - width - 8));
+      left = Math.min(Math.max(left, 8), Math.max(8, window.innerWidth / pz - width - 8));
     }
     menu.style.width = `${width}px`;
     menu.style.left = `${Math.round(left)}px`;

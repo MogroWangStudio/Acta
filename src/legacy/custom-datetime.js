@@ -369,29 +369,32 @@ input[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30%
     const rect = input.getBoundingClientRect();
     if (!panel.isConnected) return;
     const dialogRect = dialog ? dialog.getBoundingClientRect() : null;
-    const width = panel.offsetWidth || 268;
+    // rect 与 dialogRect 都是视觉坐标，panel 的 left/top 是宿主（dialog
+    // 或视口）布局坐标：除以界面缩放（zoom=1 时恒等）。
+    const pz = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acta-ui-scale')) || 1;
+    const width = (panel.offsetWidth || 268) / pz;
     // 弹层必须完整落在容器（宿主 dialog 或视口）内：dialog 常带
     // overflow:hidden，超出部分会被裁剪。面板比容器矮时正常上下翻转；
     // 比容器还高时夹取位置并允许面板内部滚动。
     const bounds = dialogRect
-      ? { top: dialogRect.top, height: dialogRect.height }
-      : { top: 0, height: window.innerHeight };
+      ? { top: dialogRect.top / pz, height: dialogRect.height / pz }
+      : { top: 0, height: window.innerHeight / pz };
     const margin = 6;
-    const spaceBelow = bounds.top + bounds.height - margin - rect.bottom;
-    const spaceAbove = rect.top - bounds.top - margin;
-    const naturalHeight = panel.offsetHeight || 330;
+    const spaceBelow = bounds.top + bounds.height - margin - rect.bottom / pz;
+    const spaceAbove = rect.top / pz - bounds.top - margin;
+    const naturalHeight = (panel.offsetHeight || 330) / pz;
     const flip = spaceBelow < naturalHeight + 10 && spaceAbove > spaceBelow;
-    const availableHeight = Math.max(220, Math.min(naturalHeight, (flip ? spaceAbove : spaceBelow) - margin));
-    panel.style.maxHeight = `${Math.max(220, Math.min(naturalHeight, availableHeight))}px`;
+    const availableHeight = Math.max(220 / pz, Math.min(naturalHeight, (flip ? spaceAbove : spaceBelow) - margin));
+    panel.style.maxHeight = `${Math.max(220 / pz, Math.min(naturalHeight, availableHeight))}px`;
     const height = Math.min(naturalHeight, availableHeight);
-    let left = rect.left - (dialogRect ? dialogRect.left : 0);
+    let left = rect.left / pz - (dialogRect ? dialogRect.left / pz : 0);
     let top = flip
-      ? rect.top - (dialogRect ? dialogRect.top : 0) - height - margin
-      : rect.bottom - (dialogRect ? dialogRect.top : 0) + margin;
+      ? rect.top / pz - (dialogRect ? dialogRect.top / pz : 0) - height - margin
+      : rect.bottom / pz - (dialogRect ? dialogRect.top / pz : 0) + margin;
     const maxTop = Math.max(margin, bounds.height - height - margin);
     top = Math.min(Math.max(top, margin), maxTop);
-    if (dialogRect) left = Math.min(Math.max(left, 6), Math.max(6, dialogRect.width - width - 6));
-    else left = Math.min(Math.max(left, 8), Math.max(8, window.innerWidth - width - 8));
+    if (dialogRect) left = Math.min(Math.max(left, 6), Math.max(6, dialogRect.width / pz - width - 6));
+    else left = Math.min(Math.max(left, 8), Math.max(8, window.innerWidth / pz - width - 8));
     panel.style.left = `${Math.round(left)}px`;
     panel.style.top = `${Math.round(top)}px`;
     panel.classList.toggle('acdt-flip', flip);

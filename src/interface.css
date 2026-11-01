@@ -1,3 +1,12 @@
+/* 「界面整体缩放」的顶层弹层：与 .app-shell 同挂一档 zoom（zoom 不挂根
+   元素——媒体查询按真实视口判定，缩放不改变断点与「页面宽度」，见
+   styles.css 的 .app-shell 注释）。fixed 元素自身的 zoom 不影响贴边
+   定位（inset:0 仍贴满视口，双引擎实测），自身内容与尺寸随 zoom 放大，
+   与主界面保持同一缩放档。 */
+.splash-screen, .settings-backdrop, .oobe-backdrop, .mobile-create-layer,
+.task-date-tip, .sync-notice, .todo-burst, .brand-egg-confetti, .brand-egg-seal,
+.context-menu, .toast, .acdt-panel, .acx-menu, dialog { zoom: var(--acta-ui-scale, 1); }
+
 /* Boot splash: full-screen layer in the body's own background color (primed by
    theme-boot.js before first paint; --sidebar instead of --paper so the fade
    can never clash with themes whose sidebar is far from the paper tone). It is
@@ -189,7 +198,7 @@ body:not(.acta-steady) .settings-content::-webkit-scrollbar-thumb { background-c
 /* 预见式返回手势中：遮罩临时透明，收缩中的设置窗口底下露出工作区，
    不再是空白纸面（窗口自身的纸色即为可见表面）。 */
 .settings-backdrop.open.is-gesturing { background: transparent; }
-.settings-window { position: relative; width: 100vw; height: var(--acta-vh); border: 0; border-radius: 0; background: var(--paper); color: var(--ink); overflow: hidden; display: grid; grid-template-rows: 52px minmax(0,1fr); transform: translateY(12px); transition: transform .32s var(--ease-out); }
+.settings-window { position: relative; width: var(--acta-vw); height: var(--acta-vh); border: 0; border-radius: 0; background: var(--paper); color: var(--ink); overflow: hidden; display: grid; grid-template-rows: 52px minmax(0,1fr); transform: translateY(12px); transition: transform .32s var(--ease-out); }
 html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 .settings-backdrop.open .settings-window { transform: translateY(0); }
 .settings-backdrop.open.is-closing { pointer-events: none; animation: actaWindowBackdropOut .24s cubic-bezier(.4,0,1,1) both; }
@@ -586,7 +595,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .splash-preview-button:active { transform: scale(.94); }
 .splash-preview-button.is-busy svg { animation: dataRefreshSpin .82s cubic-bezier(.45,.05,.55,.95) infinite; }
 
-.sync-notice { position: fixed; z-index: 130; top: 66px; right: 18px; max-width: min(360px, calc(100vw - 36px)); min-height: 42px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--paper) 92%, transparent); color: var(--muted); box-shadow: 0 3px 9px -2px rgba(25,29,24,.12), 0 12px 28px -8px rgba(25,29,24,.16); backdrop-filter: blur(14px); display: flex; align-items: center; gap: 9px; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity .2s ease, transform .3s var(--ease-out); }
+.sync-notice { position: fixed; z-index: 130; top: 66px; right: 18px; max-width: min(360px, calc(var(--acta-vw) - 36px)); min-height: 42px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--paper) 92%, transparent); color: var(--muted); box-shadow: 0 3px 9px -2px rgba(25,29,24,.12), 0 12px 28px -8px rgba(25,29,24,.16); backdrop-filter: blur(14px); display: flex; align-items: center; gap: 9px; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity .2s ease, transform .3s var(--ease-out); }
 .sync-notice.show { opacity: 1; transform: translateY(0) scale(1); }
 .sync-notice i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--sage); }
 .sync-notice.working i { animation: pulse 1s ease-in-out infinite; }
@@ -606,7 +615,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .folder-action-menu b { font-size: calc(9px * var(--acta-font-scale)); }
 .folder-action-menu small { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .folder-short-name { display: none; }
-.relation-dialog.classification-manager-dialog { width: min(1120px, calc(100vw - 40px)); height: min(780px, calc(var(--acta-vh) - 40px)); max-width: calc(100vw - 40px); max-height: calc(var(--acta-vh) - 40px); overflow: hidden; }
+.relation-dialog.classification-manager-dialog { width: min(1120px, calc(var(--acta-vw) - 40px)); height: min(780px, calc(var(--acta-vh) - 40px)); max-width: calc(var(--acta-vw) - 40px); max-height: calc(var(--acta-vh) - 40px); overflow: hidden; }
 .classification-manager-layout { height: calc(100% - 58px); min-height: 0; display: grid; grid-template-columns: 240px minmax(0,1fr); }
 .classification-manager-sidebar { min-width: 0; padding: 18px 12px; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--sidebar) 70%, var(--paper)); display: flex; flex-direction: column; overflow: hidden; }
 .classification-manager-list-head { padding: 0 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); }
@@ -645,7 +654,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .classification-emoji-trigger:hover, .classification-emoji-trigger[aria-expanded="true"] { border-color: color-mix(in srgb, var(--sage) 38%, var(--line)); background: var(--sage-2); transform: scale(1.04); box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--sage) 12%, transparent); }
 .classification-emoji-trigger:focus-visible { outline: 2px solid color-mix(in srgb, var(--sage) 35%, transparent); outline-offset: 2px; }
 .classification-emoji-picker[hidden] { display: none !important; }
-.classification-emoji-picker { position: absolute; z-index: 70; top: 69px; right: 0; width: min(278px, calc(100vw - 32px)); padding: 9px; border: 1px solid color-mix(in srgb, var(--line) 78%, var(--faint)); border-radius: 14px; background: var(--paper); box-shadow: 0 3px 9px -2px rgba(31,35,30,.12), 0 14px 32px -10px rgba(31,35,30,.2); transform-origin: top right; animation: itemMetaPopoverIn .22s var(--ease-out) both; }
+.classification-emoji-picker { position: absolute; z-index: 70; top: 69px; right: 0; width: min(278px, calc(var(--acta-vw) - 32px)); padding: 9px; border: 1px solid color-mix(in srgb, var(--line) 78%, var(--faint)); border-radius: 14px; background: var(--paper); box-shadow: 0 3px 9px -2px rgba(31,35,30,.12), 0 14px 32px -10px rgba(31,35,30,.2); transform-origin: top right; animation: itemMetaPopoverIn .22s var(--ease-out) both; }
 .classification-emoji-picker > header { min-height: 30px; padding: 0 2px 7px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .classification-emoji-picker > header strong { font-size: calc(11.45px * var(--acta-font-scale)); }
 .classification-emoji-picker > header button { height: 25px; padding: 0 8px; border: 0; border-radius: 7px; background: var(--panel); color: var(--muted); font-size: calc(10.18px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; }
@@ -708,7 +717,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 
 .relation-trigger svg { width: 15px; }
 .relation-summary .link-picker, .relation-summary .no-links { display: none !important; }
-.relation-dialog { position: fixed; inset: 0; width: min(480px, calc(100vw - 28px)); max-height: calc(var(--acta-vh) - max(28px, env(safe-area-inset-top) + env(safe-area-inset-bottom))); margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); color: var(--ink); box-shadow: 0 10px 24px -6px rgba(24,28,23,.2), 0 28px 64px -16px rgba(24,28,23,.24); overflow: hidden auto; transform-origin: 50% 44%; }
+.relation-dialog { position: fixed; inset: 0; width: min(480px, calc(var(--acta-vw) - 28px)); max-height: calc(var(--acta-vh) - max(28px, env(safe-area-inset-top) + env(safe-area-inset-bottom))); margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); color: var(--ink); box-shadow: 0 10px 24px -6px rgba(24,28,23,.2), 0 28px 64px -16px rgba(24,28,23,.24); overflow: hidden auto; transform-origin: 50% 44%; }
 .relation-dialog[open] { animation: actaWindowOpen .36s cubic-bezier(.16,1,.3,1) both; }
 .relation-dialog::backdrop { background: rgba(28,32,27,.3); backdrop-filter: blur(6px); }
 .relation-dialog[open]::backdrop { animation: actaDialogBackdropIn .28s ease-out both; }
@@ -755,7 +764,7 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .mobile-classification-list small { color: var(--faint); font-size: calc(8px * var(--acta-font-scale)); }
 .mobile-classification-open em { min-width: 27px; height: 24px; padding: 0 7px; border-radius: 12px; background: var(--panel); color: var(--muted); display: grid; place-items: center; font-size: calc(8px * var(--acta-font-scale)); font-style: normal; }
 
-.note-export-dialog { width: min(1040px, calc(100vw - 36px)); height: min(760px, calc(var(--acta-vh) - 36px)); max-width: none; max-height: none; padding: 0; border: 1px solid color-mix(in srgb, var(--note-accent) 16%, var(--line)); border-radius: 18px; background: var(--paper); color: var(--ink); box-shadow: 0 12px 28px -6px rgba(24,28,23,.22), 0 32px 72px -18px rgba(24,28,23,.28); overflow: hidden; animation: actaWindowOpen .36s var(--ease-out) both; }
+.note-export-dialog { width: min(1040px, calc(var(--acta-vw) - 36px)); height: min(760px, calc(var(--acta-vh) - 36px)); max-width: none; max-height: none; padding: 0; border: 1px solid color-mix(in srgb, var(--note-accent) 16%, var(--line)); border-radius: 18px; background: var(--paper); color: var(--ink); box-shadow: 0 12px 28px -6px rgba(24,28,23,.22), 0 32px 72px -18px rgba(24,28,23,.28); overflow: hidden; animation: actaWindowOpen .36s var(--ease-out) both; }
 .note-export-dialog::backdrop { background: rgba(20,24,20,.42); backdrop-filter: blur(9px); animation: actaDialogBackdropIn .22s ease both; }
 .note-export-dialog.is-closing { animation: actaWindowClose .18s cubic-bezier(.55,.02,.78,.3) both; }
 .note-export-dialog.is-closing::backdrop { animation: actaWindowBackdropOut .18s ease both; }
@@ -1133,7 +1142,7 @@ body.acta-steady .task-row.task-toggle-motion { animation: taskToggle .22s var(-
   z-index: 45;
   top: calc(100% + 9px);
   right: 0;
-  width: min(440px, calc(100vw - 32px));
+  width: min(440px, calc(var(--acta-vw) - 32px));
   max-height: min(calc(var(--acta-vh) * 0.7), 620px);
   margin: 0 !important;
   padding: 10px;
@@ -1149,7 +1158,7 @@ body.acta-steady .task-row.task-toggle-motion { animation: taskToggle .22s var(-
 }
 .todo-meta-grid.item-meta-popover { grid-template-columns: repeat(2, minmax(0,1fr)); align-items: start; gap: 9px; }
 .todo-meta-grid.item-meta-popover .schedule-field { grid-column: 1 / -1; }
-.note-meta-popover { width: min(390px, calc(100vw - 32px)); }
+.note-meta-popover { width: min(390px, calc(var(--acta-vw) - 32px)); }
 .note-meta-popover > .classification-field { margin: 0; }
 #itemMetaButton.is-open { color: var(--ink); background: var(--panel); transform: scale(1.06); }
 html[data-acta-theme="mono-dark"] .item-meta-popover { border-color: rgba(255,255,255,.12); background: #202020; box-shadow: 0 4px 10px -2px rgba(0,0,0,.32), 0 18px 40px -12px rgba(0,0,0,.44); }
@@ -1181,7 +1190,7 @@ html[data-acta-theme="mono-dark"] .classification-emoji-picker > header button {
 /* 有筛选在生效时点一个 4px 的实心点：入口本身不换色，状态在角上。 */
 .list-filter-toggle.is-active::after { content: ""; position: absolute; top: 6px; right: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--sage); box-shadow: 0 0 0 1.5px var(--paper); }
 .list-filter-panel {
-  position: absolute; top: calc(100% + 6px); right: 18px; z-index: 40; width: max(min(252px, calc(100vw - 40px)), 216px);
+  position: absolute; top: calc(100% + 6px); right: 18px; z-index: 40; width: max(min(252px, calc(var(--acta-vw) - 40px)), 216px);
   max-height: min(calc(var(--acta-vh) * 0.72), 460px); overflow: hidden auto;
   padding: 12px; display: grid; gap: 7px; align-content: start;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 14px;
@@ -1209,7 +1218,7 @@ html[data-acta-theme="mono-dark"] .classification-emoji-picker > header button {
 @media (prefers-reduced-motion: reduce) {
   .list-filter-panel { animation: none; }
 }
-.folder-name-dialog { width: min(400px, calc(100vw - 32px)); }
+.folder-name-dialog { width: min(400px, calc(var(--acta-vw) - 32px)); }
 .folder-name-form { display: grid; gap: 12px; }
 .folder-name-input { width: 100%; height: 40px; box-sizing: border-box; padding: 0 11px; border: 1px solid var(--line); border-radius: 10px; outline: 0; background: var(--white); color: var(--ink); font-size: calc(12px * var(--acta-font-scale)); transition: border-color .2s, box-shadow .2s; }
 .folder-name-input:focus { border-color: var(--sage); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 13%, transparent); }
@@ -1354,7 +1363,7 @@ html[data-acta-palette="neon-ocean"] .sync-icon { box-shadow: 0 0 14px color-mix
 .create-menu button[data-create="todo"]:hover { background: color-mix(in srgb, var(--todo-soft) 72%, transparent); }
 .create-menu button[data-create="note"]:hover { background: color-mix(in srgb, var(--note-soft) 72%, transparent); }
 
-.quick-capture-dialog { width: min(620px, calc(100vw - 28px)); height: min(760px, calc(var(--acta-vh) - 28px)); max-height: min(760px, calc(var(--acta-vh) - 28px)); overflow: hidden; --quick-field-bg: color-mix(in srgb, var(--quick-wash) 54%, var(--white)); }
+.quick-capture-dialog { width: min(620px, calc(var(--acta-vw) - 28px)); height: min(760px, calc(var(--acta-vh) - 28px)); max-height: min(760px, calc(var(--acta-vh) - 28px)); overflow: hidden; --quick-field-bg: color-mix(in srgb, var(--quick-wash) 54%, var(--white)); }
 .quick-capture-progress { display: none; }
 .quick-capture-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); }
 .quick-capture-head { height: 66px; border-bottom-color: color-mix(in srgb, var(--quick-accent) 20%, var(--line)); background: color-mix(in srgb, var(--quick-soft) 36%, var(--paper)); }
@@ -1405,7 +1414,7 @@ html[data-acta-theme="mono-dark"] .quick-capture-types button.active { backgroun
 
 @media (max-width: 800px) {
   /* 速记在手机上占满整屏，按步骤逐屏填写；桌面端保持完整单页表单。 */
-  .quick-capture-dialog { inset: 0; width: 100vw; height: var(--acta-vh); max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+  .quick-capture-dialog { inset: 0; width: var(--acta-vw); height: var(--acta-vh); max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
   .quick-capture-dialog[open] { animation: quickCaptureFullscreenIn .3s var(--ease-out) both; }
   .quick-capture-dialog[open].is-closing { animation: quickCaptureFullscreenOut .22s ease both; }
   .quick-capture-dialog::backdrop { background: rgba(28,32,27,.18); backdrop-filter: none; }
@@ -1513,7 +1522,7 @@ body.note-focus-mode .editor-pane {
   position: fixed !important;
   z-index: 160;
   inset: 0 !important;
-  width: 100vw;
+  width: var(--acta-vw);
   height: var(--acta-vh);
   min-width: 0;
   min-height: 0;
@@ -1595,7 +1604,7 @@ body.note-focus-mode .note-body:not([hidden]) {
   height: 100%;
   min-height: 0;
   margin: 0;
-  padding: clamp(24px,calc(var(--acta-vh) * 0.04),46px) max(22px,calc((100vw - 1180px) / 2)) 42px;
+  padding: clamp(24px,calc(var(--acta-vh) * 0.04),46px) max(22px,calc((var(--acta-vw) - 1180px) / 2)) 42px;
   border: 0;
   border-radius: 0;
   outline: 0;
@@ -1614,7 +1623,7 @@ body.note-focus-mode .note-markdown-source {
   height: 100%;
   min-height: 0;
   margin: 0;
-  padding: clamp(24px,calc(var(--acta-vh) * 0.04),46px) max(22px,calc((100vw - 1180px) / 2)) 34px;
+  padding: clamp(24px,calc(var(--acta-vh) * 0.04),46px) max(22px,calc((var(--acta-vw) - 1180px) / 2)) 34px;
   resize: none;
   border: 0;
   border-radius: 0;
@@ -1636,7 +1645,7 @@ body.note-focus-mode .note-toolbar {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 8px max(10px,calc((100vw - 1260px) / 2)) calc(8px + env(safe-area-inset-bottom));
+  padding: 8px max(10px,calc((var(--acta-vw) - 1260px) / 2)) calc(8px + env(safe-area-inset-bottom));
   border: 0;
   border-top: 1px solid color-mix(in srgb, var(--note-accent) 14%, var(--line));
   border-radius: 0;
@@ -2257,7 +2266,7 @@ body.board-view .item-header :is(button, select, input, .board-pill-menu, .view-
      贴左、右侧计划板外露）——以更高特异性回到全屏；计划板的关闭钮与
      拖宽条（z 26/27）沉到全屏面板（z 160）之下，无需单独隐藏。 */
   body.board-view.note-focus-mode .editor-pane {
-    width: 100vw;
+    width: var(--acta-vw);
     max-width: none;
     transform: none;
     transition: none;
@@ -2570,7 +2579,7 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-swatch.on { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--ink); }
 
 /* 导入对话框：筛选行 + 可滚动多选列表。 */
-.board-import-dialog { width: min(520px, calc(100vw - 28px)); }
+.board-import-dialog { width: min(520px, calc(var(--acta-vw) - 28px)); }
 .board-import-body { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
 .board-import-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .board-import-seg { display: flex; padding: 2px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 45%, transparent); }
@@ -2637,7 +2646,7 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-export-options { display: grid; gap: 12px; }
 .board-export-options .board-style-row > span { min-width: 62px; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; }
 .board-export-options input[type="range"]:disabled { opacity: .4; }
-.board-export-dialog { width: min(430px, calc(100vw - 28px)); }
+.board-export-dialog { width: min(430px, calc(var(--acta-vw) - 28px)); }
 
 /* —— 导出区域选择：画布上框定导出范围 —— */
 .board-export-region { position: absolute; inset: 0; z-index: 34; touch-action: none; }
@@ -2879,7 +2888,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .board-style-pop-lg { right: 4px; top: 56px; bottom: auto; }
   /* 图层面板在窄屏放宽到几乎满宽（留 24px 屏缘）：行内拖柄 / 图标 /
      文字 / 眼睛四段内容不再挤在一起，拖拽目标也更宽。 */
-  .board-layer-pop { max-width: min(320px, calc(100vw - 24px)); }
+  .board-layer-pop { max-width: min(320px, calc(var(--acta-vw) - 24px)); }
   .board-widget-toolbar { max-width: calc(100% - 16px); flex-wrap: wrap; justify-content: center; }
   /* 320px 档再收紧间距：标注菜单已移出滚动容器，工具条本身不必横向滚动，
      缩小间隙后全部控件（含适配视图）都能落在可视区里。 */
@@ -2888,13 +2897,13 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
     .board-chrome-sep { margin: 0 1px; }
     .board-zoom-level { min-width: 30px; }
   }
-  .board-import-dialog { width: calc(100vw - 20px); }
+  .board-import-dialog { width: calc(var(--acta-vw) - 20px); }
   .board-import-list { max-height: calc(var(--acta-vh) * 0.44); }
 }
 
 /* --- Delete confirm dialog --- */
 :root { --danger-accent: #b96051; --danger-soft: #f7e3df; }
-.delete-confirm-dialog { width: min(430px, calc(100vw - 28px)); }
+.delete-confirm-dialog { width: min(430px, calc(var(--acta-vw) - 28px)); }
 .delete-confirm-head { height: 64px; border-bottom-color: color-mix(in srgb, var(--danger-accent) 20%, var(--line)); background: color-mix(in srgb, var(--danger-soft) 36%, var(--paper)); }
 .delete-confirm-head > span.is-danger { width: 36px; height: 36px; border-radius: 10px; color: var(--danger-accent); background: var(--danger-soft); }
 .delete-confirm-head > span.is-danger svg { width: 17px; height: 17px; }
@@ -2923,7 +2932,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 .delete-confirm-actions { margin: 13px 20px 18px; justify-content: flex-end; }
 
 /* --- 导入数据弹窗：先选类型（笔记 / 待办）再进入文件选择 --- */
-.import-data-dialog { width: min(430px, calc(100vw - 28px)); }
+.import-data-dialog { width: min(430px, calc(var(--acta-vw) - 28px)); }
 .import-data-body { padding: 18px 20px 20px; display: grid; gap: 9px; }
 .import-data-choice { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 72%, transparent); color: var(--ink); text-align: left; cursor: pointer; transition: border-color .2s ease, background .2s ease, transform .18s var(--ease-out), box-shadow .2s var(--ease-out); }
 .import-data-choice:hover { transform: scale(1.01); box-shadow: 0 5px 12px -4px rgba(55,53,45,.08); }
@@ -2942,7 +2951,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 .import-data-choice:hover .import-data-go { color: var(--ink); }
 
 /* --- 备份管理：备份列表与恢复（行记数据设置页入口） --- */
-.backup-manager-dialog { width: min(560px, calc(100vw - 28px)); }
+.backup-manager-dialog { width: min(560px, calc(var(--acta-vw) - 28px)); }
 .backup-manager-body { padding: 16px 20px 18px; display: grid; gap: 12px; max-height: min(calc(var(--acta-vh) * 0.6), 520px); overflow: hidden auto; overscroll-behavior: contain; }
 .backup-list { display: grid; gap: 8px; }
 .backup-empty { margin: 0; color: var(--muted); font-size: calc(11px * var(--acta-font-scale)); line-height: 1.7; padding: 14px 4px; }
@@ -3087,7 +3096,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .view-title-menu:active { transform: scale(.92); }
   .view-title-chevron { width: 15px; height: 15px; transform: rotate(90deg); transition: transform .28s var(--ease-out); }
   .view-title-menu[aria-expanded="true"] .view-title-chevron { transform: rotate(-90deg); }
-  .view-title-menu-panel { position: absolute; z-index: 42; top: calc(100% - 3px); left: 14px; width: min(330px, calc(100vw - 28px)); max-height: min(calc(var(--acta-vh) * 0.58), 430px); padding: 6px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--white) 92%, transparent); backdrop-filter: blur(18px) saturate(1.15); box-shadow: var(--shadow-pop); opacity: 0; transform: translateY(-6px) scale(.98); transform-origin: 18px 0; pointer-events: none; transition: opacity .16s ease, transform .24s var(--ease-out); overflow: hidden; }
+  .view-title-menu-panel { position: absolute; z-index: 42; top: calc(100% - 3px); left: 14px; width: min(330px, calc(var(--acta-vw) - 28px)); max-height: min(calc(var(--acta-vh) * 0.58), 430px); padding: 6px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--white) 92%, transparent); backdrop-filter: blur(18px) saturate(1.15); box-shadow: var(--shadow-pop); opacity: 0; transform: translateY(-6px) scale(.98); transform-origin: 18px 0; pointer-events: none; transition: opacity .16s ease, transform .24s var(--ease-out); overflow: hidden; }
   .view-title-menu-panel.is-open { opacity: 1; transform: none; pointer-events: auto; }
   .view-title-menu-panel[hidden] { display: none; }
   .view-title-menu-panel .mobile-classification-list { max-height: min(calc(var(--acta-vh) * 0.54), 400px); padding: 2px; }
@@ -3100,7 +3109,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .editor-topline .item-meta-popover {
     top: calc(100% + 7px);
     right: 12px;
-    width: calc(100vw - 24px);
+    width: calc(var(--acta-vw) - 24px);
     max-height: calc(var(--acta-vh) - 190px - env(safe-area-inset-bottom));
     padding: 9px;
     border-radius: 15px;
@@ -3143,7 +3152,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 }
 
 @media (min-width: 761px) and (max-width: 1000px) {
-  .relation-dialog.classification-manager-dialog { width: calc(100vw - 24px); height: calc(var(--acta-vh) - 24px); max-width: calc(100vw - 24px); max-height: calc(var(--acta-vh) - 24px); }
+  .relation-dialog.classification-manager-dialog { width: calc(var(--acta-vw) - 24px); height: calc(var(--acta-vh) - 24px); max-width: calc(var(--acta-vw) - 24px); max-height: calc(var(--acta-vh) - 24px); }
   .classification-manager-layout { grid-template-columns: 190px minmax(0,1fr); }
   .classification-manager-sidebar { padding: 15px 10px; }
   .classification-manager-detail { padding: 16px 17px 13px; }
@@ -3162,7 +3171,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 
 @media (max-width: 760px) {
   .settings-backdrop { padding: 0; align-items: stretch; }
-  .settings-window { width: 100vw; height: var(--acta-vh); min-height: 0; border: 0; border-radius: 0; grid-template-rows: calc(48px + env(safe-area-inset-top)) minmax(0,1fr); }
+  .settings-window { width: var(--acta-vw); height: var(--acta-vh); min-height: 0; border: 0; border-radius: 0; grid-template-rows: calc(48px + env(safe-area-inset-top)) minmax(0,1fr); }
   .settings-header { padding-top: env(safe-area-inset-top); }
   .settings-layout { grid-template-columns: 108px minmax(0,1fr); }
   .settings-nav { padding: 11px 7px; }
@@ -3199,7 +3208,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .app-icon-settings .settings-actions { display: grid; grid-template-columns: 1fr; }
   .app-icon-settings .settings-button { width: 100%; }
   .language-options { grid-template-columns: 1fr; }
-  .relation-dialog.classification-manager-dialog { inset: 0; width: 100vw; height: var(--acta-vh); max-width: 100vw; max-height: var(--acta-vh); margin: 0; border: 0; border-radius: 0; }
+  .relation-dialog.classification-manager-dialog { inset: 0; width: var(--acta-vw); height: var(--acta-vh); max-width: var(--acta-vw); max-height: var(--acta-vh); margin: 0; border: 0; border-radius: 0; }
   .classification-manager-dialog .relation-dialog-head { position: relative; z-index: 5; height: calc(58px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 12px 0 15px; background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(16px); }
   .classification-manager-dialog .relation-dialog-head > span { width: 32px; height: 32px; }
 .classification-manager-dialog .relation-dialog-head h3 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: calc(20.36px * var(--acta-font-scale)); }
@@ -3300,7 +3309,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .sync-notice { top: calc(64px + env(safe-area-inset-top)); right: 12px; }
   html[data-acta-theme="mono-dark"] .sidebar { background: color-mix(in srgb, var(--sidebar) 94%, transparent); }
   .classification-controls { grid-template-columns: 1fr; }
-  .note-export-dialog { inset: 0; width: 100vw; height: var(--acta-vh); max-width: 100vw; max-height: var(--acta-vh); margin: 0; border: 0; border-radius: 0; }
+  .note-export-dialog { inset: 0; width: var(--acta-vw); height: var(--acta-vh); max-width: var(--acta-vw); max-height: var(--acta-vh); margin: 0; border: 0; border-radius: 0; }
   .note-export-header { height: calc(62px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
   .note-export-layout { height: calc(100% - 126px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); grid-template-columns: 1fr; overflow: auto; }
   .note-export-form { min-height: auto; padding: 14px 14px 20px; border-right: 0; overflow: visible; }
@@ -3440,7 +3449,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
    数据同步设置页只保留入口按钮；设备身份、发现开关、雷达与自动化都在
    这个独立页面里完成。设置页头部与列表都固定，只有内容区滚动。
    安卓客户端（acta-native-mobile）无论视口宽窄一律全屏显示。 */
-.lan-page-dialog { width: min(880px, calc(100vw - 28px)); }
+.lan-page-dialog { width: min(880px, calc(var(--acta-vw) - 28px)); }
 .lan-page-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; }
 .lan-page-head .lan-page-mark { background: var(--sage-2); color: var(--sage); }
 .lan-page-head .lan-sync-state { align-self: center; }
@@ -3455,7 +3464,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 .lan-page-body .settings-group { margin: 0; }
 .lan-page-body .lan-page-discovery { border-color: color-mix(in srgb, var(--sage) 30%, var(--line)); background: color-mix(in srgb, var(--sage) 6%, var(--white)); }
 @media (max-width: 800px) {
-  .lan-page-dialog { inset: 0; width: 100vw; height: var(--acta-vh); max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+  .lan-page-dialog { inset: 0; width: var(--acta-vw); height: var(--acta-vh); max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
   .lan-page-dialog[open] { animation: quickCaptureFullscreenIn .3s var(--ease-out) both; }
   .lan-page-dialog[open].is-closing { animation: quickCaptureFullscreenOut .22s ease both; }
   .lan-page-dialog::backdrop { background: rgba(28,32,27,.18); backdrop-filter: none; }
@@ -3465,7 +3474,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .lan-page-head .lan-sync-state { display: none; }
 }
 /* 安卓客户端（Capacitor）：与窄视口同款全屏页，平板与横屏也不例外。 */
-.acta-native-mobile .lan-page-dialog { inset: 0; width: 100vw; height: var(--acta-vh); max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+.acta-native-mobile .lan-page-dialog { inset: 0; width: var(--acta-vw); height: var(--acta-vh); max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
 .acta-native-mobile .lan-page-dialog::backdrop { background: rgba(28,32,27,.18); backdrop-filter: none; }
 .acta-native-mobile .lan-page-head { min-height: calc(58px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
 .acta-native-mobile .lan-page-head .lan-sync-state { display: none; }
@@ -3540,7 +3549,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 }
 
 /* 覆盖确认对话框：左右两张卡片表达数据流向，下方列出将要写入的文件。 */
-.lan-sync-dialog { width: min(500px, calc(100vw - 28px)); }
+.lan-sync-dialog { width: min(500px, calc(var(--acta-vw) - 28px)); }
 .lan-sync-body { display: grid; gap: 14px; }
 .lan-sync-flow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; gap: 9px; }
 .lan-sync-side { min-width: 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--white) 55%, transparent); display: grid; gap: 4px; align-content: start; }
@@ -3568,7 +3577,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 .lan-sync-fields { display: grid; gap: 8px; }
 .lan-sync-fields .settings-row { padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 45%, transparent); }
 .lan-sync-mode-line { margin: 0; color: var(--muted); font-size: calc(12.6px * var(--acta-font-scale)); line-height: 1.6; }
-.lan-notice-dialog { width: min(400px, calc(100vw - 28px)); }
+.lan-notice-dialog { width: min(400px, calc(var(--acta-vw) - 28px)); }
 .lan-notice-text { margin: 0; color: var(--ink); font-size: calc(14px * var(--acta-font-scale)); line-height: 1.7; }
 .lan-sync-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
 .lan-sync-steps li { display: flex; align-items: flex-start; gap: 9px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 45%, transparent); }
@@ -3852,7 +3861,7 @@ html[data-acta-theme="mono-dark"] .about-studio:hover { background: color-mix(in
 .font-input-wrap input { min-width: 0; }
 .font-browse-button { flex: 0 0 auto; height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 70%, transparent); color: var(--muted); font: 650 calc(12.6px * var(--acta-font-scale)) inherit; cursor: pointer; white-space: nowrap; transition: color .15s ease, border-color .15s ease, background .15s ease; }
 .font-browse-button:hover { color: var(--ink); border-color: color-mix(in srgb, var(--faint) 40%, var(--line)); background: var(--white); }
-.font-picker-dialog { width: min(480px, calc(100vw - 28px)); height: min(620px, calc(var(--acta-vh) - 28px)); }
+.font-picker-dialog { width: min(480px, calc(var(--acta-vw) - 28px)); height: min(620px, calc(var(--acta-vh) - 28px)); }
 .font-picker-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr); overflow: hidden; }
 .font-picker-body { min-height: 0; display: grid; grid-template-rows: auto auto minmax(0,1fr); gap: 9px; }
 .font-picker-search { display: flex; align-items: center; gap: 7px; height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--white) 55%, transparent); }
@@ -3870,7 +3879,7 @@ html[data-acta-theme="mono-dark"] .about-studio:hover { background: color-mix(in
 .font-picker-empty { margin: 20px 0; text-align: center; color: var(--faint); font-size: calc(10px * var(--acta-font-scale)); }
 
 /* ===== 自定义取色器（安卓端替代原生取色器）===== */
-.color-picker-dialog { width: min(400px, calc(100vw - 28px)); }
+.color-picker-dialog { width: min(400px, calc(var(--acta-vw) - 28px)); }
 .color-picker-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr) auto; overflow: hidden; }
 .color-picker-preview { display: grid; place-items: center; background: var(--sage); border-radius: 10px; transition: background .12s ease; }
 .color-picker-preview svg { width: 16px; height: 16px; color: #fff; filter: drop-shadow(0 0 2px rgba(0,0,0,.4)); }

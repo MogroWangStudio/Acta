@@ -19,24 +19,23 @@
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --acta-font-display: Georgia, "Songti SC", serif;
   --list-pane-width: 330px;
-  /* 「界面整体缩放」（外观设置滑杆，85%–125%）：真正的全局缩放——
-     html { zoom: var(--acta-ui-scale) } 让整个视口内容（布局、控件、
-     文字、弹窗）等比缩放，与浏览器页面缩放同源。配套约定：
-     · --acta-font-scale 只跟「界面字体大小」（base），不再乘 ui-scale——
+  /* 「界面整体缩放」（外观设置滑杆，85%–125%）：真正的全局缩放——zoom
+     挂在 .app-shell 与各顶层弹层上（不挂根元素，媒体查询按真实视口判定，
+     缩放不改变页面宽度的断点行为），布局、控件、文字、弹窗等比缩放。
+     配套约定（完整版见 .app-shell 处注释）：
+     · --acta-font-scale 只跟「界面字体大小」（base），不乘 ui-scale——
        zoom 已缩放文字，乘第二遍会双重放大；
-     · --acta-vh 由 JS 维护 = innerHeight / zoom，替代 vh（root zoom 下
-       vh 的解析不随 zoom 调整，var(--acta-vh) 元素会视觉溢出，实测 Chromium 与
-       WebKit 一致）；
-     · --acta-ui-scale-inverse = 1 / zoom，供画布反缩放与手势换算使用；
-     · 计划板 #boardWorld 用 inverse 反缩放：画布有自己的相机体系，
-       内容不随界面缩放（同 Figma 的界面/画布分离），画布内的指针
-       换算因此保持 1:1，无需逐处修正。
-     · 自定义手势里「指针位移（视觉 px）→ 写入布局值（transform /
-       宽高 / 定位）」的地方都要除以 zoom（视觉差 × zoom 才是布局差），
+     · --acta-vh / --acta-vw 由 JS 维护 = 视口尺寸 / zoom，替代 vh/vw
+       （zoom 容器内它们的解析不随 zoom 调整，会视觉溢出，双引擎实测一致）；
+     · --acta-ui-scale-inverse = 1 / zoom：计划板 #boardWorld 反缩放，
+       画布有自己的相机体系，内容不随界面缩放（同 Figma 的界面 / 画布
+       分离），画布内指针换算保持 1:1；
+     · 自定义手势里「指针位移（视觉 px）→ 写入布局值」都要除以 zoom，
        见 interface.js 的 actaZoom() 调用点。 */
   --acta-ui-scale: 1;
   --acta-ui-scale-inverse: 1;
-  --acta-vh: var(--acta-vh);
+  --acta-vh: 100vh;
+  --acta-vw: 100vw;
   --acta-font-scale: var(--acta-font-scale-base, 1);
   /* 移动端底栏的圆形「新建」按钮：按正方形占位（直径 + 两侧净空），
      底栏网格据此留出中列，入口按钮不与圆形交叉。圆形略高于底栏上缘，
@@ -56,15 +55,11 @@ html, body {
 
 html {
   -webkit-tap-highlight-color: transparent;
-  /* 「界面整体缩放」的挂载点：根级 zoom 缩放整个视口内容（布局、控件、
-     文字、弹窗一视同仁），与浏览器页面缩放同源。配套：
-     · --acta-vh 由 JS 维护（innerHeight / zoom）——root zoom 下 vh 的
-       解析不随 zoom 调整，100vh 会视觉溢出（Chromium 128+ 与 WebKit
-       实测一致），全项目的视口高度一律走 --acta-vh；
-     · position:fixed 与 height:100% 在根级 zoom 下语义正确（实验确认），
-       安全区 env() 保持物理值、不做补偿（偏差只影响刘海设备的边距）；
-     · 手势换算的约定见 :root 注释与 interface.js 的 actaZoom()。 */
-  zoom: var(--acta-ui-scale, 1);
+  /* 「界面整体缩放」的 zoom 挂在 .app-shell 与各顶层弹层上，而不是根元素：
+     媒体查询按初始包含块（真实视口）判定，zoom 缩放的只是内容——
+     挂在根上时布局视口 = 视觉宽度 / zoom，拖动滑杆跨过断点
+     （桌面 1220px 的侧栏收窄、移动 360px 的紧凑档）会让页面结构跳变，
+     看起来像「缩放改变了页面宽度」。见 .app-shell 处的完整约定。 */
 }
 
 body {
@@ -130,7 +125,26 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 ::selection { background: color-mix(in srgb, var(--sage) 30%, transparent); }
 .note-body ::selection, .note-body::selection, .note-markdown-source::selection, .editor-title::selection, .task-text::selection, .todo-notes::selection { background: color-mix(in srgb, var(--note-accent, var(--sage)) 28%, transparent); }
 
-.app-shell { height: var(--acta-vh); width: 100vw; }
+/* 「界面整体缩放」（外观设置滑杆，85%–125%）：zoom 挂在应用内容与各顶层
+   弹层上，而不是根元素——媒体查询按真实视口判定（缩放不改变断点、不改变
+   「页面宽度」），放大的只是元素与排版。配套约定（Chromium 128+ 与
+   WebKit 双引擎实测）：
+   · --acta-vh / --acta-vw 由 JS 维护 = 视口尺寸 / zoom：zoom 容器内
+     100vh/100vw 的解析不随 zoom 调整（会视觉溢出），视口尺寸一律走变量；
+   · app-shell 自身尺寸用两个变量（= 视觉尺寸 / zoom），zoom 放大后视觉
+     恰好铺满视口；position:fixed 在 zoom 祖先内仍贴真实视口边缘，而自身
+     尺寸随 zoom 放大（顶栏 / 底栏 / 沉浸编辑因此天然正确）；
+   · 顶层弹层（启动层 / 设置遮罩 / OOBE / dialog / 右键菜单 / toast /
+     放射菜单等，见 interface.css 的「顶层缩放层」规则）同挂 zoom，与主
+     界面同一缩放档；fixed 元素自身的 zoom 不影响其贴边定位（实验确认）；
+   · --acta-font-scale 只跟「界面字体大小」（base），不乘 ui-scale；
+   · --acta-ui-scale-inverse = 1 / zoom：计划板 #boardWorld 反缩放，画布
+     有自己的相机体系，内容不随界面缩放（同 Figma 的界面 / 画布分离），
+     画布内指针换算保持 1:1；
+   · 自定义手势里「指针位移（视觉 px）→ 写入布局值（transform / 宽高 /
+     定位）」都要除以 zoom（zoom 容器自身与后代一致，实验确认），见
+     interface.js 的 actaZoom() 调用点。 */
+.app-shell { height: var(--acta-vh); width: var(--acta-vw); zoom: var(--acta-ui-scale, 1); }
 
 .titlebar {
   height: 52px;
@@ -141,6 +155,13 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
   align-items: center;
   position: relative;
   z-index: 30;
+  /* 界面缩放下媒体查询按真实视口判定（稳定），但顶栏内容按布局宽排版：
+     用容器查询承接「排不下就收起」的排版决策（如版本胶囊），容器宽 =
+     布局宽，随缩放自然变化，与视口断点互不干扰。 */
+  container: titlebar / inline-size;
+}
+@container titlebar (max-width: 380px) {
+  .brand-version { display: none; }
 }
 
 .brand { display: flex; align-items: center; gap: 9px; padding-left: 18px; min-width: 0; }
@@ -181,7 +202,7 @@ html[data-desktop-platform="win32"] .titlebar-center { padding-right: 8px; }
 html[data-desktop-platform="win32"] .desktop-window-controls { display: flex; }
 html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 
-.workspace { height: calc(var(--acta-vh) - 52px * var(--acta-ui-scale, 1)); display: grid; grid-template-columns: 248px clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr); }
+.workspace { height: calc(var(--acta-vh) - 52px); display: grid; grid-template-columns: 248px clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr); }
 
 .sidebar {
   background: var(--sidebar);
@@ -688,7 +709,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
      钉在真实视口上后，滑动只发生在列表等内部滚动容器里。 */
   html { height: 100%; overflow: hidden; }
   body { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
-  .app-shell { height: 100%; width: 100%; }
+  .app-shell { height: var(--acta-vh); width: var(--acta-vw); }
   .titlebar {
     height: calc(48px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
@@ -703,7 +724,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   html[data-desktop-platform="win32"] .titlebar { grid-template-columns: 1fr; }
   html[data-desktop-platform="darwin"] .brand { padding-left: 16px; }
   .workspace {
-    height: calc(var(--acta-vh) - 48px * var(--acta-ui-scale, 1) - env(safe-area-inset-top));
+    height: calc(var(--acta-vh) - 48px - env(safe-area-inset-top));
     display: block;
   }
   /* 安卓端：WebView 上报的安全区上缘略宽于状态栏的视觉高度，顶栏内容
@@ -716,7 +737,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     padding-top: max(0px, env(safe-area-inset-top) - 5px);
   }
   html.acta-native-mobile .workspace {
-    height: calc(var(--acta-vh) - 43px * var(--acta-ui-scale, 1) - max(0px, env(safe-area-inset-top) - 5px));
+    height: calc(var(--acta-vh) - 43px - max(0px, env(safe-area-inset-top) - 5px));
   }
   .sidebar {
     position: fixed; z-index: 45; left: 0; right: 0; bottom: 0;
