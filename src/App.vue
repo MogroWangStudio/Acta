@@ -461,7 +461,7 @@
                 </div>
                 <label class="settings-row"><span><b>自动同步</b></span><input id="autoSyncSetting" type="checkbox"/></label>
                 <label class="settings-row" id="autoSyncIntervalRow"><span><b>检查频率</b></span><select id="autoSyncInterval"><option value="1">每 1 分钟</option><option value="5">每 5 分钟</option><option value="15">每 15 分钟</option></select></label>
-                <div class="settings-actions">
+                <div class="settings-actions cloud-transfer-actions">
                   <button class="settings-button secondary" id="downloadOneDrive" type="button" disabled><svg><use href="#i-download"/></svg>下载完整数据文件夹</button>
                   <button class="settings-button" id="uploadOneDrive" type="button" disabled><svg><use href="#i-upload"/></svg>上传完整数据文件夹</button>
                   <button class="settings-button secondary" id="disconnectOneDrive" type="button" disabled><svg><use href="#i-close"/></svg>断开同步位置</button>

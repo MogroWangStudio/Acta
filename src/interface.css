@@ -2985,6 +2985,18 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 .backup-entry-copy b { font-size: calc(11px * var(--acta-font-scale)); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .backup-entry-copy small { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .backup-manager-body .settings-status { margin: 0; }
+/* 数据同步 · WebDAV：常驻说明（cloudSyncHint）不是动态状态，从状态条
+   样式降级为组底脚注小字——不再与 oneDriveStatus 的状态条堆叠成两条
+   同款灰底，观感重复。 */
+#cloudSyncHint { margin: 10px 15px 13px; min-height: 0; padding: 0; background: transparent; border-radius: 0; line-height: 1.5; }
+/* 动态状态条与组内行的内边距对齐（不再顶到组边框）。 */
+[data-settings-panel="cloud"] #oneDriveStatus { margin: 13px 10px 12px; }
+/* 移动端三个传输动作统一全宽（与「保存并测试连接」同语言），
+   不再按各自文字长度参差换行。 */
+@media (max-width: 800px) {
+  .cloud-transfer-actions { flex-direction: column; }
+  .cloud-transfer-actions .settings-button { width: 100%; justify-content: center; }
+}
 /* 面板底部的手动备份入口：与历史记录同一条底栏语言（右对齐、细分割线）。 */
 .backup-manager-actions { display: flex; justify-content: flex-end; padding: 12px 20px 18px; border-top: 1px solid color-mix(in srgb, var(--line) 62%, transparent); }
 .backup-manager-actions .settings-button[aria-busy="true"] { opacity: .6; cursor: progress; }
