@@ -5110,8 +5110,16 @@
       pullIndicator.style.setProperty('--pull-shift', `${(pullShift / actaZoom()).toFixed(1)}px`); // 视觉 → 布局
       pullIndicator.style.setProperty('--pull-spin', `${(pullShift * 3.4).toFixed(1)}deg`);
       pullIndicator.style.setProperty('--pull-grow', (0.88 + 0.12 * Math.min(1, pullShift / PULL_TRIGGER)).toFixed(3));
+      // 环形进度：拉动时描边满圈即触发点。
+      const progress = Math.min(1, pullShift / PULL_TRIGGER);
+      pullIndicator.style.setProperty('--pull-progress', progress.toFixed(3));
       pullIndicator.style.opacity = Math.min(1, pullShift / 40).toFixed(3);
+      // 到达触发点的边沿轻震一下：不用看指示器也知道「松手就刷新」。
+      const wasReady = pullIndicator.classList.contains('is-ready');
       pullIndicator.classList.toggle('is-ready', pullShift >= PULL_TRIGGER);
+      if (!wasReady && pullShift >= PULL_TRIGGER) {
+        try { navigator.vibrate?.(10); } catch { /* 无振动能力静默 */ }
+      }
     };
     const pullPaintSoon = () => { if (!pullFrame) pullFrame = requestAnimationFrame(pullPaint); };
     const pullReset = () => {
