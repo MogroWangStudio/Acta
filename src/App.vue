@@ -410,6 +410,7 @@
               </div>
               <div class="settings-group mobile-nav-settings" style="margin-top:18px">
                 <label class="settings-row"><span><b>底栏图标</b></span><select id="mobileNavStyleSetting"><option value="labeled">图标和文字</option><option value="icon">仅图标</option></select></label>
+                <label class="settings-row"><span><b>设置页侧边栏</b></span><select id="settingsNavStyleSetting"><option value="labeled">图标和文字</option><option value="icon">仅图标</option></select></label>
                 <label class="settings-row" id="newButtonSizeRow" hidden><span><b>新建按钮大小</b></span><span class="font-size-control"><input id="newButtonSizeSetting" type="range" min="60" max="96" step="2"/><output id="newButtonSizeValue">76 px</output></span></label>
               </div>
               <div class="appearance-subsection app-icon-settings" data-mobile-app-icon-only>

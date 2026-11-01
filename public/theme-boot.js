@@ -39,6 +39,9 @@
   root.style.setProperty('--acta-vw', `${(document.documentElement.clientWidth / uiScale).toFixed(2)}px`);
   // 移动端底栏「仅图标」也在首帧前生效，避免文字先闪一下再消失。
   if (String(stored.mobileNavStyle) === 'icon') root.dataset.mobileNav = 'icon';
+  // 移动端设置页侧边栏「仅图标」同理：侧栏列宽随模式变化，晚一帧会看到
+  // 侧栏从宽变窄的跳动。
+  if (String(stored.settingsNavStyle) === 'icon') root.dataset.settingsNav = 'icon';
   if (!theme) return;
   // 跟随系统：首帧按系统明暗解析（浅色 → 黑白浅色，与 applyTheme 一致），
   // 避免先闪默认调色板再切换。
