@@ -5108,7 +5108,6 @@
     const pullPaint = () => {
       pullFrame = 0;
       pullIndicator.style.setProperty('--pull-shift', `${(pullShift / actaZoom()).toFixed(1)}px`); // 视觉 → 布局
-      pullIndicator.style.setProperty('--pull-spin', `${(pullShift * 3.4).toFixed(1)}deg`);
       pullIndicator.style.setProperty('--pull-grow', (0.88 + 0.12 * Math.min(1, pullShift / PULL_TRIGGER)).toFixed(3));
       // 环形进度：拉动时描边满圈即触发点。
       const progress = Math.min(1, pullShift / PULL_TRIGGER);

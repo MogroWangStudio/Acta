@@ -210,7 +210,6 @@
           <div class="item-list-frame">
             <div class="pull-refresh-indicator" id="pullRefreshIndicator" aria-hidden="true">
               <svg class="pull-ring" viewBox="0 0 40 40"><circle class="ring-track" cx="20" cy="20" r="16"/><circle class="ring-progress" cx="20" cy="20" r="16"/></svg>
-              <svg class="pull-glyph"><use href="#i-refresh"/></svg>
             </div>
             <div class="item-list" id="itemList"></div>
           </div>

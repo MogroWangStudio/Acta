@@ -439,22 +439,26 @@ body.folder-view .view-folder-mark { display: grid; }
    松手后 transform 恢复过渡，走带回弹的非线性弹簧曲线。 */
 .item-list-frame { position: relative; flex: 1; min-height: 0; display: flex; }
 .item-list-frame .item-list { flex: 1; }
-/* 下拉刷新指示器：圆底 + 环形进度（拉动时描边、满圈即触发）+ 中心
-   图标。跟手阶段（is-pulling）进度环无过渡实时映射位移；松手弹回时
-   恢复过渡，环平滑退回；触发后（is-refreshing）环自转、中心图标隐去。 */
+/* 下拉刷新指示器：圆底 + 环形进度（拉动时描边、满圈即触发）。只有这一个
+   记号——旧的中心刷新图标已经移除，不再和进度环叠在一起。跟手阶段
+   （is-pulling）进度环无过渡实时映射位移；松手弹回时恢复过渡，环平滑退回；
+   触发后（is-refreshing）环自转（iOS 风格 spinner）。 */
 .pull-refresh-indicator { position: absolute; top: 10px; left: 50%; z-index: 6; width: 40px; height: 40px; margin-left: -20px; border-radius: 50%; background: var(--white); color: var(--muted); box-shadow: 0 3px 10px -2px rgba(34,38,33,.18), 0 0 0 1px var(--line); display: none; place-items: center; pointer-events: none; opacity: 0; transform: translateY(calc(-46px + var(--pull-shift, 0px))) scale(var(--pull-grow, .88)); transition: transform .55s cubic-bezier(.24,1.36,.4,1), opacity .3s ease, color .18s ease, background .18s ease, box-shadow .18s ease; }
-.pull-refresh-indicator .pull-ring { position: absolute; inset: 3px; transform: rotate(-90deg); }
+/* 环是一个绝对定位的内联 SVG：只写 inset 时它的宽高仍取内在尺寸（300×150），
+   环会缩到左上角一小块——必须同时给宽高（容器 40px − 两侧各 3px）。 */
+.pull-refresh-indicator .pull-ring { position: absolute; inset: 3px; width: calc(100% - 6px); height: calc(100% - 6px); transform: rotate(-90deg); }
 .pull-ring circle { fill: none; stroke-width: 2.5; }
 .pull-ring .ring-track { stroke: color-mix(in srgb, var(--line) 85%, transparent); }
 .pull-ring .ring-progress { stroke: var(--sage); stroke-linecap: round; stroke-dasharray: 100.53; stroke-dashoffset: calc(100.53 * (1 - var(--pull-progress, 0))); }
-.pull-refresh-indicator .pull-glyph { width: 16px; height: 16px; transform: rotate(var(--pull-spin, 0deg)); transition: opacity .15s ease; }
 .pull-refresh-indicator.is-pulling { transition: color .18s ease, background .18s ease, box-shadow .18s ease; }
 .pull-refresh-indicator.is-pulling .ring-progress { transition: none; }
 .pull-refresh-indicator.is-ready { color: var(--sage); background: color-mix(in srgb, var(--sage) 10%, var(--white)); box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--sage) 30%, transparent), 0 0 0 1px color-mix(in srgb, var(--sage) 30%, var(--line)); animation: pullReadyPulse .32s var(--ease-out); }
 .pull-refresh-indicator.is-ready .ring-progress { stroke-dashoffset: 0; }
 @keyframes pullReadyPulse { 40% { transform: translateY(calc(-46px + var(--pull-shift, 0px))) scale(calc(var(--pull-grow, 1) * 1.1)); } }
 .pull-refresh-indicator.is-refreshing { opacity: 1; }
-.pull-refresh-indicator.is-refreshing .pull-glyph { opacity: 0; }
+/* 刷新中只留环自转：把描边收成一段缺口弧（约 28% 周长），否则满圈旋转看
+   起来是静止的——iOS 风格 spinner 靠的正是这段缺口。 */
+.pull-refresh-indicator.is-refreshing .ring-progress { stroke-dashoffset: 72; transition: stroke-dashoffset .2s ease; }
 .pull-refresh-indicator.is-refreshing .pull-ring { animation: pull-refresh-spin .92s cubic-bezier(.55,.08,.45,.92) infinite; }
 @keyframes pull-refresh-spin { from { transform: rotate(-90deg); } to { transform: rotate(270deg); } }
 .item-card {

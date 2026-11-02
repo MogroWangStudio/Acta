@@ -1412,6 +1412,22 @@ async function main() {
         && document.querySelector('#smartNav [data-view="trash"]')?.classList.contains('active');
       document.querySelector('[data-view="inbox"]').click();
       await waitFor(() => currentView === 'inbox');
+      // 下拉刷新指示器只留一个记号（环形进度）：旧的刷新图标已移除，且环
+      // 必须撑满容器内缩（只写 inset 的内联 SVG 会退回内在尺寸、缩到左上角）。
+      const pullMark = document.querySelector('#pullRefreshIndicator');
+      const pullRingEl = pullMark?.querySelector('.pull-ring');
+      const mobilePullIndicatorSingleRing = Boolean(pullRingEl)
+        && pullMark.querySelectorAll('svg').length === 1
+        && Math.abs(pullRingEl.getBoundingClientRect().width - (pullMark.getBoundingClientRect().width - 6)) <= 1;
+      // 设置侧栏是一根固定导航条，不进入滚动：360×630 下十个入口刚好差几像素，
+      // 能滑就会「整条导航跟着动」。
+      window.resizeTo(360, 630);
+      await waitFor(() => innerWidth <= 360 && innerHeight <= 630);
+      const settingsNavEl = document.querySelector('.settings-nav');
+      const mobileSettingsNavNotScrollable = await waitFor(() => settingsNavEl.scrollHeight <= settingsNavEl.clientHeight + 1)
+        && getComputedStyle(settingsNavEl).overflowY === 'hidden';
+      window.resizeTo(600, 700);
+      await waitFor(() => innerWidth <= 600 && innerHeight <= 700);
       document.querySelector('#settingsBack').click();
       await waitFor(() => !document.querySelector('#settingsModal').classList.contains('open'));
       // 移动端计划板底部工具条：画布自 v4.2.0 起铺到屏幕底（内容从毛玻璃
@@ -1878,6 +1894,8 @@ async function main() {
         mobileClassificationPanelInViewport,
         mobileTrashOpensTrashView,
         mobileBoardChromeAboveNav,
+        mobilePullIndicatorSingleRing,
+        mobileSettingsNavNotScrollable,
         mobileBoardChromeDebug,
         expandedBrandVersionVisible,
         collapsedSidebarAligned,
@@ -2208,6 +2226,8 @@ async function main() {
     assert.equal(result.mobileClassificationPanelInViewport, true);
     assert.equal(result.mobileTrashOpensTrashView, true);
     assert.equal(result.mobileBoardChromeAboveNav, true, JSON.stringify(result.mobileBoardChromeDebug));
+    assert.equal(result.mobilePullIndicatorSingleRing, true);
+    assert.equal(result.mobileSettingsNavNotScrollable, true);
     assert.equal(result.expandedBrandVersionVisible, true);
     assert.equal(result.collapsedSidebarAligned, true, JSON.stringify(result.collapsedSidebarOffsets));
     assert.equal(result.collapsedBrandCentered, true);

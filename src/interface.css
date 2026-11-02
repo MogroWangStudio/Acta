@@ -3243,8 +3243,11 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
      文字用 ellipsis 兜底，字号缩放也不会撑破列宽。 */
   /* 列宽随「界面字体大小」同步放大：大字号下标签仍完整显示。 */
   .settings-layout { grid-template-columns: calc(96px * var(--acta-font-scale-base, 1)) minmax(0,1fr); }
-  .settings-nav { padding: 11px 6px; }
-.settings-nav button { height: 54px; padding: 7px 4px; justify-content: center; flex-direction: column; gap: 5px; font-size: calc(10px * var(--acta-font-scale)); }
+  /* 侧栏是一根固定的竖排导航条：条目按可用高度分配（54px 封顶，放不下时
+     等比收一点），永不进入滚动——10 个入口在 360×640 上恰好差 6px，滑一下
+     整条导航跟着动、底下露出半截留白，既没必要又像坏了。 */
+  .settings-nav { padding: 11px 6px; display: flex; flex-direction: column; overflow: hidden; }
+.settings-nav button { flex: 0 1 auto; height: 54px; min-height: 0; padding: 7px 4px; justify-content: center; flex-direction: column; gap: 5px; font-size: calc(10px * var(--acta-font-scale)); overflow: hidden; }
   .settings-nav button span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .settings-nav button i { display: none; }
   .settings-nav svg { width: 19px; flex: 0 0 auto; }
