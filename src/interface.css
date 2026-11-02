@@ -741,10 +741,11 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .relation-dialog-close { margin-left: auto; width: 29px; height: 29px; padding: 0; border: 0; border-radius: 8px; background: var(--panel); display: grid; place-items: center; cursor: pointer; }
 .relation-dialog-body { padding: 17px 17px 15px; }
 .relation-dialog-body .link-picker { display: grid !important; }
-/* 窗口排版：说明 → 新建关联 → 已关联列表的三段层次。 */
+/* 窗口排版：说明 → 新建关联 → 已关联列表的三段层次。列表是编辑器摘要的
+   镜像，只留一条分隔线接在窗口里，不再叠一层卡片边框。 */
 .relation-dialog-body .relation-dialog-hint { margin: 0 0 13px; }
 .relation-dialog-body .link-picker select { font-size: calc(12.6px * var(--acta-font-scale)); }
-.relation-dialog-body .linked-section { margin: 15px 0 0; padding: 13px 0 0; border-top: 1px solid var(--line); }
+.relation-dialog-body .linked-section { margin: 15px 0 0; padding: 13px 0 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
 .relation-dialog-body .linked-section .linked-head { margin: 0 0 9px; }
 .relation-dialog-body .linked-list { gap: 6px; }
 .relation-dialog-body .linked-row { background: color-mix(in srgb, var(--white) 55%, transparent); border: 1px solid var(--line); border-radius: 10px; padding: 4px 6px 4px 4px; }
@@ -3106,24 +3107,35 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .calendar-todo-meta { flex-wrap: wrap; }
   .calendar-subtask { min-height: 29px; }
   .calendar-subtask-title { font-size: calc(11px * var(--acta-font-scale)); }
-  /* 顶栏右上角按钮区：与顶栏内容行（安卓端收至 43px）垂直居中并随
-     顶栏一起上移 5px——top = 安全区上缘 − 5px + (43 − 36)/2 = −5px + 3.5px，
-     与 logo 同一条水平中线。 */
-  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: calc(max(0px, env(safe-area-inset-top) - 5px) + 3.5px); display: flex; align-items: center; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--white) 72%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); -webkit-app-region: no-drag; }
-  html:not(.acta-native-mobile) .mobile-titlebar-actions { top: calc(env(safe-area-inset-top) + 6px); }
+  /* 顶栏右上角按钮区：在顶栏的内容行内垂直居中（top / bottom 定下内容行
+     的上下缘，margin:auto 吃掉剩余空间）——不再用「安全区 − 5px + 一半」的
+     手算偏移，胶囊整体 40px 稳定落在安卓 43px / 网页 48px 的内容行内，
+     不会探出顶栏下缘。 */
+  .mobile-titlebar-actions { position: absolute; z-index: 4; right: 14px; top: max(0px, env(safe-area-inset-top) - 5px); bottom: 0; height: 40px; margin: auto 0; padding: 1px; display: flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--white) 72%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); -webkit-app-region: no-drag; }
+  html:not(.acta-native-mobile) .mobile-titlebar-actions { top: env(safe-area-inset-top); }
   /* 顶栏右上角是自定义按钮区：合并为药丸按钮区域（iOS segmented 语言），
      候选按钮全部隐藏，由设置中的三个槽位（mobile-title-slot-N）决定显示
      哪三个；设置按钮固定在末尾。图标项之间以细分隔线分开，当前视图对应
      的入口呈现药丸状强调底（分隔线被选中药丸自然盖住，与系统分段控件
      一致）。 */
-  .mobile-titlebar-action { position: relative; width: 42px; height: 38px; display: none; border: 0; border-radius: 999px; background: transparent; color: var(--muted); -webkit-app-region: no-drag; }
-  .mobile-titlebar-action:hover { transform: none; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+  .mobile-titlebar-action { position: relative; width: 42px; height: 36px; display: none; border: 0; border-radius: 999px; background: transparent; color: var(--muted); transition: background .22s ease, color .22s ease, transform .22s var(--ease-out); -webkit-app-region: no-drag; }
+  /* 按下即亮（反馈落在按下的一瞬），松手后背景自动淡出。触屏不保留悬停
+     态：安卓 WebView 会把最后一次点击的 :hover 粘住，看起来像一块不散的
+     遮罩；悬停反馈只在真有指针的设备上给。 */
+  .mobile-titlebar-action:active { background: color-mix(in srgb, var(--ink) 9%, transparent); transform: scale(.94); transition-duration: .06s; }
+  @media (hover: none) {
+    .mobile-titlebar-action:hover { transform: none; background: transparent; color: var(--muted); }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .mobile-titlebar-action:hover { transform: none; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+  }
   .mobile-titlebar-action + .mobile-titlebar-action::before { content: ""; position: absolute; left: 0; top: 50%; width: 1px; height: 55%; transform: translateY(-50%); background: var(--line); }
   .mobile-titlebar-action.mobile-title-slot-1 { order: 1; display: grid; }
   .mobile-titlebar-action.mobile-title-slot-2 { order: 2; display: grid; }
   .mobile-titlebar-action.mobile-title-slot-3 { order: 3; display: grid; }
   .mobile-titlebar-action.mobile-list-settings { order: 4; display: grid; }
   .mobile-titlebar-action.active { background: var(--sage); color: #fff; }
+  .mobile-titlebar-action.active:active { background: color-mix(in srgb, var(--sage) 86%, #000); transition-duration: .06s; }
   .mobile-titlebar-action.active::before, .mobile-titlebar-action.active + .mobile-titlebar-action::before { content: none; }
   .mobile-titlebar-action:disabled { opacity: .58; cursor: progress; }
   html[data-acta-theme="mono-dark"] .mobile-titlebar-actions { background: color-mix(in srgb, #292929 82%, transparent); border-color: rgba(255,255,255,.1); }

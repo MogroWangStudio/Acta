@@ -9548,10 +9548,41 @@
   }
   // ===== Acta 局域网同步结束 =====
 
+  // 关联窗口里的已关联行是编辑器摘要的镜像（克隆）：行随编辑器重建整批
+  // 换新，逐个绑定会在下一次重建后重复，因此窗口内统一委派一次点击。
+  function onRelationWindowClick(event) {
+    const row = event.target.closest?.('.linked-row');
+    if (!row) return;
+    const item = getItem();
+    const linked = item && library.items.find(entry => entry.id === row.dataset.linkedId);
+    if (!linked) return;
+    if (event.target.closest('.remove-item-link')) {
+      unlinkItems(item, linked);
+      renderEditor();
+      renderList();
+      showToast(t('unlinked'));
+      return;
+    }
+    if (event.target.closest('.open-linked-item')) {
+      // 打开另一条内容前先关窗：窗口跟着编辑器，切到别的条目还留着会让人
+      // 以为是新条目的关联。
+      const current = document.body.querySelector(':scope > .relation-dialog');
+      if (current?.open) closeAnimatedDialog(current);
+      openItem(linked.id);
+    }
+  }
+
   function enhanceRelationEditor() {
     const pane = byId('editorPane');
     const article = pane?.querySelector('[data-editor-id]');
-    if (!article || article.dataset.relationUi === 'ready') return;
+    if (!article) {
+      // 编辑器回到空态（条目被删 / 移入回收站）：窗口不属于任何条目，
+      // 关掉而不是留着一份过期内容。
+      const stale = document.body.querySelector(':scope > .relation-dialog');
+      if (stale?.open) closeAnimatedDialog(stale);
+      return;
+    }
+    if (article.dataset.relationUi === 'ready') return;
     const section = article.querySelector('.linked-section');
     const actions = article.querySelector('.editor-actions');
     const picker = section?.querySelector('.link-picker');
@@ -9560,6 +9591,12 @@
 
     const relationCopy = { title: uiText('linkTitle'), close: uiText('close'), hint: uiText('linkHint') };
     const linkedRows = section.querySelectorAll('.linked-row');
+
+    // 编辑器内保留「已关联项目」摘要：有关联时列出条目（可打开、可移除），
+    // 没有关联时整块让位——「选择项目」这一步在窗口里完成，摘要内不再放
+    // 一行选择器。
+    section.classList.add('relation-summary');
+    section.hidden = linkedRows.length === 0;
 
     const trigger = document.createElement('button');
     trigger.type = 'button';
@@ -9573,7 +9610,6 @@
     // 在窗口里移除一条关联后，编辑器重建触发增强，内容原位更新而窗口
     // 保持打开——关联的新建、查看与移除都在窗口内一次完成。
     let dialog = document.body.querySelector(':scope > .relation-dialog');
-    let body;
     if (!dialog) {
       dialog = document.createElement('dialog');
       dialog.className = 'relation-dialog';
@@ -9582,17 +9618,18 @@
       dialog.querySelector('.relation-dialog-close').addEventListener('click', () => closeAnimatedDialog(dialog));
       // 弹出窗口不因点击空白处而关闭（设计约定），关闭只通过关闭按钮或 Esc。
       dialog.addEventListener('cancel', event => { event.preventDefault(); closeAnimatedDialog(dialog); });
+      dialog.querySelector('.relation-dialog-body').addEventListener('click', onRelationWindowClick);
     }
-    body = dialog.querySelector('.relation-dialog-body');
-    // 内容随编辑器重建原位更新：新 picker 移入、已关联列表移入（编辑器
-    // 内不再重复显示一份摘要）。移除摘要模式的样式钩子，窗口内选择器
-    // 与空态（还没有关联项目）都正常呈现。
-    section.classList.remove('relation-summary');
-    section.hidden = false;
+    const body = dialog.querySelector('.relation-dialog-body');
+    // 内容随编辑器重建原位更新：选择器移入窗口，已关联列表以镜像呈现
+    // （编辑器里那份留在原处继续显示，两处同一份渲染、同一套操作）。
+    const mirror = section.cloneNode(true);
+    mirror.classList.remove('relation-summary');
+    mirror.hidden = false;
+    mirror.querySelector('.link-picker')?.remove();
+    mirror.querySelector('.linked-list')?.classList.add('relation-window-list');
     const hint = body.querySelector('.relation-dialog-hint');
-    body.replaceChildren(hint, picker, section);
-    const list = section.querySelector('.linked-list');
-    if (list) list.classList.add('relation-window-list');
+    body.replaceChildren(hint, picker, mirror);
 
     trigger.addEventListener('click', () => { if (!dialog.open) openAnimatedDialog(dialog); });
   }

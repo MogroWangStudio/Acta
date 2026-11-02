@@ -9355,6 +9355,9 @@ function shiftCalendarCursor(direction) {
 function bindLinkedItems(item) {
   const select = $('#linkItemSelect');
   const addButton = $('#addItemLink');
+  // 已关联列表只在编辑器内绑定：关联窗口里那份是编辑器摘要的镜像克隆，
+  // 逐行绑定会在重建后重复，窗口内统一走委派点击（interface.js）。
+  const pane = $('#editorPane');
   select?.addEventListener('change', () => { addButton.disabled = !select.value; });
   addButton?.addEventListener('click', () => {
     const linked = library.items.find(entry => entry.id === select.value
@@ -9366,7 +9369,7 @@ function bindLinkedItems(item) {
     renderList();
     showToast(t('linked'));
   });
-  $$('.linked-row').forEach(row => {
+  $$('.linked-row', pane).forEach(row => {
     const linked = library.items.find(entry => entry.id === row.dataset.linkedId);
     if (!linked) return;
     $('.open-linked-item', row).addEventListener('click', () => {
