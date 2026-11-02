@@ -2808,12 +2808,16 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-pen-field input[type="range"] { width: 74px; accent-color: var(--sage); }
 .board-pen-field output { min-width: 30px; color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; text-align: right; }
 @media (max-width: 800px) {
-  /* 画布底缘已经在底栏之上（item-pane 留白），工具条只需贴近画布底缘：
-     原先再叠一层 84px，工具栏会停在底栏上方约 100px，离手指太远。
-     画笔条与多选条依次排在主工具条上方，保持 8px 净空。 */
-  .board-pen-bar { top: auto; bottom: 76px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  /* 底栏是浮在画布之上的固定层（76px + 安全区），而画布自 v4.2.0 起铺到
+     屏幕底（列表让位改为「滚动内容末尾留白」，画布没有「末项」，容器直接
+     到底）——画布内的悬浮条不能再以「画布底」当基准，否则整条会沉到毛玻璃
+     底栏背后。--board-dock 就是这个让位量，三条悬浮条都从它起算。 */
+  .board-canvas { --board-dock: calc(76px + env(safe-area-inset-bottom)); }
+  /* 画笔条与多选条依次排在主工具条上方：主工具条距底栏 30px、自身 52px，
+     再加 8px 净空 = 90px，两条之间看得出是两块，三条不会互相压住。 */
+  .board-pen-bar { top: auto; bottom: calc(var(--board-dock) + 90px); max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
   .board-pen-bar::-webkit-scrollbar { display: none; }
-  .board-widget-toolbar.is-multi { bottom: 76px; }
+  .board-widget-toolbar.is-multi { bottom: calc(var(--board-dock) + 90px); }
 }
 
 /* 面板关闭按钮：浮动在面板左上角内侧。常驻渲染，与面板同曲线同时长滑入滑出；
@@ -2898,9 +2902,10 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 /* 移动端：板胶囊与工具条让出画布顶部，工具条筛选部分横向滚动；
    卡片点击进入全屏编辑器；导入对话框占满宽度。 */
 @media (max-width: 800px) {
-  /* 底部工具条上移到 22px：其投影向下延伸约 36px，画布底缘与底部导航
-     栏之间只有 ~14px 空隙，贴底时投影大部被导航栏盖住（视觉上被截断）。 */
-  .board-chrome { bottom: 22px; max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
+  /* 主工具条距底栏 30px：它的投影向下铺约 36px，落在底栏的毛玻璃上而不是
+     被底栏上缘切断。基准是 --board-dock（底栏高度 + 安全区），见上方说明
+     ——画布铺到屏幕底之后，直接用 bottom: 22px 会整条沉进底栏背后。 */
+  .board-chrome { bottom: calc(var(--board-dock) + 30px); max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; }
   .board-chrome::-webkit-scrollbar { display: none; }
   .board-tool span { display: none; }
   .board-zoom-level { min-width: 34px; }

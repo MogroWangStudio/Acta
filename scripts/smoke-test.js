@@ -1414,6 +1414,32 @@ async function main() {
       await waitFor(() => currentView === 'inbox');
       document.querySelector('#settingsBack').click();
       await waitFor(() => !document.querySelector('#settingsModal').classList.contains('open'));
+      // 移动端计划板底部工具条：画布自 v4.2.0 起铺到屏幕底（内容从毛玻璃
+      // 底栏下穿过），画布内的悬浮条必须以底栏为基准让位——仍以画布底为基准
+      // 时会整条沉到底栏背后（就是「工具条不见了」）。断言几何：工具条底缘
+      // 高于底栏上缘至少 8px，且自身可见（不是零尺寸或隐藏）。
+      // 不用 elementFromPoint 复核：无头环境里 OOBE 遮罩等浮层会常驻命中，
+      // 命中的是谁与工具条位置无关；几何断言已覆盖这次回归的根因。
+      document.querySelector('[data-view="board"]').click();
+      let mobileBoardChromeDebug = null;
+      const mobileBoardChromeAboveNav = await waitFor(() => {
+        const chrome = document.querySelector('#boardChrome');
+        const nav = document.querySelector('#primarySidebar');
+        if (!chrome || !nav) { mobileBoardChromeDebug = { chrome: Boolean(chrome), nav: Boolean(nav), view: currentView }; return false; }
+        const chromeRect = chrome.getBoundingClientRect();
+        const navRect = nav.getBoundingClientRect();
+        const chromeStyle = getComputedStyle(chrome);
+        const visible = chromeStyle.display !== 'none' && chromeStyle.visibility !== 'hidden' && parseFloat(chromeStyle.opacity) > .5;
+        mobileBoardChromeDebug = {
+          view: currentView,
+          chrome: { top: chromeRect.top, bottom: chromeRect.bottom, h: chromeRect.height },
+          nav: { top: navRect.top, h: navRect.height },
+          dock: getComputedStyle(document.querySelector('.board-canvas') || document.body).getPropertyValue('--board-dock')
+        };
+        return visible && chromeRect.height > 0 && chromeRect.bottom <= navRect.top - 8;
+      });
+      document.querySelector('[data-view="inbox"]').click();
+      await waitFor(() => currentView === 'inbox');
       window.resizeTo(1280, 800);
       await waitFor(() => innerWidth > 1200 && innerHeight > 700);
       window.__actaSmokeStep = 'classification-item-opened';
@@ -1851,6 +1877,8 @@ async function main() {
         mobileClassificationIconsUpright,
         mobileClassificationPanelInViewport,
         mobileTrashOpensTrashView,
+        mobileBoardChromeAboveNav,
+        mobileBoardChromeDebug,
         expandedBrandVersionVisible,
         collapsedSidebarAligned,
         collapsedSidebarOffsets,
@@ -2179,6 +2207,7 @@ async function main() {
     assert.equal(result.mobileClassificationIconsUpright, true);
     assert.equal(result.mobileClassificationPanelInViewport, true);
     assert.equal(result.mobileTrashOpensTrashView, true);
+    assert.equal(result.mobileBoardChromeAboveNav, true, JSON.stringify(result.mobileBoardChromeDebug));
     assert.equal(result.expandedBrandVersionVisible, true);
     assert.equal(result.collapsedSidebarAligned, true, JSON.stringify(result.collapsedSidebarOffsets));
     assert.equal(result.collapsedBrandCentered, true);
