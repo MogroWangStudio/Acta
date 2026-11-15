@@ -80,14 +80,26 @@ jobs:
         run: |
           set -euo pipefail
           tag="${{ steps.meta.outputs.tag }}"
-          if git rev-parse -q --verify "refs/tags/$tag" > /dev/null 2>&1; then
-            echo "Tag $tag already exists — keeping it (re-release of the same version)."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git tag "$tag"
-            git push origin "$tag"
+          current_sha=$(git rev-parse HEAD)
+          # 浅克隆（checkout 默认 fetch-depth 1）没有本地 tags，统一查远端。
+          # tag 已存在时分两种情况：
+          # - 指向当前 HEAD：同一 commit 重跑，保留；
+          # - 指向别的 commit：那次 commit 的构建失败了才会走到这里
+          #   （Release 不存在才没被上面的门禁拦下）——删掉旧 tag 重打，
+          #   让 tag 跟随修复后的 HEAD，构建检出的一定是能出产物的代码。
+          remote_target=$(git ls-remote --tags origin "refs/tags/$tag" | awk '{print $1; exit}')
+          if [ -n "$remote_target" ]; then
+            if [ "$remote_target" = "$current_sha" ]; then
+              echo "Tag $tag already points at HEAD ($current_sha) — keeping it."
+              exit 0
+            fi
+            echo "Tag $tag exists at $remote_target but HEAD is $current_sha (previous build failed) — re-pointing the tag."
+            git push origin ":refs/tags/$tag"
           fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$tag"
+          git push origin "$tag"
 
   windows-portable:
     name: Windows x64 portable exe
