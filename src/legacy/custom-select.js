@@ -52,6 +52,10 @@ html[data-acta-theme="mono-dark"] select[${ENHANCED_FLAG}][${OPEN_FLAG}] {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 7.5L6 4L9.5 7.5' fill='none' stroke='%238b8b8b' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); }
+/* 点击后的 halo（浏览器给聚焦 select 的默认外圈）整体去除：菜单展开本身
+   就是焦点指示，弹层收起时也会主动 blur，不需要额外的光圈。 */
+select[${ENHANCED_FLAG}] { -webkit-tap-highlight-color: transparent; }
+select[${ENHANCED_FLAG}]:focus, select[${ENHANCED_FLAG}]:focus-visible { outline: none; }
 .acx-menu { position: fixed; z-index: 2147483000; visibility: hidden; pointer-events: none; }
 .acx-frame {
   position: absolute; left: 0; width: 100%; overflow: hidden;
@@ -177,10 +181,17 @@ select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 34
   // 选中行当前在弹层坐标系里的 top（menu + frame + plate 三层偏移之和）。
   const contentTop = () => menuTopNow() + elTop(frame) + elTop(plate);
 
+  // 收起态（展开动画的起点）：可见窗口对准触发器位置、内容是选中行——
+  // 面板从「选中项中间」长出来。menu.top 已由 layout() 落成「面板相对
+  // 触发器」的偏移结果，所以窗口相对 menu 的 top = 触发器布局 top −
+  // menu 布局 top，plate 再把选中行滚进这个窗口。此前 center 模式硬编码
+  // [0, 0]，面板实际从自身顶端长出、与选中项无关（用户实测的偏差点）。
   const closedGeom = () => {
-    if (lastDir === 'center' || recenterGeom) return [0, 0];
-    const base = menuTopNow();
-    return [-base, -idx * ROW];
+    const pz = layoutScale();
+    const select = openState?.select;
+    const host = hostOffset();
+    const selectTop = select ? (select.getBoundingClientRect().top - host.y) / pz : 0;
+    return [selectTop - menuTopNow(), -idx * ROW];
   };
   const shift = i => (lastDir === 'center' ? (i === anchor ? 0 : (i > anchor ? 8 : -8)) : (i === 0 ? 0 : -8));
 

@@ -1,6 +1,6 @@
 [package]
 name = "acta"
-version = "4.3.0-beta2"
+version = "4.3.0-beta3"
 description = "Acta"
 authors = ["MogroWang Studio"]
 edition = "2021"
@@ -22,6 +22,9 @@ reqwest = { version = "0.12", default-features = false, features = ["charset", "
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+# 测速探针的「块间空闲」计时（tokio::time::timeout）需要 time 能力；
+# tokio 本体已随 tauri/reqwest 引入，这里只是显式声明使用到的 feature。
+tokio = { version = "1", default-features = false, features = ["time"] }
 # 更新包自 v4.3.0 起为 zip 压缩包（Release 资产统一 Acta-<版本>-<平台>-<架构>.zip），
 # 向导安装时解出其中的 Acta.exe / Acta.dmg；只用 deflate，不带多余格式支持。
 zip = { version = "2", default-features = false, features = ["deflate"] }

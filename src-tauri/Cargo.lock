@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "acta"
-version = "4.3.0-beta2"
+version = "4.3.0-beta3"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -22,6 +22,7 @@ dependencies = [
  "tauri-plugin-clipboard-manager",
  "tauri-plugin-dialog",
  "tauri-plugin-opener",
+ "tokio",
  "url",
  "windows 0.62.2",
  "zip",

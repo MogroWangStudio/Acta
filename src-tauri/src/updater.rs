@@ -259,33 +259,47 @@ pub struct SpeedProbe {
     pub kbps: u64,
 }
 
-/// GET 目标地址，读到 1 MB（或流结束）即断开——测速不是下载，
-/// 样本够算速度就行，也不给代理与 GitHub 增加整包流量。
+/// GET 目标地址，读到 1 MB 或 8 秒即停——测速不是下载，样本够算速度就行，
+/// 也不给代理与 GitHub 增加整包流量。慢网络（直连 GitHub CDN 常 < 50KB/s）
+/// 读不满 1 MB 是常态：这里没有请求级总超时，只有「块间空闲 8 秒」的读帽，
+/// 超时/中途断流时只要已读到样本就照样返回测速结果，读不到数据才算失败。
 /// releases/download 与 gh-proxy.org 都遵循 302 → CDN，reqwest 默认跟随。
 pub async fn probe_download_speed(url: String) -> Result<SpeedProbe, String> {
-    const PROBE_CAP: u64 = 1024 * 1024;
+    const PROBE_BYTES_CAP: u64 = 1024 * 1024;
+    const CHUNK_IDLE_CAP: Duration = Duration::from_secs(8);
     let start = Instant::now();
     let response = http_client()
         .await?
         .get(&url)
-        .timeout(Duration::from_secs(20))
         .send()
         .await
         .map_err(|error| format!("无法连接：{error}"))?;
     let status = response.status().as_u16();
     let mut stream = response.bytes_stream();
     let mut received: u64 = 0;
-    while let Some(chunk) = stream.next().await {
-        let chunk = chunk.map_err(|error| format!("读取中断：{error}"))?;
-        received += chunk.len() as u64;
-        if received >= PROBE_CAP {
-            break;
+    let mut stream_error: Option<String> = None;
+    while received < PROBE_BYTES_CAP {
+        match tokio::time::timeout(CHUNK_IDLE_CAP, stream.next()).await {
+            Err(_idle) => break, // 块间空闲超过 8 秒：拿已有样本收工
+            Ok(None) => break,   // 流自然结束
+            Ok(Some(Ok(chunk))) => {
+                received += chunk.len() as u64;
+            }
+            Ok(Some(Err(error))) => {
+                stream_error = Some(error.to_string());
+                break;
+            }
         }
     }
     let elapsed = start.elapsed();
+    if received == 0 {
+        let detail = stream_error.unwrap_or_else(|| "服务器没有返回数据".into());
+        return Err(format!("读取中断：{detail}"));
+    }
     let seconds = elapsed.as_secs_f64().max(0.001);
     Ok(SpeedProbe {
-        ok: (200..300).contains(&status) && received > 0,
+        // 部分样本（时间帽/断流截断）同样是有效测速：状态 2xx 且读到了数据。
+        ok: (200..300).contains(&status),
         status,
         bytes: received,
         elapsed_ms: elapsed.as_millis() as u64,

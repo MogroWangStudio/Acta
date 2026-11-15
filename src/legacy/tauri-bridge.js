@@ -14,7 +14,7 @@
   const firstPath = value => Array.isArray(value) ? value[0] || null : value || null;
   const baseName = value => String(value || '').split(/[\\/]/).pop() || '';
   const safeMarkdownName = value => {
-    const name = baseName(value).replace(/\.(md|markdown|txt)$/i, '') || '行记笔记';
+    const name = baseName(value).replace(/\.(md|markdown|txt)$/i, '') || 'Acta';
     return `${name}.md`;
   };
   const assetType = Object.freeze({
@@ -152,7 +152,7 @@
         const type = assetType[asset.mimeType];
         const path = await dialog.save({
           title:'导出笔记',
-          defaultPath:baseName(asset.fileName) || `行记笔记.${type?.extension || 'png'}`,
+          defaultPath:baseName(asset.fileName) || `Acta.${type?.extension || 'png'}`,
           filters:type ? [{ name:type.name, extensions:[type.extension] }] : []
         });
         return path ? invoke('export_assets', { destination:path, assets, directory:false }) : null;

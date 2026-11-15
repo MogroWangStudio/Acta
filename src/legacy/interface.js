@@ -4793,17 +4793,32 @@
         .find(asset => typeof asset.name === 'string' && asset.name.endsWith(assetSuffix))
         ?.browser_download_url;
       if (!assetUrl) throw new Error('no matching asset');
+      // 两条线路各自兜底：一路失败（慢网断流、代理失效）不影响另一路的
+      // 结果展示——Promise.all 一败俱败是上一版「测速无显示」的帮凶之一。
+      const probeRoute = async url => {
+        try {
+          return { probe: await window.actaDesktop.probeDownloadSpeed(url) };
+        } catch (error) {
+          return { error: (error && error.message) ? error.message : String(error) };
+        }
+      };
       const [direct, proxied] = await Promise.all([
-        window.actaDesktop.probeDownloadSpeed(assetUrl),
-        window.actaDesktop.probeDownloadSpeed(GH_PROXY_PREFIX + assetUrl)
+        probeRoute(assetUrl),
+        probeRoute(GH_PROXY_PREFIX + assetUrl)
       ]);
-      const lines = [];
-      const directOk = direct?.ok;
-      const proxyOk = proxied?.ok;
-      const directFaster = directOk && proxyOk && direct.kbps > proxied.kbps;
-      const proxyFaster = directOk && proxyOk && proxied.kbps > direct.kbps;
-      lines.push(directOk ? formatProbeLine('probeDirectLabel', direct, directFaster) : updateText('probeFailLine', { label: updateText('probeDirectLabel'), status: direct?.status ?? 0 }));
-      lines.push(proxyOk ? formatProbeLine('probeProxyLabel', proxied, proxyFaster) : updateText('probeFailLine', { label: updateText('probeProxyLabel'), status: proxied?.status ?? 0 }));
+      const bothOk = Boolean(direct.probe?.ok && proxied.probe?.ok);
+      const directFaster = bothOk && direct.probe.kbps > proxied.probe.kbps;
+      const proxyFaster = bothOk && proxied.probe.kbps > direct.probe.kbps;
+      const renderRoute = (labelKey, result, faster) => {
+        const label = updateText(labelKey);
+        if (result.error) return updateText('probeErrorLine', { label, detail: result.error });
+        if (!result.probe?.ok) return updateText('probeFailLine', { label, status: result.probe?.status ?? 0 });
+        return formatProbeLine(labelKey, result.probe, faster);
+      };
+      const lines = [
+        renderRoute('probeDirectLabel', direct, directFaster),
+        renderRoute('probeProxyLabel', proxied, proxyFaster)
+      ];
       const el = byId('downloadProbeStatus');
       // 结果与「正在测速…」共用这一行：渲染结果即取代加载文案。这里不能再
       // 调 setProbeStatus(null)——它会把承载结果的同一行整个藏掉，表现就是
