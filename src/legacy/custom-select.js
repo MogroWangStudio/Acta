@@ -165,7 +165,11 @@ select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 34
     return isNaN(v) ? 0 : v;
   };
   const elTop = el => {
-    const v = parseFloat(getComputedStyle(el).top);
+    // getComputedStyle 优先（动画中的实时值）；inline style 兜底。
+    // 注意必须是 let：计算值非数字时要用 inline 值重新赋一遍——vite 8 的
+    // rolldown 打包器会静态拒绝 const 重赋值（ILLEGAL_REASSIGNMENT），
+    // esbuild 转译与 dev 模式都发现不了，只有 CI 的 vite build 会挂。
+    let v = parseFloat(getComputedStyle(el).top);
     if (!isNaN(v)) return v;
     v = parseFloat(el.style.top);
     return isNaN(v) ? 0 : v;
