@@ -2518,8 +2518,11 @@ body.board-view .item-title-row h1 { white-space: nowrap; min-width: 0; overflow
 .board-pill-button:active { transform: scale(.97); transition-duration: .08s; }
 .board-pill-button > svg:first-child { width: 14px; height: 14px; color: var(--sage); flex: 0 0 auto; }
 .board-pill-button b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.board-pill-chevron { width: 12px !important; height: 12px !important; color: var(--faint); transition: transform .2s var(--ease-out); }
-.board-pill-button[aria-expanded="true"] .board-pill-chevron { transform: rotate(90deg); }
+/* 药丸小箭头与全站下拉同一语言：静止指下（提示可展开），菜单弹出后指上
+   （提示可收回）。此前静止时无旋转（chevron 默认指右）、展开才转指下，
+   方向语义与「查看归类 / 日历跳转」等下拉正好相反。 */
+.board-pill-chevron { width: 12px !important; height: 12px !important; color: var(--faint); transition: transform .2s var(--ease-out); transform: rotate(90deg); }
+.board-pill-button[aria-expanded="true"] .board-pill-chevron { transform: rotate(-90deg); }
 .board-pill-menu {
   position: absolute; top: calc(100% + 7px); left: 0; z-index: 6; min-width: 208px; max-height: 320px; overflow: hidden auto; padding: 5px;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent); border-radius: 13px;

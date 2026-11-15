@@ -4613,8 +4613,9 @@
 
   // 注意仓库归属是 MogroWangStudio：此前写成 MogroWang 导致检查永远 404。
   const ACTA_RELEASES_URL = 'https://github.com/MogroWangStudio/Acta/releases';
-  const ACTA_LATEST_RELEASE_API = 'https://api.github.com/repos/MogroWangStudio/Acta/releases/latest';
-  const ACTA_TAGS_API = 'https://api.github.com/repos/MogroWangStudio/Acta/tags';
+  // 列表端点一次拿全部近期 Release（latest 端点永远只给正式版，测试通道
+  // 拿不到 beta）。预发布判定与应用端/CI 同源：tag 含 '-' 即预发布。
+  const ACTA_RELEASES_LIST_API = 'https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=15';
   const updateMessages = {
     zh: { checking:'正在检查更新…', latest:'当前已是最新版本（{version}）。', available:'发现新版本 {remote}，{link}。', noRelease:'尚未在 GitHub 上发布版本，{link}。', error:'检查更新失败：{detail}', downloadLink:'前往下载', releasesLink:'查看发布页' },
     en: { checking:'Checking for updates…', latest:'Acta is up to date ({version}).', available:'A new version {remote} is available. {link}.', noRelease:'No releases have been published on GitHub yet. {link}.', error:'Update check failed: {detail}', downloadLink:'Get the update', releasesLink:'View releases' },
@@ -4673,15 +4674,20 @@
     aboutUpdateVars = vars;
     renderUpdateStatus();
   }
+  // 当前更新通道（settings.updateChannel，更新通道下拉维护；脏值归 stable）。
+  // settings 是 renderer.js 的顶层 let——经典脚本的全局词法声明，裸标识符
+  // 可达；window.settings 不存在（let 不挂 window）。
+  const activeUpdateChannel = () => (settings?.updateChannel === 'beta' ? 'beta' : 'stable');
   async function checkForUpdates() {
     const btn = byId('aboutCheckUpdate');
     if (btn) { btn.classList.add('checking'); btn.disabled = true; }
     setUpdateStatus('checking');
+    const channel = activeUpdateChannel();
     try {
-      // 桌面端走 Rust 命令：返回分平台安装包信息，确认后进入应用内更新
-      // 流程（下载 → 重启 → 更新向导）；否则退回网页式的发布页链接。
+      // 桌面端走 Rust 命令：按通道返回分平台安装包信息，确认后进入应用内
+      // 更新流程（下载 → 读秒 → 重启 → 更新向导）；否则退回网页式的发布页链接。
       if (window.actaDesktop?.checkAppUpdate) {
-        const info = await window.actaDesktop.checkAppUpdate();
+        const info = await window.actaDesktop.checkAppUpdate(channel);
         if (!info) {
           setUpdateStatus('latest', { version: currentActaVersion() });
         } else {
@@ -4701,25 +4707,23 @@
         }
         return;
       }
-      const response = await fetch(ACTA_LATEST_RELEASE_API, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
-      if (response.status === 404) {
-        const tagsResponse = await fetch(ACTA_TAGS_API, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
-        const tags = tagsResponse.ok ? await tagsResponse.json() : [];
-        if (Array.isArray(tags) && tags.length) {
-          const remote = extractActaVersion(tags[0].name) || tags[0].name;
-          if (compareActaVersion(remote, currentActaVersion()) > 0) setUpdateStatus('available', { remote, url: ACTA_RELEASES_URL });
-          else setUpdateStatus('latest', { version: currentActaVersion() });
-        } else {
-          setUpdateStatus('noRelease');
-        }
-      } else {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        const remote = extractActaVersion(data.tag_name) || extractActaVersion(data.name) || data.tag_name || data.name || '';
-        const url = data.html_url || ACTA_RELEASES_URL;
-        if (compareActaVersion(remote, currentActaVersion()) > 0) setUpdateStatus('available', { remote, url });
-        else setUpdateStatus('latest', { version: currentActaVersion() });
+      // 纯网页端：列表端点按通道过滤——stable 跳过预发布（tag 含 '-' 或
+      // prerelease 标记），beta 全收；列表按 GitHub 的最新优先排序，取首个。
+      const response = await fetch(ACTA_RELEASES_LIST_API, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const releases = await response.json();
+      const candidate = (Array.isArray(releases) ? releases : []).find(release => {
+        const isPrerelease = Boolean(release.prerelease) || String(release.tag_name || '').includes('-');
+        return channel === 'beta' || !isPrerelease;
+      });
+      if (!candidate) {
+        setUpdateStatus('noRelease');
+        return;
       }
+      const remote = extractActaVersion(candidate.tag_name) || extractActaVersion(candidate.name) || candidate.tag_name || candidate.name || '';
+      const url = candidate.html_url || ACTA_RELEASES_URL;
+      if (compareActaVersion(remote, currentActaVersion()) > 0) setUpdateStatus('available', { remote, url });
+      else setUpdateStatus('latest', { version: currentActaVersion() });
     } catch (err) {
       setUpdateStatus('error', { detail: (err && err.message) ? err.message : String(err) });
     } finally {
@@ -4727,6 +4731,18 @@
     }
   }
   byId('aboutCheckUpdate')?.addEventListener('click', checkForUpdates);
+
+  // 更新通道下拉：写回 settings.updateChannel 并持久化（renderer 的 persist
+  // 一并保存设置与数据），检查更新时桌面/网页分支共用该值。
+  const updateChannelSetting = byId('updateChannelSetting');
+  if (updateChannelSetting) {
+    updateChannelSetting.value = activeUpdateChannel();
+    updateChannelSetting.addEventListener('change', () => {
+      if (!settings) return;
+      settings.updateChannel = updateChannelSetting.value === 'beta' ? 'beta' : 'stable';
+      persist?.();
+    });
+  }
 
   // —— 工作室字标跳转 ——安卓 WebView 不处理 target="_blank"：改走
   // ActaSync.openExternal（ACTION_VIEW）；桌面由 tauri-bridge 的全局

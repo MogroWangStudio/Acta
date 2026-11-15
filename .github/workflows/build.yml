@@ -1,12 +1,12 @@
+# 按需的构建验证：只确认当前分支能产出三平台的包体，产物留在 Actions
+# Artifacts——不发 Release、不打 tag。推送 main 后的自动发布由 release.yml
+# 负责（读 tauri.conf.json 的版本号决定正式版 / Pre-Release）。
+# 原先的 push 自动触发与 tag 发布 job 已移除，避免与 release.yml 重复发布。
+
 name: Build
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    tags:
-      - "v*"
+  workflow_dispatch: {}
 
 concurrency:
   group: build-${{ github.ref }}
@@ -154,19 +154,5 @@ jobs:
           path: dist/Acta-*-android.apk
           if-no-files-found: error
 
-  release:
-    name: Publish release
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [windows-portable, macos-dmg, android-apk]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: dist
-          merge-multiple: true
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*
-          generate_release_notes: true
+  # 发布不再由本工作流负责：推 main 后 release.yml 按版本号自动发布
+  # （正式版标 latest，x.y.z-betax 标 prerelease）。

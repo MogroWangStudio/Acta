@@ -17,6 +17,7 @@
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::cmp::Ordering;
 use std::fs;
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
@@ -25,7 +26,9 @@ use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, WebviewUrl, WebviewWindow};
 
-const RELEASE_API: &str = "https://api.github.com/repos/MogroWangStudio/Acta/releases/latest";
+/// 列出最近的 Release 而不是 /releases/latest：latest 端点永远只返回正式版，
+/// 测试通道（beta）拿不到预发布版本。列表端点不含 draft，无需过滤。
+const RELEASE_API: &str = "https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=30";
 const USER_AGENT: &str = concat!("Acta-Updater/", env!("CARGO_PKG_VERSION"), " (+https://github.com/MogroWangStudio/Acta)");
 pub const WIZARD_FLAG: &str = "--acta-update-wizard";
 const UPDATE_DIR_NAME: &str = "acta-update";
@@ -47,11 +50,15 @@ pub struct UpdateInfo {
     pub asset_name: String,
     pub size: u64,
     pub url: String,
+    /// 是否预发布（测试通道）。前端用它提示"这是 beta 版本"。
+    pub prerelease: bool,
 }
 
 #[derive(Debug, Deserialize)]
 struct ReleasePayload {
     tag_name: String,
+    #[serde(default)]
+    prerelease: bool,
     #[serde(default)]
     body: String,
     #[serde(default)]
@@ -67,9 +74,12 @@ struct ReleaseAsset {
 
 /// 主应用 → 向导的安装任务单。target 在主应用侧就解析好：
 /// Windows 为 exe 自身路径，macOS 为应被替换的 .app 包目录。
+/// from_version 是当前运行版本的完整版本号（可能带 -beta 后缀），
+/// 向导用它把新 exe 换成带新版本号的文件名。
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateManifest {
     pub version: String,
+    pub from_version: String,
     pub payload: PathBuf,
     pub target: PathBuf,
     pub pid: u32,
@@ -81,18 +91,86 @@ fn update_work_dir() -> PathBuf {
 
 // ---- 版本比较 ----
 
-/// "v3.2.1" / "3.2.1-beta.2" → (3, 2, 1)；解析失败返回 None（视为无更新）。
-fn parse_version(tag: &str) -> Option<(u64, u64, u64)> {
-    let core = tag
-        .trim()
-        .trim_start_matches(['v', 'V'])
-        .split(['-', '+'])
-        .next()?;
+/// tag → (major, minor, patch, prerelease 段)。
+/// 预发布判定与 CI 发布规则同源：去 v 前缀后含 '-' 即预发布（4.3.0-beta1）。
+fn parse_release_tag(tag: &str) -> Option<((u64, u64, u64), Option<String>)> {
+    let trimmed = tag.trim().trim_start_matches(['v', 'V']);
+    let (core, pre) = match trimmed.split_once('-') {
+        Some((core, pre)) => (core, Some(pre.split_once('+').map(|(p, _)| p).unwrap_or(pre).to_string())),
+        None => {
+            let core = trimmed.split_once('+').map(|(c, _)| c).unwrap_or(trimmed);
+            (core, None)
+        }
+    };
     let mut parts = core.split('.');
     let major = parts.next()?.parse().ok()?;
     let minor = parts.next()?.parse().ok()?;
     let patch = parts.next().unwrap_or("0").parse().ok()?;
-    Some((major, minor, patch))
+    Some(((major, minor, patch), pre))
+}
+
+/// 预发布段内的大小比较：连续数字按数值比（beta10 > beta9），否则按字符串比。
+/// semver 规定数字段小于字符串段（1 < alpha）。
+fn compare_pre_tokens(a: &str, b: &str) -> Ordering {
+    let numeric = |s: &str| !s.is_empty() && s.chars().all(|c| c.is_ascii_digit());
+    match (numeric(a), numeric(b)) {
+        (true, true) => a.parse::<u64>().unwrap_or(0).cmp(&b.parse::<u64>().unwrap_or(0)),
+        (true, false) => Ordering::Less,
+        (false, true) => Ordering::Greater,
+        (false, false) => a.cmp(b),
+    }
+}
+
+/// 把预发布段 token 化（"beta.2" → ["beta", "2"]，"beta2" → ["beta", "2"]）。
+fn pre_tokens(pre: &str) -> Vec<String> {
+    let mut tokens: Vec<String> = Vec::new();
+    let mut buffer = String::new();
+    let mut last_digit: Option<bool> = None;
+    for c in pre.chars() {
+        if c == '.' || c == '-' || c == '+' {
+            if !buffer.is_empty() { tokens.push(std::mem::take(&mut buffer)); }
+            last_digit = None;
+            continue;
+        }
+        let digit = c.is_ascii_digit();
+        if last_digit.map_or(false, |d| d != digit) {
+            tokens.push(std::mem::take(&mut buffer));
+        }
+        buffer.push(c);
+        last_digit = Some(digit);
+    }
+    if !buffer.is_empty() { tokens.push(buffer); }
+    tokens
+}
+
+/// 完整的 Release tag 比较（semver）：数字段逐位比；同版本号时正式版大于
+/// 一切预发布；预发布段逐 token 比。用于在 Release 列表里挑出"最新的、
+/// 比当前新的"版本——4.3.0-beta1 < 4.3.0-beta2 < 4.3.0 < 4.3.1。
+fn compare_release_tags(a: &str, b: &str) -> Ordering {
+    let (Some(((a_major, a_minor, a_patch), a_pre)), Some(((b_major, b_minor, b_patch), b_pre))) =
+        (parse_release_tag(a), parse_release_tag(b))
+    else {
+        return Ordering::Equal;
+    };
+    let core = (a_major, a_minor, a_patch).cmp(&(b_major, b_minor, b_patch));
+    if core != Ordering::Equal {
+        return core;
+    }
+    match (a_pre, b_pre) {
+        (None, None) => Ordering::Equal,
+        (None, Some(_)) => Ordering::Greater,
+        (Some(_), None) => Ordering::Less,
+        (Some(a), Some(b)) => {
+            let (tokens_a, tokens_b) = (pre_tokens(&a), pre_tokens(&b));
+            for (ta, tb) in tokens_a.iter().zip(tokens_b.iter()) {
+                let order = compare_pre_tokens(ta, tb);
+                if order != Ordering::Equal {
+                    return order;
+                }
+            }
+            tokens_a.len().cmp(&tokens_b.len())
+        }
+    }
 }
 
 fn release_asset_filter(name: &str) -> bool {
@@ -138,10 +216,17 @@ async fn http_client() -> Result<reqwest::Client, String> {
 
 // ---- 主应用侧入口（lib.rs 以 #[tauri::command] 薄包装后注册） ----
 
-/// 查询 GitHub 最新 Release，比当前版本新才返回 Some。
-pub async fn check_for_update(app: AppHandle) -> Result<Option<UpdateInfo>, String> {
+/// 更新通道：stable 只收正式版，beta 连预发布一起收。
+fn accepts_prerelease(channel: &str) -> bool {
+    channel.eq_ignore_ascii_case("beta")
+}
+
+/// 查询 GitHub Release 列表，按通道筛选出比当前版本新的最新版本。
+/// 通道规则与 CI 发布规则同源：tag 含 '-' 即预发布，stable 通道一律跳过。
+pub async fn check_for_update(app: AppHandle, channel: Option<String>) -> Result<Option<UpdateInfo>, String> {
+    let beta = accepts_prerelease(channel.as_deref().unwrap_or("stable"));
     let version = app.package_info().version.clone();
-    let current = (version.major, version.minor, version.patch);
+    let current_tag = version.to_string();
     let response = http_client()
         .await?
         .get(RELEASE_API)
@@ -153,20 +238,26 @@ pub async fn check_for_update(app: AppHandle) -> Result<Option<UpdateInfo>, Stri
     if !response.status().is_success() {
         return Err(format!("GitHub 返回了 {}", response.status()));
     }
-    let release: ReleasePayload = response.json().await.map_err(|error| error.to_string())?;
-    let candidate = match parse_version(&release.tag_name) {
-        Some(candidate) => candidate,
-        None => return Ok(None),
-    };
-    if candidate <= current {
+    let releases: Vec<ReleasePayload> = response.json().await.map_err(|error| error.to_string())?;
+    // 列表按 GitHub 的"最新优先"排序；逐个过滤通道、比当前新、保留最大者。
+    let candidate = releases.iter().find(|release| {
+        let is_prerelease = release.prerelease || release.tag_name.trim_start_matches(['v', 'V']).contains('-');
+        if !beta && is_prerelease {
+            return false;
+        }
+        compare_release_tags(&release.tag_name, &current_tag) == Ordering::Greater
+    });
+    let Some(release) = candidate else {
         return Ok(None);
-    }
-    let asset = match pick_asset(&release.assets, &release.tag_name.trim_start_matches(['v', 'V'])) {
+    };
+    let version_tag = release.tag_name.trim_start_matches(['v', 'V']).to_string();
+    let asset = match pick_asset(&release.assets, &version_tag) {
         Some(asset) => asset.clone(),
         None => return Err("新版本没有提供当前平台的安装包".into()),
     };
     Ok(Some(UpdateInfo {
-        version: release.tag_name.trim_start_matches(['v', 'V']).to_string(),
+        prerelease: release.prerelease || version_tag.contains('-'),
+        version: version_tag,
         notes: notes_preview(&release.body),
         asset_name: asset.name,
         size: asset.size,
@@ -241,7 +332,7 @@ fn sanitize_asset_name(name: &str) -> Result<String, String> {
 }
 
 /// 写任务单并以向导模式拉起自身的第二个实例，随即由前端关闭主窗口。
-pub async fn prepare_restart(payload: String, version: String) -> Result<bool, String> {
+pub async fn prepare_restart(app: AppHandle, payload: String, version: String) -> Result<bool, String> {
     let payload_path = PathBuf::from(&payload);
     if !payload_path.is_file() {
         return Err("更新包不存在，请重新下载".into());
@@ -250,6 +341,7 @@ pub async fn prepare_restart(payload: String, version: String) -> Result<bool, S
     let target = resolve_update_target(&self_path)?;
     let manifest = UpdateManifest {
         version,
+        from_version: app.package_info().version.to_string(),
         payload: payload_path,
         target,
         pid: std::process::id(),
@@ -379,11 +471,13 @@ fn install_worker(app: AppHandle, manifest_path: PathBuf) {
             set_stage(&app, "done", &message);
             // 自动重启保证：新版本进程被检测到后才安静退出；迟迟未出现
             // 则明确告知更新已完成、需手动启动，避免向导消失后应用也不见。
+            // Windows 的新版本落在带新版本号的文件名上，检测目标要与之同源。
+            let launch_target = versioned_launch_target(&manifest);
             let handle = app.clone();
             std::thread::spawn(move || {
                 let deadline = Instant::now() + Duration::from_secs(10);
                 while Instant::now() < deadline {
-                    if launched_running(&manifest.target) {
+                    if launched_running(&launch_target) {
                         // 给新版本留出完成启动的时间，再收掉向导窗口。
                         std::thread::sleep(Duration::from_millis(800));
                         handle.exit(0);
@@ -508,11 +602,48 @@ fn shell_quote(value: &str) -> String {
     format!("'{}'", value.replace('\'', "'\\''"))
 }
 
-/// Windows：等待退出 → 运行中的 exe 改名为 *.acta-old → 新 exe 移回原路径 → 启动。
+/// 新 exe 的文件名：把旧文件名里的当前版本号换成新版本号（文件名即版本，
+/// 便于用户分辨手里的是哪个版本）；用户改过名（如 `Acta.exe`）时补上
+/// 版本号，避免覆盖同名文件后无从判断。
+#[cfg(target_os = "windows")]
+fn versioned_exe_name(target: &Path, from_version: &str, to_version: &str) -> String {
+    let name = target.file_name().and_then(|value| value.to_str()).unwrap_or("Acta.exe");
+    let (stem, ext) = match name.rsplit_once('.') {
+        Some((stem, ext)) if !ext.is_empty() && !ext.chars().any(|c| !c.is_ascii_alphanumeric()) => (stem, Some(ext)),
+        _ => (name, None),
+    };
+    let renamed = if stem.contains(from_version) {
+        stem.replacen(from_version, to_version, 1)
+    } else {
+        format!("{stem}-{to_version}")
+    };
+    match ext {
+        Some(ext) => format!("{renamed}.{ext}"),
+        None => renamed,
+    }
+}
+
+/// 向导安装后新版本应落到的路径（Windows 版本化文件名；其他平台原路径）。
+/// install_worker 的"新进程检测"与 install_windows 的实际落点必须同源。
+fn versioned_launch_target(manifest: &UpdateManifest) -> PathBuf {
+    #[cfg(target_os = "windows")]
+    {
+        let name = versioned_exe_name(&manifest.target, &manifest.from_version, &manifest.version);
+        return manifest.target.with_file_name(name);
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        manifest.target.clone()
+    }
+}
+
+/// Windows：等待退出 → 运行中的 exe 改名为 *.acta-old → 新 exe 以带新版本号
+/// 的文件名移入 → 启动。
 #[cfg(target_os = "windows")]
 fn install_windows(app: &AppHandle, manifest: &UpdateManifest) -> Result<String, String> {
     set_stage(app, "install", "正在替换应用…");
     let target = &manifest.target;
+    let final_target = versioned_launch_target(manifest);
     let backup = target.with_file_name(format!(
         "{}.acta-old",
         target.file_name().and_then(|name| name.to_str()).unwrap_or("Acta.exe")
@@ -534,26 +665,40 @@ fn install_windows(app: &AppHandle, manifest: &UpdateManifest) -> Result<String,
     if !rename_error.is_empty() {
         return Err(format!("无法替换应用文件（可能被占用）：{rename_error}"));
     }
-    move_file(&manifest.payload, target).map_err(|error| format!("无法放置新版本：{error}"))?;
+    move_file(&manifest.payload, &final_target).map_err(|error| format!("无法放置新版本：{error}"))?;
     set_stage(app, "launch", "正在启动新版本…");
-    Command::new(target).spawn().map_err(|error| format!("无法启动新版本：{error}"))?;
+    Command::new(&final_target).spawn().map_err(|error| format!("无法启动新版本：{error}"))?;
     Ok("更新完成".to_string())
 }
 
-/// 新版本启动后清理上一次更新留下的旧 exe（向导进程退出前无法删除自己的映像）。
+/// 新版本启动后清理上一次更新留下的旧 exe（向导进程退出前无法删除自己的
+/// 映像）。更新会改名当前 exe 产生 `*.acta-old` 备份，而新 exe 的文件名带了
+/// 新版本号，无法按"自己的名字 + 后缀"定位——改为清理同目录下所有
+/// `.acta-old` 结尾的文件（只有 Acta 的更新流程会制造这种文件）。
 #[cfg(target_os = "windows")]
 pub fn cleanup_stale_backup() {
     let Ok(self_path) = std::env::current_exe() else { return };
-    let Some(file_name) = self_path.file_name().and_then(|name| name.to_str()) else { return };
-    let backup = self_path.with_file_name(format!("{file_name}.acta-old"));
-    for _ in 0..3 {
-        match fs::remove_file(&backup) {
-            Ok(()) => return,
-            // 向导可能仍在收尾，稍等重试；仍失败就留给下次启动。
-            Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => {
-                std::thread::sleep(Duration::from_millis(500));
+    let Some(dir) = self_path.parent() else { return };
+    let Ok(entries) = fs::read_dir(dir) else { return };
+    for entry in entries.flatten() {
+        let path = entry.path();
+        let is_backup = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .map(|name| name.ends_with(".acta-old"))
+            .unwrap_or(false);
+        if !is_backup || !path.is_file() {
+            continue;
+        }
+        // 向导可能仍在收尾，稍等重试；仍失败就留给下次启动。
+        for _ in 0..3 {
+            match fs::remove_file(&path) {
+                Ok(()) => break,
+                Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => {
+                    std::thread::sleep(Duration::from_millis(500));
+                }
+                Err(_) => break,
             }
-            Err(_) => return,
         }
     }
 }
@@ -720,16 +865,41 @@ mod tests {
 
     #[test]
     fn parses_tags() {
-        assert_eq!(parse_version("v3.2.1"), Some((3, 2, 1)));
-        assert_eq!(parse_version("3.10.0"), Some((3, 10, 0)));
-        assert_eq!(parse_version("v3.3.0-beta.1"), Some((3, 3, 0)));
-        assert_eq!(parse_version("release-42"), None);
+        assert_eq!(parse_release_tag("v3.2.1"), Some(((3, 2, 1), None)));
+        assert_eq!(parse_release_tag("3.10.0"), Some(((3, 10, 0), None)));
+        assert_eq!(parse_release_tag("v4.3.0-beta1"), Some(((4, 3, 0), Some("beta1".into()))));
+        assert_eq!(parse_release_tag("release-42"), None);
     }
 
     #[test]
-    fn compares_versions() {
-        assert!(parse_version("v3.2.1").unwrap() > parse_version("v3.2.0").unwrap());
-        assert!(parse_version("v3.2.0").unwrap() <= parse_version("v3.2.0").unwrap());
+    fn orders_prerelease_tags() {
+        use compare_release_tags as cmp;
+        // beta 递进与"beta < 正式"的 semver 次序；beta10 按数值大于 beta9。
+        assert_eq!(cmp("v4.3.0-beta1", "4.3.0-beta2"), Ordering::Less);
+        assert_eq!(cmp("4.3.0-beta9", "4.3.0-beta10"), Ordering::Less);
+        assert_eq!(cmp("4.3.0-beta1", "4.3.0"), Ordering::Less);
+        assert_eq!(cmp("4.3.0", "4.2.9"), Ordering::Greater);
+        assert_eq!(cmp("v4.3.0", "4.3.0"), Ordering::Equal);
+        // 跨版本号：4.3.0-beta1 依然大于 4.2.9。
+        assert_eq!(cmp("4.3.0-beta1", "4.2.9"), Ordering::Greater);
+    }
+
+    // versioned_exe_name 只在 Windows 编译；测试分支随之限定。
+    #[test]
+    #[cfg(target_os = "windows")]
+    fn versions_windows_exe_names() {
+        let path = Path::new("C:/Apps/Acta-4.3.0-beta1-windows-x64-portable.exe");
+        assert_eq!(
+            versioned_exe_name(path, "4.3.0-beta1", "4.3.0"),
+            "Acta-4.3.0-windows-x64-portable.exe"
+        );
+        assert_eq!(
+            versioned_exe_name(path, "4.3.0-beta1", "4.4.0"),
+            "Acta-4.4.0-windows-x64-portable.exe"
+        );
+        // 用户改过名（无版本号）→ 追加新版本号。
+        let renamed = Path::new("C:/Apps/Acta.exe");
+        assert_eq!(versioned_exe_name(renamed, "4.3.0-beta1", "4.4.0"), "Acta-4.4.0.exe");
     }
 
     #[test]

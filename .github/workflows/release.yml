@@ -1,0 +1,284 @@
+# 发布流水线：推送到 main 后按版本号自动发版。
+#
+# 版本号只写在 src-tauri/tauri.conf.json（package.json / Cargo.toml 与它同步
+# 是发版操作的一部分），流水线读它来决定整个发布：
+# - 纯数字版本（x.y.z）→ 正式 Release，标记 latest；
+# - 带后缀版本（x.y.z-betax）→ Pre-Release，标记 prerelease。
+# 判定规则与应用内更新器（updater.rs 的 compare_release_tags）同源：tag 含
+# '-' 即预发布。
+#
+# 幂等：日常提交不重复构建——该版本的 Release 已存在时整个流水线跳过；
+# 手动触发（workflow_dispatch）视为强制重发，产物覆盖上传并纠正渠道标记。
+# 发版操作因此收敛为：改版本号 + 补 CHANGELOG 段落 + 推 main。
+#
+# 构建步骤与 build.yml 保持一致；build.yml 只做按需的构建验证（手动触发，
+# 不发 Release、不打 tag）。
+
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+      skip: ${{ steps.meta.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read version and decide channel
+        id: meta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          tag="v${version}"
+          if [[ "$version" == *-* ]]; then
+            prerelease=true
+          else
+            prerelease=false
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+          # 幂等门禁：Release 已存在且非手动触发 → 跳过；手动触发一律重发。
+          if [[ "${{ github.event_name }}" == "push" ]] && gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Release $tag already exists — skipping."
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+      - name: Require a CHANGELOG section for this version
+        if: steps.meta.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          version="${{ steps.meta.outputs.version }}"
+          if ! grep -q "^## v${version}" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md 缺少 «## v${version}» 段落——发版前先补更新说明。"
+            exit 1
+          fi
+      - name: Create tag for this version
+        if: steps.meta.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          tag="${{ steps.meta.outputs.tag }}"
+          if git rev-parse -q --verify "refs/tags/$tag" > /dev/null 2>&1; then
+            echo "Tag $tag already exists — keeping it (re-release of the same version)."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag "$tag"
+            git push origin "$tag"
+          fi
+
+  windows-portable:
+    name: Windows x64 portable exe
+    needs: prepare
+    if: needs.prepare.outputs.skip != 'true'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install dependencies
+        run: npm ci
+      - name: Build portable exe
+        run: npm run windows:portable
+      - name: Collect portable exe
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $exe = Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release" -Filter *.exe |
+            Sort-Object Length -Descending | Select-Object -First 1
+          if (-not $exe) { throw "No portable exe found in release output." }
+          Copy-Item $exe.FullName "dist/Acta-${{ needs.prepare.outputs.version }}-windows-x64-portable.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Acta-${{ needs.prepare.outputs.version }}-windows-x64-portable
+          path: dist/Acta-*-windows-x64-portable.exe
+          if-no-files-found: error
+
+  macos-dmg:
+    name: macOS arm64 dmg
+    needs: prepare
+    if: needs.prepare.outputs.skip != 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install dependencies
+        run: npm ci
+      - name: Build app bundle
+        # 只产出 .app；dmg 由下一步自行打包，以便放入「启动修复」脚本与说明
+        run: npm run macos:build:app
+      - name: Strip quarantine attribute from app bundle
+        shell: bash
+        run: |
+          # 未签名/未公证的 app 带着 quarantine 扩展属性时，Gatekeeper 会直接
+          # 报“已损坏”。构建产物里任何环节（工具链、缓存恢复）意外写入的
+          # quarantine 都在这里清掉，保证进入 dmg 的 .app 不带该属性。
+          app_path=$(ls -d src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app 2>/dev/null | head -n 1)
+          if [ -z "$app_path" ]; then echo "No app bundle found." >&2; exit 1; fi
+          sudo xattr -r -d com.apple.quarantine "$app_path" 2>/dev/null || true
+          echo "Cleared com.apple.quarantine on: $app_path"
+      - name: Package dmg with repair script
+        shell: bash
+        run: |
+          # 应用下载后仍会被用户侧 Gatekeeper 打上 quarantine 而提示“已损坏”，
+          # 因此在 dmg 内一并放入修复脚本（sudo xattr -r -d com.apple.quarantine）
+          # 和开源说明，用户双击脚本、输入密码即可修复启动。
+          bash scripts/dmg/package-dmg.sh "${{ needs.prepare.outputs.version }}"
+          sudo xattr -r -d com.apple.quarantine "dist/Acta-${{ needs.prepare.outputs.version }}-macos-arm64.dmg" 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Acta-${{ needs.prepare.outputs.version }}-macos-arm64
+          path: dist/Acta-*-macos-arm64.dmg
+          if-no-files-found: error
+
+  android-apk:
+    name: Android apk
+    needs: prepare
+    if: needs.prepare.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Accept SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+      - name: Install dependencies
+        run: npm ci
+      - name: Sync web assets
+        run: npm run android:sync
+      - name: Restore release keystore
+        id: keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+        run: |
+          cd android
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KEYSTORE_PASSWORD" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > acta-release.keystore
+            printf 'storeFile=acta-release.keystore\nstorePassword=%s\nkeyAlias=acta-release\nkeyPassword=%s\n' \
+              "$KEYSTORE_PASSWORD" "$KEYSTORE_PASSWORD" > keystore.properties
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Secrets ANDROID_RELEASE_KEYSTORE_B64 / ANDROID_RELEASE_KEYSTORE_PASSWORD are not set. Falling back to the runner's ephemeral debug key — this APK will NOT upgrade-install over existing releases."
+          fi
+      - name: Build release apk
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+      - name: Collect apk
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp android/app/build/outputs/apk/release/app-release.apk "dist/Acta-${{ needs.prepare.outputs.version }}-android.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Acta-${{ needs.prepare.outputs.version }}-android-apk
+          path: dist/Acta-*-android.apk
+          if-no-files-found: error
+
+  publish:
+    name: Publish release
+    needs: [prepare, windows-portable, macos-dmg, android-apk]
+    if: needs.prepare.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Extract release notes from CHANGELOG
+        run: |
+          set -euo pipefail
+          version="${{ needs.prepare.outputs.version }}"
+          # CHANGELOG 的版本标题形如 «## v4.3.0-beta1（2026-11-15）»，截取该段
+          # 到下一个 «## » 标题（不含）之间的全部内容作为发布说明。
+          awk -v marker="## v${version}" '
+            $0 ~ "^## " { if (found) exit; if (index($0, marker) == 1) { found = 1; next } }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "::warning::CHANGELOG 段落为空，改用自动生成的发布说明。"
+            rm -f release-notes.md
+          fi
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${{ needs.prepare.outputs.tag }}"
+          title="Acta v${{ needs.prepare.outputs.version }}"
+          if [[ "${{ needs.prepare.outputs.prerelease }}" == "true" ]]; then
+            channel="--prerelease"
+          else
+            channel="--latest"
+          fi
+          notes_args=()
+          if [ -f release-notes.md ]; then
+            notes_args=(--notes-file release-notes.md)
+          else
+            notes_args=(--generate-notes)
+          fi
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            # 补发/重发：覆盖产物并按版本号纠正渠道标记。
+            gh release upload "$tag" artifacts/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --title "$title" $channel
+          else
+            gh release create "$tag" artifacts/* --repo "$GITHUB_REPOSITORY" --title "$title" $channel "${notes_args[@]}"
+          fi

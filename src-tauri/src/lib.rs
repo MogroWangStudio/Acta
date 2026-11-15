@@ -100,8 +100,8 @@ fn set_background_run(
 // 自更新命令的薄包装：#[tauri::command] 的隐藏宏留在 lib.rs 作用域，
 // 避免 generate_handler! 跨模块引用私有宏的可见性问题。
 #[tauri::command]
-async fn check_app_update(app: AppHandle) -> Result<Option<updater::UpdateInfo>, String> {
-    updater::check_for_update(app).await
+async fn check_app_update(app: AppHandle, channel: Option<String>) -> Result<Option<updater::UpdateInfo>, String> {
+    updater::check_for_update(app, channel).await
 }
 
 #[tauri::command]
@@ -115,8 +115,8 @@ async fn download_app_update(
 }
 
 #[tauri::command]
-async fn prepare_update_restart(payload: String, version: String) -> Result<bool, String> {
-    updater::prepare_restart(payload, version).await
+async fn prepare_update_restart(app: AppHandle, payload: String, version: String) -> Result<bool, String> {
+    updater::prepare_restart(app, payload, version).await
 }
 
 // 局域网同步命令的薄包装：与 updater 命令同理，#[tauri::command] 的隐藏宏

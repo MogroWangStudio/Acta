@@ -217,8 +217,8 @@
     async openPath(path) {
       try { await opener.openPath(path); } catch { /* 忽略打开失败 */ }
     },
-    checkAppUpdate() {
-      return invoke('check_app_update');
+    checkAppUpdate(channel) {
+      return invoke('check_app_update', { channel: channel || 'stable' });
     },
     downloadAppUpdate(request) {
       return invoke('download_app_update', request);

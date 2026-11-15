@@ -35,7 +35,7 @@
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
-        <span class="brand-version" aria-label="当前版本 4.2.0">4.2.0</span>
+        <span class="brand-version" aria-label="当前版本 4.3.0-beta1">4.3.0-beta1</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
@@ -479,11 +479,15 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta 行记" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta 行记</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.2.0</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.3.0-beta1</b></div>
                 <div><small>本版更新日期</small><b>2026-10-29</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <div class="about-update">
+                <!-- 更新通道：稳定通道只收正式版 Release，测试通道连 beta 预发布
+                     一起收。通道选择存 settings.updateChannel，桌面/网页检查
+                     更新共用（interface.js checkForUpdates）。 -->
+                <label class="settings-row" id="updateChannelRow" data-i18n-title="updateChannelHint" title="测试通道会同时接收 beta 预发布版本"><span><b data-i18n="updateChannelLabel">更新通道</b></span><select id="updateChannelSetting"><option value="stable" data-i18n="updateChannelStable">稳定通道</option><option value="beta" data-i18n="updateChannelBeta">测试通道</option></select></label>
                 <button type="button" class="settings-button secondary" id="aboutCheckUpdate"><svg><use href="#i-refresh"/></svg><span>检查更新</span></button>
                 <p class="settings-status about-update-status" id="aboutUpdateStatus" hidden></p>
               </div>

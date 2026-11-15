@@ -172,6 +172,10 @@ select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 30
     closeMenu(true);
     const dialog = select.closest('dialog');
     const menuEl = ensureMenu();
+    // 关闭动画尚未结束时重开：closeMenu 的早退守卫（openState 已置空）会
+    // 跳过清理，菜单带着 acx-closing 复活，展开动画走成关闭曲线——重开前
+    // 无条件摘掉这个关闭态 class。
+    menuEl.classList.remove('acx-closing');
     renderOptions(select);
     (dialog || document.body).appendChild(menuEl);
     openState = { select, dialog };

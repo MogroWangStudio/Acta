@@ -9,19 +9,23 @@
   if (!bridge?.checkAppUpdate || window.__ACTA_UPDATER__) return;
 
   // 与 renderer.js / interface.js 一致的语言全局（interface.js 会同步 settings.language）。
-  const language = () => (window.settings?.language === 'zh' ? 'zh' : window.settings?.language === 'zh-Hant' ? 'zh-Hant' : 'en'); // ja/ko/fr/de/es/ru 暂用英文文案
+  // settings 是 renderer.js 的顶层 let（不挂 window），裸标识符可达。
+  const language = () => (settings?.language === 'zh' ? 'zh' : settings?.language === 'zh-Hant' ? 'zh-Hant' : 'en'); // ja/ko/fr/de/es/ru 暂用英文文案
   const copy = {
     zh: {
       title: '发现新版本',
       ask: '是否下载并安装 v{version}？安装会在应用关闭后由更新向导自动完成。',
       downloading: '正在下载更新包…',
-      restart: '下载完成。关闭软件后将自动弹出更新向导，现在重启以完成更新吗？',
+      restart: '下载完成，安装包已就绪。现在重启以完成更新吗？',
+      countdown: '{sec} 秒后自动重启安装…',
       restarting: '正在准备重启更新…',
       failed: '更新失败：{detail}',
       notesEmpty: '（暂无更新说明）',
+      prerelease: '测试版',
       later: '稍后',
       update: '下载更新',
       restartNow: '立即重启更新',
+      cancelAuto: '取消自动安装',
       close: '关闭',
       size: '{received} / {total} MB（{percent}%）'
     },
@@ -29,13 +33,16 @@
       title: 'Update available',
       ask: 'Download and install v{version} now? An update wizard finishes the install after the app quits.',
       downloading: 'Downloading the update…',
-      restart: 'Download complete. The update wizard opens after the app quits — restart now to update?',
+      restart: 'Download complete and ready to install. Restart now to update?',
+      countdown: 'Auto-restarting to install in {sec}s…',
       restarting: 'Preparing to restart…',
       failed: 'Update failed: {detail}',
       notesEmpty: '(no release notes)',
+      prerelease: 'Beta',
       later: 'Later',
       update: 'Download update',
       restartNow: 'Restart to update',
+      cancelAuto: 'Cancel auto-install',
       close: 'Close',
       size: '{received} / {total} MB ({percent}%)'
     },
@@ -43,13 +50,16 @@
       title: '發現新版本',
       ask: '是否下載並安裝 v{version}？安裝會在應用關閉後由更新精靈自動完成。',
       downloading: '正在下載更新包…',
-      restart: '下載完成。關閉軟體後將自動彈出更新精靈，現在重啟以完成更新嗎？',
+      restart: '下載完成，安裝包已就緒。現在重啟以完成更新嗎？',
+      countdown: '{sec} 秒後自動重啟安裝…',
       restarting: '正在準備重啟…',
       failed: '更新失敗：{detail}',
       notesEmpty: '（暫無更新說明）',
+      prerelease: '測試版',
       later: '稍後',
       update: '下載更新',
       restartNow: '立即重啟更新',
+      cancelAuto: '取消自動安裝',
       close: '關閉',
       size: '{received} / {total} MB（{percent}%）'
     }
@@ -120,15 +130,17 @@
     const primary = card.querySelector('button.primary');
 
     title.textContent = mode === 'error' ? text('failed', { detail: extra.detail || '' }) : text('title');
-    version.textContent = info ? `v${info.version}` : '';
+    // 测试通道收到的预发布版本在版本号旁标注，避免误当成正式版。
+    version.textContent = info ? `v${info.version}${info.prerelease ? ` · ${text('prerelease')}` : ''}` : '';
     notes.textContent = info ? (info.notes || text('notesEmpty')) : '';
     notes.hidden = !info;
 
     track.hidden = mode !== 'download';
-    percent.textContent = extra.percentText || '';
+    percent.textContent = extra.percentText || (mode === 'ready' ? text(extra.countdownLeft > 0 ? 'countdown' : 'restart', { sec: extra.countdownLeft }) : '');
     if (mode === 'download') bar.style.width = `${extra.percent || 0}%`;
 
-    secondary.textContent = text(mode === 'ask' || mode === 'ready' ? 'later' : 'close');
+    // 读秒期间副按钮是「取消自动安装」，倒计时停了才回到「稍后」。
+    secondary.textContent = text(mode === 'ready' && extra.countdownLeft > 0 ? 'cancelAuto' : (mode === 'ask' || mode === 'ready' ? 'later' : 'close'));
     secondary.hidden = mode === 'download';
     primary.textContent = mode === 'ask' ? text('update') : mode === 'ready' ? text('restartNow') : text('close');
     primary.hidden = mode === 'download';
@@ -137,6 +149,32 @@
   };
 
   const closeDialog = () => { dialog?.close(); };
+
+  // —— 下载完成后的自动读秒安装 ——
+  // 安装包就绪即开始读秒，归零自动重启进更新向导；「取消自动安装」随时
+  // 叫停（保留已下载的包，之后仍可立即重启更新或稍后再说）。
+  const AUTO_INSTALL_SEC = 6;
+  let countdownTimer = 0;
+  const stopCountdown = () => {
+    if (!countdownTimer) return;
+    clearInterval(countdownTimer);
+    countdownTimer = 0;
+  };
+  const beginCountdown = info => {
+    stopCountdown();
+    let remaining = AUTO_INSTALL_SEC;
+    const renderCountdown = () => render('ready', info, { countdownLeft: remaining });
+    renderCountdown();
+    countdownTimer = setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        stopCountdown();
+        restartToUpdate(info);
+        return;
+      }
+      renderCountdown();
+    }, 1000);
+  };
 
   const startDownload = info => {
     render('download', info, { percent: 0 });
@@ -152,13 +190,15 @@
     }
     bridge.downloadAppUpdate({ url: info.url, assetName: info.asset_name, expectedSize: Number(info.size) || 0 })
       .then(payloadPath => {
-        render('ready', info);
+        if (state !== 'download') return; // 用户已关闭对话框，不再自动读秒
         dialog.dataset.payloadPath = payloadPath;
+        beginCountdown(info);
       })
       .catch(error => render('error', info, { detail: error?.message || String(error) }));
   };
 
   const restartToUpdate = info => {
+    stopCountdown();
     const payloadPath = dialog?.dataset.payloadPath || '';
     render('restarting', info);
     bridge.prepareUpdateRestart(payloadPath, info.version)
@@ -180,25 +220,36 @@
       else if (state === 'ready') restartToUpdate(info);
       else if (state === 'error') { dialog.close(); if (!options.fromAbout) render('idle', null); }
     };
-    secondary.onclick = () => { dialog.close(); };
+    secondary.onclick = () => {
+      if (state === 'ready' && countdownTimer) {
+        // 取消自动读秒：停在就绪态，保留「立即重启更新 / 稍后」两个选择。
+        stopCountdown();
+        render('ready', info);
+        return;
+      }
+      dialog.close();
+    };
     if (!dialog.open) dialog.showModal();
   };
 
   // 下载/重启中禁止 Esc 误关（稍后可在关于页重新发起，文件会复用）；
-  // 其余状态关闭即复位，避免阻塞之后的自动检查。
+  // 其余状态关闭即复位，避免阻塞之后的自动检查。就绪态读秒中关闭对话框
+  // 也算取消自动安装——先停掉倒计时，避免窗口已关还触发重启。
   document.addEventListener('cancel', event => {
     if (event.target === dialog && (state === 'download' || state === 'restarting')) event.preventDefault();
   }, true);
   dialog?.addEventListener('close', () => {
+    stopCountdown();
     if (state !== 'download' && state !== 'restarting') state = 'idle';
   });
   window.actaUpdater = Object.freeze({ open });
 
-  // 启动后静默检查一次；离线或接口失败都安静跳过，不打扰使用。
+  // 启动后静默检查一次（按设置里的更新通道）；离线或接口失败都安静跳过。
   window.setTimeout(async () => {
     if (state !== 'idle') return;
     try {
-      const info = await bridge.checkAppUpdate();
+      const channel = settings?.updateChannel === 'beta' ? 'beta' : 'stable';
+      const info = await bridge.checkAppUpdate(channel);
       if (info && state === 'idle') open(info);
     } catch { /* 离线等情况忽略 */ }
   }, 6000);
