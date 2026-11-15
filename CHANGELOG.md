@@ -2,6 +2,14 @@
 
 ## v4.3.0-beta1（2026-11-15）
 
+### 下载来源切换与链路测速：GitHub Raw 直链 / gh-proxy.org 加速代理
+
+「关于」页新增「下载来源」下拉——**GitHub Raw（原生直链）** 与 **GitHub-proxy**（按 gh-proxy.org 文档在下载链接前拼接 `https://gh-proxy.org/` 前缀加速）：
+
+- 选择存进 `settings.downloadSource`（脏值归 github，八语言词典补齐），应用内更新的下载入口统一经它拼接；Release 资产加前缀实测可通（HEAD 返回 200）；
+- **测速**（桌面端）：新增 Rust 命令 `probe_download_speed`——GET 目标地址读满 1 MB（或流结束）即断开连接，按实际字节与总耗时（含握手）算 KB/s，20 秒超时兜底；「测速」按钮取最近 Release 里当前平台资产的直链为样本，原生与代理两路并行探测，并列显示 KB/s / 耗时 / 样本量，较快一侧标「更快」，不可达的一侧标 HTTP 状态；纯网页端因 fetch 跨域受限，不显示该按钮；
+- 测速是探测不是下载：样本读完即断，不给 GitHub 与代理节点增加整包流量。
+
 ### Release 自动发布：推 main 即按版本号发版，正式 / Pre-Release 自动判定
 
 原先 `build.yml` 推 main 每次都全量构建三平台包体但不发 Release，发版要手动推 `v*` 标签走另一个发布 job——两条链路重复维护，还可能同时跑。现在新增 `.github/workflows/release.yml`：推 main 自动读取 `src-tauri/tauri.conf.json` 的版本号，**纯数字版本（`x.y.z`）发布为正式 Release（标 latest），带后缀版本（`x.y.z-betax`）发布为 Pre-Release**——判定规则与应用内更新器完全同源（tag 去 `v` 前缀后含 `-` 即预发布），Rust 端与流水线永远不打架。

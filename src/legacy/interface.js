@@ -4617,9 +4617,12 @@
   // 拿不到 beta）。预发布判定与应用端/CI 同源：tag 含 '-' 即预发布。
   const ACTA_RELEASES_LIST_API = 'https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=15';
   const updateMessages = {
-    zh: { checking:'正在检查更新…', latest:'当前已是最新版本（{version}）。', available:'发现新版本 {remote}，{link}。', noRelease:'尚未在 GitHub 上发布版本，{link}。', error:'检查更新失败：{detail}', downloadLink:'前往下载', releasesLink:'查看发布页' },
-    en: { checking:'Checking for updates…', latest:'Acta is up to date ({version}).', available:'A new version {remote} is available. {link}.', noRelease:'No releases have been published on GitHub yet. {link}.', error:'Update check failed: {detail}', downloadLink:'Get the update', releasesLink:'View releases' },
-    'zh-Hant': { checking:'正在檢查更新…', latest:'目前已是最新版本（{version}）。', available:'發現新版本 {remote}，{link}。', noRelease:'尚未在 GitHub 上發佈版本，{link}。', error:'檢查更新失敗：{detail}', downloadLink:'前往下載', releasesLink:'查看發佈頁' }
+    zh: { checking:'正在检查更新…', latest:'当前已是最新版本（{version}）。', available:'发现新版本 {remote}，{link}。', noRelease:'尚未在 GitHub 上发布版本，{link}。', error:'检查更新失败：{detail}', downloadLink:'前往下载', releasesLink:'查看发布页',
+      probing:'正在测速…', probeAssetFail:'无法获取用于测速的下载地址：{detail}', probeLine:'{label}：{kbps} KB/s（{sec}s，{mb} MB）', probeFailLine:'{label}：无法访问（HTTP {status}）', probeErrorLine:'{label}：测速失败：{detail}', probeFaster:'更快', probeDirectLabel:'GitHub 直链', probeProxyLabel:'GitHub-proxy' },
+    en: { checking:'Checking for updates…', latest:'Acta is up to date ({version}).', available:'A new version {remote} is available. {link}.', noRelease:'No releases have been published on GitHub yet. {link}.', error:'Update check failed: {detail}', downloadLink:'Get the update', releasesLink:'View releases',
+      probing:'Probing speed…', probeAssetFail:'Could not resolve a download URL for the speed test: {detail}', probeLine:'{label}: {kbps} KB/s ({sec}s, {mb} MB)', probeFailLine:'{label}: unreachable (HTTP {status})', probeErrorLine:'{label}: probe failed: {detail}', probeFaster:'faster', probeDirectLabel:'GitHub direct', probeProxyLabel:'GitHub-proxy' },
+    'zh-Hant': { checking:'正在檢查更新…', latest:'目前已是最新版本（{version}）。', available:'發現新版本 {remote}，{link}。', noRelease:'尚未在 GitHub 上發佈版本，{link}。', error:'檢查更新失敗：{detail}', downloadLink:'前往下載', releasesLink:'查看發佈頁',
+      probing:'正在測速…', probeAssetFail:'無法取得用於測速的下載地址：{detail}', probeLine:'{label}：{kbps} KB/s（{sec}s，{mb} MB）', probeFailLine:'{label}：無法存取（HTTP {status}）', probeErrorLine:'{label}：測速失敗：{detail}', probeFaster:'更快', probeDirectLabel:'GitHub 直連', probeProxyLabel:'GitHub-proxy' }
   };
   let aboutUpdateState = 'idle';
   let aboutUpdateVars = {};
@@ -4742,6 +4745,78 @@
       settings.updateChannel = updateChannelSetting.value === 'beta' ? 'beta' : 'stable';
       persist?.();
     });
+  }
+
+  // —— 下载来源与测速 ——
+  // 来源存 settings.downloadSource（github = GitHub Raw 直链 / proxy = 在下载
+  // 链接前拼 gh-proxy.org 前缀，拼接发生在 updater.js 的下载入口与下面的
+  // 测速流程）。测速用 Rust 命令各读 1 MB 计时，比较两条线路的可用性与速度；
+  // 仅桌面端提供（网页端 fetch 跨域受限）。
+  const GH_PROXY_PREFIX = 'https://gh-proxy.org/';
+  const activeDownloadSource = () => (settings?.downloadSource === 'proxy' ? 'proxy' : 'github');
+  const downloadSourceSetting = byId('downloadSourceSetting');
+  if (downloadSourceSetting) {
+    downloadSourceSetting.value = activeDownloadSource();
+    downloadSourceSetting.addEventListener('change', () => {
+      if (!settings) return;
+      settings.downloadSource = downloadSourceSetting.value === 'proxy' ? 'proxy' : 'github';
+      persist?.();
+    });
+  }
+  const setProbeStatus = (message, vars = {}) => {
+    const el = byId('downloadProbeStatus');
+    if (!el) return;
+    if (message === null) { el.hidden = true; el.textContent = ''; return; }
+    el.hidden = false;
+    el.textContent = updateText(message, vars);
+  };
+  const formatProbeLine = (labelKey, probe, faster) => {
+    const mb = (probe.bytes / (1024 * 1024)).toFixed(1);
+    return updateText('probeLine', { label: updateText(labelKey), kbps: probe.kbps, sec: (probe.elapsed_ms / 1000).toFixed(1), mb }) + (faster ? ` · ${updateText('probeFaster')}` : '');
+  };
+  async function runDownloadProbe() {
+    const btn = byId('downloadProbeButton');
+    if (!btn || btn.disabled || !window.actaDesktop?.probeDownloadSpeed) return;
+    btn.disabled = true;
+    setProbeStatus('probing');
+    try {
+      // 拿一个真实存在的下载直链做样本：取最近 Release 里当前平台资产的
+      // browser_download_url（只测链路，不关心版本是否比当前新）。
+      const isMac = /Mac/i.test(navigator.userAgent) && !/iPhone|iPad/i.test(navigator.userAgent);
+      const assetSuffix = isMac ? '-macos-arm64.dmg' : '-windows-x64-portable.exe';
+      const response = await fetch('https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const releases = await response.json();
+      const assetUrl = (Array.isArray(releases) ? releases : [])
+        .flatMap(release => (Array.isArray(release.assets) ? release.assets : []))
+        .find(asset => typeof asset.name === 'string' && asset.name.endsWith(assetSuffix))
+        ?.browser_download_url;
+      if (!assetUrl) throw new Error('no matching asset');
+      const [direct, proxied] = await Promise.all([
+        window.actaDesktop.probeDownloadSpeed(assetUrl),
+        window.actaDesktop.probeDownloadSpeed(GH_PROXY_PREFIX + assetUrl)
+      ]);
+      const lines = [];
+      const directOk = direct?.ok;
+      const proxyOk = proxied?.ok;
+      const directFaster = directOk && proxyOk && direct.kbps > proxied.kbps;
+      const proxyFaster = directOk && proxyOk && proxied.kbps > direct.kbps;
+      lines.push(directOk ? formatProbeLine('probeDirectLabel', direct, directFaster) : updateText('probeFailLine', { label: updateText('probeDirectLabel'), status: direct?.status ?? 0 }));
+      lines.push(proxyOk ? formatProbeLine('probeProxyLabel', proxied, proxyFaster) : updateText('probeFailLine', { label: updateText('probeProxyLabel'), status: proxied?.status ?? 0 }));
+      const el = byId('downloadProbeStatus');
+      if (el) { el.hidden = false; el.innerHTML = lines.map(line => escapeHTML(line)).join('<br>'); }
+      setProbeStatus(null);
+    } catch (err) {
+      setProbeStatus('probeAssetFail', { detail: (err && err.message) ? err.message : String(err) });
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+  const downloadProbeButton = byId('downloadProbeButton');
+  if (downloadProbeButton) {
+    // 测速是桌面端能力（Rust 命令读流计时）；网页端不出这个按钮。
+    downloadProbeButton.hidden = !window.actaDesktop?.probeDownloadSpeed;
+    downloadProbeButton.addEventListener('click', runDownloadProbe);
   }
 
   // —— 工作室字标跳转 ——安卓 WebView 不处理 target="_blank"：改走

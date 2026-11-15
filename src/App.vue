@@ -488,8 +488,14 @@
                      一起收。通道选择存 settings.updateChannel，桌面/网页检查
                      更新共用（interface.js checkForUpdates）。 -->
                 <label class="settings-row" id="updateChannelRow" data-i18n-title="updateChannelHint" title="测试通道会同时接收 beta 预发布版本"><span><b data-i18n="updateChannelLabel">更新通道</b></span><select id="updateChannelSetting"><option value="stable" data-i18n="updateChannelStable">稳定通道</option><option value="beta" data-i18n="updateChannelBeta">测试通道</option></select></label>
+                <!-- 下载来源：GitHub Raw 原生直链，或按 gh-proxy.org 指南在下载
+                     链接前拼接代理前缀（settings.downloadSource，updater.js
+                     下载时拼接；「测速」按钮验证两条链路可用性并比较速度）。 -->
+                <label class="settings-row" id="downloadSourceRow" data-i18n-title="downloadSourceHint" title="下载更新包时走 GitHub 原生直链，或经 gh-proxy.org 加速"><span><b data-i18n="downloadSourceLabel">下载来源</b></span><select id="downloadSourceSetting"><option value="github" data-i18n="downloadSourceGithub">GitHub Raw</option><option value="proxy" data-i18n="downloadSourceProxy">GitHub-proxy</option></select></label>
+                <button type="button" class="settings-button secondary" id="downloadProbeButton" hidden><svg><use href="#i-radar"/></svg><span>测速</span></button>
                 <button type="button" class="settings-button secondary" id="aboutCheckUpdate"><svg><use href="#i-refresh"/></svg><span>检查更新</span></button>
                 <p class="settings-status about-update-status" id="aboutUpdateStatus" hidden></p>
+                <p class="settings-status about-update-status" id="downloadProbeStatus" hidden></p>
               </div>
               <div class="settings-group about-developer-group">
                 <div class="settings-row"><span><b>开发者</b></span></div>

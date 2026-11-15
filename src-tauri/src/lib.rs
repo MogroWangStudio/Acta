@@ -119,6 +119,12 @@ async fn prepare_update_restart(app: AppHandle, payload: String, version: String
     updater::prepare_restart(app, payload, version).await
 }
 
+// 下载链路测速：验证 GitHub 直链 / gh-proxy 代理是否可用、速度几何。
+#[tauri::command]
+async fn probe_download_speed(url: String) -> Result<updater::SpeedProbe, String> {
+    updater::probe_download_speed(url).await
+}
+
 // 局域网同步命令的薄包装：与 updater 命令同理，#[tauri::command] 的隐藏宏
 // 留在 lib.rs 作用域，避免 generate_handler! 跨模块引用私有宏。
 // 协议 v2 之后服务启动不再携带数据档案，生命周期命令为同步轻量操作；
@@ -2284,7 +2290,8 @@ pub fn run() {
             save_app_data_settings,
             check_app_update,
             download_app_update,
-            prepare_update_restart
+            prepare_update_restart,
+            probe_download_speed
         ])
         .build(context)
         .expect("error while building Acta");

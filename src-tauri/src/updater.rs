@@ -214,6 +214,53 @@ async fn http_client() -> Result<reqwest::Client, String> {
         .map_err(|error| error.to_string())
 }
 
+// ---- 下载测速（检查 gh-proxy 等代理链路是否可用、速度几何） ----
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SpeedProbe {
+    /// HTTP 2xx 且确实读到了数据。
+    pub ok: bool,
+    pub status: u16,
+    pub bytes: u64,
+    pub elapsed_ms: u64,
+    /// KB/s（按实际读到的字节与总耗时计，含握手）。
+    pub kbps: u64,
+}
+
+/// GET 目标地址，读到 1 MB（或流结束）即断开——测速不是下载，
+/// 样本够算速度就行，也不给代理与 GitHub 增加整包流量。
+/// releases/download 与 gh-proxy.org 都遵循 302 → CDN，reqwest 默认跟随。
+pub async fn probe_download_speed(url: String) -> Result<SpeedProbe, String> {
+    const PROBE_CAP: u64 = 1024 * 1024;
+    let start = Instant::now();
+    let response = http_client()
+        .await?
+        .get(&url)
+        .timeout(Duration::from_secs(20))
+        .send()
+        .await
+        .map_err(|error| format!("无法连接：{error}"))?;
+    let status = response.status().as_u16();
+    let mut stream = response.bytes_stream();
+    let mut received: u64 = 0;
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk.map_err(|error| format!("读取中断：{error}"))?;
+        received += chunk.len() as u64;
+        if received >= PROBE_CAP {
+            break;
+        }
+    }
+    let elapsed = start.elapsed();
+    let seconds = elapsed.as_secs_f64().max(0.001);
+    Ok(SpeedProbe {
+        ok: (200..300).contains(&status) && received > 0,
+        status,
+        bytes: received,
+        elapsed_ms: elapsed.as_millis() as u64,
+        kbps: (received as f64 / 1024.0 / seconds).round() as u64,
+    })
+}
+
 // ---- 主应用侧入口（lib.rs 以 #[tauri::command] 薄包装后注册） ----
 
 /// 更新通道：stable 只收正式版，beta 连预发布一起收。

@@ -229,6 +229,9 @@
     onDownloadProgress(handler) {
       return tauri.event.listen('update://download', handler);
     },
+    probeDownloadSpeed(url) {
+      return invoke('probe_download_speed', { url });
+    },
     closeAppWindow() {
       return currentWindow.close();
     }

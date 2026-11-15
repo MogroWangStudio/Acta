@@ -176,6 +176,11 @@
     }, 1000);
   };
 
+  // 下载来源：github = GitHub Raw 直链；proxy = 按 gh-proxy.org 指南在下载
+  // 链接前拼接加速前缀（settings.downloadSource，「关于」页切换）。
+  const GH_PROXY_PREFIX = 'https://gh-proxy.org/';
+  const resolveDownloadUrl = raw => (settings?.downloadSource === 'proxy' ? GH_PROXY_PREFIX + raw : raw);
+
   const startDownload = info => {
     render('download', info, { percent: 0 });
     if (!unsubscribeProgress) {
@@ -188,7 +193,7 @@
         });
       });
     }
-    bridge.downloadAppUpdate({ url: info.url, assetName: info.asset_name, expectedSize: Number(info.size) || 0 })
+    bridge.downloadAppUpdate({ url: resolveDownloadUrl(info.url), assetName: info.asset_name, expectedSize: Number(info.size) || 0 })
       .then(payloadPath => {
         if (state !== 'download') return; // 用户已关闭对话框，不再自动读秒
         dialog.dataset.payloadPath = payloadPath;
