@@ -24,7 +24,7 @@
 
     <div class="app-shell">
       <header class="titlebar">
-        <div class="brand" role="button" tabindex="0" aria-label="Acta 行记">
+        <div class="brand" role="button" tabindex="0" aria-label="Acta">
           <svg class="brand-logo" aria-hidden="true" viewBox="0 0 659 190" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
               <g transform="matrix(1,0,0,1,-2224.716424,-1882.139442)">
                   <g transform="matrix(15.85749,0,0,15.85749,74.816397,-4042.287587)">
@@ -35,7 +35,7 @@
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
-        <span class="brand-version" aria-label="当前版本 4.3.0-beta1">4.3.0-beta1</span>
+        <span class="brand-version" aria-label="当前版本 4.3.0-beta2">4.3.0-beta2</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
@@ -476,14 +476,17 @@
 
             <section class="settings-panel" data-settings-panel="about">
               <header><h3>关于 Acta</h3><p>让笔记与行动在一个安静、可掌控的本地空间中自然连接。</p></header>
-              <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta 行记" /></div>
+              <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta" /></div>
               <div class="about-meta">
-                <div><small>产品</small><b>Acta 行记</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.3.0-beta1</b></div>
+                <div><small>产品</small><b>Acta</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.3.0-beta2</b></div>
                 <div><small>本版更新日期</small><b>2026-10-29</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
-              <div class="about-update">
+              <!-- 软件更新：独立板块（单层卡组，标题行 + 通道/来源行 +
+                   操作行 + 状态行），与「开发者」组同一行语言。 -->
+              <div class="settings-group about-update-group">
+                <div class="settings-row"><span><b data-i18n="updateSectionTitle">软件更新</b></span></div>
                 <!-- 更新通道：稳定通道只收正式版 Release，测试通道连 beta 预发布
                      一起收。通道选择存 settings.updateChannel，桌面/网页检查
                      更新共用（interface.js checkForUpdates）。 -->
@@ -492,8 +495,10 @@
                      链接前拼接代理前缀（settings.downloadSource，updater.js
                      下载时拼接；「测速」按钮验证两条链路可用性并比较速度）。 -->
                 <label class="settings-row" id="downloadSourceRow" data-i18n-title="downloadSourceHint" title="下载更新包时走 GitHub 原生直链，或经 gh-proxy.org 加速"><span><b data-i18n="downloadSourceLabel">下载来源</b></span><select id="downloadSourceSetting"><option value="github" data-i18n="downloadSourceGithub">GitHub Raw</option><option value="proxy" data-i18n="downloadSourceProxy">GitHub-proxy</option></select></label>
-                <button type="button" class="settings-button secondary" id="downloadProbeButton" hidden><svg><use href="#i-radar"/></svg><span>测速</span></button>
-                <button type="button" class="settings-button secondary" id="aboutCheckUpdate"><svg><use href="#i-refresh"/></svg><span>检查更新</span></button>
+                <div class="settings-row about-update-actions">
+                  <button type="button" class="settings-button secondary" id="downloadProbeButton" hidden><svg><use href="#i-radar"/></svg><span>测速</span></button>
+                  <button type="button" class="settings-button secondary" id="aboutCheckUpdate"><svg><use href="#i-refresh"/></svg><span>检查更新</span></button>
+                </div>
                 <p class="settings-status about-update-status" id="aboutUpdateStatus" hidden></p>
                 <p class="settings-status about-update-status" id="downloadProbeStatus" hidden></p>
               </div>

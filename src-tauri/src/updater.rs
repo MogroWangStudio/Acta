@@ -1,12 +1,16 @@
-//! 应用自更新：检查 GitHub Release → 下载对应平台的安装包 → 主应用退出后，
+//! 应用自更新：检查 GitHub Release → 下载对应平台的更新包 → 主应用退出后，
 //! 同一个二进制以 `--acta-update-wizard <manifest>` 重新拉起"更新向导"实例，
 //! 由向导完成安装并自动打开新版本。
 //!
+//! Release 资产统一为压缩包 `Acta-<版本>-<平台>-<架构>.zip`，包内单个
+//! Acta.exe（Windows）/ Acta.dmg（macOS）/ Acta.apk（Android）；向导按文件
+//! 名识别平台包体，安装前先解压（zip crate，无命令行窗口）。
+//!
 //! 平台差异：
 //! - Windows（便携版单 exe）：向导等待主进程退出后，把运行中的 exe 改名为
-//!   `*.acta-old`（Windows 允许改名运行中的映像），把新 exe 移回原路径并启动；
-//!   新版本下次启动时清理 `*.acta-old`。
-//! - macOS：向导挂载下载的 dmg，替换 /Applications（或当前所在位置）里的
+//!   `*.acta-old`（Windows 允许改名运行中的映像），把解压出的新 exe 以带新
+//!   版本号的文件名移入原目录并启动；新版本下次启动时清理 `*.acta-old`。
+//! - macOS：向导解压出 dmg 并挂载，替换 /Applications（或当前所在位置）里的
 //!   `.app`，随后清除 quarantine 标记——优先用无密码的 `xattr -r -d`，仍带
 //!   标记时弹终端运行 dmg 内自带的「修复启动损坏.command」（sudo 提权），等
 //!   标记消失后再启动新版本。
@@ -87,6 +91,33 @@ pub struct UpdateManifest {
 
 fn update_work_dir() -> PathBuf {
     std::env::temp_dir().join(UPDATE_DIR_NAME)
+}
+
+/// 解压更新压缩包，返回包内唯一载荷（Acta.exe / Acta.dmg）的落盘路径。
+/// Release 资产固定"一个 zip 装一个文件"；解出零个条目视为资产异常。
+fn extract_payload(zip_path: &Path, work_dir: &Path) -> Result<PathBuf, String> {
+    let file = fs::File::open(zip_path).map_err(|error| format!("无法打开更新包：{error}"))?;
+    let mut archive = zip::ZipArchive::new(file).map_err(|error| format!("更新包损坏：{error}"))?;
+    let mut extracted: Option<PathBuf> = None;
+    for index in 0..archive.len() {
+        let mut entry = archive.by_index(index).map_err(|error| format!("更新包损坏：{error}"))?;
+        if entry.is_dir() {
+            continue;
+        }
+        // 条目名可能带路径前缀，只取文件名部分并过一遍安全检查。
+        let raw_name = entry.name().to_string();
+        let name = Path::new(&raw_name)
+            .file_name()
+            .and_then(|value| value.to_str())
+            .ok_or("更新包内文件名无效")?
+            .to_string();
+        let destination = work_dir.join(sanitize_asset_name(&name)?);
+        let mut output = fs::File::create(&destination).map_err(|error| error.to_string())?;
+        std::io::copy(&mut entry, &mut output).map_err(|error| format!("解压失败：{error}"))?;
+        output.flush().map_err(|error| error.to_string())?;
+        extracted = Some(destination);
+    }
+    extracted.ok_or_else(|| "更新包里没有找到可安装的文件".into())
 }
 
 // ---- 版本比较 ----
@@ -174,10 +205,11 @@ fn compare_release_tags(a: &str, b: &str) -> Ordering {
 }
 
 fn release_asset_filter(name: &str) -> bool {
+    // Release 资产统一为压缩包：Acta-<版本>-<平台>-<架构>.zip。
     if cfg!(target_os = "macos") {
-        name.ends_with("-macos-arm64.dmg")
+        name.ends_with("-macos-arm64.zip")
     } else if cfg!(target_os = "windows") {
-        name.ends_with("-windows-x64-portable.exe")
+        name.ends_with("-windows-x64.zip")
     } else {
         false
     }
@@ -684,10 +716,14 @@ fn versioned_launch_target(manifest: &UpdateManifest) -> PathBuf {
     }
 }
 
-/// Windows：等待退出 → 运行中的 exe 改名为 *.acta-old → 新 exe 以带新版本号
-/// 的文件名移入 → 启动。
+/// Windows：等待退出 → 解压更新包 → 运行中的 exe 改名为 *.acta-old → 新 exe
+/// 以带新版本号的文件名移入 → 启动。
 #[cfg(target_os = "windows")]
 fn install_windows(app: &AppHandle, manifest: &UpdateManifest) -> Result<String, String> {
+    set_stage(app, "install", "正在解压更新包…");
+    let work_dir = update_work_dir();
+    fs::create_dir_all(&work_dir).map_err(|error| error.to_string())?;
+    let payload = extract_payload(&manifest.payload, &work_dir)?;
     set_stage(app, "install", "正在替换应用…");
     let target = &manifest.target;
     let final_target = versioned_launch_target(manifest);
@@ -712,7 +748,7 @@ fn install_windows(app: &AppHandle, manifest: &UpdateManifest) -> Result<String,
     if !rename_error.is_empty() {
         return Err(format!("无法替换应用文件（可能被占用）：{rename_error}"));
     }
-    move_file(&manifest.payload, &final_target).map_err(|error| format!("无法放置新版本：{error}"))?;
+    move_file(&payload, &final_target).map_err(|error| format!("无法放置新版本：{error}"))?;
     set_stage(app, "launch", "正在启动新版本…");
     Command::new(&final_target).spawn().map_err(|error| format!("无法启动新版本：{error}"))?;
     Ok("更新完成".to_string())
@@ -753,16 +789,19 @@ pub fn cleanup_stale_backup() {
 #[cfg(not(target_os = "windows"))]
 pub fn cleanup_stale_backup() {}
 
-/// macOS：挂载 dmg → 替换 .app → 清 quarantine（必要时弹终端跑修复脚本）→ 启动。
+/// macOS：解压更新包 → 挂载 dmg → 替换 .app → 清 quarantine（必要时弹终端跑
+/// 修复脚本）→ 启动。
 #[cfg(target_os = "macos")]
 fn install_macos(app: &AppHandle, manifest: &UpdateManifest) -> Result<String, String> {
     let work_dir = update_work_dir();
     let mount = work_dir.join("mount");
     let _ = fs::remove_dir_all(&mount);
     fs::create_dir_all(&mount).map_err(|error| error.to_string())?;
+    set_stage(app, "install", "正在解压更新包…");
+    let dmg = extract_payload(&manifest.payload, &work_dir)?;
     set_stage(app, "install", "正在挂载更新包…");
     let mount_arg = mount.to_string_lossy().into_owned();
-    let payload_arg = manifest.payload.to_string_lossy().into_owned();
+    let payload_arg = dmg.to_string_lossy().into_owned();
     run_command(
         "hdiutil",
         &["attach", "-nobrowse", "-readonly", "-mountpoint", mount_arg.as_str(), payload_arg.as_str()],
@@ -951,9 +990,9 @@ mod tests {
 
     #[test]
     fn sanitizes_names() {
-        assert!(sanitize_asset_name("Acta-3.3.0-macos-arm64.dmg").is_ok());
-        assert!(sanitize_asset_name("../evil.dmg").is_err());
+        assert!(sanitize_asset_name("Acta-4.3.0-macos-arm64.zip").is_ok());
+        assert!(sanitize_asset_name("../evil.zip").is_err());
         assert!(sanitize_asset_name("").is_err());
-        assert!(sanitize_asset_name("a/b.dmg").is_err());
+        assert!(sanitize_asset_name("a/b.zip").is_err());
     }
 }

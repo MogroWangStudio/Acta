@@ -2395,8 +2395,10 @@ async function main() {
       document.querySelector('#listFilterToggle').click();
       sortSelect.dispatchEvent(new MouseEvent('mousedown', { bubbles:true, cancelable:true }));
       const menuOpens = await waitFor(() => document.querySelector('.acx-menu'));
-      const menuOptionCount = document.querySelectorAll('.acx-menu .acx-option').length;
-      const target = [...document.querySelectorAll('.acx-menu .acx-option')].find(option => option.dataset.value === 'title');
+      // MWS ComboBox 重构后弹层行为 .acx-row（data-i 下标），与 sortSelect.options 一一对应。
+      const menuOptionCount = document.querySelectorAll('.acx-menu .acx-row').length;
+      const targetIndex = [...sortSelect.options].findIndex(option => option.value === 'title');
+      const target = document.querySelector('.acx-menu .acx-row[data-i="' + targetIndex + '"]');
       target?.click();
       const menuClosed = await waitFor(() => !document.querySelector('.acx-menu'));
       const sortChanged = sortSelect.value === 'title';

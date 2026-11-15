@@ -19,17 +19,23 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * 应用内更新（Android 原生实现）：
- * 检查 GitHub Release 的安卓安装包 → 下载到应用外部缓存目录（带进度事件）→
- * 通过 FileProvider 拉起系统安装器（未授予「安装未知应用」权限时先跳转授权）。
- * 只在 Tag 发布的 Release 中寻找 `Acta-*-android.apk` 资产；桌面端更新走
+ * 检查 GitHub Release 的安卓更新包 → 下载到应用外部缓存目录（带进度事件）→
+ * 解压出 apk → 通过 FileProvider 拉起系统安装器（未授予「安装未知应用」权限
+ * 时先跳转授权）。Release 资产统一为压缩包 `Acta-<版本>-android-arm64.zip`
+ * （包内单个 Acta.apk），本插件按压缩包名识别、下载后解出 apk 再安装；
+ * 桌面端更新走
  * Tauri 自身机制，与本插件互不影响。
  */
 @CapacitorPlugin(name = "ActaUpdater")
@@ -134,7 +140,7 @@ public class ActaUpdaterPlugin extends Plugin {
                     call.resolve(result);
                     return;
                 }
-                // 只认安卓安装包资产：Acta-*-android.apk
+                // 只认安卓更新压缩包资产：Acta-<版本>-android-<架构>.zip
                 String downloadUrl = "";
                 String assetName = "";
                 long assetSize = 0;
@@ -143,7 +149,7 @@ public class ActaUpdaterPlugin extends Plugin {
                     for (int i = 0; i < assets.length(); i++) {
                         JSONObject asset = assets.optJSONObject(i);
                         String name = asset == null ? "" : asset.optString("name", "");
-                        if (name.matches("Acta-.*-android\\.apk")) {
+                        if (name.matches("Acta-.*-android-.*\\.zip")) {
                             downloadUrl = asset.optString("browser_download_url", "");
                             assetSize = asset.optLong("size", 0);
                             assetName = name;
@@ -189,10 +195,10 @@ public class ActaUpdaterPlugin extends Plugin {
         Thread worker = new Thread(() -> {
             try {
                 File updatesDir = new File(context.getExternalFilesDir(null), "updates");
-                File target = new File(updatesDir, "Acta-" + version + "-android.apk");
-                // 已有完整包直接复用，避免重复下载
+                File target = new File(updatesDir, "Acta-" + version + "-android.zip");
+                // 已有完整压缩包直接复用，避免重复下载
                 if (expectedSize > 0 && target.exists() && target.length() == expectedSize) {
-                    resolveDownloaded(call, target);
+                    resolveDownloaded(call, extractApkFromZip(target, updatesDir, version));
                     return;
                 }
                 updatesDir.mkdirs();
@@ -236,13 +242,40 @@ public class ActaUpdaterPlugin extends Plugin {
                     return;
                 }
                 notifyProgress(target.length(), target.length());
-                resolveDownloaded(call, target);
+                // 解压出 apk 再交给安装流程；压缩包完成使命后删除。
+                File apk = extractApkFromZip(target, updatesDir, version);
+                target.delete();
+                resolveDownloaded(call, apk);
             } catch (Exception error) {
                 call.reject("下载更新失败：" + error.getMessage());
             }
         }, "acta-updater-download");
         worker.setDaemon(true);
         worker.start();
+    }
+
+    /** 从更新压缩包里解出唯一的 apk（Release 资产固定一个 zip 装一个 Acta.apk）。 */
+    private static File extractApkFromZip(File zipFile, File updatesDir, String version) throws Exception {
+        File apkFile = new File(updatesDir, "Acta-" + version + "-android.apk");
+        File extracted = null;
+        try (ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) {
+            ZipEntry entry;
+            while ((entry = zip.getNextEntry()) != null) {
+                if (entry.isDirectory()) continue;
+                String name = new File(entry.getName()).getName();
+                if (!name.toLowerCase().endsWith(".apk")) continue;
+                if (extracted != null) throw new IllegalStateException("更新压缩包里有多个 apk");
+                try (FileOutputStream output = new FileOutputStream(apkFile)) {
+                    byte[] buffer = new byte[65536];
+                    int read;
+                    while ((read = zip.read(buffer)) != -1) output.write(buffer, 0, read);
+                    output.getFD().sync();
+                }
+                extracted = apkFile;
+            }
+        }
+        if (extracted == null) throw new IllegalStateException("更新压缩包里没有 apk");
+        return extracted;
     }
 
     private void resolveDownloaded(PluginCall call, File file) {

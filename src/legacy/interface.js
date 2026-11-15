@@ -4781,9 +4781,10 @@
     setProbeStatus('probing');
     try {
       // 拿一个真实存在的下载直链做样本：取最近 Release 里当前平台资产的
-      // browser_download_url（只测链路，不关心版本是否比当前新）。
+      // browser_download_url（只测链路，不关心版本是否比当前新）。Release
+      // 资产统一为压缩包 Acta-<版本>-<平台>-<架构>.zip。
       const isMac = /Mac/i.test(navigator.userAgent) && !/iPhone|iPad/i.test(navigator.userAgent);
-      const assetSuffix = isMac ? '-macos-arm64.dmg' : '-windows-x64-portable.exe';
+      const assetSuffix = isMac ? '-macos-arm64.zip' : '-windows-x64.zip';
       const response = await fetch('https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const releases = await response.json();
@@ -4804,8 +4805,10 @@
       lines.push(directOk ? formatProbeLine('probeDirectLabel', direct, directFaster) : updateText('probeFailLine', { label: updateText('probeDirectLabel'), status: direct?.status ?? 0 }));
       lines.push(proxyOk ? formatProbeLine('probeProxyLabel', proxied, proxyFaster) : updateText('probeFailLine', { label: updateText('probeProxyLabel'), status: proxied?.status ?? 0 }));
       const el = byId('downloadProbeStatus');
+      // 结果与「正在测速…」共用这一行：渲染结果即取代加载文案。这里不能再
+      // 调 setProbeStatus(null)——它会把承载结果的同一行整个藏掉，表现就是
+      // 「测速后没有任何显示」。
       if (el) { el.hidden = false; el.innerHTML = lines.map(line => escapeHTML(line)).join('<br>'); }
-      setProbeStatus(null);
     } catch (err) {
       setProbeStatus('probeAssetFail', { detail: (err && err.message) ? err.message : String(err) });
     } finally {
@@ -7265,7 +7268,7 @@
     const search = dialog.querySelector('.font-picker-search input');
     search.addEventListener('input', () => { fontPickerState.filter = search.value; renderFontPickerList(); });
     const status = dialog.querySelector('.font-picker-status');
-    fontPickerState.sampleText = 'Acta 行记';
+    fontPickerState.sampleText = 'Acta';
     try {
       const { families } = await loadSystemFonts();
       if (fontPickerState.dialog !== dialog) return;

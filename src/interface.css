@@ -455,8 +455,14 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
 /* 值里没有空格（如「Tauri（Windows/macOS），Capacitor（Android）」）时
    默认规则无处可断：允许任意位置折行，字号放大或窄屏下不再撑破卡片。 */
 .about-meta b { font-size: calc(10px * var(--acta-font-scale)); overflow-wrap: anywhere; }
-.about-update { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
-.about-update .about-update-status { margin: 0; min-height: 0; padding: 0; background: transparent; flex: 1; min-width: 0; }
+/* 软件更新：独立板块（settings-group 卡组），标题行 + 通道/来源/操作行 +
+   状态行，与「开发者」组同一行语言。 */
+.about-update-group { margin-top: 14px; }
+.about-update-group .settings-row { min-height: 48px; }
+.about-update-actions { gap: 10px; justify-content: flex-end; }
+.about-update-actions .settings-button { min-height: 34px; }
+.about-update-group .about-update-status { margin: 0; padding: 9px 15px 11px; background: transparent; min-height: 0; font-size: calc(10px * var(--acta-font-scale)); }
+.about-update-group .about-update-status + .about-update-status { padding-top: 0; }
 .about-update-status[hidden] { display: none; }
 .about-update-status.ok { color: var(--sage); }
 .about-update-status.error { color: #b96051; }

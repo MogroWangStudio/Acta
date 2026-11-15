@@ -36,18 +36,21 @@ jobs:
         run: npm ci
       - name: Build portable exe
         run: npm run windows:portable
-      - name: Collect portable exe
+      - name: Collect portable exe into zip
         shell: pwsh
         run: |
+          # 与 release.yml 同构的产物：Acta-<版本>-windows-x64.zip，包内单个 Acta.exe。
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           $exe = Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release" -Filter *.exe |
             Sort-Object Length -Descending | Select-Object -First 1
           if (-not $exe) { throw "No portable exe found in release output." }
-          Copy-Item $exe.FullName "dist/Acta-${{ steps.ver.outputs.version }}-windows-x64-portable.exe"
+          New-Item -ItemType Directory -Force -Path dist/payload | Out-Null
+          Copy-Item $exe.FullName "dist/payload/Acta.exe"
+          Compress-Archive -Path "dist/payload/Acta.exe" -DestinationPath "dist/Acta-${{ steps.ver.outputs.version }}-windows-x64.zip" -Force
       - uses: actions/upload-artifact@v4
         with:
-          name: Acta-${{ steps.ver.outputs.version }}-windows-x64-portable
-          path: dist/Acta-*-windows-x64-portable.exe
+          name: Acta-${{ steps.ver.outputs.version }}-windows-x64
+          path: dist/Acta-*-windows-x64.zip
           if-no-files-found: error
 
   macos-dmg:
@@ -92,10 +95,18 @@ jobs:
           # 和开源说明，用户双击脚本、输入密码即可修复启动。
           bash scripts/dmg/package-dmg.sh "${{ steps.ver.outputs.version }}"
           sudo xattr -r -d com.apple.quarantine "dist/Acta-${{ steps.ver.outputs.version }}-macos-arm64.dmg" 2>/dev/null || true
+      - name: Collect dmg into zip
+        shell: bash
+        run: |
+          # 与 release.yml 同构的产物：Acta-<版本>-macos-arm64.zip，包内单个 Acta.dmg。
+          cd dist
+          cp "Acta-${{ steps.ver.outputs.version }}-macos-arm64.dmg" Acta.dmg
+          zip -q "Acta-${{ steps.ver.outputs.version }}-macos-arm64.zip" Acta.dmg
+          rm -f Acta.dmg
       - uses: actions/upload-artifact@v4
         with:
           name: Acta-${{ steps.ver.outputs.version }}-macos-arm64
-          path: dist/Acta-*-macos-arm64.dmg
+          path: dist/Acta-*-macos-arm64.zip
           if-no-files-found: error
 
   android-apk:
@@ -143,15 +154,17 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
-      - name: Collect apk
+      - name: Collect apk into zip
         shell: bash
         run: |
+          # 与 release.yml 同构的产物：Acta-<版本>-android-arm64.zip，包内单个 Acta.apk。
           mkdir -p dist
-          cp android/app/build/outputs/apk/release/app-release.apk "dist/Acta-${{ steps.ver.outputs.version }}-android.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk dist/Acta.apk
+          cd dist && zip -q "Acta-${{ steps.ver.outputs.version }}-android-arm64.zip" Acta.apk && rm -f Acta.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: Acta-${{ steps.ver.outputs.version }}-android-apk
-          path: dist/Acta-*-android.apk
+          name: Acta-${{ steps.ver.outputs.version }}-android-arm64
+          path: dist/Acta-*-android-*.zip
           if-no-files-found: error
 
   # 发布不再由本工作流负责：推 main 后 release.yml 按版本号自动发布
