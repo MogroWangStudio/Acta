@@ -913,7 +913,9 @@ let calendarModeHistory = [];
 let calendarCursor = new Date(`${todayISO()}T12:00:00`);
 let calendarMotion = '';
 let calendarMotionTimer = null;
-let selectedId = library.items.find(item => !item.deletedAt)?.id || null;
+// 选中项只由用户动作决定（点卡片、新建、打开关联条目）：启动与切换视图
+// 都不替用户挑一条内容，右侧保持空态，等真的选中了再展开编辑器。
+let selectedId = null;
 let searchQuery = '';
 // —— 已完成待办自动置底 ——
 // 勾选完成后待办先原地停留一段可配置的延迟（等勾选动效播完，也给用户留出
@@ -3002,7 +3004,8 @@ function destroyItems(ids) {
   library.items.forEach(entry => { entry.linkedIds = (entry.linkedIds || []).filter(id => !idSet.has(id)); });
   library.items = library.items.filter(entry => !idSet.has(entry.id));
   idSet.forEach(id => statsSelection.delete(id));
-  if (selectedId && idSet.has(selectedId)) selectedId = activeItems()[0]?.id || null;
+  // 被删除的正是当前选中项：清空选中回到空态，不替用户打开另一条内容。
+  if (selectedId && idSet.has(selectedId)) selectedId = null;
   persist();
   renderAll();
 }
@@ -8543,8 +8546,7 @@ function bindEditor(item) {
       logHistory('item-trashed', item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')), item.id, JSON.parse(JSON.stringify(item)));
       item.deletedAt = new Date().toISOString();
       unlinkForTrash(item);
-      const nextSelection = getVisibleItems().find(entry => entry.id !== item.id) || activeItems()[0];
-      selectedId = nextSelection?.id || null;
+      selectedId = null;
       persist();
       renderAll();
       return;
@@ -9320,8 +9322,18 @@ function openItem(id) {
     settings.showCompletedTodos = true;
     persist();
   }
-  currentView = target.type === 'todo' ? 'todos' : 'notes';
-  resetListFilters(target.type);
+  // 在归类页里顺着关联切换到另一条内容时留在归类视图：目标已归类就停在
+  // 它所在的归类页（跨归类时跟着过去），只有未归类的条目才退回「所有
+  // 待办 / 所有笔记」——否则在归类里点一条关联就被踢出当前归类。
+  const folderView = String(currentView).startsWith('folder:');
+  const targetFolder = target.folderId && getFolder(target.folderId) ? target.folderId : '';
+  if (folderView && targetFolder) {
+    currentView = `folder:${targetFolder}`;
+    resetListFilters('mixed');
+  } else {
+    currentView = target.type === 'todo' ? 'todos' : 'notes';
+    resetListFilters(target.type);
+  }
   searchQuery = '';
   mobileEditorOpen = true;
   $('#searchInput').value = '';
@@ -9917,10 +9929,9 @@ function bindShell() {
     mobileEditorOpen = false;
     renderSidebar(); renderList();
     const visible = getVisibleItems();
-    // 进入汇总板不带旧选中：画布以全宽打开，点击卡片再展开编辑器；
-    // 其余视图维持「选中项不在列表时回落到第一项」的既有行为。
-    if (currentView === 'board') selectedId = null;
-    else if (!visible.some(item => item.id === selectedId)) selectedId = visible[0]?.id || null;
+    // 不替用户挑内容：进入汇总板不带旧选中（画布以全宽打开，点卡片再展开
+    // 编辑器）；其余视图只在选中项仍属于当前列表时保留，否则回到空态。
+    if (currentView === 'board' || !visible.some(item => item.id === selectedId)) selectedId = null;
     if (currentView !== 'calendar') renderEditor();
     // 移动端顶栏功能区的选中药丸：当前视图对应的入口高亮（刷新 / 历史 /
     // 局域网雷达等动作入口无视图态，不亮）。
@@ -9940,10 +9951,11 @@ function bindShell() {
       renderEditor();
     }
   });
+  // 筛选把当前选中项排除掉时回到空态：右侧不再顺手打开列表里的第一条。
   const refreshFilteredList = () => {
     renderList();
     const visible = getVisibleItems();
-    if (!visible.some(item => item.id === selectedId)) { selectedId = visible[0]?.id || null; renderEditor(); }
+    if (!visible.some(item => item.id === selectedId)) { selectedId = null; renderEditor(); }
   };
   // 行内类型分段：控件只有一个，语义随页面而定——
   // 收集箱 / 归类 / 回收站是在本页内按类型收窄；「全部待办」与「全部笔记」
@@ -10026,7 +10038,7 @@ function bindShell() {
   $('#searchInput').addEventListener('input', event => {
     searchQuery = event.target.value.trim(); renderList();
     const visible = getVisibleItems();
-    if (!visible.some(item => item.id === selectedId)) { selectedId = visible[0]?.id || null; renderEditor(); }
+    if (!visible.some(item => item.id === selectedId)) { selectedId = null; renderEditor(); }
   });
   // 日历快速跳转：标签开关浮层，年导航与月份格选中即跳转。
   $('#calendarJumpTrigger')?.addEventListener('click', () => {

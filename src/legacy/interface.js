@@ -196,7 +196,8 @@
     exportCopyClipboard:'复制到剪贴板', exportTasksTxt:'导出 TXT', exportTasksMd:'导出 Markdown',
     tasksExported:'子任务已导出', tasksExportEmpty:'还没有可导出的子任务',
     exportScope:'子待办范围', exportScopeAll:'已完成 + 未完成', exportScopeDone:'仅已完成', exportScopeUndone:'仅未完成',
-    exportNumbering:'序号样式', exportNumberingNone:'不加序号', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
+    exportNumbering:'序号样式', exportNumberingNone:'不加序号', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)',
+    exportPreview:'导出预览', exportPreviewCount:'{0} 行', exportPreviewEmpty:'当前范围内没有可导出的子任务'
   });
   Object.assign(dictionaries.en, {
     bulkAddTask:'Quick-add subtasks', bulkAddTaskHint:'One subtask per line — paste a list and add them all at once', bulkAddPlaceholder:'Type one subtask per line…',
@@ -207,7 +208,8 @@
     exportCopyClipboard:'Copy to clipboard', exportTasksTxt:'Export TXT', exportTasksMd:'Export Markdown',
     tasksExported:'Subtasks exported', tasksExportEmpty:'No subtasks to export',
     exportScope:'Subtask scope', exportScopeAll:'Completed + open', exportScopeDone:'Completed only', exportScopeUndone:'Open only',
-    exportNumbering:'Numbering', exportNumberingNone:'No numbering', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
+    exportNumbering:'Numbering', exportNumberingNone:'No numbering', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)',
+    exportPreview:'Preview', exportPreviewCount:'{0} lines', exportPreviewEmpty:'No subtasks to export in this range'
   });
   Object.assign(dictionaries['zh-Hant'], {
     bulkAddTask:'快速新增子任務', bulkAddTaskHint:'每行一條子任務，貼上清單一鍵新增', bulkAddPlaceholder:'每行輸入一條子任務…',
@@ -218,7 +220,8 @@
     exportCopyClipboard:'複製到剪貼簿', exportTasksTxt:'匯出 TXT', exportTasksMd:'匯出 Markdown',
     tasksExported:'子任務已匯出', tasksExportEmpty:'還沒有可匯出的子任務',
     exportScope:'子任務範圍', exportScopeAll:'已完成 + 未完成', exportScopeDone:'僅已完成', exportScopeUndone:'僅未完成',
-    exportNumbering:'序號樣式', exportNumberingNone:'不加序號', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)'
+    exportNumbering:'序號樣式', exportNumberingNone:'不加序號', exportNumberingDot:'1. 2. 3.', exportNumberingDunhao:'1、2、3、', exportNumberingCn:'一、二、三、', exportNumberingParen:'(1) (2) (3)',
+    exportPreview:'匯出預覽', exportPreviewCount:'{0} 行', exportPreviewEmpty:'目前範圍內沒有可匯出的子任務'
   });
 
   // 编辑器内查找。
@@ -2724,28 +2727,36 @@
     dialog.className = 'relation-dialog export-tasks-dialog';
     dialog.innerHTML = `
       <header class="relation-dialog-head"><span><svg><use href="#i-upload"/></svg></span><h3>${escapeHTML(t('exportTasks'))}</h3><button class="relation-dialog-close" type="button" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></header>
-      <form class="relation-dialog-body" method="dialog" novalidate>
-        <p class="bulk-task-hint">${escapeHTML(t('exportTasksHint'))}</p>
-        <div class="export-tasks-format" role="radiogroup" aria-label="${escapeHTML(t('exportFormatTitle'))}">
-          <label><input type="radio" name="taskExportFormat" value="lines" checked/><span><b>${escapeHTML(t('exportFormatLines'))}</b><small>${escapeHTML(t('exportFormatLinesHint'))}</small></span></label>
-          <label><input type="radio" name="taskExportFormat" value="checklist"/><span><b>${escapeHTML(t('exportFormatChecklist'))}</b><small>${escapeHTML(t('exportFormatChecklistHint'))}</small></span></label>
-        </div>
-        <div class="export-tasks-options">
-          <div class="export-tasks-scope" role="group" aria-label="${escapeHTML(t('exportScope'))}">
-            <span>${escapeHTML(t('exportScope'))}</span>
-            <div class="board-import-seg">
-              <button type="button" data-task-scope="all" class="active">${escapeHTML(t('exportScopeAll'))}</button>
-              <button type="button" data-task-scope="done">${escapeHTML(t('exportScopeDone'))}</button>
-              <button type="button" data-task-scope="undone">${escapeHTML(t('exportScopeUndone'))}</button>
+      <form class="relation-dialog-body export-tasks-body" method="dialog" novalidate>
+        <div class="export-tasks-layout">
+          <div class="export-tasks-controls">
+            <p class="bulk-task-hint">${escapeHTML(t('exportTasksHint'))}</p>
+            <div class="export-tasks-format" role="radiogroup" aria-label="${escapeHTML(t('exportFormatTitle'))}">
+              <label><input type="radio" name="taskExportFormat" value="lines" checked/><span><b>${escapeHTML(t('exportFormatLines'))}</b><small>${escapeHTML(t('exportFormatLinesHint'))}</small></span></label>
+              <label><input type="radio" name="taskExportFormat" value="checklist"/><span><b>${escapeHTML(t('exportFormatChecklist'))}</b><small>${escapeHTML(t('exportFormatChecklistHint'))}</small></span></label>
+            </div>
+            <div class="export-tasks-options">
+              <div class="export-tasks-scope" role="group" aria-label="${escapeHTML(t('exportScope'))}">
+                <span>${escapeHTML(t('exportScope'))}</span>
+                <div class="board-import-seg">
+                  <button type="button" data-task-scope="all" class="active">${escapeHTML(t('exportScopeAll'))}</button>
+                  <button type="button" data-task-scope="done">${escapeHTML(t('exportScopeDone'))}</button>
+                  <button type="button" data-task-scope="undone">${escapeHTML(t('exportScopeUndone'))}</button>
+                </div>
+              </div>
+              <label class="export-tasks-numbering"><span>${escapeHTML(t('exportNumbering'))}</span><select name="taskExportNumbering">
+                <option value="none">${escapeHTML(t('exportNumberingNone'))}</option>
+                <option value="dot">${escapeHTML(t('exportNumberingDot'))}</option>
+                <option value="dunhao">${escapeHTML(t('exportNumberingDunhao'))}</option>
+                <option value="cn">${escapeHTML(t('exportNumberingCn'))}</option>
+                <option value="paren">${escapeHTML(t('exportNumberingParen'))}</option>
+              </select></label>
             </div>
           </div>
-          <label class="export-tasks-numbering"><span>${escapeHTML(t('exportNumbering'))}</span><select name="taskExportNumbering">
-            <option value="none">${escapeHTML(t('exportNumberingNone'))}</option>
-            <option value="dot">${escapeHTML(t('exportNumberingDot'))}</option>
-            <option value="dunhao">${escapeHTML(t('exportNumberingDunhao'))}</option>
-            <option value="cn">${escapeHTML(t('exportNumberingCn'))}</option>
-            <option value="paren">${escapeHTML(t('exportNumberingParen'))}</option>
-          </select></label>
+          <section class="export-tasks-preview" aria-label="${escapeHTML(t('exportPreview'))}">
+            <header class="export-tasks-preview-head"><b>${escapeHTML(t('exportPreview'))}</b><em class="export-tasks-preview-count"></em></header>
+            <pre class="export-tasks-preview-text" tabindex="0"></pre>
+          </section>
         </div>
         <div class="settings-actions">
           <button type="button" class="settings-button secondary" data-export-copy><svg><use href="#i-copy"/></svg><span>${escapeHTML(t('exportCopyClipboard'))}</span></button>
@@ -2758,6 +2769,17 @@
       scope: dialog.querySelector('[data-task-scope].active')?.dataset.taskScope || 'all',
       numbering: dialog.querySelector('select[name="taskExportNumbering"]')?.value || 'none'
     });
+    // 右侧预览与左侧选项同源：都是 taskExportContent 按当前格式 / 范围 /
+    // 序号现算的一行行文字，改任一选项立即重排，导出前就能看清结果。
+    const previewText = dialog.querySelector('.export-tasks-preview-text');
+    const previewCount = dialog.querySelector('.export-tasks-preview-count');
+    const syncPreview = () => {
+      const content = taskExportContent(item, currentFormat(), currentOptions());
+      const lines = content ? content.split('\n').length : 0;
+      previewCount.textContent = lines ? t('exportPreviewCount').replace('{0}', lines) : '';
+      previewText.textContent = content || t('exportPreviewEmpty');
+      previewText.classList.toggle('is-empty', !lines);
+    };
     let exportFinished = false;
     // 关闭动画与批量添加弹窗同款：is-closing 250ms 后再移除节点。
     const finish = () => {
@@ -2770,7 +2792,10 @@
     dialog.addEventListener('cancel', event => { event.preventDefault(); finish(); });
     dialog.querySelectorAll('[data-task-scope]').forEach(button => button.addEventListener('click', () => {
       dialog.querySelectorAll('[data-task-scope]').forEach(entry => entry.classList.toggle('active', entry === button));
+      syncPreview();
     }));
+    dialog.querySelectorAll('input[name="taskExportFormat"]').forEach(input => input.addEventListener('change', syncPreview));
+    dialog.querySelector('select[name="taskExportNumbering"]').addEventListener('change', syncPreview);
     dialog.querySelector('[data-export-copy]').addEventListener('click', async () => {
       await contextClipboardWrite(taskExportContent(item, currentFormat(), currentOptions()));
       showToast(t('copied'));
@@ -2783,6 +2808,7 @@
       await exportTasksToFile(item, taskExportContent(item, currentFormat(), currentOptions()), 'md');
       finish();
     });
+    syncPreview();
     document.body.appendChild(dialog);
     dialog.showModal();
   };
@@ -2911,8 +2937,8 @@
         if (choice === 'trash') {
           item.deletedAt = new Date().toISOString();
           unlinkForTrash(item);
-          const nextSelection = getVisibleItems().find(entry => entry.id !== item.id) || activeItems()[0];
-          selectedId = nextSelection?.id || null;
+          // 移入回收站后回到空态：不再自动打开列表里的下一条。
+          selectedId = null;
           persist();
           renderAll();
           return;
@@ -3647,7 +3673,8 @@
     }
     library = next;
     statsSelection.clear();
-    selectedId = activeItems()[0]?.id || null;
+    // 换了一份数据不等于选中了内容：保持空态，等用户自己点开。
+    selectedId = null;
     // 刷新（下拉刷新 / 刷新按钮）传 keepView：数据更新不改变用户所在视图
     // 与筛选——收集箱里「所有笔记 / 所有待办」的类型筛选、其他筛选与搜索
     // 词都保持，只有归类视图的归类已被删时回落收集箱。数据替换类调用
@@ -4774,25 +4801,43 @@
     const mb = (probe.bytes / (1024 * 1024)).toFixed(1);
     return updateText('probeLine', { label: updateText(labelKey), kbps: probe.kbps, sec: (probe.elapsed_ms / 1000).toFixed(1), mb }) + (faster ? ` · ${updateText('probeFaster')}` : '');
   };
+  // 测速样本地址：优先取最近 Release 里当前平台资产的 browser_download_url
+  // （只测链路，不关心版本是否比当前新；资产统一是
+  // Acta-<版本>-<平台>-<架构>.zip）。api.github.com 的未认证额度按 IP 计
+  // （60 次/小时），撞上额度就会返回 403——上一版把这一次接口失败当成整场
+  // 测速失败，用户只看到「HTTP 403」。这里的取舍是：
+  //   1) 发现结果在内存里缓存 10 分钟，连点测速不再反复打接口；
+  //   2) 接口失败/限流/资产缺失时退回仓库内一份固定存在的样本文件，
+  //      两条线路照常各测各的——测速测的是链路，不该被一次 403 拦死。
+  const PROBE_SAMPLE_FALLBACK = 'https://raw.githubusercontent.com/MogroWangStudio/Acta/main/public/lib/pdf-lib.min.js';
+  const PROBE_SAMPLE_TTL = 10 * 60 * 1000;
+  let probeSampleCache = { url: '', at: 0 };
+  async function probeSampleUrl() {
+    if (probeSampleCache.url && Date.now() - probeSampleCache.at < PROBE_SAMPLE_TTL) return probeSampleCache.url;
+    const isMac = /Mac/i.test(navigator.userAgent) && !/iPhone|iPad/i.test(navigator.userAgent);
+    const assetSuffix = isMac ? '-macos-arm64.zip' : '-windows-x64.zip';
+    try {
+      const response = await fetch('https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+      if (!response.ok) return PROBE_SAMPLE_FALLBACK;
+      const releases = await response.json();
+      const assetUrl = (Array.isArray(releases) ? releases : [])
+        .flatMap(release => (Array.isArray(release.assets) ? release.assets : []))
+        .find(asset => typeof asset.name === 'string' && asset.name.endsWith(assetSuffix))
+        ?.browser_download_url;
+      if (!assetUrl) return PROBE_SAMPLE_FALLBACK;
+      probeSampleCache = { url: assetUrl, at: Date.now() };
+      return assetUrl;
+    } catch {
+      return PROBE_SAMPLE_FALLBACK;
+    }
+  }
   async function runDownloadProbe() {
     const btn = byId('downloadProbeButton');
     if (!btn || btn.disabled || !window.actaDesktop?.probeDownloadSpeed) return;
     btn.disabled = true;
     setProbeStatus('probing');
     try {
-      // 拿一个真实存在的下载直链做样本：取最近 Release 里当前平台资产的
-      // browser_download_url（只测链路，不关心版本是否比当前新）。Release
-      // 资产统一为压缩包 Acta-<版本>-<平台>-<架构>.zip。
-      const isMac = /Mac/i.test(navigator.userAgent) && !/iPhone|iPad/i.test(navigator.userAgent);
-      const assetSuffix = isMac ? '-macos-arm64.zip' : '-windows-x64.zip';
-      const response = await fetch('https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const releases = await response.json();
-      const assetUrl = (Array.isArray(releases) ? releases : [])
-        .flatMap(release => (Array.isArray(release.assets) ? release.assets : []))
-        .find(asset => typeof asset.name === 'string' && asset.name.endsWith(assetSuffix))
-        ?.browser_download_url;
-      if (!assetUrl) throw new Error('no matching asset');
+      const assetUrl = await probeSampleUrl();
       // 两条线路各自兜底：一路失败（慢网断流、代理失效）不影响另一路的
       // 结果展示——Promise.all 一败俱败是上一版「测速无显示」的帮凶之一。
       const probeRoute = async url => {

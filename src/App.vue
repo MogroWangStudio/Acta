@@ -35,7 +35,7 @@
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
-        <span class="brand-version" aria-label="当前版本 4.3.0-beta3">4.3.0-beta3</span>
+        <span class="brand-version" aria-label="当前版本 4.3.0-beta4">4.3.0-beta4</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
@@ -479,7 +479,7 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.3.0-beta3</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.3.0-beta4</b></div>
                 <div><small>本版更新日期</small><b>2026-10-29</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>

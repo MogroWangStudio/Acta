@@ -34,7 +34,10 @@
 
   const style = document.createElement('style');
   style.textContent = `
-select[${ENHANCED_FLAG}] {
+/* 三重限定（元素 + 属性 + .acx-trigger）提高特异性：业务样式里任何
+   background 简写都会把 background-image 重置成 none，chevron 就没了。
+   这里必须稳压普通的 “.some-field select:focus” 一类规则。 */
+select[${ENHANCED_FLAG}].acx-trigger {
   appearance: none; -webkit-appearance: none;
   --acx-chev: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' fill='none' stroke='%23989b94' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-image: var(--acx-chev);
@@ -42,16 +45,19 @@ select[${ENHANCED_FLAG}] {
   border-radius: 10px;
   transition: background-image .18s ease, border-color .16s ease;
 }
-html[data-acta-theme="mono-dark"] select[${ENHANCED_FLAG}] {
+html[data-acta-theme="mono-dark"] select[${ENHANCED_FLAG}].acx-trigger {
   --acx-chev: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' fill='none' stroke='%238b8b8b' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
-select[${ENHANCED_FLAG}][${OPEN_FLAG}] {
+/* 打开态必须限定 ="true"：收起时组件把标记写成 "false"（而不是删掉），
+   只按属性存在与否匹配会让箭头在第一次点开之后一直朝上——速记弹窗里
+   选完归类、面板已收起，箭头还朝上就是这个原因。 */
+select[${ENHANCED_FLAG}].acx-trigger[${OPEN_FLAG}="true"] {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 7.5L6 4L9.5 7.5' fill='none' stroke='%23989b94' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
-html[data-acta-theme="mono-dark"] select[${ENHANCED_FLAG}][${OPEN_FLAG}] {
+html[data-acta-theme="mono-dark"] select[${ENHANCED_FLAG}].acx-trigger[${OPEN_FLAG}="true"] {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 7.5L6 4L9.5 7.5' fill='none' stroke='%238b8b8b' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
-select[${ENHANCED_FLAG}]:hover { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); }
+select[${ENHANCED_FLAG}].acx-trigger:hover { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); }
 /* 点击后的 halo（浏览器给聚焦 select 的默认外圈）整体去除：菜单展开本身
    就是焦点指示，弹层收起时也会主动 blur，不需要额外的光圈。 */
 select[${ENHANCED_FLAG}] { -webkit-tap-highlight-color: transparent; }
@@ -540,10 +546,35 @@ select[${ENHANCED_FLAG}]:focus, select[${ENHANCED_FLAG}]:focus-visible { outline
   window.addEventListener('resize', reposition, true);
   window.addEventListener('scroll', handleScroll, true);
 
+  // —— 跨面按压产生的合成 click ——
+  // 弹层从触发器的位置长出来，指针常常正好落在新展开的行上：按下在 select、
+  // 松开在行内，浏览器会把 click 派发到两者的公共祖先（通常是 body）。宿主
+  // 浮层（待办属性面板、筛选面板、新建菜单等）都靠 document 上的 click 判断
+  // 「点到外面了」，会因为这一下把面板收起。这里记录按下的归属面，丢掉这类
+  // 既不在触发器、也不在弹层里的 click——它不是用户对别处的点击。
+  let pressSurface = null;
+  const inMenu = node => node instanceof Element && Boolean(node.closest?.('.acx-menu'));
+  const inTrigger = node => node instanceof Element && Boolean(node.closest?.(`[${ENHANCED_FLAG}]`));
+  document.addEventListener('pointerdown', event => {
+    const path = event.composedPath?.() || [event.target];
+    pressSurface = path.some(inMenu) ? 'menu' : path.some(inTrigger) ? 'trigger' : null;
+  }, true);
+  document.addEventListener('click', event => {
+    const surface = pressSurface;
+    pressSurface = null;
+    if (!surface) return;
+    const path = event.composedPath?.() || [event.target];
+    if (path.some(inMenu) || path.some(inTrigger)) return;
+    if (!document.querySelector('.acx-menu')) return;
+    event.stopPropagation();
+    event.preventDefault();
+  }, true);
+
   const enhance = select => {
     if (!(select instanceof HTMLSelectElement)) return;
     if (select.hasAttribute(ENHANCED_FLAG) || select.multiple) return;
     select.setAttribute(ENHANCED_FLAG, 'true');
+    select.classList.add('acx-trigger');
     const trigger = event => {
       if (event.button !== undefined && event.button !== 0) return;
       if (select.disabled) return;

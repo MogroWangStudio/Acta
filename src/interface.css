@@ -757,6 +757,23 @@ input[type="range"]:disabled::-webkit-slider-thumb { opacity: .45; transform: no
 .relation-dialog-body .linked-row { background: color-mix(in srgb, var(--white) 55%, transparent); border: 1px solid var(--line); border-radius: 10px; padding: 4px 6px 4px 4px; }
 .relation-dialog-body .linked-row .open-linked-item:hover { background: var(--panel); }
 .relation-dialog-body .no-links { margin: 0; color: var(--faint); font-size: calc(11.45px * var(--acta-font-scale)); }
+/* 导出子任务：左侧选项、右侧实时预览的双栏窗口。窗口比常规关系弹窗宽，
+   预览给出与导出文件逐行一致的文字，改格式 / 范围 / 序号即刻重排。 */
+.relation-dialog.export-tasks-dialog { width: min(880px, calc(var(--acta-vw) - 28px)); }
+.export-tasks-body { display: grid; gap: 14px; }
+.export-tasks-body .settings-actions { justify-content: flex-end; margin-top: 0; }
+.export-tasks-layout { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+.export-tasks-controls { min-width: 0; display: grid; align-content: start; }
+.export-tasks-preview { min-width: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); border: 1px solid var(--line); border-radius: 12px; background: var(--white); overflow: hidden; }
+.export-tasks-preview-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 11px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 58%, var(--white)); color: var(--muted); font-size: calc(11px * var(--acta-font-scale)); }
+.export-tasks-preview-head b { color: var(--ink); font-weight: 620; }
+.export-tasks-preview-head em { color: var(--faint); font-style: normal; font-variant-numeric: tabular-nums; }
+.export-tasks-preview-text { margin: 0; min-height: 176px; max-height: 268px; padding: 11px 12px; overflow: auto; color: var(--ink); font: calc(11.5px * var(--acta-font-scale))/1.72 ui-monospace, "SFMono-Regular", Consolas, "Microsoft YaHei", monospace; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; }
+.export-tasks-preview-text.is-empty { color: var(--faint); font-family: inherit; font-size: calc(11.45px * var(--acta-font-scale)); display: grid; place-items: center; text-align: center; }
+@media (max-width: 720px) {
+  .export-tasks-layout { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .export-tasks-preview-text { min-height: 104px; max-height: 168px; }
+}
 .export-tasks-options { display: grid; gap: 9px; margin: 12px 0 4px; }
 .export-tasks-scope { display: grid; gap: 5px; }
 .export-tasks-scope > span { color: var(--muted); font-size: calc(9px * var(--acta-font-scale)); }
@@ -1428,10 +1445,12 @@ html[data-acta-palette="neon-ocean"] .sync-icon { box-shadow: 0 0 14px color-mix
 .quick-capture-field-wide { grid-column: 1 / -1; }
 .quick-capture-field-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .quick-capture-field-heading button { padding: 0; border: 0; background: transparent; color: var(--quick-accent); font: inherit; font-size: calc(9px * var(--acta-font-scale)); cursor: pointer; }
-.quick-capture-field input, .quick-capture-field select, .quick-capture-field textarea { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid var(--line); border-radius: 10px; outline: 0; color: var(--ink); background: var(--quick-field-bg); font: inherit; font-weight: 500; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+/* 底色只写 background-color：background 简写会把自绘下拉（custom-select）
+   的 chevron 背景图一起重置成 none，聚焦时箭头就消失。 */
+.quick-capture-field input, .quick-capture-field select, .quick-capture-field textarea { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid var(--line); border-radius: 10px; outline: 0; color: var(--ink); background-color: var(--quick-field-bg); font: inherit; font-weight: 500; transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease; }
 .quick-capture-field input, .quick-capture-field select { height: 40px; padding: 0 11px; }
 .quick-capture-field textarea { min-height: 94px; padding: 10px 11px; resize: vertical; line-height: 1.55; }
-.quick-capture-field input:focus, .quick-capture-field select:focus, .quick-capture-field textarea:focus { border-color: var(--quick-accent); background: var(--white); box-shadow: 0 0 0 3px color-mix(in srgb, var(--quick-accent) 13%, transparent); }
+.quick-capture-field input:focus, .quick-capture-field select:focus, .quick-capture-field textarea:focus { border-color: var(--quick-accent); background-color: var(--white); box-shadow: 0 0 0 3px color-mix(in srgb, var(--quick-accent) 13%, transparent); }
 .quick-capture-field > small { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-weight: 500; line-height: 1.4; }
 .quick-capture-field[hidden] { display: none; }
 .quick-capture-schedule-hint { margin: -2px 0 0; padding: 8px 10px; border-radius: 9px; color: #96613e; background: color-mix(in srgb, #d99a58 13%, transparent); font-size: calc(9px * var(--acta-font-scale)); font-weight: 600; line-height: 1.45; }

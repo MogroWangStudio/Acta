@@ -8,8 +8,8 @@
 //!
 //! 平台差异：
 //! - Windows（便携版单 exe）：向导等待主进程退出后，把运行中的 exe 改名为
-//!   `*.acta-old`（Windows 允许改名运行中的映像），把解压出的新 exe 以带新
-//!   版本号的文件名移入原目录并启动；新版本下次启动时清理 `*.acta-old`。
+//!   `*.acta-old`（Windows 允许改名运行中的映像），把解压出的新 exe 按原
+//!   文件名（`Acta.exe`）放回原路径并启动；新版本下次启动时清理 `*.acta-old`。
 //! - macOS：向导解压出 dmg 并挂载，替换 /Applications（或当前所在位置）里的
 //!   `.app`，随后清除 quarantine 标记——优先用无密码的 `xattr -r -d`，仍带
 //!   标记时弹终端运行 dmg 内自带的「修复启动损坏.command」（sudo 提权），等
@@ -79,7 +79,7 @@ struct ReleaseAsset {
 /// 主应用 → 向导的安装任务单。target 在主应用侧就解析好：
 /// Windows 为 exe 自身路径，macOS 为应被替换的 .app 包目录。
 /// from_version 是当前运行版本的完整版本号（可能带 -beta 后缀），
-/// 向导用它把新 exe 换成带新版本号的文件名。
+/// 向导只把它写进更新日志，不再用它拼新 exe 的文件名。
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateManifest {
     pub version: String,
@@ -564,13 +564,12 @@ fn install_worker(app: AppHandle, manifest_path: PathBuf) {
             set_stage(&app, "done", &message);
             // 自动重启保证：新版本进程被检测到后才安静退出；迟迟未出现
             // 则明确告知更新已完成、需手动启动，避免向导消失后应用也不见。
-            // Windows 的新版本落在带新版本号的文件名上，检测目标要与之同源。
-            let launch_target = versioned_launch_target(&manifest);
+            let new_target = install_target(&manifest);
             let handle = app.clone();
             std::thread::spawn(move || {
                 let deadline = Instant::now() + Duration::from_secs(10);
                 while Instant::now() < deadline {
-                    if launched_running(&launch_target) {
+                    if launched_running(&new_target) {
                         // 给新版本留出完成启动的时间，再收掉向导窗口。
                         std::thread::sleep(Duration::from_millis(800));
                         handle.exit(0);
@@ -695,43 +694,16 @@ fn shell_quote(value: &str) -> String {
     format!("'{}'", value.replace('\'', "'\\''"))
 }
 
-/// 新 exe 的文件名：把旧文件名里的当前版本号换成新版本号（文件名即版本，
-/// 便于用户分辨手里的是哪个版本）；用户改过名（如 `Acta.exe`）时补上
-/// 版本号，避免覆盖同名文件后无从判断。
-#[cfg(target_os = "windows")]
-fn versioned_exe_name(target: &Path, from_version: &str, to_version: &str) -> String {
-    let name = target.file_name().and_then(|value| value.to_str()).unwrap_or("Acta.exe");
-    let (stem, ext) = match name.rsplit_once('.') {
-        Some((stem, ext)) if !ext.is_empty() && !ext.chars().any(|c| !c.is_ascii_alphanumeric()) => (stem, Some(ext)),
-        _ => (name, None),
-    };
-    let renamed = if stem.contains(from_version) {
-        stem.replacen(from_version, to_version, 1)
-    } else {
-        format!("{stem}-{to_version}")
-    };
-    match ext {
-        Some(ext) => format!("{renamed}.{ext}"),
-        None => renamed,
-    }
-}
-
-/// 向导安装后新版本应落到的路径（Windows 版本化文件名；其他平台原路径）。
+/// 向导安装后新版本应落到的路径。Windows 也保持用户硬盘上的原文件名
+/// （`Acta.exe`）：带版本号的文件名会让快捷方式、开机自启与用户习惯的
+/// 路径在每次更新后失效，版本信息在应用内可见，不需要靠文件名承载。
 /// install_worker 的"新进程检测"与 install_windows 的实际落点必须同源。
-fn versioned_launch_target(manifest: &UpdateManifest) -> PathBuf {
-    #[cfg(target_os = "windows")]
-    {
-        let name = versioned_exe_name(&manifest.target, &manifest.from_version, &manifest.version);
-        return manifest.target.with_file_name(name);
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        manifest.target.clone()
-    }
+fn install_target(manifest: &UpdateManifest) -> PathBuf {
+    manifest.target.clone()
 }
 
 /// Windows：等待退出 → 解压更新包 → 运行中的 exe 改名为 *.acta-old → 新 exe
-/// 以带新版本号的文件名移入 → 启动。
+/// 以原文件名放回原路径 → 启动。
 #[cfg(target_os = "windows")]
 fn install_windows(app: &AppHandle, manifest: &UpdateManifest) -> Result<String, String> {
     set_stage(app, "install", "正在解压更新包…");
@@ -740,7 +712,7 @@ fn install_windows(app: &AppHandle, manifest: &UpdateManifest) -> Result<String,
     let payload = extract_payload(&manifest.payload, &work_dir)?;
     set_stage(app, "install", "正在替换应用…");
     let target = &manifest.target;
-    let final_target = versioned_launch_target(manifest);
+    let final_target = install_target(manifest);
     let backup = target.with_file_name(format!(
         "{}.acta-old",
         target.file_name().and_then(|name| name.to_str()).unwrap_or("Acta.exe")
@@ -769,9 +741,9 @@ fn install_windows(app: &AppHandle, manifest: &UpdateManifest) -> Result<String,
 }
 
 /// 新版本启动后清理上一次更新留下的旧 exe（向导进程退出前无法删除自己的
-/// 映像）。更新会改名当前 exe 产生 `*.acta-old` 备份，而新 exe 的文件名带了
-/// 新版本号，无法按"自己的名字 + 后缀"定位——改为清理同目录下所有
-/// `.acta-old` 结尾的文件（只有 Acta 的更新流程会制造这种文件）。
+/// 映像）。更新会改名当前 exe 产生 `*.acta-old` 备份；扫描同目录下所有
+/// `.acta-old` 结尾的文件（只有 Acta 的更新流程会制造这种文件），不依赖
+/// 文件名里的版本号。
 #[cfg(target_os = "windows")]
 pub fn cleanup_stale_backup() {
     let Ok(self_path) = std::env::current_exe() else { return };
@@ -984,24 +956,7 @@ mod tests {
         assert_eq!(cmp("4.3.0-beta1", "4.2.9"), Ordering::Greater);
     }
 
-    // versioned_exe_name 只在 Windows 编译；测试分支随之限定。
-    #[test]
-    #[cfg(target_os = "windows")]
-    fn versions_windows_exe_names() {
-        let path = Path::new("C:/Apps/Acta-4.3.0-beta1-windows-x64-portable.exe");
-        assert_eq!(
-            versioned_exe_name(path, "4.3.0-beta1", "4.3.0"),
-            "Acta-4.3.0-windows-x64-portable.exe"
-        );
-        assert_eq!(
-            versioned_exe_name(path, "4.3.0-beta1", "4.4.0"),
-            "Acta-4.4.0-windows-x64-portable.exe"
-        );
-        // 用户改过名（无版本号）→ 追加新版本号。
-        let renamed = Path::new("C:/Apps/Acta.exe");
-        assert_eq!(versioned_exe_name(renamed, "4.3.0-beta1", "4.4.0"), "Acta-4.4.0.exe");
-    }
-
+    // Windows 更新不再改文件名，替换测试也随之取消。
     #[test]
     fn sanitizes_names() {
         assert!(sanitize_asset_name("Acta-4.3.0-macos-arm64.zip").is_ok());
