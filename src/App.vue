@@ -35,7 +35,7 @@
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
-        <span class="brand-version" aria-label="当前版本 4.3.0-beta5">4.3.0-beta5</span>
+        <span class="brand-version" aria-label="当前版本 4.3.0-beta6">4.3.0-beta6</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
@@ -113,15 +113,24 @@
           </div>
         </aside>
 
-        <!-- 标签条：横跨列表与编辑器（侧栏除外）。每个标签保存一整套页面
-             状态，切换即恢复；中键或悬停后的 × 关闭，右侧两个动作是
-             「新建标签页」与「并排显示」。 -->
+        <!-- 标签条：横跨列表与编辑器（侧栏与右侧窗格除外）。每个标签保存
+             一整套页面状态，切换即恢复；右键出菜单（复制 / 关闭 / 关闭全部 /
+             移到右侧），中键或悬停后的 × 关闭，右侧两个动作是「新建标签页」
+             与「侧边标签页」。 -->
         <div class="tab-strip" id="tabStrip" role="tablist" aria-label="页面标签">
           <div class="tab-strip-scroll" id="tabStripScroll"></div>
           <div class="tab-strip-actions">
             <button class="tab-strip-button" id="tabNewButton" type="button" title="新建标签页" aria-label="新建标签页"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
-            <button class="tab-strip-button" id="tabSplitButton" type="button" title="并排显示两个标签页" aria-label="并排显示两个标签页" aria-pressed="false"><svg aria-hidden="true"><use href="#i-split"/></svg></button>
+            <button class="tab-strip-button" id="tabSideButton" type="button" title="打开侧边标签页" aria-label="打开侧边标签页" aria-pressed="false"><svg aria-hidden="true"><use href="#i-split"/></svg></button>
           </div>
+        </div>
+
+        <!-- 右侧窗格自己的标签条：与主标签条同一套标签逻辑（激活 / 中键关闭 /
+             右键菜单），宽度只够放标签与收起按钮。空态给一句拖放提示，让
+             「把标签页拖进来」这件事在开口处就能被看见。 -->
+        <div class="tab-side-strip" id="tabSideStrip" role="tablist" aria-label="侧边标签页" hidden>
+          <div class="tab-side-strip-scroll" id="tabSideStripScroll"></div>
+          <button class="tab-strip-button" id="tabSideCloseButton" type="button" title="收起侧边标签页" aria-label="收起侧边标签页"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
         </div>
 
         <section class="item-pane">
@@ -228,15 +237,16 @@
           <div class="list-resizer" id="listResizer" role="separator" aria-orientation="vertical" aria-label="调整列表宽度"></div>
         </section>
 
-        <!-- 并排窗格：标签页并排时，第二个标签页的列表落在这里（页头 + 卡片
-             列表）。它是独立的渲染目标，不复用主列表的 DOM，两个页面互不打断
-             对方的滚动与筛选；整页视图不参与并排，这里显示一条说明。 -->
-        <section class="item-pane tab-pane-secondary" id="tabPaneSecondary" aria-label="并排的标签页" hidden>
+        <!-- 侧边标签页窗格：默认落在工作区右缘，放的是被拖进来的那些标签页。
+             它是独立的渲染目标，不复用主列表的 DOM——两个页面互不打断对方的
+             滚动与筛选；整页视图（日历 / 计划板 / 总结 / 回收站）需要整屏，
+             这个窗格随主标签条一起收起。 -->
+        <section class="item-pane tab-side-pane" id="tabSidePane" aria-label="侧边标签页" hidden>
           <div class="item-header">
-            <div class="item-title-row"><h1 id="tabSecondaryTitle"></h1></div>
-            <span class="tab-pane-count" id="tabSecondaryCount"></span>
+            <div class="item-title-row"><h1 id="tabSideTitle"></h1></div>
+            <span class="tab-pane-count" id="tabSideCount"></span>
           </div>
-          <div class="item-list" id="tabSecondaryList"></div>
+          <div class="item-list" id="tabSideList"></div>
         </section>
 
         <section class="editor-pane" id="editorPane"></section>
@@ -501,8 +511,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.3.0-beta5</b></div>
-                <div><small>本版更新日期</small><b>2026-11-19</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.3.0-beta6</b></div>
+                <div><small>本版更新日期</small><b>2026-11-20</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <!-- 软件更新：独立板块（单层卡组，标题行 + 通道/来源行 +
@@ -982,6 +992,9 @@
     <div class="sync-notice" id="syncNotice" role="status" aria-live="polite"><i></i><span></span></div>
     <div class="toast" id="toast" popover="manual"><span><svg><use href="#i-check"/></svg></span><p></p></div>
     <div class="context-menu" id="contextMenu" role="menu" aria-hidden="true"></div>
+    <!-- 标签页右键菜单：与文本右键菜单同一个视觉语言（同 .context-menu），
+         独立节点以免与桌面端的文本菜单互相开关。 -->
+    <div class="context-menu tab-context-menu" id="tabMenu" role="menu" aria-hidden="true"></div>
 
     <!-- 安卓端放射式新建菜单：五枚圆钮从中央新建按钮沿弧线弹出，
          底部渐入遮罩保证文字对比度；桌面端保持侧栏功能列表。

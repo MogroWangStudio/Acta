@@ -4070,7 +4070,10 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
    标签条占据工作区网格的第一行（见 styles.css 的 grid-template-areas），
    横跨列表与编辑器。视觉语言沿用列表页的分段控件：胶囊、单色、无投影；
    选中态只是「白底 + 细边」的落位，不做位移或放大——它是位置指示，
-   不是可点的强调按钮。关闭口只在悬停与选中时浮现，安静但不难找。 */
+   不是可点的强调按钮。关闭口只在悬停与选中时浮现，安静但不难找。
+
+   标题分两段：页面名（先让位、带省略号）与正在看的条目名（更淡、更细，
+   随标签一起省略）。层级来自字号与字重，不额外引入第二种颜色。 */
 .tab-strip {
   display: flex; align-items: center; gap: 8px; min-width: 0;
   padding: 6px 10px 6px 12px;
@@ -4078,16 +4081,22 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
   border-left: 1px solid rgba(42,48,41,.07);
   border-bottom: 1px solid rgba(42,48,41,.08);
   position: relative; z-index: 12;
+  transition: background-color .18s ease;
 }
+/* 侧边窗格开着时，主标签条只横跨列表与编辑器：右缘补一道分隔线。 */
+body.tab-side .tab-strip { border-right: 1px solid rgba(42,48,41,.08); }
 .tab-strip-scroll { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .tab-strip-scroll::-webkit-scrollbar { display: none; }
 .tab-item {
-  flex: 0 0 auto; display: flex; align-items: center; max-width: 200px; height: 28px;
+  flex: 0 0 auto; display: flex; align-items: center; max-width: 250px; height: 28px;
   border: 1px solid transparent; border-radius: 8px; color: var(--muted); background: transparent;
-  transition: background-color .16s ease, color .16s ease, border-color .16s ease;
+  transition: background-color .16s ease, color .16s ease, border-color .16s ease, opacity .16s ease;
 }
+.tab-item.is-side { max-width: 200px; }
 .tab-item:hover { background: rgba(255,255,255,.55); color: var(--ink); }
 .tab-item.is-active { background: var(--white); border-color: rgba(42,48,41,.1); color: var(--ink); }
+/* 被拖走的那个标签留在原位做淡化底片：位置仍可辨认，指针手里是它本身。 */
+.tab-item.is-dragging { opacity: .3; }
 .tab-item-main {
   display: flex; align-items: center; gap: 5px; min-width: 0; height: 100%; padding: 0 4px 0 9px;
   border: 0; background: transparent; color: inherit; cursor: pointer;
@@ -4095,7 +4104,11 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 }
 .tab-item-main svg { width: 13px; height: 13px; flex: 0 0 auto; opacity: .62; }
 .tab-item.is-active .tab-item-main svg { opacity: .85; }
-.tab-item-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-item-label { display: flex; min-width: 0; overflow: hidden; }
+/* 页面名先占住自己的位置，条目名吃剩下的宽度：长标题不会把「收集箱」
+   挤成一个字，超长的归类名到 45% 处自己收住。 */
+.tab-item-page { flex: 0 0 auto; max-width: calc(108px * var(--acta-font-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 650; }
+.tab-item-item { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; opacity: .74; }
 .tab-item-close {
   flex: 0 0 auto; width: 18px; height: 18px; margin-right: 4px; padding: 0;
   border: 0; border-radius: 5px; background: transparent; color: inherit;
@@ -4118,32 +4131,100 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 .tab-strip-button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .tab-strip-button[disabled], .tab-strip-button[aria-disabled="true"] { opacity: .34; cursor: default; }
 .tab-strip-button[disabled]:hover, .tab-strip-button[aria-disabled="true"]:hover { background: transparent; color: var(--muted); }
-/* 并排要两个窗格加编辑器同屏：窗口不够宽时不给入口，避免三列挤成一条。 */
+/* 侧边窗格要三列同屏：窗口不够宽时不给入口，避免挤成一条。 */
 @media (max-width: 1119px) {
-  #tabSplitButton { display: none; }
+  #tabSideButton { display: none; }
 }
 
-/* 并排窗格：与主列表同构（页头 / 卡片 / 页脚），底色略偏浅、卡片略紧，
-   一眼能看出是「另一个页面」而不是当前页面的续列。 */
-.tab-pane-secondary {
+/* 侧边标签条：工作区第一行的右端，与主标签条同一高度、同一语言，只用
+   「底色略浅 + 左缘分隔线」说明它是另一块窗格的标题栏。空窗格在这里先给
+   一句拖放提示——标签条本身就是这件动作发生的地方。 */
+.tab-side-strip {
+  display: flex; align-items: center; gap: 6px; min-width: 0;
+  padding: 6px 8px 6px 8px;
+  background: color-mix(in srgb, var(--panel) 82%, var(--paper));
+  border-left: 1px solid rgba(42,48,41,.08);
+  border-bottom: 1px solid rgba(42,48,41,.08);
+  position: relative; z-index: 12;
+  transition: background-color .18s ease, box-shadow .18s ease;
+}
+.tab-side-strip[hidden] { display: none; }
+.tab-side-strip-scroll { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tab-side-strip-scroll::-webkit-scrollbar { display: none; }
+.tab-side-strip-hint {
+  flex: 0 1 auto; min-width: 0; height: 24px; padding: 0 8px;
+  display: flex; align-items: center;
+  border: 1px dashed rgba(42,48,41,.16); border-radius: 7px; color: var(--faint);
+  font-size: calc(9px * var(--acta-font-scale)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* 侧边窗格：默认落在工作区右缘，与主列表同构（页头 / 卡片），底色略偏浅、
+   卡片略紧，一眼能看出是「另一个页面」而不是当前页面的续列。 */
+.tab-side-pane {
   display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative;
   background: color-mix(in srgb, var(--panel) 88%, var(--paper));
-  border-right: 1px solid rgba(42,48,41,.08);
+  border-left: 1px solid rgba(42,48,41,.08);
+  transition: box-shadow .18s ease;
 }
-.tab-pane-secondary[hidden] { display: none; }
-.tab-pane-secondary .item-header { height: 66px; }
-.tab-pane-secondary .item-header h1 { font-size: calc(20px * var(--acta-font-scale)); }
+.tab-side-pane[hidden] { display: none; }
+.tab-side-pane .item-header { height: 66px; }
+.tab-side-pane .item-header h1 { font-size: calc(20px * var(--acta-font-scale)); }
 .tab-pane-count { padding-bottom: 2px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
-.tab-pane-secondary .item-list { padding: 6px 8px 10px; }
-.tab-pane-secondary .item-card { min-height: 84px; padding: 11px 11px 9px; animation: none; }
-.tab-pane-secondary .item-card:hover { transform: none; }
-.tab-pane-secondary .item-card h3 { margin-top: 7px; }
-.tab-pane-secondary .item-card p { height: 25px; }
+.tab-side-pane .item-list { padding: 6px 8px 10px; }
+.tab-side-pane .item-card { min-height: 84px; padding: 11px 11px 9px; animation: none; }
+.tab-side-pane .item-card:hover { transform: none; }
+.tab-side-pane .item-card h3 { margin-top: 7px; }
+.tab-side-pane .item-card p { height: 25px; }
 .tab-pane-empty {
   margin: 8px 2px; padding: 20px 14px; border: 1px dashed rgba(42,48,41,.15); border-radius: 12px;
   color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.65; text-align: center;
 }
 .tab-pane-empty b { display: block; margin-bottom: 5px; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); }
+
+/* 空窗格：一块方正的投放区，说清「把标签页拖到这里」，另给一个按钮——
+   触屏与不习惯拖动的用户不必先学会手势。空窗格连页头一起收起。 */
+.tab-side-pane .item-header[hidden] { display: none; }
+.tab-side-pane .item-list.is-empty { display: flex; align-items: center; justify-content: center; padding: 14px; }
+.tab-side-pane .item-list.is-empty > * { flex: 0 1 auto; width: 100%; }
+.tab-side-empty {
+  flex: 0 1 auto; width: 100%;
+  margin: 0; padding: 28px 18px;
+  border: 1px dashed rgba(42,48,41,.16); border-radius: 14px;
+  display: grid; justify-items: center; gap: 8px; text-align: center;
+  color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.7;
+  transition: border-color .18s ease, background-color .18s ease;
+}
+.tab-side-empty b { color: var(--ink); font-size: calc(11.5px * var(--acta-font-scale)); }
+.tab-side-empty p { margin: 0; max-width: 230px; }
+body.tab-drop-side .tab-side-pane { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--sage) 32%, transparent); }
+body.tab-drop-side .tab-side-strip { background: color-mix(in srgb, var(--sage) 10%, var(--panel)); }
+body.tab-drop-side .tab-side-empty {
+  border-color: color-mix(in srgb, var(--sage) 46%, transparent);
+  background: color-mix(in srgb, var(--sage) 7%, transparent);
+}
+body.tab-drop-main .tab-strip { background: color-mix(in srgb, var(--sage) 8%, var(--panel)); }
+
+/* 拖动中的标签：指针手里那一枚。抬起来的东西有投影是物理常识（其余标签
+   不加阴影）；位移与缩放都走 transform，结束时会从当前位置继续收尾。 */
+.tab-drag-ghost {
+  position: fixed; left: 0; top: 0; z-index: 300;
+  display: flex; align-items: center; gap: 5px;
+  height: 28px; padding: 0 10px; max-width: 250px;
+  border: 1px solid rgba(42,48,41,.12); border-radius: 8px;
+  background: var(--white); color: var(--ink);
+  font-size: calc(10px * var(--acta-font-scale)); font-weight: 650;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 10px 26px -12px rgba(31,35,30,.36), 0 2px 6px -2px rgba(31,35,30,.18);
+  pointer-events: none; will-change: transform, opacity;
+  zoom: var(--acta-ui-scale, 1);
+}
+.tab-drag-ghost svg { width: 13px; height: 13px; flex: 0 0 auto; opacity: .7; }
+.tab-drag-ghost span { overflow: hidden; text-overflow: ellipsis; }
+body.tab-dragging { cursor: grabbing; user-select: none; }
+
+/* 标签页右键菜单沿用 .context-menu 的语言（同底色、同圆角、同弹出方向），
+   只是在标签条上出现时贴得更近一些。 */
+.tab-context-menu { min-width: 184px; }
 
 /* —— 版本列表（关于 → 版本列表） ——
    一行一个发布：版本号 / 渠道标记 / 日期 / 说明摘要 / 体积与动作。
@@ -4179,8 +4260,8 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 .version-history-dialog .settings-button.secondary:hover { background: var(--panel); }
 .version-history-dialog .settings-button.danger:hover { color: #fff; background: #b96051; }
 /* [hidden] 的 UA 规则（display:none）会被上面的 display 声明压掉：
-   单标签页时隐藏关闭口、未并排时隐藏副窗格，都要显式写一遍。 */
-.tab-item-close[hidden], .tab-pane-secondary[hidden] { display: none; }
+   单标签页时隐藏关闭口，要显式写一遍（两个窗格各有自己的 [hidden] 规则）。 */
+.tab-item-close[hidden] { display: none; }
 /* 版本列表的窗口骨架：头 / 通道行 / 可滚动清单 / 底栏四段。只有 [open]
    时才成为竖排 flex——否则 dialog 的 UA display:none 会被作者样式压掉，
    关闭状态的窗口会留在页面上。 */

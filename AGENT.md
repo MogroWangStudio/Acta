@@ -34,7 +34,7 @@ src/legacy/renderer.js     最重要的文件（经典脚本，约 1 万行）�
                            以 <script src="./legacy/renderer.js"> 方式加载，
                            文件本体在 public/legacy/renderer.js
 src/legacy/interface.js    设置页、数据档案、WebDAV、局域网、关于页与更新入口
-src/legacy/tabs.js         标签页（页面状态快照 + 并排副窗格）
+src/legacy/tabs.js         标签页（页面状态快照 + 右侧侧边窗格；见「标签页」一节）
 src/legacy/tauri-bridge.js window.actaDesktop：所有 Tauri 命令的 JS 门面
 src/legacy/updater.js      应用内更新对话框 + 静默检查（仅桌面）
 src/legacy/updater-wizard.js 更新向导窗口的界面（Rust 侧拉起的第二个实例）
@@ -54,7 +54,7 @@ docs/                      `npm run build:pages` 的产物（GitHub Pages），�
 - **渲染入口**：`renderAll()` = `translateStaticUI()` + `renderSidebar()` + `renderList()` + `renderEditor()`。视图切换统一走 `activateView(view)`（侧栏、移动端导航、类型分段共用；它负责复位选中、日历入场与转场）。
 - **列表卡片**：`itemCardMarkup(item, { active, index, animate })` 是主列表与并排副窗格共用的唯一卡片标记函数，改卡片样式只改这一处。
 - **DOM 约定**：所有节点都靠固定 id 取用（`#itemList`、`#editorPane`、`#viewTitle`、`#itemCountLabel`…）。新增界面时优先在 `App.vue` 里加静态标记、由模块按 id 绑定，不要在 JS 里拼整页结构。
-- **持久化**：`localStorage` 键——`acta.library.v1`（正文数据）、`acta.settings.v1`（用户偏好）、`acta.interface.settings.v1`（界面设置，桌面端另镜像到数据文件夹的 `settings.json`）、`acta.tabs.v1`（标签页布局，设备本地，不随档案同步）。数据档案格式为 v4：`acta-manifest.json`、`classifications.json`、`notes/`、`todos/`、`boards/`，通道共有五条（见 `2026-10-26` 的工作记忆），改动档案结构要同时改 Rust、WebDAV 与 Android 插件。
+- **持久化**：`localStorage` 键——`acta.library.v1`（正文数据）、`acta.settings.v1`（用户偏好）、`acta.interface.settings.v1`（界面设置，桌面端另镜像到数据文件夹的 `settings.json`）、`acta.tabs.v1`（标签页布局，v2 结构：`{ version, activeId, sideActiveId, sideOpen, tabs:[{ id, group, state }] }`，设备本地，不随档案同步；旧版只有 `splitId` 的布局在启动时迁移成右侧窗格）。数据档案格式为 v4：`acta-manifest.json`、`classifications.json`、`notes/`、`todos/`、`boards/`，通道共有五条（见 `2026-10-26` 的工作记忆），改动档案结构要同时改 Rust、WebDAV 与 Android 插件。
 
 ## 4. 功能地图
 
@@ -63,7 +63,9 @@ docs/                      `npm run build:pages` 的产物（GitHub Pages），�
 - **计划板**：`#boardViewport` 内的相机画布，卡片 / 富文本 / 标注三类组件，图层、多选、撤销、导出 PNG/JPG/PDF；`body.board-view` 下编辑器是浮层。
 - **总结 / 回收站**：整页视图，同样把编辑器列压成 0。
 - **筛选**：行内只有内容类型分段（`#listTypeSwitch`），其余条件在标题行漏斗弹出的 `#listFilterPanel`；状态变量见上。
-- **标签页**：`tabs.js`。一个标签 = 一整套页面状态快照；`renderList` 被包装后负责同步标签名、刷新副窗格与延迟落盘。并排只在「主页面是列表型视图」时生效（`isListView`），整页视图下按钮置灰。
+- **标签页**：`tabs.js`。一个标签 = 一整套页面状态快照：视图、内容类型分段、筛选面板全部条件、搜索词、选中项、列表滚动位置与编辑器滚动位置。标签标题是「页面名 · 正在看的条目名」（`tabLabel`，条目名先省略）。两组标签（`group: 'main' | 'side'`）各有一条标签条：主标签条在 `#tabStripScroll`，侧边标签条在 `#tabSideStripScroll`，侧边窗格是 `#tabSidePane` + `#tabSideList`。右键菜单（`#tabMenu`）提供复制 / 移到另一侧 / 关闭 / 关闭全部；标签可以用指针拖进拖出侧边窗格。`renderList` 与 `renderEditor` 被包装后负责同步标签名、侧边窗格与延迟落盘。
+- **侧边标签页的规则**（改这块先读）：侧边窗格默认在右侧；收起窗格时侧边的标签全部回主标签条（不留看不见的页面），所以每次打开都是空窗格；主标签条永远至少一个标签（最后一个不给关闭口，关全部时留一个同视图空标签）；侧边窗格只在「主页面是列表型视图」（`isListView`）且窗口 ≥ 1120px 时显示，整页视图下入口置灰、窗口变窄时收起但标签保留；侧边组里激活一个整页视图标签会把它送回主区打开。
+- **局域网雷达入口光效**：`body.lan-radar-live` 由 `interface.js` 的 `updateLanStateUI()` 按服务状态挂上；样式在 `styles.css`：`::before` 是呼吸柔光，`.nav-icon::after`（移动端为按钮 `::after`）是 6 秒一圈的雷达扇面，图标本身不旋转；「减少动态效果」退成静态。
 - **更新**：`interface.js`（关于页 UI：检查更新、通道、下载来源、测速、版本列表）＋ `updater.js`（下载 / 读秒 / 重启）＋ `updater.rs`（GitHub API、semver 比较、平台安装）。`window.actaUpdater.install(info)` 用于"选了某个版本直接装"，跳过询问但仍走同一个下载与向导。
 - **Android 更新**：`ActaUpdaterPlugin.java`，`/releases` 列表端点 + 通道过滤 + semver 取最大，下载 zip、解出 apk、交给系统安装器。
 
@@ -84,7 +86,8 @@ docs/                      `npm run build:pages` 的产物（GitHub Pages），�
 6. **更新资产命名**固定为 `Acta-<版本>-<平台>-<架构>.zip`，`pick_asset` 按后缀挑平台包；版本列表只列出当前平台真有资产的发布。
 7. **冒烟测试在本机沙箱**：`pipe:true` 会卡在 launch，需要复制到 `/tmp`、把 `puppeteer-core` / `vite` / `path.join(__dirname,'..')` 换成绝对路径、去掉 pipe 并加 `--no-sandbox --remote-debugging-port=0`，并在项目根目录下运行（脚本按相对路径读 css）。
 8. **界面缩放**：`zoom` 挂在 `.app-shell` 与各顶层弹层上，不在根元素；自定义手势里「视觉 px → 布局值」要除以 `actaZoom()`。
-9. **移动端断点 800px**：`.workspace` 变 `display:block`、编辑器全屏、标签条与副窗格隐藏；并排入口在 1120px 以下也不提供。
+9. **移动端断点 800px**：`.workspace` 变 `display:block`、编辑器全屏、标签条 / 侧边标签条 / 侧边窗格隐藏；侧边入口在 1120px 以下也不提供。
+10. **标签页的网格与 localStorage 不要另起一套**：工作区的四列由 `body.tab-side` 切到 `grid-template-areas` 的 `sidehead` / `sidepane`（`styles.css`），整页视图的列宽覆盖规则依赖它；标签持久化的键仍是 `acta.tabs.v1`，改结构要在 `tabs.js` 的 `restore()` 里兼容旧版本，否则用户的标签布局会丢。
 
 ## 7. 常用命令
 

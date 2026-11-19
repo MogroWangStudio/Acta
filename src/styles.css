@@ -204,10 +204,10 @@ html[data-desktop-platform="win32"] .desktop-window-controls { display: flex; }
 html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 
 /* 工作区网格：侧栏 / 列表 / 编辑器三列，外加标签条独占一行。
-   标签条横跨列表与编辑器（侧栏保持固定），并排时网格扩成四列：
-   侧栏 / 主列表 / 并排列表 / 编辑器——标签条仍横跨后三列。
-   用 grid-template-areas 而不是改 DOM 结构：日历、计划板、总结等
-   视图对 .workspace 的列宽覆盖（把编辑器收成 0px）继续有效。 */
+   标签条横跨列表与编辑器（侧栏保持固定）；打开侧边窗格时网格扩成四列：
+   侧栏 / 列表 / 编辑器 / 侧边窗格——主标签条仍只横跨中间两列，右缘留给
+   侧边标签条。用 grid-template-areas 而不是改 DOM 结构：日历、计划板、
+   总结等视图对 .workspace 的列宽覆盖（把编辑器收成 0px）继续有效。 */
 .workspace {
   height: calc(var(--acta-vh) - 52px);
   display: grid;
@@ -221,19 +221,19 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .item-pane { grid-area: list; }
 .editor-pane { grid-area: editor; }
 .tab-strip { grid-area: tabs; }
-.tab-pane-secondary { grid-area: companion; }
+.tab-side-strip { grid-area: sidehead; }
+.tab-side-pane { grid-area: sidepane; }
 
-/* 并排：两个标签页各占一列。主列表沿用用户拖出来的宽度，并排列取它的
-   0.86 倍（略窄，视觉上是「副窗格」），编辑器拿走剩下的。 */
-body.tab-split .workspace {
+/* 侧边标签页：右侧多出一列，列宽跟着视口走（不给编辑器留一条缝）。 */
+body.tab-side .workspace {
   grid-template-columns:
     248px
     clamp(300px, var(--list-pane-width, 330px), 520px)
-    clamp(280px, calc(var(--list-pane-width, 330px) * .86), 460px)
-    minmax(320px, 1fr);
+    minmax(260px, 1fr)
+    clamp(280px, 22vw, 400px);
   grid-template-areas:
-    "side tabs tabs tabs"
-    "side list companion editor";
+    "side tabs tabs sidehead"
+    "side list editor sidepane";
 }
 
 .sidebar {
@@ -331,51 +331,68 @@ html[data-nav-effect="pop"] .nav-section button.active .nav-icon { animation: na
   100% { transform: scale(1); }
 }
 body.acta-reduce-motion .nav-section button .nav-icon { animation: none !important; }
-/* 局域网雷达入口：可被发现（服务运行中）时按钮内部循环扫光 + 图标
-   持续旋转，按钮保持高亮（强调色描边）——三种信号同帧表达「运行中」，
-   桌面侧栏入口与移动端顶栏入口同一语言；跟随「减少动态效果」关闭。 */
+/* 局域网雷达入口：可被发现（服务运行中）时只给两种安静信号——从图标
+   一侧漫开的呼吸柔光，和图标四周缓慢转动的雷达扇面；图标本身不再持续
+   自转（常量旋转在侧栏里太吵，也抢走导航的可读性）。跟随「减少动态效果」
+   退成静态高亮。 */
 .smart-nav [data-nav-action="lan"], .mobile-titlebar-action[data-nav-action="lan"] { position: relative; overflow: hidden; }
-@keyframes lanRadarSweep {
-  0% { transform: translateX(-130%); }
-  55%, 100% { transform: translateX(130%); }
+@keyframes lanRadarBreath {
+  0%, 100% { opacity: .26; }
+  50% { opacity: .6; }
 }
-/* 旋转独立于 transform：侧栏展开态 .nav-icon 静态、无位移，rotate 绕
-   自身中心自转即可；折叠态 .nav-icon 靠 transform: translate(-50%,-50%)
-   居中，合成矩阵里 rotate 作用在位移之后，转起来会绕原点公转——
-   所以旋转目标落在内层 svg（无 transform，中心与外壳一致），主图标
-   与描线层同转保持重合，外壳的居中位移不受任何影响。 */
-@keyframes lanRadarSpin {
+@keyframes lanRadarSweepTurn {
   to { rotate: 360deg; }
 }
-body.lan-radar-live .smart-nav [data-nav-action="lan"]::after,
-body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::after {
+body.lan-radar-live .smart-nav [data-nav-action="lan"]::before,
+body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(104deg, transparent 34%, color-mix(in srgb, var(--sage) 18%, transparent) 46%, color-mix(in srgb, var(--white) 62%, transparent) 50%, color-mix(in srgb, var(--sage) 18%, transparent) 54%, transparent 66%);
-  animation: lanRadarSweep 2.6s cubic-bezier(.4, 0, .2, 1) infinite;
+  background: radial-gradient(130% 150% at 16% 50%, color-mix(in srgb, var(--sage) 24%, transparent), transparent 64%);
+  animation: lanRadarBreath 5.2s ease-in-out infinite;
 }
-/* 图标持续旋转 + 按钮高亮：侧栏内层图标（主图标与描线层一起转）与
-   移动端顶栏图标。 */
-body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon > svg,
-body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { animation: lanRadarSpin 2.4s linear infinite; }
+/* 折叠态图标居中，柔光也回到正中。移动端顶栏药丸同理。 */
+body.sidebar-collapsed .smart-nav [data-nav-action="lan"]::before,
+body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::before {
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--sage) 26%, transparent), transparent 68%);
+}
+/* 扫光：图标四周一小圈扇面，边缘用 radial mask 化开，6 秒一圈——
+   比原来的 2.6 秒横穿光带慢一倍多，读起来是「在扫描」而不是「在闪」。 */
+body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon::after {
+  content: ""; position: absolute; inset: -9px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from 0deg, color-mix(in srgb, var(--sage) 32%, transparent) 0deg, color-mix(in srgb, var(--sage) 12%, transparent) 44deg, transparent 82deg, transparent 360deg);
+  -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 74%);
+  mask-image: radial-gradient(circle, #000 30%, transparent 74%);
+  animation: lanRadarSweepTurn 6s linear infinite;
+}
+body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 36px; height: 36px; margin: -18px 0 0 -18px;
+  border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from 0deg, color-mix(in srgb, var(--sage) 32%, transparent) 0deg, color-mix(in srgb, var(--sage) 12%, transparent) 44deg, transparent 82deg, transparent 360deg);
+  -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 74%);
+  mask-image: radial-gradient(circle, #000 30%, transparent 74%);
+  animation: lanRadarSweepTurn 6s linear infinite;
+}
+/* 图标只保持强调色，不旋转、不做透明度闪烁。 */
 body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon > svg:not(.nav-icon-trace),
 body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { color: var(--sage); opacity: 1 !important; }
 /* 高亮：单一强调色的淡底 + 内描边（不叠加第二种颜色）。 */
 body.lan-radar-live .smart-nav [data-nav-action="lan"] {
-  background: color-mix(in srgb, var(--sage) 16%, var(--white));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sage) 34%, var(--line));
+  background: color-mix(in srgb, var(--sage) 10%, var(--white));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sage) 28%, var(--line));
 }
 /* 直接着色 stroke：图标线条由 stroke: currentColor 绘制，按钮内部其他
    规则会覆盖 color，stroke 更直接也更稳。 */
 body.lan-radar-live .smart-nav [data-nav-action="lan"] .nav-icon > svg { stroke: var(--sage) !important; }
 body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] {
-  border-color: color-mix(in srgb, var(--sage) 46%, var(--line));
-  background: color-mix(in srgb, var(--sage) 16%, var(--white));
+  border-color: color-mix(in srgb, var(--sage) 42%, var(--line));
+  background: color-mix(in srgb, var(--sage) 12%, var(--white));
 }
 body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"] > svg { stroke: var(--sage) !important; }
+body.acta-reduce-motion .smart-nav [data-nav-action="lan"]::before,
 body.acta-reduce-motion .smart-nav [data-nav-action="lan"]::after,
-body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"]::after,
-body.acta-reduce-motion .smart-nav [data-nav-action="lan"] .nav-icon > svg,
-body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"] > svg { animation: none; }
+body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"]::before,
+body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"]::after { animation: none; }
+body.acta-reduce-motion .smart-nav [data-nav-action="lan"]::before,
+body.acta-reduce-motion .mobile-titlebar-action[data-nav-action="lan"]::before { opacity: .42; }
 
 .folder-section { margin-top: 23px; min-height: 0; overflow: hidden auto; }
 .section-label { height: 28px; padding: 0 9px; display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; letter-spacing: .12em; color: #989b94; font-size: calc(9px * var(--acta-font-scale)); font-weight: 700; }
@@ -773,12 +790,12 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr); }
   html[data-desktop-platform="win32"] .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr) 138px; }
   .workspace { grid-template-columns: 220px clamp(330px, var(--list-pane-width), 560px) minmax(0, 1fr); }
-  body.tab-split .workspace {
+  body.tab-side .workspace {
     grid-template-columns:
       220px
       clamp(280px, var(--list-pane-width, 330px), 460px)
-      clamp(260px, calc(var(--list-pane-width, 330px) * .86), 400px)
-      minmax(300px, 1fr);
+      minmax(240px, 1fr)
+      clamp(240px, 20vw, 340px);
   }
   .sidebar { padding-left: 11px; padding-right: 11px; }
   .editor-wrap { width: calc(100% - 56px); }
@@ -809,9 +826,9 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     height: calc(var(--acta-vh) - 48px - env(safe-area-inset-top));
     display: block;
   }
-  /* 标签页是桌面端的多页面工作方式：移动端一屏只放一个页面，标签条与
-     并排窗格一起收起（数据仍保留，回到桌面继续用）。 */
-  .tab-strip, .tab-pane-secondary { display: none !important; }
+  /* 标签页是桌面端的多页面工作方式：移动端一屏只放一个页面，标签条、
+     侧边标签条与侧边窗格一起收起（数据仍保留，回到桌面继续用）。 */
+  .tab-strip, .tab-side-strip, .tab-side-pane { display: none !important; }
   /* 安卓端：WebView 上报的安全区上缘略宽于状态栏的视觉高度，顶栏内容
      与状态栏之间多出一段空隙。这里整体上移 5px 收紧（max 防 env 为 0
      时出现负 padding），工作区高度同步补偿；编辑器全屏面板在下方
@@ -951,6 +968,8 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  body.lan-radar-live .smart-nav [data-nav-action="lan"]::before,
   body.lan-radar-live .smart-nav [data-nav-action="lan"]::after,
+  body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::before,
   body.lan-radar-live .mobile-titlebar-action[data-nav-action="lan"]::after { animation: none; }
 }
