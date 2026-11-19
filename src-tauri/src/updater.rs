@@ -62,11 +62,29 @@ pub struct UpdateInfo {
 struct ReleasePayload {
     tag_name: String,
     #[serde(default)]
+    html_url: String,
+    #[serde(default)]
+    published_at: String,
+    #[serde(default)]
     prerelease: bool,
     #[serde(default)]
     body: String,
     #[serde(default)]
     assets: Vec<ReleaseAsset>,
+}
+
+/// 版本列表里的一行。升降级方向与「正在使用」由前端比较版本号得出；
+/// notes 是正文摘要，完整更新日志在发布页。
+#[derive(Debug, Clone, Serialize)]
+pub struct ReleaseEntry {
+    pub version: String,
+    pub html_url: String,
+    pub published_at: String,
+    pub notes: String,
+    pub prerelease: bool,
+    pub asset_name: String,
+    pub size: u64,
+    pub url: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -238,6 +256,17 @@ fn notes_preview(body: &str) -> String {
     }
 }
 
+/// 版本列表里的更新说明：保留换行与条目（前端按行渲染），只做长度封顶。
+/// 与 notes_preview 的「三条摘要」不同，这里要让人看清每个版本改了什么。
+fn notes_excerpt(body: &str, max_chars: usize) -> String {
+    let text = body.trim();
+    if text.chars().count() > max_chars {
+        format!("{}…", text.chars().take(max_chars).collect::<String>())
+    } else {
+        text.to_string()
+    }
+}
+
 async fn http_client() -> Result<reqwest::Client, String> {
     reqwest::Client::builder()
         .user_agent(USER_AGENT)
@@ -314,6 +343,22 @@ fn accepts_prerelease(channel: &str) -> bool {
     channel.eq_ignore_ascii_case("beta")
 }
 
+/// 在 Release 列表里挑出「通道允许、比当前新、版本号最大」的那一个。
+/// 不依赖 GitHub 的返回顺序：列表是按发布时间排的，补发的旧版本或先发布的
+/// beta 都可能排在前面——取首个会把 beta9 当成 beta10 之后的最新版。
+fn newest_update_candidate<'a>(releases: &'a [ReleasePayload], current_tag: &str, beta: bool) -> Option<&'a ReleasePayload> {
+    releases
+        .iter()
+        .filter(|release| {
+            let is_prerelease = release.prerelease || release.tag_name.trim_start_matches(['v', 'V']).contains('-');
+            if !beta && is_prerelease {
+                return false;
+            }
+            compare_release_tags(&release.tag_name, current_tag) == Ordering::Greater
+        })
+        .max_by(|a, b| compare_release_tags(&a.tag_name, &b.tag_name))
+}
+
 /// 查询 GitHub Release 列表，按通道筛选出比当前版本新的最新版本。
 /// 通道规则与 CI 发布规则同源：tag 含 '-' 即预发布，stable 通道一律跳过。
 pub async fn check_for_update(app: AppHandle, channel: Option<String>) -> Result<Option<UpdateInfo>, String> {
@@ -332,15 +377,7 @@ pub async fn check_for_update(app: AppHandle, channel: Option<String>) -> Result
         return Err(format!("GitHub 返回了 {}", response.status()));
     }
     let releases: Vec<ReleasePayload> = response.json().await.map_err(|error| error.to_string())?;
-    // 列表按 GitHub 的"最新优先"排序；逐个过滤通道、比当前新、保留最大者。
-    let candidate = releases.iter().find(|release| {
-        let is_prerelease = release.prerelease || release.tag_name.trim_start_matches(['v', 'V']).contains('-');
-        if !beta && is_prerelease {
-            return false;
-        }
-        compare_release_tags(&release.tag_name, &current_tag) == Ordering::Greater
-    });
-    let Some(release) = candidate else {
+    let Some(release) = newest_update_candidate(&releases, &current_tag, beta) else {
         return Ok(None);
     };
     let version_tag = release.tag_name.trim_start_matches(['v', 'V']).to_string();
@@ -356,6 +393,50 @@ pub async fn check_for_update(app: AppHandle, channel: Option<String>) -> Result
         size: asset.size,
         url: asset.browser_download_url,
     }))
+}
+
+/// 版本列表：把近期 Release 按版本号从新到旧列出来，供「关于 → 版本列表」
+/// 选择任意一个版本安装。只保留当前平台确实有安装包的发布——列表里的每一行
+/// 都必须点得动，否则「可降级到 4.2.0」会变成一句空话。
+/// channel 只决定要不要预发布；降级方向由前端确认，这里不做「比当前新」过滤。
+pub async fn list_releases(channel: Option<String>) -> Result<Vec<ReleaseEntry>, String> {
+    let beta = accepts_prerelease(channel.as_deref().unwrap_or("beta"));
+    let response = http_client()
+        .await?
+        .get(RELEASE_API)
+        .header("Accept", "application/vnd.github+json")
+        .timeout(Duration::from_secs(15))
+        .send()
+        .await
+        .map_err(|error| format!("无法连接 GitHub：{error}"))?;
+    if !response.status().is_success() {
+        return Err(format!("GitHub 返回了 {}", response.status()));
+    }
+    let releases: Vec<ReleasePayload> = response.json().await.map_err(|error| error.to_string())?;
+    let mut entries: Vec<ReleaseEntry> = releases
+        .into_iter()
+        .filter_map(|release| {
+            let version = release.tag_name.trim_start_matches(['v', 'V']).to_string();
+            let prerelease = release.prerelease || version.contains('-');
+            if !beta && prerelease {
+                return None;
+            }
+            let asset = pick_asset(&release.assets, &version)?.clone();
+            Some(ReleaseEntry {
+                version,
+                html_url: release.html_url,
+                published_at: release.published_at,
+                notes: notes_excerpt(&release.body, 600),
+                prerelease,
+                asset_name: asset.name,
+                size: asset.size,
+                url: asset.browser_download_url,
+            })
+        })
+        .collect();
+    entries.sort_by(|a, b| compare_release_tags(&b.version, &a.version));
+    entries.dedup_by(|a, b| compare_release_tags(&a.version, &b.version) == Ordering::Equal);
+    Ok(entries)
 }
 
 /// 流式下载更新包到临时目录，进度经 `update://download` 事件广播。
@@ -949,11 +1030,41 @@ mod tests {
         // beta 递进与"beta < 正式"的 semver 次序；beta10 按数值大于 beta9。
         assert_eq!(cmp("v4.3.0-beta1", "4.3.0-beta2"), Ordering::Less);
         assert_eq!(cmp("4.3.0-beta9", "4.3.0-beta10"), Ordering::Less);
+        assert_eq!(cmp("4.3.0-beta10", "4.3.0-beta9"), Ordering::Greater);
         assert_eq!(cmp("4.3.0-beta1", "4.3.0"), Ordering::Less);
         assert_eq!(cmp("4.3.0", "4.2.9"), Ordering::Greater);
         assert_eq!(cmp("v4.3.0", "4.3.0"), Ordering::Equal);
         // 跨版本号：4.3.0-beta1 依然大于 4.2.9。
         assert_eq!(cmp("4.3.0-beta1", "4.2.9"), Ordering::Greater);
+    }
+
+    fn fake_release(tag: &str) -> ReleasePayload {
+        ReleasePayload {
+            tag_name: tag.to_string(),
+            html_url: String::new(),
+            published_at: String::new(),
+            prerelease: tag.contains('-'),
+            body: String::new(),
+            assets: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn picks_newest_candidate_by_version_not_list_order() {
+        // 列表故意按「发布时间」排：补发的 beta9 排在 beta10 前面。
+        let releases = vec![
+            fake_release("v4.3.0-beta9"),
+            fake_release("v4.3.0-beta10"),
+            fake_release("v4.3.0-beta2"),
+        ];
+        assert_eq!(
+            newest_update_candidate(&releases, "4.3.0-beta5", true).map(|release| release.tag_name.as_str()),
+            Some("v4.3.0-beta10")
+        );
+        // 稳定通道跳过预发布：没有候选。
+        assert!(newest_update_candidate(&releases, "4.3.0-beta5", false).is_none());
+        // 已经是最新（beta10）时不再提示。
+        assert!(newest_update_candidate(&releases, "4.3.0-beta10", true).is_none());
     }
 
     // Windows 更新不再改文件名，替换测试也随之取消。

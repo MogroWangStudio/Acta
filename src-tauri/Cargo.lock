@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "acta"
-version = "4.3.0-beta4"
+version = "4.3.0-beta5"
 dependencies = [
  "base64 0.22.1",
  "chrono",

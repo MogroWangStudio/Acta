@@ -114,6 +114,12 @@ async fn download_app_update(
     updater::download_update(window, url, asset_name, expected_size).await
 }
 
+// 版本列表：关于页的「版本列表」弹窗用它列出可安装的历史版本（含降级）。
+#[tauri::command]
+async fn list_app_releases(channel: Option<String>) -> Result<Vec<updater::ReleaseEntry>, String> {
+    updater::list_releases(channel).await
+}
+
 #[tauri::command]
 async fn prepare_update_restart(app: AppHandle, payload: String, version: String) -> Result<bool, String> {
     updater::prepare_restart(app, payload, version).await
@@ -2289,6 +2295,7 @@ pub fn run() {
             load_app_data_settings,
             save_app_data_settings,
             check_app_update,
+            list_app_releases,
             download_app_update,
             prepare_update_restart,
             probe_download_speed

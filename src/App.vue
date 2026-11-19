@@ -35,7 +35,7 @@
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
-        <span class="brand-version" aria-label="当前版本 4.3.0-beta4">4.3.0-beta4</span>
+        <span class="brand-version" aria-label="当前版本 4.3.0-beta5">4.3.0-beta5</span>
         <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
         <div class="window-spacer"></div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
@@ -112,6 +112,17 @@
             </div>
           </div>
         </aside>
+
+        <!-- 标签条：横跨列表与编辑器（侧栏除外）。每个标签保存一整套页面
+             状态，切换即恢复；中键或悬停后的 × 关闭，右侧两个动作是
+             「新建标签页」与「并排显示」。 -->
+        <div class="tab-strip" id="tabStrip" role="tablist" aria-label="页面标签">
+          <div class="tab-strip-scroll" id="tabStripScroll"></div>
+          <div class="tab-strip-actions">
+            <button class="tab-strip-button" id="tabNewButton" type="button" title="新建标签页" aria-label="新建标签页"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            <button class="tab-strip-button" id="tabSplitButton" type="button" title="并排显示两个标签页" aria-label="并排显示两个标签页" aria-pressed="false"><svg aria-hidden="true"><use href="#i-split"/></svg></button>
+          </div>
+        </div>
 
         <section class="item-pane">
           <div class="item-header">
@@ -215,6 +226,17 @@
           </div>
           <div class="list-footer"><span id="itemCountLabel">0 个项目</span><span data-i18n="localFirst">本地优先</span></div>
           <div class="list-resizer" id="listResizer" role="separator" aria-orientation="vertical" aria-label="调整列表宽度"></div>
+        </section>
+
+        <!-- 并排窗格：标签页并排时，第二个标签页的列表落在这里（页头 + 卡片
+             列表）。它是独立的渲染目标，不复用主列表的 DOM，两个页面互不打断
+             对方的滚动与筛选；整页视图不参与并排，这里显示一条说明。 -->
+        <section class="item-pane tab-pane-secondary" id="tabPaneSecondary" aria-label="并排的标签页" hidden>
+          <div class="item-header">
+            <div class="item-title-row"><h1 id="tabSecondaryTitle"></h1></div>
+            <span class="tab-pane-count" id="tabSecondaryCount"></span>
+          </div>
+          <div class="item-list" id="tabSecondaryList"></div>
         </section>
 
         <section class="editor-pane" id="editorPane"></section>
@@ -479,8 +501,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.3.0-beta4</b></div>
-                <div><small>本版更新日期</small><b>2026-10-29</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.3.0-beta5</b></div>
+                <div><small>本版更新日期</small><b>2026-11-19</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <!-- 软件更新：独立板块（单层卡组，标题行 + 通道/来源行 +
@@ -497,6 +519,7 @@
                 <label class="settings-row" id="downloadSourceRow" data-i18n-title="downloadSourceHint" title="下载更新包时走 GitHub 原生直链，或经 gh-proxy.org 加速"><span><b data-i18n="downloadSourceLabel">下载来源</b></span><select id="downloadSourceSetting"><option value="github" data-i18n="downloadSourceGithub">GitHub Raw</option><option value="proxy" data-i18n="downloadSourceProxy">GitHub-proxy</option></select></label>
                 <div class="settings-row about-update-actions">
                   <button type="button" class="settings-button secondary" id="downloadProbeButton" hidden><svg><use href="#i-radar"/></svg><span>测速</span></button>
+                  <button type="button" class="settings-button secondary" id="aboutVersionList"><svg><use href="#i-layers"/></svg><span>版本列表</span></button>
                   <button type="button" class="settings-button secondary" id="aboutCheckUpdate"><svg><use href="#i-refresh"/></svg><span>检查更新</span></button>
                 </div>
                 <p class="settings-status about-update-status" id="aboutUpdateStatus" hidden></p>
@@ -515,6 +538,27 @@
         </div>
       </section>
     </div>
+
+    <dialog class="relation-dialog version-history-dialog" id="versionHistoryDialog" aria-labelledby="versionHistoryTitle">
+      <header class="relation-dialog-head">
+        <span class="is-sage"><svg><use href="#i-layers"/></svg></span>
+        <div><h3 id="versionHistoryTitle">版本列表</h3><small id="versionHistorySubtitle">从 GitHub 发布记录读取，可直接升级或降级</small></div>
+        <button class="relation-dialog-close" id="closeVersionHistory" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button>
+      </header>
+      <div class="version-history-toolbar">
+        <div class="version-channel-switch" id="versionChannelSwitch" role="group" aria-label="更新通道">
+          <button type="button" data-version-channel="stable">稳定</button>
+          <button type="button" data-version-channel="beta">测试</button>
+        </div>
+        <span class="version-history-hint" id="versionHistoryHint"></span>
+      </div>
+      <div class="relation-dialog-body version-history-body" id="versionHistoryBody"></div>
+      <p class="version-history-status" id="versionHistoryStatus" hidden></p>
+      <footer class="settings-actions version-history-footer">
+        <a class="settings-button secondary" id="versionHistoryReleasesLink" href="https://github.com/MogroWangStudio/Acta/releases" target="_blank" rel="noopener">在 GitHub 查看</a>
+        <button class="settings-button secondary" id="versionHistoryClose" type="button">关闭</button>
+      </footer>
+    </dialog>
 
     <dialog class="relation-dialog delete-confirm-dialog" id="deleteConfirmDialog" aria-labelledby="deleteConfirmTitle">
       <header class="relation-dialog-head"><span class="is-danger"><svg><use href="#i-trash"/></svg></span><div><h3 id="deleteConfirmTitle">删除项目</h3><small id="deleteConfirmItem">选择如何处理这一项</small></div><button class="relation-dialog-close" id="closeDeleteConfirm" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>

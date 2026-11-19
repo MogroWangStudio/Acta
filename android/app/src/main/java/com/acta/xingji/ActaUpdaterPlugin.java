@@ -41,7 +41,8 @@ import java.util.zip.ZipInputStream;
 @CapacitorPlugin(name = "ActaUpdater")
 public class ActaUpdaterPlugin extends Plugin {
 
-    private static final String RELEASES_LATEST_API = "https://api.github.com/repos/MogroWangStudio/Acta/releases/latest";
+    /** 列表端点：latest 永远只给正式版，测试通道拿不到 beta 预发布。 */
+    private static final String RELEASES_LIST_API = "https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=15";
     private static final int CONNECT_TIMEOUT_MS = 10000;
     private static final int READ_TIMEOUT_MS = 30000;
     private static final long PROGRESS_STEP_BYTES = 262144L;
@@ -79,17 +80,65 @@ public class ActaUpdaterPlugin extends Plugin {
     }
 
     private static String versionString(String value) {
-        int[] parts = parseVersion(value);
-        return parts[0] + "." + parts[1] + "." + parts[2];
+        String trimmed = value == null ? "" : value.trim();
+        if (trimmed.startsWith("v") || trimmed.startsWith("V")) trimmed = trimmed.substring(1);
+        int plus = trimmed.indexOf('+');
+        if (plus >= 0) trimmed = trimmed.substring(0, plus);
+        return trimmed;
     }
 
-    private static boolean isNewer(String remote, String local) {
+    /** 预发布段（"4.3.0-beta10" → "beta10"），无预发布为空串。 */
+    private static String preReleaseOf(String value) {
+        String trimmed = versionString(value).toLowerCase();
+        int dash = trimmed.indexOf('-');
+        return dash < 0 ? "" : trimmed.substring(dash + 1);
+    }
+
+    /** 预发布段 token 化：beta10 → [beta, 10]，beta.2 → [beta, 2]。 */
+    private static java.util.List<String> preTokens(String pre) {
+        java.util.List<String> tokens = new java.util.ArrayList<>();
+        if (pre == null || pre.isEmpty()) return tokens;
+        for (String part : pre.split("[.-]")) {
+            if (part.isEmpty()) continue;
+            java.util.regex.Matcher inner = java.util.regex.Pattern.compile("\\d+|\\D+").matcher(part);
+            while (inner.find()) tokens.add(inner.group());
+        }
+        return tokens;
+    }
+
+    private static int comparePreToken(String a, String b) {
+        boolean numericA = a.matches("\\d+");
+        boolean numericB = b.matches("\\d+");
+        if (numericA && numericB) return Integer.compare(Integer.parseInt(a), Integer.parseInt(b));
+        // semver：数字段小于同位置的非数字段（1 < alpha）。
+        if (numericA) return -1;
+        if (numericB) return 1;
+        return a.compareTo(b);
+    }
+
+    /** semver 比较：>0 表示 remote 比 local 新；同版本号时正式版大于预发布。 */
+    private static int compareVersions(String remote, String local) {
         int[] remoteParts = parseVersion(remote);
         int[] localParts = parseVersion(local);
         for (int i = 0; i < 3; i++) {
-            if (remoteParts[i] != localParts[i]) return remoteParts[i] > localParts[i];
+            if (remoteParts[i] != localParts[i]) return Integer.compare(remoteParts[i], localParts[i]);
         }
-        return false;
+        String remotePre = preReleaseOf(remote);
+        String localPre = preReleaseOf(local);
+        if (remotePre.isEmpty() && localPre.isEmpty()) return 0;
+        if (remotePre.isEmpty()) return 1;
+        if (localPre.isEmpty()) return -1;
+        java.util.List<String> remoteTokens = preTokens(remotePre);
+        java.util.List<String> localTokens = preTokens(localPre);
+        for (int i = 0; i < Math.min(remoteTokens.size(), localTokens.size()); i++) {
+            int difference = comparePreToken(remoteTokens.get(i), localTokens.get(i));
+            if (difference != 0) return difference;
+        }
+        return Integer.compare(remoteTokens.size(), localTokens.size());
+    }
+
+    private static boolean isNewer(String remote, String local) {
+        return compareVersions(remote, local) > 0;
     }
 
     private static String sanitizeFileName(String value) {
@@ -109,12 +158,25 @@ public class ActaUpdaterPlugin extends Plugin {
         return builder.toString();
     }
 
+    /** 找出该 Release 里可用的安卓更新包（Acta-<版本>-android-<架构>.zip）。 */
+    private static JSONObject androidAssetOf(JSONObject release) {
+        JSONArray assets = release == null ? null : release.optJSONArray("assets");
+        if (assets == null) return null;
+        for (int i = 0; i < assets.length(); i++) {
+            JSONObject asset = assets.optJSONObject(i);
+            String name = asset == null ? "" : asset.optString("name", "");
+            if (name.matches("Acta-.*-android-.*\\.zip")) return asset;
+        }
+        return null;
+    }
+
     @PluginMethod
     public void checkUpdate(PluginCall call) {
         final String localVersion = currentVersionName();
+        final boolean betaChannel = "beta".equalsIgnoreCase(call.getString("channel", "stable"));
         Thread worker = new Thread(() -> {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(RELEASES_LATEST_API).openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URL(RELEASES_LIST_API).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
                 connection.setReadTimeout(READ_TIMEOUT_MS);
                 connection.setRequestProperty("Accept", "application/vnd.github+json");
@@ -132,31 +194,32 @@ public class ActaUpdaterPlugin extends Plugin {
                     call.reject("检查更新失败：HTTP " + status);
                     return;
                 }
-                JSONObject release = new JSONObject(body);
-                String remoteVersion = versionString(release.optString("tag_name", ""));
-                if (!isNewer(remoteVersion, localVersion)) {
+                JSONArray releases = new JSONArray(body);
+                // 通道过滤 + 按 semver 取最大者：列表按发布时间排序，取首个会
+                // 把补发/先发的低版本当成最新（beta9 抢在 beta10 前面）。
+                JSONObject release = null;
+                String remoteVersion = "";
+                for (int i = 0; i < releases.length(); i++) {
+                    JSONObject candidate = releases.optJSONObject(i);
+                    if (candidate == null) continue;
+                    String version = versionString(candidate.optString("tag_name", ""));
+                    if (version.isEmpty()) continue;
+                    boolean prerelease = candidate.optBoolean("prerelease", false) || version.contains("-");
+                    if (!betaChannel && prerelease) continue;
+                    if (androidAssetOf(candidate) == null) continue;
+                    if (!isNewer(version, localVersion)) continue;
+                    if (release == null || compareVersions(version, remoteVersion) > 0) {
+                        release = candidate;
+                        remoteVersion = version;
+                    }
+                }
+                if (release == null) {
                     result.put("available", false);
-                    result.put("version", remoteVersion);
                     call.resolve(result);
                     return;
                 }
-                // 只认安卓更新压缩包资产：Acta-<版本>-android-<架构>.zip
-                String downloadUrl = "";
-                String assetName = "";
-                long assetSize = 0;
-                JSONArray assets = release.optJSONArray("assets");
-                if (assets != null) {
-                    for (int i = 0; i < assets.length(); i++) {
-                        JSONObject asset = assets.optJSONObject(i);
-                        String name = asset == null ? "" : asset.optString("name", "");
-                        if (name.matches("Acta-.*-android-.*\\.zip")) {
-                            downloadUrl = asset.optString("browser_download_url", "");
-                            assetSize = asset.optLong("size", 0);
-                            assetName = name;
-                            break;
-                        }
-                    }
-                }
+                JSONObject asset = androidAssetOf(release);
+                String downloadUrl = asset.optString("browser_download_url", "");
                 if (downloadUrl.isEmpty()) {
                     result.put("available", false);
                     result.put("reason", "noAndroidAsset");
@@ -167,8 +230,8 @@ public class ActaUpdaterPlugin extends Plugin {
                 result.put("available", true);
                 result.put("version", remoteVersion);
                 result.put("url", downloadUrl);
-                result.put("name", assetName);
-                result.put("size", assetSize);
+                result.put("name", asset.optString("name", ""));
+                result.put("size", asset.optLong("size", 0));
                 result.put("htmlUrl", release.optString("html_url", ""));
                 String notes = release.optString("body", "");
                 if (notes.length() > NOTES_MAX_CHARS) notes = notes.substring(0, NOTES_MAX_CHARS);

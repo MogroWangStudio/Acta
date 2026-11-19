@@ -8328,18 +8328,31 @@ function renderList() {
     return;
   }
 
-  list.innerHTML = `<div class="list-body">${items.map((item, index) => {
-    const folder = getFolder(item.folderId);
-    const linkedCount = getLinkedItems(item).length;
-    const completed = item.type === 'todo' && (item.tasks || []).filter(task => task.done).length;
-    const total = item.type === 'todo' ? (item.tasks || []).length : 0;
-    const done = isTodoComplete(item);
-    const progress = total ? Math.round(completed / total * 100) : (done ? 100 : 0);
-    const dateMarkup = item.type === 'todo'
-      ? todoListTimeMarkup(item)
-      : `<time class="card-date" datetime="${escapeHTML(item.updatedAt)}">${escapeHTML(formatDate(item.updatedAt, true))}</time>`;
-    const active = !matchMedia('(max-width: 800px)').matches && item.id === selectedId;
-    return `<button class="item-card ${active ? 'active' : ''} ${done ? 'completed-card' : ''} ${item.type === 'todo' ? `priority-${item.priority || 'medium'}` : ''}" data-id="${escapeHTML(item.id)}" style="animation-delay:${Math.min(index * 18, 100)}ms">
+  list.innerHTML = `<div class="list-body">${items.map((item, index) => itemCardMarkup(item, {
+    index,
+    active: !matchMedia('(max-width: 800px)').matches && item.id === selectedId
+  })).join('')}</div>`;
+  if (sinking && sinkPreviousRects) {
+    // 置底落位：抑制入场级联重放，只播移位卡片的位置动效。
+    document.body.classList.add('acta-steady');
+    try { playCompletedSinkMotion(list, sinkPreviousRects); } catch { /* 动画失败不影响落位。 */ }
+  }
+}
+
+// 列表卡片：主列表与并排标签页共用这一份标记，两处的卡片永远长得一样。
+// 入场级联的 animation-delay 由 index 决定；并排窗格不做整列入场（重排时
+// 会一起闪烁），调用方传 animate:false 关掉。
+function itemCardMarkup(item, { active = false, index = 0, animate = true } = {}) {
+  const folder = getFolder(item.folderId);
+  const linkedCount = getLinkedItems(item).length;
+  const completed = item.type === 'todo' && (item.tasks || []).filter(task => task.done).length;
+  const total = item.type === 'todo' ? (item.tasks || []).length : 0;
+  const done = isTodoComplete(item);
+  const progress = total ? Math.round(completed / total * 100) : (done ? 100 : 0);
+  const dateMarkup = item.type === 'todo'
+    ? todoListTimeMarkup(item)
+    : `<time class="card-date" datetime="${escapeHTML(item.updatedAt)}">${escapeHTML(formatDate(item.updatedAt, true))}</time>`;
+  return `<button class="item-card ${active ? 'active' : ''} ${done ? 'completed-card' : ''} ${item.type === 'todo' ? `priority-${item.priority || 'medium'}` : ''}" data-id="${escapeHTML(item.id)}"${animate ? ` style="animation-delay:${Math.min(index * 18, 100)}ms"` : ''}>
       <div class="card-top"><span class="type-pill ${item.type}"><svg><use href="#i-${item.type === 'todo' ? 'check' : 'note'}"/></svg>${t(item.type)}</span>${item.type === 'todo' ? `<span class="priority-pill ${item.priority || 'medium'}">${t(item.priority || 'medium')}</span>` : ''}${dateMarkup}</div>
       <h3>${escapeHTML(item.title || (item.type === 'todo' ? t('untitledTodo') : t('untitledNote')))}</h3>
       <p>${escapeHTML(itemPreview(item))}</p>
@@ -8362,12 +8375,6 @@ function renderList() {
           })()
         : `<span>${completed}/${total}</span><span class="mini-progress"><i style="width:${progress}%"></i></span>`) : ''}</div>
     </button>`;
-  }).join('')}</div>`;
-  if (sinking && sinkPreviousRects) {
-    // 置底落位：抑制入场级联重放，只播移位卡片的位置动效。
-    document.body.classList.add('acta-steady');
-    try { playCompletedSinkMotion(list, sinkPreviousRects); } catch { /* 动画失败不影响落位。 */ }
-  }
 }
 
 function editorTop(item) {
@@ -10436,8 +10443,8 @@ function getSyncBridge() {
 
   window.actaMobileUpdater = {
     open,
-    checkUpdate: async currentVersion => {
-      const result = await native.checkUpdate({ currentVersion: currentVersion || '' });
+    checkUpdate: async (currentVersion, channel) => {
+      const result = await native.checkUpdate({ currentVersion: currentVersion || '', channel: channel === 'beta' ? 'beta' : 'stable' });
       return result?.available
         ? { version: result.version, url: result.url, size: result.size || 0, notes: result.notes || '', htmlUrl: result.htmlUrl || '' }
         : null;

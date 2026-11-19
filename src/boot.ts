@@ -6,5 +6,8 @@ import './legacy/note-export.js';
 import './legacy/interface.js';
 import './legacy/custom-select.js';
 import './legacy/custom-datetime.js';
+// 标签页：把页面状态存成可切换的标签（依赖 renderer.js 的全局状态与
+// interface.js 的词典，必须排在两者之后）。
+import './legacy/tabs.js';
 // 自更新流程（对话框 + 启动后的静默检查）依赖 bridge 与界面语言设置，放最后。
 import './legacy/updater.js';

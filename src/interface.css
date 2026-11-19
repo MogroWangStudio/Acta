@@ -459,7 +459,7 @@ html[data-desktop-platform="win32"] .settings-content { padding-bottom: 78px; }
    状态行，与「开发者」组同一行语言。 */
 .about-update-group { margin-top: 14px; }
 .about-update-group .settings-row { min-height: 48px; }
-.about-update-actions { gap: 10px; justify-content: flex-end; }
+.about-update-actions { gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 .about-update-actions .settings-button { min-height: 34px; }
 .about-update-group .about-update-status { margin: 0; padding: 9px 15px 11px; background: transparent; min-height: 0; font-size: calc(10px * var(--acta-font-scale)); }
 .about-update-group .about-update-status + .about-update-status { padding-top: 0; }
@@ -4065,3 +4065,127 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 .board-export-dialog .board-style-check { cursor: pointer; }
 .board-export-dialog .board-style-check input { width: 15px; height: 15px; accent-color: var(--sage); }
 .board-export-dialog [data-bg-image] button { flex: 0 0 auto; }
+
+/* —— 标签页 ——
+   标签条占据工作区网格的第一行（见 styles.css 的 grid-template-areas），
+   横跨列表与编辑器。视觉语言沿用列表页的分段控件：胶囊、单色、无投影；
+   选中态只是「白底 + 细边」的落位，不做位移或放大——它是位置指示，
+   不是可点的强调按钮。关闭口只在悬停与选中时浮现，安静但不难找。 */
+.tab-strip {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  padding: 6px 10px 6px 12px;
+  background: var(--panel);
+  border-left: 1px solid rgba(42,48,41,.07);
+  border-bottom: 1px solid rgba(42,48,41,.08);
+  position: relative; z-index: 12;
+}
+.tab-strip-scroll { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tab-strip-scroll::-webkit-scrollbar { display: none; }
+.tab-item {
+  flex: 0 0 auto; display: flex; align-items: center; max-width: 200px; height: 28px;
+  border: 1px solid transparent; border-radius: 8px; color: var(--muted); background: transparent;
+  transition: background-color .16s ease, color .16s ease, border-color .16s ease;
+}
+.tab-item:hover { background: rgba(255,255,255,.55); color: var(--ink); }
+.tab-item.is-active { background: var(--white); border-color: rgba(42,48,41,.1); color: var(--ink); }
+.tab-item-main {
+  display: flex; align-items: center; gap: 5px; min-width: 0; height: 100%; padding: 0 4px 0 9px;
+  border: 0; background: transparent; color: inherit; cursor: pointer;
+  font-size: calc(10px * var(--acta-font-scale)); font-weight: 600;
+}
+.tab-item-main svg { width: 13px; height: 13px; flex: 0 0 auto; opacity: .62; }
+.tab-item.is-active .tab-item-main svg { opacity: .85; }
+.tab-item-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab-item-close {
+  flex: 0 0 auto; width: 18px; height: 18px; margin-right: 4px; padding: 0;
+  border: 0; border-radius: 5px; background: transparent; color: inherit;
+  display: grid; place-items: center; opacity: 0; cursor: pointer;
+  transition: opacity .14s ease, background-color .14s ease;
+}
+.tab-item-close svg { width: 11px; height: 11px; }
+.tab-item:hover .tab-item-close, .tab-item.is-active .tab-item-close { opacity: .5; }
+.tab-item-close:hover { opacity: 1; background: rgba(42,48,41,.08); }
+.tab-item-close:active { opacity: 1; }
+.tab-strip-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 2px; }
+.tab-strip-button {
+  width: 28px; height: 28px; border: 0; border-radius: 8px; background: transparent; color: var(--muted);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, transform .1s ease;
+}
+.tab-strip-button:hover { background: rgba(255,255,255,.7); color: var(--ink); }
+.tab-strip-button:active { transform: scale(.94); }
+.tab-strip-button svg { width: 15px; height: 15px; }
+.tab-strip-button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.tab-strip-button[disabled], .tab-strip-button[aria-disabled="true"] { opacity: .34; cursor: default; }
+.tab-strip-button[disabled]:hover, .tab-strip-button[aria-disabled="true"]:hover { background: transparent; color: var(--muted); }
+/* 并排要两个窗格加编辑器同屏：窗口不够宽时不给入口，避免三列挤成一条。 */
+@media (max-width: 1119px) {
+  #tabSplitButton { display: none; }
+}
+
+/* 并排窗格：与主列表同构（页头 / 卡片 / 页脚），底色略偏浅、卡片略紧，
+   一眼能看出是「另一个页面」而不是当前页面的续列。 */
+.tab-pane-secondary {
+  display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative;
+  background: color-mix(in srgb, var(--panel) 88%, var(--paper));
+  border-right: 1px solid rgba(42,48,41,.08);
+}
+.tab-pane-secondary[hidden] { display: none; }
+.tab-pane-secondary .item-header { height: 66px; }
+.tab-pane-secondary .item-header h1 { font-size: calc(20px * var(--acta-font-scale)); }
+.tab-pane-count { padding-bottom: 2px; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+.tab-pane-secondary .item-list { padding: 6px 8px 10px; }
+.tab-pane-secondary .item-card { min-height: 84px; padding: 11px 11px 9px; animation: none; }
+.tab-pane-secondary .item-card:hover { transform: none; }
+.tab-pane-secondary .item-card h3 { margin-top: 7px; }
+.tab-pane-secondary .item-card p { height: 25px; }
+.tab-pane-empty {
+  margin: 8px 2px; padding: 20px 14px; border: 1px dashed rgba(42,48,41,.15); border-radius: 12px;
+  color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.65; text-align: center;
+}
+.tab-pane-empty b { display: block; margin-bottom: 5px; color: var(--ink); font-size: calc(11px * var(--acta-font-scale)); }
+
+/* —— 版本列表（关于 → 版本列表） ——
+   一行一个发布：版本号 / 渠道标记 / 日期 / 说明摘要 / 体积与动作。
+   正在使用的版本只做底色区分，不重复给「安装」按钮。降级确认就落在
+   被点的那一行下面——警告和它要拦的动作贴在同一个位置。 */
+.version-history-dialog { width: min(560px, calc(var(--acta-vw) - 28px)); }
+.version-history-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 20px 12px; }
+.version-channel-switch { display: flex; padding: 2px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, var(--white) 55%, transparent); }
+.version-channel-switch button { height: 26px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); font-weight: 650; cursor: pointer; transition: background-color .15s ease, color .15s ease; }
+.version-channel-switch button.active { background: var(--ink); color: var(--paper); }
+.version-history-hint { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+.version-history-body { display: flex; flex-direction: column; gap: 8px; padding: 0 20px 6px; overflow: auto; }
+.version-history-status { margin: 0; padding: 14px 20px 4px; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.65; }
+.version-history-status.is-error { color: #b96051; }
+.version-row { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.42); }
+.version-row.is-current { border-color: color-mix(in srgb, var(--sage) 34%, var(--line)); background: color-mix(in srgb, var(--sage) 6%, rgba(255,255,255,.5)); }
+.version-row-head { display: flex; align-items: center; gap: 8px; }
+.version-row-head b { font-size: calc(12px * var(--acta-font-scale)); font-weight: 650; font-variant-numeric: tabular-nums; }
+.version-row-head time { margin-left: auto; color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+.version-badge { height: 18px; padding: 0 6px; border-radius: 5px; display: inline-flex; align-items: center; font-size: calc(8px * var(--acta-font-scale)); font-weight: 700; letter-spacing: .04em; color: var(--muted); background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.version-badge.is-beta { color: #94702f; background: #f3e8c9; }
+.version-badge.is-current { color: var(--sage); background: color-mix(in srgb, var(--sage) 14%, transparent); }
+.version-notes { margin: 8px 0 0; color: var(--muted); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.6; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.version-row-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.version-size { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); font-variant-numeric: tabular-nums; }
+.version-install-button { margin-left: auto; }
+.version-downgrade { margin-top: 10px; padding: 10px 12px; border: 1px solid color-mix(in srgb, #b96051 26%, var(--line)); border-radius: 10px; background: color-mix(in srgb, #b96051 7%, transparent); }
+.version-downgrade p { margin: 0 0 9px; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); line-height: 1.68; }
+.version-downgrade b { color: #b96051; }
+.version-downgrade-actions { display: flex; justify-content: flex-end; gap: 8px; }
+/* 弹窗里的按钮不做悬停放大：这里是一份清单，动作按钮不需要「弹一下」。 */
+.version-history-dialog .settings-button:hover { transform: none; box-shadow: none; }
+.version-history-dialog .settings-button.secondary:hover { background: var(--panel); }
+.version-history-dialog .settings-button.danger:hover { color: #fff; background: #b96051; }
+/* [hidden] 的 UA 规则（display:none）会被上面的 display 声明压掉：
+   单标签页时隐藏关闭口、未并排时隐藏副窗格，都要显式写一遍。 */
+.tab-item-close[hidden], .tab-pane-secondary[hidden] { display: none; }
+/* 版本列表的窗口骨架：头 / 通道行 / 可滚动清单 / 底栏四段。只有 [open]
+   时才成为竖排 flex——否则 dialog 的 UA display:none 会被作者样式压掉，
+   关闭状态的窗口会留在页面上。 */
+.relation-dialog-head > span.is-sage { background: var(--sage-2); color: var(--sage); }
+.version-history-dialog[open] { display: flex; flex-direction: column; }
+.version-history-body { flex: 1 1 auto; min-height: 0; overflow: hidden auto; }
+.version-history-footer { flex: 0 0 auto; align-items: center; justify-content: flex-end; gap: 9px; margin: 0; padding: 12px 20px 16px; border-top: 1px solid var(--line); }
+.version-history-footer .settings-button { min-height: 32px; text-decoration: none; }

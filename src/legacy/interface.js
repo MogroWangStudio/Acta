@@ -4645,11 +4645,26 @@
   const ACTA_RELEASES_LIST_API = 'https://api.github.com/repos/MogroWangStudio/Acta/releases?per_page=15';
   const updateMessages = {
     zh: { checking:'正在检查更新…', latest:'当前已是最新版本（{version}）。', available:'发现新版本 {remote}，{link}。', noRelease:'尚未在 GitHub 上发布版本，{link}。', error:'检查更新失败：{detail}', downloadLink:'前往下载', releasesLink:'查看发布页',
-      probing:'正在测速…', probeAssetFail:'无法获取用于测速的下载地址：{detail}', probeLine:'{label}：{kbps} KB/s（{sec}s，{mb} MB）', probeFailLine:'{label}：无法访问（HTTP {status}）', probeErrorLine:'{label}：测速失败：{detail}', probeFaster:'更快', probeDirectLabel:'GitHub 直链', probeProxyLabel:'GitHub-proxy' },
+      probing:'正在测速…', probeAssetFail:'无法获取用于测速的下载地址：{detail}', probeLine:'{label}：{kbps} KB/s（{sec}s，{mb} MB）', probeFailLine:'{label}：无法访问（HTTP {status}）', probeErrorLine:'{label}：测速失败：{detail}', probeFaster:'更快', probeDirectLabel:'GitHub 直链', probeProxyLabel:'GitHub-proxy',
+      versionCurrent:'正在使用', versionPrerelease:'测试版',
+      versionLoading:'正在读取发布记录…', versionEmpty:'这个通道还没有可安装的发布。', versionError:'读取发布记录失败：{detail}',
+      versionUpgrade:'升级到此版本', versionDowngrade:'降级到此版本', versionReinstall:'重新安装', versionDownload:'前往下载',
+      versionNotesEmpty:'（这个版本没有填写更新说明）', versionHint:'当前 v{version}',
+      versionDowngradeTitle:'降级会覆盖当前程序', versionDowngradeBody:'旧版本可能读不懂新版本写入的数据（数据档案格式、计划板、后来新增的字段）。一旦用旧版本保存，新版本里的内容可能永久丢失，再升级也找不回来。建议先到「行记数据」里立即备份再继续。', versionDowngradeConfirm:'我已备份，仍然降级', versionCancel:'取消', },
     en: { checking:'Checking for updates…', latest:'Acta is up to date ({version}).', available:'A new version {remote} is available. {link}.', noRelease:'No releases have been published on GitHub yet. {link}.', error:'Update check failed: {detail}', downloadLink:'Get the update', releasesLink:'View releases',
-      probing:'Probing speed…', probeAssetFail:'Could not resolve a download URL for the speed test: {detail}', probeLine:'{label}: {kbps} KB/s ({sec}s, {mb} MB)', probeFailLine:'{label}: unreachable (HTTP {status})', probeErrorLine:'{label}: probe failed: {detail}', probeFaster:'faster', probeDirectLabel:'GitHub direct', probeProxyLabel:'GitHub-proxy' },
+      probing:'Probing speed…', probeAssetFail:'Could not resolve a download URL for the speed test: {detail}', probeLine:'{label}: {kbps} KB/s ({sec}s, {mb} MB)', probeFailLine:'{label}: unreachable (HTTP {status})', probeErrorLine:'{label}: probe failed: {detail}', probeFaster:'faster', probeDirectLabel:'GitHub direct', probeProxyLabel:'GitHub-proxy',
+      versionCurrent:'In use', versionPrerelease:'Beta',
+      versionLoading:'Reading release history…', versionEmpty:'No installable releases on this channel yet.', versionError:'Could not read release history: {detail}',
+      versionUpgrade:'Upgrade to this version', versionDowngrade:'Downgrade to this version', versionReinstall:'Reinstall', versionDownload:'Open download',
+      versionNotesEmpty:'(no release notes for this version)', versionHint:'Current v{version}',
+      versionDowngradeTitle:'Downgrading replaces the app', versionDowngradeBody:'An older build may not understand data written by this one (archive format, boards, fields added later). Once the old build saves, newer content can be lost for good — upgrading again will not bring it back. Back up first from “Acta data”.', versionDowngradeConfirm:'I have a backup, downgrade', versionCancel:'Cancel', },
     'zh-Hant': { checking:'正在檢查更新…', latest:'目前已是最新版本（{version}）。', available:'發現新版本 {remote}，{link}。', noRelease:'尚未在 GitHub 上發佈版本，{link}。', error:'檢查更新失敗：{detail}', downloadLink:'前往下載', releasesLink:'查看發佈頁',
-      probing:'正在測速…', probeAssetFail:'無法取得用於測速的下載地址：{detail}', probeLine:'{label}：{kbps} KB/s（{sec}s，{mb} MB）', probeFailLine:'{label}：無法存取（HTTP {status}）', probeErrorLine:'{label}：測速失敗：{detail}', probeFaster:'更快', probeDirectLabel:'GitHub 直連', probeProxyLabel:'GitHub-proxy' }
+      probing:'正在測速…', probeAssetFail:'無法取得用於測速的下載地址：{detail}', probeLine:'{label}：{kbps} KB/s（{sec}s，{mb} MB）', probeFailLine:'{label}：無法存取（HTTP {status}）', probeErrorLine:'{label}：測速失敗：{detail}', probeFaster:'更快', probeDirectLabel:'GitHub 直連', probeProxyLabel:'GitHub-proxy',
+      versionCurrent:'正在使用', versionPrerelease:'測試版',
+      versionLoading:'正在讀取發佈記錄…', versionEmpty:'這個通道還沒有可安裝的發佈。', versionError:'讀取發佈記錄失敗：{detail}',
+      versionUpgrade:'升級到此版本', versionDowngrade:'降級到此版本', versionReinstall:'重新安裝', versionDownload:'前往下載',
+      versionNotesEmpty:'（這個版本沒有填寫更新說明）', versionHint:'目前 v{version}',
+      versionDowngradeTitle:'降級會覆蓋目前程式', versionDowngradeBody:'舊版本可能讀不懂新版本寫入的資料（資料檔案格式、計畫板、後來新增的欄位）。一旦用舊版本儲存，新版本裡的內容可能永久遺失，再升級也找不回來。建議先到「行記資料」立即備份再繼續。', versionDowngradeConfirm:'我已備份，仍然降級', versionCancel:'取消', }
   };
   let aboutUpdateState = 'idle';
   let aboutUpdateVars = {};
@@ -4659,18 +4674,47 @@
     return message;
   };
   const currentActaVersion = () => (byId('aboutVersion')?.textContent || '').trim();
+  // 版本号提取保留预发布后缀（4.3.0-beta10）——只取 \d+\.\d+\.\d+ 会把
+  // beta 段吃掉，两个 beta 之间就再也分不出先后。
   const extractActaVersion = value => {
-    const match = String(value || '').match(/\d+\.\d+\.\d+/);
-    return match ? match[0] : '';
+    const match = String(value || '').match(/(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/);
+    return match ? match[1] : '';
   };
   const parseActaVersion = value => {
-    const match = extractActaVersion(value).match(/(\d+)\.(\d+)\.(\d+)/);
-    return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : [0, 0, 0];
+    const match = extractActaVersion(value).match(/(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?/);
+    return match
+      ? { core: [Number(match[1]), Number(match[2]), Number(match[3])], pre: match[4] ? match[4].toLowerCase() : '' }
+      : { core: [0, 0, 0], pre: '' };
   };
+  // 预发布段 token 化：beta10 → [beta, 10]，beta.2 → [beta, 2]。
+  const preReleaseTokens = pre => String(pre).split(/[.-]/)
+    .flatMap(part => part.match(/\d+|\D+/g) || [])
+    .filter(Boolean);
+  const comparePreToken = (a, b) => {
+    const numericA = /^\d+$/.test(a);
+    const numericB = /^\d+$/.test(b);
+    if (numericA && numericB) return Number(a) - Number(b);
+    // semver：数字段小于同位置的非数字段（1 < alpha）。
+    if (numericA) return -1;
+    if (numericB) return 1;
+    return a < b ? -1 : a > b ? 1 : 0;
+  };
+  // semver 比较：数字段逐位比；同版本号时正式版大于一切预发布；预发布段
+  // 逐 token 比，连续数字按数值比（beta10 > beta9，而不是 "beta10" < "beta9"）。
   const compareActaVersion = (a, b) => {
-    const pa = parseActaVersion(a), pb = parseActaVersion(b);
-    for (let i = 0; i < 3; i++) { if (pa[i] !== pb[i]) return pa[i] - pb[i]; }
-    return 0;
+    const va = parseActaVersion(a);
+    const vb = parseActaVersion(b);
+    for (let i = 0; i < 3; i++) if (va.core[i] !== vb.core[i]) return va.core[i] - vb.core[i];
+    if (!va.pre && !vb.pre) return 0;
+    if (!va.pre) return 1;
+    if (!vb.pre) return -1;
+    const tokensA = preReleaseTokens(va.pre);
+    const tokensB = preReleaseTokens(vb.pre);
+    for (let i = 0; i < Math.min(tokensA.length, tokensB.length); i++) {
+      const difference = comparePreToken(tokensA[i], tokensB[i]);
+      if (difference) return difference;
+    }
+    return tokensA.length - tokensB.length;
   };
   function renderUpdateStatus() {
     const el = byId('aboutUpdateStatus');
@@ -4728,7 +4772,7 @@
       }
       // Android 原生更新：直接检查 Release 的安装包资产，确认后下载并拉起安装器。
       if (window.actaMobileUpdater) {
-        const mobileInfo = await window.actaMobileUpdater.checkUpdate(currentActaVersion());
+        const mobileInfo = await window.actaMobileUpdater.checkUpdate(currentActaVersion(), channel);
         if (!mobileInfo) {
           setUpdateStatus('latest', { version: currentActaVersion() });
         } else {
@@ -4738,20 +4782,31 @@
         return;
       }
       // 纯网页端：列表端点按通道过滤——stable 跳过预发布（tag 含 '-' 或
-      // prerelease 标记），beta 全收；列表按 GitHub 的最新优先排序，取首个。
+      // prerelease 标记），beta 全收。不取列表首个：GitHub 按发布时间排序，
+      // 补发/先发的 beta 会排在更高版本前面，这里按 semver 取最大者。
       const response = await fetch(ACTA_RELEASES_LIST_API, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const releases = await response.json();
-      const candidate = (Array.isArray(releases) ? releases : []).find(release => {
+      const candidates = (Array.isArray(releases) ? releases : []).filter(release => {
         const isPrerelease = Boolean(release.prerelease) || String(release.tag_name || '').includes('-');
         return channel === 'beta' || !isPrerelease;
       });
-      if (!candidate) {
+      if (!candidates.length) {
         setUpdateStatus('noRelease');
         return;
       }
-      const remote = extractActaVersion(candidate.tag_name) || extractActaVersion(candidate.name) || candidate.tag_name || candidate.name || '';
-      const url = candidate.html_url || ACTA_RELEASES_URL;
+      const newest = candidates.reduce((best, release) => {
+        const version = extractActaVersion(release.tag_name) || extractActaVersion(release.name);
+        if (!version) return best;
+        if (!best) return { release, version };
+        return compareActaVersion(version, best.version) > 0 ? { release, version } : best;
+      }, null);
+      if (!newest) {
+        setUpdateStatus('noRelease');
+        return;
+      }
+      const remote = newest.version;
+      const url = newest.release.html_url || ACTA_RELEASES_URL;
       if (compareActaVersion(remote, currentActaVersion()) > 0) setUpdateStatus('available', { remote, url });
       else setUpdateStatus('latest', { version: currentActaVersion() });
     } catch (err) {
@@ -4771,8 +4826,247 @@
       if (!settings) return;
       settings.updateChannel = updateChannelSetting.value === 'beta' ? 'beta' : 'stable';
       persist?.();
+      refreshVersionHistoryIfOpen();
     });
   }
+
+  // —— 版本列表 ——
+  // 「关于 → 版本列表」把近期 Release 按 semver 从新到旧列出来，每一行都能
+  // 直接安装：比当前新的走升级、比当前旧的走降级、同版本是重装。桌面端复用
+  // 应用内更新流程（下载 → 读秒 → 更新向导），Android 交给系统安装器，纯
+  // 网页端只能给发布页链接。
+  // 降级确认就地展开在被点的那一行下面——警告必须贴在它要拦的动作上，
+  // 而不是弹第二个窗口让人对着两份文案做决定。
+  const versionHistoryDialog = byId('versionHistoryDialog');
+  let versionEntries = [];
+  let versionRequestId = 0;
+  let confirmingDowngrade = '';
+
+  const releaseDirection = version => {
+    const difference = compareActaVersion(version, currentActaVersion());
+    return difference > 0 ? 'up' : difference < 0 ? 'down' : 'same';
+  };
+  const formatReleaseDate = value => {
+    const stamp = Date.parse(value || '');
+    if (!Number.isFinite(stamp)) return '';
+    const date = new Date(stamp);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  };
+  // Release 说明是 Markdown：行首的 # 对一份清单没有任何信息量，而紧跟的
+  // 「## v4.2.0（日期）」与行头的版本号重复。去掉这两类，并把空行收成
+  // 单换行——清单里只有三行位置，一段说明塞不下空行。
+  const cleanReleaseNotes = value => String(value || '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .filter(line => !/^#{1,2}\s*v?\d+\.\d+\.\d+/i.test(line.trim()))
+    .map(line => line.replace(/^#{2,6}\s*/, '').replace(/\*\*|__|`|~~/g, '').trim())
+    .filter(Boolean)
+    .join('\n')
+    .trim();
+  const formatReleaseSize = bytes => (Number(bytes) > 0 ? `${(Number(bytes) / (1024 * 1024)).toFixed(1)} MB` : '');
+  const releaseCanInstall = entry => entry.installable && Boolean(entry.url);
+
+  function setVersionStatus(key, vars = {}, isError = false) {
+    const node = byId('versionHistoryStatus');
+    if (!node) return;
+    if (!key) { node.hidden = true; node.textContent = ''; node.classList.remove('is-error'); return; }
+    node.hidden = false;
+    node.classList.toggle('is-error', isError);
+    node.textContent = updateText(key, vars);
+  }
+
+  function syncVersionChannelSwitch() {
+    const channel = activeUpdateChannel();
+    byId('versionChannelSwitch')?.querySelectorAll('[data-version-channel]').forEach(button => {
+      const active = button.dataset.versionChannel === channel;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    const hint = byId('versionHistoryHint');
+    if (hint) hint.textContent = updateText('versionHint', { version: currentActaVersion() });
+  }
+
+  function versionRowHTML(entry) {
+    const direction = releaseDirection(entry.version);
+    const isCurrent = direction === 'same';
+    const badge = isCurrent
+      ? `<span class="version-badge is-current">${escapeHTML(updateText('versionCurrent'))}</span>`
+      : entry.prerelease ? `<span class="version-badge is-beta">${escapeHTML(updateText('versionPrerelease'))}</span>` : '';
+    const label = isCurrent
+      ? updateText('versionReinstall')
+      : direction === 'down' ? updateText('versionDowngrade') : updateText('versionUpgrade');
+    const action = releaseCanInstall(entry)
+      ? `<button type="button" class="settings-button ${direction === 'up' ? '' : 'secondary'} version-install-button" data-version-install="${escapeHTML(entry.version)}">${escapeHTML(label)}</button>`
+      : `<button type="button" class="settings-button secondary version-install-button" data-version-link="${escapeHTML(entry.htmlUrl || ACTA_RELEASES_URL)}">${escapeHTML(updateText('versionDownload'))}</button>`;
+    const size = formatReleaseSize(entry.size);
+    const confirming = confirmingDowngrade === entry.version;
+    const notes = cleanReleaseNotes(entry.notes) || updateText('versionNotesEmpty');
+    return `<article class="version-row${isCurrent ? ' is-current' : ''}">
+      <div class="version-row-head"><b>v${escapeHTML(entry.version)}</b>${badge}<time>${escapeHTML(formatReleaseDate(entry.publishedAt))}</time></div>
+      <p class="version-notes">${escapeHTML(notes)}</p>
+      <div class="version-row-actions">${size ? `<span class="version-size">${escapeHTML(size)}</span>` : ''}${action}</div>
+      ${confirming ? `<div class="version-downgrade">
+        <p><b>${escapeHTML(updateText('versionDowngradeTitle'))}</b><br>${escapeHTML(updateText('versionDowngradeBody'))}</p>
+        <div class="version-downgrade-actions">
+          <button type="button" class="settings-button secondary" data-version-cancel>${escapeHTML(updateText('versionCancel'))}</button>
+          <button type="button" class="settings-button danger" data-version-confirm="${escapeHTML(entry.version)}">${escapeHTML(updateText('versionDowngradeConfirm'))}</button>
+        </div>
+      </div>` : ''}
+    </article>`;
+  }
+
+  function renderVersionRows() {
+    const body = byId('versionHistoryBody');
+    if (!body) return;
+    if (!versionEntries.length) {
+      body.innerHTML = `<p class="version-history-status">${escapeHTML(updateText('versionEmpty'))}</p>`;
+      return;
+    }
+    body.innerHTML = versionEntries.map(versionRowHTML).join('');
+  }
+
+  async function fetchVersionEntries(channel) {
+    if (window.actaDesktop?.listAppReleases) {
+      const list = await window.actaDesktop.listAppReleases(channel);
+      return (Array.isArray(list) ? list : []).map(entry => ({
+        version: String(entry.version || ''),
+        notes: entry.notes || '',
+        publishedAt: entry.published_at || '',
+        prerelease: Boolean(entry.prerelease),
+        size: Number(entry.size) || 0,
+        url: entry.url || '',
+        assetName: entry.asset_name || '',
+        htmlUrl: entry.html_url || ACTA_RELEASES_URL,
+        installable: Boolean(entry.url)
+      })).filter(entry => entry.version);
+    }
+    // 网页 / Android：直接读 GitHub 列表。Android 只认带安卓包的发布（能把
+    // 包交给系统安装器）；网页端一律只给发布页链接。
+    const response = await fetch(ACTA_RELEASES_LIST_API, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const releases = await response.json();
+    const mobile = Boolean(window.actaMobileUpdater);
+    return (Array.isArray(releases) ? releases : []).map(release => {
+      const version = extractActaVersion(release.tag_name) || extractActaVersion(release.name);
+      const prerelease = Boolean(release.prerelease) || String(release.tag_name || '').includes('-');
+      const assets = Array.isArray(release.assets) ? release.assets : [];
+      const asset = mobile
+        ? assets.find(item => typeof item.name === 'string' && /^Acta-.*-android-.*\.zip$/.test(item.name))
+        : null;
+      return {
+        version,
+        notes: String(release.body || '').slice(0, 600),
+        publishedAt: release.published_at || '',
+        prerelease,
+        size: Number(asset?.size) || 0,
+        url: asset?.browser_download_url || '',
+        assetName: asset?.name || '',
+        htmlUrl: release.html_url || ACTA_RELEASES_URL,
+        installable: Boolean(mobile && asset?.browser_download_url)
+      };
+    }).filter(entry => entry.version && (channel === 'beta' || !entry.prerelease))
+      .sort((a, b) => compareActaVersion(b.version, a.version));
+  }
+
+  async function loadVersionEntries() {
+    const requestId = ++versionRequestId;
+    confirmingDowngrade = '';
+    setVersionStatus('versionLoading');
+    const body = byId('versionHistoryBody');
+    if (body) body.innerHTML = '';
+    try {
+      const entries = await fetchVersionEntries(activeUpdateChannel());
+      if (requestId !== versionRequestId) return;
+      versionEntries = entries;
+      setVersionStatus(null);
+      renderVersionRows();
+    } catch (error) {
+      if (requestId !== versionRequestId) return;
+      versionEntries = [];
+      setVersionStatus('versionError', { detail: (error && error.message) ? error.message : String(error) }, true);
+    }
+  }
+
+  function refreshVersionHistoryIfOpen() {
+    if (!versionHistoryDialog?.open) return;
+    syncVersionChannelSwitch();
+    void loadVersionEntries();
+  }
+
+  function openVersionHistory() {
+    if (!versionHistoryDialog) return;
+    syncVersionChannelSwitch();
+    if (!versionHistoryDialog.open) versionHistoryDialog.showModal();
+    void loadVersionEntries();
+  }
+
+  function closeVersionHistory() {
+    versionHistoryDialog?.close();
+  }
+
+  function installReleaseEntry(entry) {
+    const info = {
+      version: entry.version,
+      notes: entry.notes,
+      url: entry.url,
+      asset_name: entry.assetName,
+      size: entry.size,
+      prerelease: entry.prerelease
+    };
+    closeVersionHistory();
+    if (window.actaDesktop?.downloadAppUpdate && window.actaUpdater?.install) {
+      window.actaUpdater.install(info);
+      return;
+    }
+    if (window.actaMobileUpdater && releaseCanInstall(entry)) {
+      window.actaMobileUpdater.open({ ...info, htmlUrl: entry.htmlUrl });
+      return;
+    }
+    window.open(entry.htmlUrl || ACTA_RELEASES_URL, '_blank', 'noopener');
+  }
+
+  byId('aboutVersionList')?.addEventListener('click', openVersionHistory);
+  byId('versionHistoryClose')?.addEventListener('click', closeVersionHistory);
+  byId('closeVersionHistory')?.addEventListener('click', closeVersionHistory);
+  byId('versionChannelSwitch')?.addEventListener('click', event => {
+    const button = event.target.closest('[data-version-channel]');
+    if (!button || !settings) return;
+    const next = button.dataset.versionChannel === 'beta' ? 'beta' : 'stable';
+    settings.updateChannel = next;
+    persist?.();
+    if (updateChannelSetting) updateChannelSetting.value = next;
+    syncVersionChannelSwitch();
+    void loadVersionEntries();
+  });
+  byId('versionHistoryBody')?.addEventListener('click', event => {
+    const install = event.target.closest('[data-version-install]');
+    if (install) {
+      const entry = versionEntries.find(item => item.version === install.dataset.versionInstall);
+      if (!entry) return;
+      // 降级先就地展开警告，第二次点击（「我已备份」）才真正开始下载。
+      if (releaseDirection(entry.version) === 'down' && confirmingDowngrade !== entry.version) {
+        confirmingDowngrade = entry.version;
+        renderVersionRows();
+        return;
+      }
+      installReleaseEntry(entry);
+      return;
+    }
+    if (event.target.closest('[data-version-cancel]')) {
+      confirmingDowngrade = '';
+      renderVersionRows();
+      return;
+    }
+    const confirm = event.target.closest('[data-version-confirm]');
+    if (confirm) {
+      const entry = versionEntries.find(item => item.version === confirm.dataset.versionConfirm);
+      if (entry) installReleaseEntry(entry);
+      return;
+    }
+    const link = event.target.closest('[data-version-link]');
+    if (link) window.open(link.dataset.versionLink, '_blank', 'noopener');
+  });
+  versionHistoryDialog?.addEventListener('close', () => { confirmingDowngrade = ''; });
 
   // —— 下载来源与测速 ——
   // 来源存 settings.downloadSource（github = GitHub Raw 直链 / proxy = 在下载

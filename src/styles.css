@@ -203,7 +203,38 @@ html[data-desktop-platform="win32"] .titlebar-center { padding-right: 8px; }
 html[data-desktop-platform="win32"] .desktop-window-controls { display: flex; }
 html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 
-.workspace { height: calc(var(--acta-vh) - 52px); display: grid; grid-template-columns: 248px clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr); }
+/* 工作区网格：侧栏 / 列表 / 编辑器三列，外加标签条独占一行。
+   标签条横跨列表与编辑器（侧栏保持固定），并排时网格扩成四列：
+   侧栏 / 主列表 / 并排列表 / 编辑器——标签条仍横跨后三列。
+   用 grid-template-areas 而不是改 DOM 结构：日历、计划板、总结等
+   视图对 .workspace 的列宽覆盖（把编辑器收成 0px）继续有效。 */
+.workspace {
+  height: calc(var(--acta-vh) - 52px);
+  display: grid;
+  grid-template-columns: 248px clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr);
+  grid-template-rows: 40px minmax(0, 1fr);
+  grid-template-areas:
+    "side tabs tabs"
+    "side list editor";
+}
+.sidebar { grid-area: side; }
+.item-pane { grid-area: list; }
+.editor-pane { grid-area: editor; }
+.tab-strip { grid-area: tabs; }
+.tab-pane-secondary { grid-area: companion; }
+
+/* 并排：两个标签页各占一列。主列表沿用用户拖出来的宽度，并排列取它的
+   0.86 倍（略窄，视觉上是「副窗格」），编辑器拿走剩下的。 */
+body.tab-split .workspace {
+  grid-template-columns:
+    248px
+    clamp(300px, var(--list-pane-width, 330px), 520px)
+    clamp(280px, calc(var(--list-pane-width, 330px) * .86), 460px)
+    minmax(320px, 1fr);
+  grid-template-areas:
+    "side tabs tabs tabs"
+    "side list companion editor";
+}
 
 .sidebar {
   background: var(--sidebar);
@@ -742,6 +773,13 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
   .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr); }
   html[data-desktop-platform="win32"] .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr) 138px; }
   .workspace { grid-template-columns: 220px clamp(330px, var(--list-pane-width), 560px) minmax(0, 1fr); }
+  body.tab-split .workspace {
+    grid-template-columns:
+      220px
+      clamp(280px, var(--list-pane-width, 330px), 460px)
+      clamp(260px, calc(var(--list-pane-width, 330px) * .86), 400px)
+      minmax(300px, 1fr);
+  }
   .sidebar { padding-left: 11px; padding-right: 11px; }
   .editor-wrap { width: calc(100% - 56px); }
   .editor-title { font-size: calc(32px * var(--acta-font-scale)); }
@@ -771,6 +809,9 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     height: calc(var(--acta-vh) - 48px - env(safe-area-inset-top));
     display: block;
   }
+  /* 标签页是桌面端的多页面工作方式：移动端一屏只放一个页面，标签条与
+     并排窗格一起收起（数据仍保留，回到桌面继续用）。 */
+  .tab-strip, .tab-pane-secondary { display: none !important; }
   /* 安卓端：WebView 上报的安全区上缘略宽于状态栏的视觉高度，顶栏内容
      与状态栏之间多出一段空隙。这里整体上移 5px 收紧（max 防 env 为 0
      时出现负 padding），工作区高度同步补偿；编辑器全屏面板在下方

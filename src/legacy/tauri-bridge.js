@@ -220,6 +220,10 @@
     checkAppUpdate(channel) {
       return invoke('check_app_update', { channel: channel || 'stable' });
     },
+    // 版本列表：关于页的「版本列表」弹窗（含降级）用它列出可安装的历史版本。
+    listAppReleases(channel) {
+      return invoke('list_app_releases', { channel: channel || 'beta' });
+    },
     downloadAppUpdate(request) {
       return invoke('download_app_update', request);
     },

@@ -247,7 +247,16 @@
     stopCountdown();
     if (state !== 'download' && state !== 'restarting') state = 'idle';
   });
-  window.actaUpdater = Object.freeze({ open });
+  // 直接安装指定版本：关于页的「版本列表」选好版本后调用。跳过「是否下载」
+  // 那一问（选择版本本身就是确认），其余流程与自动更新完全一致——同一个
+  // 下载、读秒与更新向导，升降级走的是同一条路。
+  const install = info => {
+    if (!info?.version || !info?.url) return;
+    open(info, { fromAbout: true });
+    startDownload(info);
+  };
+
+  window.actaUpdater = Object.freeze({ open, install });
 
   // 启动后静默检查一次（按设置里的更新通道）；离线或接口失败都安静跳过。
   window.setTimeout(async () => {
