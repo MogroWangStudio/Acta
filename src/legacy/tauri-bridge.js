@@ -254,7 +254,9 @@
     // 指针挪出死区再真正拖动，原样松手就让 click 照常发生——否则弹层打开时
     // 顶部条带附近的单击 / 双击关闭会全部失灵。同理，双击最大化只留给窗口
     // 自身的 chrome；弹层表面的双击属于「点击空白处关闭」，不能抢。
-    const DRAG_BLOCKERS = 'button, a, input, select, textarea, [contenteditable], [role="button"], .acdt-panel, .acx-menu';
+    // 标签条也在顶栏里（见 tabs.js）：标签本身要能拖动、点选，不能让按下
+    // 就变成拖窗口——.tab-item 的包装区（按钮之外的 1-2px）也一并排除。
+    const DRAG_BLOCKERS = 'button, a, input, select, textarea, [contenteditable], [role="button"], .tab-item, .acdt-panel, .acx-menu';
     const OVERLAY_SELECTOR = '.settings-backdrop.open, .oobe-backdrop.open, dialog[open]';
     const OVERLAY_CHROME = '.settings-header, .oobe-head, .relation-dialog-head';
     const DRAG_DEAD_ZONE = 6;

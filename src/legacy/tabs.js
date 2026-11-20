@@ -329,7 +329,9 @@
       sideButton.title = title;
       sideButton.setAttribute('aria-label', title);
     }
-    byId('tabStrip')?.setAttribute('aria-label', text('tabs'));
+    // 标签语义挂在真正装标签的容器上（tablist）；#tabStrip 外层还装着动作
+    // 按钮与侧边标签条，不再兼任 tablist。
+    byId('tabStripScroll')?.setAttribute('aria-label', text('tabs'));
 
     renderSideStrip();
   };

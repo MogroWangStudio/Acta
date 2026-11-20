@@ -35,9 +35,30 @@
           <span class="logo-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <img class="brand-mini-logo" src="/icons/Acta_weblogo.png" alt="" aria-hidden="true" />
         </div>
-        <span class="brand-version" aria-label="当前版本 4.3.0-beta6">4.3.0-beta6</span>
-        <div class="titlebar-center"><span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span></div>
-        <div class="window-spacer"></div>
+        <!-- 标签页就住在顶栏：主标签条从侧栏右缘起排，右侧窗格的标签跟在它
+             后面（一条短竖线把两组分开），右端留给状态与窗口控件。标签条
+             原来是工作区自己的首行，现在并进顶栏，列表页头直接接在顶栏下。 -->
+        <div class="tab-strip" id="tabStrip">
+          <div class="tab-strip-scroll" id="tabStripScroll" role="tablist" aria-label="页面标签"></div>
+          <div class="tab-strip-actions">
+            <button class="tab-strip-button" id="tabNewButton" type="button" title="新建标签页" aria-label="新建标签页"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            <button class="tab-strip-button" id="tabSideButton" type="button" title="打开侧边标签页" aria-label="打开侧边标签页" aria-pressed="false"><svg aria-hidden="true"><use href="#i-split"/></svg></button>
+          </div>
+          <!-- 右侧窗格的标签条：与主标签条同一套标签逻辑（激活 / 中键关闭 /
+               右键菜单），标签可以在两条标签条之间拖进拖出。空窗格在这里先
+               给一句拖放提示——标签条本身就是这件动作发生的地方。 -->
+          <div class="tab-side-strip" id="tabSideStrip" hidden>
+            <div class="tab-side-strip-scroll" id="tabSideStripScroll" role="tablist" aria-label="侧边标签页"></div>
+            <button class="tab-strip-button" id="tabSideCloseButton" type="button" title="收起侧边标签页" aria-label="收起侧边标签页"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+          </div>
+        </div>
+        <!-- 顶栏右端：版本胶囊与保存状态，窗口控件（Windows）紧接其后。
+             状态是这一整页的写入回执，所以守在右端、贴着窗口控件，
+             不占标签条要用的横向空间。 -->
+        <div class="titlebar-meta">
+          <span class="brand-version" aria-label="当前版本 4.3.0-beta7">4.3.0-beta7</span>
+          <span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span>
+        </div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
           <button class="icon-button mobile-titlebar-action" id="mobileTitleTodos" type="button" data-view="todos" aria-label="所有待办"><svg><use href="#i-check"/></svg></button>
           <button class="icon-button mobile-titlebar-action" id="mobileTitleNotes" type="button" data-view="notes" aria-label="所有笔记"><svg><use href="#i-note"/></svg></button>
@@ -112,26 +133,6 @@
             </div>
           </div>
         </aside>
-
-        <!-- 标签条：横跨列表与编辑器（侧栏与右侧窗格除外）。每个标签保存
-             一整套页面状态，切换即恢复；右键出菜单（复制 / 关闭 / 关闭全部 /
-             移到右侧），中键或悬停后的 × 关闭，右侧两个动作是「新建标签页」
-             与「侧边标签页」。 -->
-        <div class="tab-strip" id="tabStrip" role="tablist" aria-label="页面标签">
-          <div class="tab-strip-scroll" id="tabStripScroll"></div>
-          <div class="tab-strip-actions">
-            <button class="tab-strip-button" id="tabNewButton" type="button" title="新建标签页" aria-label="新建标签页"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
-            <button class="tab-strip-button" id="tabSideButton" type="button" title="打开侧边标签页" aria-label="打开侧边标签页" aria-pressed="false"><svg aria-hidden="true"><use href="#i-split"/></svg></button>
-          </div>
-        </div>
-
-        <!-- 右侧窗格自己的标签条：与主标签条同一套标签逻辑（激活 / 中键关闭 /
-             右键菜单），宽度只够放标签与收起按钮。空态给一句拖放提示，让
-             「把标签页拖进来」这件事在开口处就能被看见。 -->
-        <div class="tab-side-strip" id="tabSideStrip" role="tablist" aria-label="侧边标签页" hidden>
-          <div class="tab-side-strip-scroll" id="tabSideStripScroll"></div>
-          <button class="tab-strip-button" id="tabSideCloseButton" type="button" title="收起侧边标签页" aria-label="收起侧边标签页"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
-        </div>
 
         <section class="item-pane">
           <div class="item-header">
@@ -511,8 +512,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.3.0-beta6</b></div>
-                <div><small>本版更新日期</small><b>2026-11-20</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.3.0-beta7</b></div>
+                <div><small>本版更新日期</small><b>2026-11-21</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <!-- 软件更新：独立板块（单层卡组，标题行 + 通道/来源行 +

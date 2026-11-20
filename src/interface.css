@@ -921,9 +921,14 @@ html[data-acta-theme="mws-light"] .nav-icon-trace,
 html[data-acta-theme="mws-light"] .nav-section button.active .nav-icon-trace { color: #fff; }
 /* 选中项的白底略提亮：白描线在更高不透明度的白底上仍清晰可辨。 */
 html[data-acta-theme="mws-light"] .nav-section button.active { background: rgba(255,255,255,.32); }
-html[data-acta-theme="mws-light"] .titlebar-center { border-left-color: rgba(255,255,255,.32); }
-html[data-acta-theme="mws-light"] .titlebar-center span { color: rgba(255,255,255,.9); }
-html[data-acta-theme="mws-light"] .titlebar-center span.saving { color: #fff; }
+html[data-acta-theme="mws-light"] .titlebar-meta #saveState { color: rgba(255,255,255,.9); }
+html[data-acta-theme="mws-light"] .titlebar-meta #saveState.saving { color: #fff; }
+/* 顶栏标签的配色令牌：品牌绿底上文字与悬停走白色系，选中胶囊仍是白底。 */
+html[data-acta-theme="mws-light"] .titlebar {
+  --chrome-line: rgba(255,255,255,.42);
+  --chrome-hover: rgba(255,255,255,.24);
+  --chrome-muted: rgba(255,255,255,.92);
+}
 html[data-acta-theme="mws-light"] .brand-version { color: rgba(31,74,38,.8); border-color: rgba(31,74,38,.22); background: rgba(255,255,255,.34); }
 html[data-acta-theme="mws-light"] .desktop-window-controls button:hover { background: rgba(255,255,255,.24); }
 html[data-acta-theme="mws-light"] .sidebar { background: #ff6666; }
@@ -1101,7 +1106,7 @@ body { font-size: calc(14px * var(--acta-font-scale)); }
 .note-body { font-size: calc(var(--note-body-size, 17px) * var(--acta-font-scale)); }
 .settings-content, .settings-window button, .settings-window input, .settings-window textarea, .settings-window select { font-size: calc(14px * var(--acta-font-scale)); }
 .search-box input, .filter-row button, .filter-select select, .editor-folder, .meta-field input, .meta-field select, .linked-head b, .open-linked-item b, .progress-head h2, .note-block h2, .add-task { font-size: calc(11px * var(--acta-font-scale)); }
-.titlebar-center span, .sync-card b { font-size: calc(11px * var(--acta-font-scale)); }
+.titlebar-meta #saveState, .sync-card b { font-size: calc(11px * var(--acta-font-scale)); }
 .nav-section button { font-size: calc(14px * var(--acta-font-scale)); }
 .sync-card small, .card-date, .editor-type, .editor-subline, .progress-head span, .no-links, .list-footer, .note-footer { font-size: calc(10px * var(--acta-font-scale)); }
 .type-pill, .priority-pill, .card-bottom, .meta-field label { font-size: calc(9px * var(--acta-font-scale)); }
@@ -1843,31 +1848,8 @@ body.sidebar-collapsed .brand.brand-stamp .brand-mini-logo { animation: miniLogo
 .brand-logo { position: relative; z-index: 1; }
 .brand-version { position: absolute; left: 143px; top: auto; bottom: 9px; transform: none; z-index: 1; max-width: 76px; overflow: hidden; padding: 3px 6px; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 999px; color: var(--muted); background: color-mix(in srgb, var(--white) 48%, transparent); font: 700 calc(8px * var(--acta-font-scale))/1 "Segoe UI Variable", "PingFang SC", sans-serif; letter-spacing: .035em; white-space: nowrap; opacity: 1; transition: max-width .42s cubic-bezier(.2,.82,.2,1), padding .42s cubic-bezier(.2,.82,.2,1), border-width .28s ease, opacity .18s ease, transform .42s cubic-bezier(.2,.82,.2,1); }
 @media (min-width: 801px) {
-  /* macOS：logo 居中，版本号脱排到标题栏右缘，保存状态紧随其左；
-     红绿灯由原生定位（traffic_light_position）垂直居中、贴左侧留间距。 */
-  html[data-desktop-platform="darwin"] .titlebar { grid-template-columns: minmax(0,1fr); }
-  html[data-desktop-platform="darwin"] .brand {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    height: 100%;
-    padding-left: 0;
-    transform: translateX(-50%) translateZ(0);
-    transform-origin: center;
-    --logo-center-x: 50%;
-  }
-  html[data-desktop-platform="darwin"] .brand:hover,
-  html[data-desktop-platform="darwin"] .brand:focus-visible { transform: translateX(-50%) translate3d(0,-1px,0) scale(1.018); }
-  html[data-desktop-platform="darwin"] .brand:active { transform: translateX(-50%) translate3d(0,0,0) scale(.988); transition-duration: .1s; }
-  html[data-desktop-platform="darwin"] .brand-version {
-    position: absolute;
-    left: auto;
-    right: 16px;
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-    transition: none;
-  }
+  /* macOS：红绿灯由原生定位（traffic_light_position）贴左上，品牌区因此
+     右移到 84px 之后；折叠侧栏时迷你 logo 藏在红绿灯下面，干脆不显示。 */
   html[data-desktop-platform="darwin"] body.sidebar-collapsed .brand-mini-logo { opacity: 0; }
 }
 
@@ -3726,12 +3708,8 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .bulk-task-input, .export-tasks-format label, .export-tasks-format label::after { transition: none; }
 }
 
-/* macOS：品牌区绝对定位在标题栏右上，保存状态随之移到 logo 左侧，
-   远离系统红绿灯；brand 脱离文档流后 titlebar-center 会顶进第一列，
-   必须显式固定到第二列。 */
-@media (min-width: 801px) {
-  html[data-desktop-platform="darwin"] .titlebar-center { grid-column: 1; justify-content: flex-end; padding: 0 70px 0 16px; border-left: 0; }
-}
+/* macOS：品牌回到左端（不再是居中字标）——顶栏中段现在归标签页，
+   红绿灯由原生定位贴左上，品牌区自带 84px 左内边距让开它们。 */
 
 /* —— 工具栏设置 —— */
 .nav-page-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 2px 0 0; }
@@ -4066,35 +4044,41 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
 .board-export-dialog .board-style-check input { width: 15px; height: 15px; accent-color: var(--sage); }
 .board-export-dialog [data-bg-image] button { flex: 0 0 auto; }
 
-/* —— 标签页 ——
-   标签条占据工作区网格的第一行（见 styles.css 的 grid-template-areas），
-   横跨列表与编辑器。视觉语言沿用列表页的分段控件：胶囊、单色、无投影；
-   选中态只是「白底 + 细边」的落位，不做位移或放大——它是位置指示，
-   不是可点的强调按钮。关闭口只在悬停与选中时浮现，安静但不难找。
+/* —— 标签页（住在顶栏里） ——
+   标签条不再是工作区的一行，而是顶栏的中间一段：起点落在侧栏右缘，与下方
+   列表、编辑器的竖缝同一条线；右端依次是「新建 / 侧边标签页」两个动作、
+   右侧窗格的标签、状态与窗口控件（见 styles.css 的 grid-template-areas）。
+
+   视觉沿用原来的胶囊语言：胶囊、单色、无投影；选中态只是「白底 + 细边」的
+   落位，不做位移或放大——它是位置指示，不是可点的强调按钮。底色换成顶栏
+   自己的表面（深色主题下近黑、MWS 浅色下是品牌绿），所以文字与悬停一律走
+   「墨色 / 白色」的混色令牌（--chrome-*），不写死浅灰。关闭口只在悬停与
+   选中时浮现，安静但不难找。
 
    标题分两段：页面名（先让位、带省略号）与正在看的条目名（更淡、更细，
    随标签一起省略）。层级来自字号与字重，不额外引入第二种颜色。 */
+.titlebar {
+  --chrome-line: color-mix(in srgb, var(--ink) 10%, transparent);
+  --chrome-hover: color-mix(in srgb, var(--white) 55%, transparent);
+  --chrome-muted: color-mix(in srgb, var(--ink) 62%, transparent);
+}
 .tab-strip {
-  display: flex; align-items: center; gap: 8px; min-width: 0;
-  padding: 6px 10px 6px 12px;
-  background: var(--panel);
-  border-left: 1px solid rgba(42,48,41,.07);
-  border-bottom: 1px solid rgba(42,48,41,.08);
-  position: relative; z-index: 12;
+  grid-area: tabs;
+  display: flex; align-items: center; gap: 4px; min-width: 0; height: 100%;
+  padding: 0 6px 0 10px;
+  position: relative;
   transition: background-color .18s ease;
 }
-/* 侧边窗格开着时，主标签条只横跨列表与编辑器：右缘补一道分隔线。 */
-body.tab-side .tab-strip { border-right: 1px solid rgba(42,48,41,.08); }
-.tab-strip-scroll { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tab-strip-scroll { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .tab-strip-scroll::-webkit-scrollbar { display: none; }
 .tab-item {
-  flex: 0 0 auto; display: flex; align-items: center; max-width: 250px; height: 28px;
-  border: 1px solid transparent; border-radius: 8px; color: var(--muted); background: transparent;
+  flex: 0 0 auto; display: flex; align-items: center; max-width: 240px; height: 28px;
+  border: 1px solid transparent; border-radius: 8px; color: var(--chrome-muted); background: transparent;
   transition: background-color .16s ease, color .16s ease, border-color .16s ease, opacity .16s ease;
 }
-.tab-item.is-side { max-width: 200px; }
-.tab-item:hover { background: rgba(255,255,255,.55); color: var(--ink); }
-.tab-item.is-active { background: var(--white); border-color: rgba(42,48,41,.1); color: var(--ink); }
+.tab-item.is-side { max-width: 190px; }
+.tab-item:hover { background: var(--chrome-hover); color: var(--ink); }
+.tab-item.is-active { background: var(--white); border-color: var(--chrome-line); color: var(--ink); }
 /* 被拖走的那个标签留在原位做淡化底片：位置仍可辨认，指针手里是它本身。 */
 .tab-item.is-dragging { opacity: .3; }
 .tab-item-main {
@@ -4117,44 +4101,41 @@ body.tab-side .tab-strip { border-right: 1px solid rgba(42,48,41,.08); }
 }
 .tab-item-close svg { width: 11px; height: 11px; }
 .tab-item:hover .tab-item-close, .tab-item.is-active .tab-item-close { opacity: .5; }
-.tab-item-close:hover { opacity: 1; background: rgba(42,48,41,.08); }
+.tab-item-close:hover { opacity: 1; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .tab-item-close:active { opacity: 1; }
-.tab-strip-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 2px; }
+.tab-strip-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 2px; margin-left: 2px; }
 .tab-strip-button {
-  width: 28px; height: 28px; border: 0; border-radius: 8px; background: transparent; color: var(--muted);
+  width: 26px; height: 26px; border: 0; border-radius: 7px; background: transparent; color: var(--chrome-muted);
   display: grid; place-items: center; cursor: pointer;
   transition: background-color .15s ease, color .15s ease, transform .1s ease;
 }
-.tab-strip-button:hover { background: rgba(255,255,255,.7); color: var(--ink); }
+.tab-strip-button:hover { background: var(--chrome-hover); color: var(--ink); }
 .tab-strip-button:active { transform: scale(.94); }
-.tab-strip-button svg { width: 15px; height: 15px; }
+.tab-strip-button svg { width: 14px; height: 14px; }
 .tab-strip-button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .tab-strip-button[disabled], .tab-strip-button[aria-disabled="true"] { opacity: .34; cursor: default; }
-.tab-strip-button[disabled]:hover, .tab-strip-button[aria-disabled="true"]:hover { background: transparent; color: var(--muted); }
+.tab-strip-button[disabled]:hover, .tab-strip-button[aria-disabled="true"]:hover { background: transparent; color: var(--chrome-muted); }
 /* 侧边窗格要三列同屏：窗口不够宽时不给入口，避免挤成一条。 */
 @media (max-width: 1119px) {
   #tabSideButton { display: none; }
 }
 
-/* 侧边标签条：工作区第一行的右端，与主标签条同一高度、同一语言，只用
-   「底色略浅 + 左缘分隔线」说明它是另一块窗格的标题栏。空窗格在这里先给
-   一句拖放提示——标签条本身就是这件动作发生的地方。 */
+/* 右侧窗格的标签：同一行跟在主标签条后面，一条短竖线把两组分开——它分的
+   是两组标签，不是两栏内容，所以不通高（顶栏只有一个表面，不铺第二层
+   底色）。空窗格在这里先给一句拖放提示，标签条本身就是这件动作发生的
+   地方。 */
 .tab-side-strip {
-  display: flex; align-items: center; gap: 6px; min-width: 0;
-  padding: 6px 8px 6px 8px;
-  background: color-mix(in srgb, var(--panel) 82%, var(--paper));
-  border-left: 1px solid rgba(42,48,41,.08);
-  border-bottom: 1px solid rgba(42,48,41,.08);
-  position: relative; z-index: 12;
-  transition: background-color .18s ease, box-shadow .18s ease;
+  flex: 0 1 auto; display: flex; align-items: center; gap: 4px;
+  min-width: 0; max-width: 42%; height: 100%;
 }
 .tab-side-strip[hidden] { display: none; }
-.tab-side-strip-scroll { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tab-side-strip::before { content: ""; flex: 0 0 auto; width: 1px; height: 18px; margin: 0 4px 0 6px; background: var(--chrome-line); transition: background-color .18s ease; }
+.tab-side-strip-scroll { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .tab-side-strip-scroll::-webkit-scrollbar { display: none; }
 .tab-side-strip-hint {
   flex: 0 1 auto; min-width: 0; height: 24px; padding: 0 8px;
   display: flex; align-items: center;
-  border: 1px dashed rgba(42,48,41,.16); border-radius: 7px; color: var(--faint);
+  border: 1px dashed color-mix(in srgb, var(--ink) 18%, transparent); border-radius: 7px; color: var(--chrome-muted);
   font-size: calc(9px * var(--acta-font-scale)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
@@ -4197,12 +4178,14 @@ body.tab-side .tab-strip { border-right: 1px solid rgba(42,48,41,.08); }
 .tab-side-empty b { color: var(--ink); font-size: calc(11.5px * var(--acta-font-scale)); }
 .tab-side-empty p { margin: 0; max-width: 230px; }
 body.tab-drop-side .tab-side-pane { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--sage) 32%, transparent); }
-body.tab-drop-side .tab-side-strip { background: color-mix(in srgb, var(--sage) 10%, var(--panel)); }
+/* 拖到右侧窗格时，只让分组竖线亮成强调色——窗格自身的描边已经说明落点。 */
+body.tab-drop-side .tab-side-strip::before { background: var(--sage); }
 body.tab-drop-side .tab-side-empty {
   border-color: color-mix(in srgb, var(--sage) 46%, transparent);
   background: color-mix(in srgb, var(--sage) 7%, transparent);
 }
-body.tab-drop-main .tab-strip { background: color-mix(in srgb, var(--sage) 8%, var(--panel)); }
+/* 拖回主标签条时整段亮起：这一段就是要落下去的地方。 */
+body.tab-drop-main .tab-strip { background: color-mix(in srgb, var(--sage) 11%, transparent); }
 
 /* 拖动中的标签：指针手里那一枚。抬起来的东西有投影是物理常识（其余标签
    不加阴影）；位移与缩放都走 transform，结束时会从当前位置继续收尾。 */

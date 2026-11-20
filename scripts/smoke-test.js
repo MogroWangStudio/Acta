@@ -1527,11 +1527,16 @@ async function main() {
         const stateRect = document.querySelector('#saveState').getBoundingClientRect();
         return sidebarRect.width > 200 && Math.abs(stateRect.left - sidebarRect.right - 8) < 1;
       });
-      const expandedSidebarRect = document.querySelector('#primarySidebar').getBoundingClientRect();
+      // 标签页并进顶栏后，保存状态守在顶栏右端：它必须在标签条右侧，
+      // 并贴着 .titlebar-meta 的右缘（窗口控件之前），而不是紧贴侧栏。
+      const titlebarMeta = document.querySelector('.titlebar-meta');
+      const titlebarMetaRect = titlebarMeta.getBoundingClientRect();
+      const tabStripRect = document.querySelector('#tabStrip').getBoundingClientRect();
       const saveStateRect = document.querySelector('#saveState').getBoundingClientRect();
-      const saveStateStyle = getComputedStyle(document.querySelector('#saveState'));
-      const saveStateRelocated = Math.abs(saveStateRect.left - expandedSidebarRect.right - 8) <= 1 && saveStateStyle.textAlign === 'left';
-      const saveStateMetrics = { saveLeft:saveStateRect.left, sidebarRight:expandedSidebarRect.right, difference:saveStateRect.left - expandedSidebarRect.right, textAlign:saveStateStyle.textAlign };
+      const saveStatePadding = parseFloat(getComputedStyle(titlebarMeta).paddingRight) || 0;
+      const saveStateRelocated = saveStateRect.left >= tabStripRect.right
+        && Math.abs(saveStateRect.right - (titlebarMetaRect.right - saveStatePadding)) <= 1;
+      const saveStateMetrics = { saveLeft:saveStateRect.left, tabStripRight:tabStripRect.right, metaRight:titlebarMetaRect.right, rightGap:Number((titlebarMetaRect.right - saveStatePadding - saveStateRect.right).toFixed(2)) };
       const lowerLeftControlsTogether = ['#dataRefreshButton', '#historyButton', '#settingsButton', '#sidebarToggle'].every(selector => document.querySelector(selector)?.closest('.sidebar-dock-actions'));
       window.__actaSmokeStep = 'sidebar-checked';
       document.querySelector('#settingsButton').click();

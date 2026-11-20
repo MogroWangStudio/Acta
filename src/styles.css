@@ -152,7 +152,10 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
   background: var(--sidebar);
   border-bottom: 1px solid rgba(42, 48, 41, .08);
   display: grid;
-  grid-template-columns: 248px minmax(0, 1fr);
+  /* 品牌（宽与侧栏一致）/ 标签条 / 状态与版本 / 窗口控件。四个列都显式命名：
+     标签条因此永远落在侧栏右缘，与下方列表、编辑器的竖缝同一条线。 */
+  grid-template-columns: var(--acta-sidebar-width) minmax(0, 1fr) auto auto;
+  grid-template-areas: "brand tabs meta controls";
   align-items: center;
   position: relative;
   z-index: 30;
@@ -165,12 +168,20 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
   .brand-version { display: none; }
 }
 
-.brand { display: flex; align-items: center; gap: 9px; padding-left: 18px; min-width: 0; }
-.titlebar-center { align-self: stretch; min-width: 0; padding: 0 148px 0 8px; border-left: 1px solid rgba(42,48,41,.07); display: flex; align-items: center; justify-content: flex-start; }
-.titlebar-center span { min-width: 0; color: var(--faint); overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; font-size: calc(11px * var(--acta-font-scale)); transition: color .3s var(--ease-out); }
-.titlebar-center span.saving { color: var(--amber); }
-.window-spacer { display: none; }
+.brand { grid-area: brand; display: flex; align-items: center; gap: 9px; padding-left: 18px; min-width: 0; }
+/* 顶栏右端：版本胶囊与保存状态。状态是整页的写入回执，守在右端贴住
+   窗口控件；它不再占标签条要用的横向空间。 */
+.titlebar-meta {
+  grid-area: meta;
+  align-self: stretch;
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  min-width: 0; padding: 0 10px 0 8px;
+}
+.titlebar-meta #saveState { min-width: 0; color: var(--faint); overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; font-size: calc(10px * var(--acta-font-scale)); transition: color .3s var(--ease-out); }
+.titlebar-meta #saveState.saving { color: var(--amber); }
+.titlebar-meta .brand-version { position: static; }
 .desktop-window-controls {
+  grid-area: controls;
   display: none;
   align-self: stretch;
   height: 52px;
@@ -198,30 +209,24 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 .desktop-window-controls .win-icon-restore { display: none; }
 html[data-window-maximized="true"] .desktop-window-controls button[data-window-action="maximize"] .win-icon-maximize { display: none; }
 html[data-window-maximized="true"] .desktop-window-controls button[data-window-action="maximize"] .win-icon-restore { display: block; }
-html[data-desktop-platform="win32"] .titlebar { grid-template-columns: var(--acta-sidebar-width) minmax(0, 1fr) 138px; }
-html[data-desktop-platform="win32"] .titlebar-center { padding-right: 8px; }
 html[data-desktop-platform="win32"] .desktop-window-controls { display: flex; }
 html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 
-/* 工作区网格：侧栏 / 列表 / 编辑器三列，外加标签条独占一行。
-   标签条横跨列表与编辑器（侧栏保持固定）；打开侧边窗格时网格扩成四列：
-   侧栏 / 列表 / 编辑器 / 侧边窗格——主标签条仍只横跨中间两列，右缘留给
-   侧边标签条。用 grid-template-areas 而不是改 DOM 结构：日历、计划板、
-   总结等视图对 .workspace 的列宽覆盖（把编辑器收成 0px）继续有效。 */
+/* 工作区网格：侧栏 / 列表 / 编辑器三列——标签页并进顶栏后，第一行那 40px
+   归了顶栏，列表页头直接接在顶栏下面。打开侧边窗格时网格扩成四列：
+   侧栏 / 列表 / 编辑器 / 侧边窗格。用 grid-template-areas 而不是改 DOM
+   结构：日历、计划板、总结等视图对 .workspace 的列宽覆盖（把编辑器收成
+   0px）继续有效。 */
 .workspace {
   height: calc(var(--acta-vh) - 52px);
   display: grid;
-  grid-template-columns: 248px clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr);
-  grid-template-rows: 40px minmax(0, 1fr);
-  grid-template-areas:
-    "side tabs tabs"
-    "side list editor";
+  grid-template-columns: var(--acta-sidebar-width) clamp(330px, var(--list-pane-width), 620px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "side list editor";
 }
 .sidebar { grid-area: side; }
 .item-pane { grid-area: list; }
 .editor-pane { grid-area: editor; }
-.tab-strip { grid-area: tabs; }
-.tab-side-strip { grid-area: sidehead; }
 .tab-side-pane { grid-area: sidepane; }
 
 /* 侧边标签页：右侧多出一列，列宽跟着视口走（不给编辑器留一条缝）。 */
@@ -231,9 +236,7 @@ body.tab-side .workspace {
     clamp(300px, var(--list-pane-width, 330px), 520px)
     minmax(260px, 1fr)
     clamp(280px, 22vw, 400px);
-  grid-template-areas:
-    "side tabs tabs sidehead"
-    "side list editor sidepane";
+  grid-template-areas: "side list editor sidepane";
 }
 
 .sidebar {
@@ -787,8 +790,7 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 @keyframes pulse { 0%,100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.35); } }
 
 @media (max-width: 1220px) {
-  .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr); }
-  html[data-desktop-platform="win32"] .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr) 138px; }
+  .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr) auto auto; }
   .workspace { grid-template-columns: 220px clamp(330px, var(--list-pane-width), 560px) minmax(0, 1fr); }
   body.tab-side .workspace {
     grid-template-columns:
@@ -813,22 +815,26 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
     height: calc(48px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
     grid-template-columns: 1fr;
+    grid-template-areas: "brand";
     border-bottom-color: var(--line);
   }
   .brand { padding-left: 16px; }
-  .brand-version { left: 141px; }
-  .titlebar-center, .window-spacer { display: none; }
+  /* 移动端只留品牌与右上角药丸按钮：保存状态让位，版本胶囊退回品牌右侧
+     的小字位置（绝对定位落在整条顶栏上），标签条、侧边标签条与侧边窗格
+     一起收起——标签页是桌面端的多页面工作方式，数据仍保留，回到桌面
+     继续用。 */
+  .titlebar-meta { position: absolute; inset: 0; display: block; padding: 0; pointer-events: none; }
+  .titlebar-meta #saveState { display: none; }
+  .titlebar-meta .brand-version { position: absolute; }
+  .tab-strip, .tab-side-strip, .tab-side-pane { display: none !important; }
   .desktop-window-controls,
   html[data-desktop-platform="win32"] .desktop-window-controls { display: none; }
-  html[data-desktop-platform="win32"] .titlebar { grid-template-columns: 1fr; }
   html[data-desktop-platform="darwin"] .brand { padding-left: 16px; }
+  html[data-desktop-platform="win32"] .titlebar { grid-template-columns: 1fr; grid-template-areas: "brand"; }
   .workspace {
     height: calc(var(--acta-vh) - 48px - env(safe-area-inset-top));
     display: block;
   }
-  /* 标签页是桌面端的多页面工作方式：移动端一屏只放一个页面，标签条、
-     侧边标签条与侧边窗格一起收起（数据仍保留，回到桌面继续用）。 */
-  .tab-strip, .tab-side-strip, .tab-side-pane { display: none !important; }
   /* 安卓端：WebView 上报的安全区上缘略宽于状态栏的视觉高度，顶栏内容
      与状态栏之间多出一段空隙。这里整体上移 5px 收紧（max 防 env 为 0
      时出现负 padding），工作区高度同步补偿；编辑器全屏面板在下方
