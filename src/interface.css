@@ -1984,11 +1984,11 @@ body.calendar-view .search-box, body.calendar-view .filter-row, body.calendar-vi
 @media (min-width: 801px) {
   body.calendar-view main.workspace { grid-template-columns: var(--acta-sidebar-width) minmax(0,1fr) 0px !important; }
 }
-body.calendar-view .item-pane { border-right: 0; background: color-mix(in srgb, var(--calendar-soft) 20%, var(--panel)); }
+body.calendar-view .item-pane:not(.tab-side-pane) { border-right: 0; background: color-mix(in srgb, var(--calendar-soft) 20%, var(--panel)); }
 body.calendar-view .editor-pane { display: none; }
-body.calendar-view .item-header { min-height: 74px; height: auto; padding: 15px 22px 12px 25px; gap: 20px; }
-body.calendar-view .item-header > div:first-child { min-width: 190px; }
-body.calendar-view .item-header h1 { font-size: calc(25px * var(--acta-font-scale)); }
+body.calendar-view .item-pane:not(.tab-side-pane) > .item-header { min-height: 74px; height: auto; padding: 15px 22px 12px 25px; gap: 20px; }
+body.calendar-view .item-pane:not(.tab-side-pane) > .item-header > div:first-child { min-width: 190px; }
+body.calendar-view .item-pane:not(.tab-side-pane) > .item-header h1 { font-size: calc(25px * var(--acta-font-scale)); }
 body.calendar-view .list-footer { background: color-mix(in srgb, var(--calendar-soft) 18%, var(--panel)); }
 .calendar-list { padding: 12px 16px 16px; overflow: auto; overscroll-behavior: contain; }
 .calendar-list.calendar-is-animating > * { --calendar-enter-x: 0; --calendar-enter-scale: .985; animation: calendarViewEnter .46s cubic-bezier(.16,1,.3,1) both; }
@@ -2152,7 +2152,7 @@ html[data-acta-theme="mono-dark"] .calendar-subtask-check { background:#202020; 
 
 body.stats-view .search-box, body.stats-view .filter-row, body.stats-view .list-resizer { display: none; }
 /* 统计页背景与主题保持一致：直接使用主题 --panel，不再叠加待办色调染色。 */
-body.stats-view .item-pane { border-right: 0; background: var(--panel); }
+body.stats-view .item-pane:not(.tab-side-pane) { border-right: 0; background: var(--panel); }
 body.stats-view .editor-pane { display: none; }
 body.stats-view .list-footer { background: transparent; }
 @media (min-width: 801px) {
@@ -2222,7 +2222,7 @@ body.stats-view .list-footer { background: transparent; }
 /* 回收站有类型与归类筛选：筛选行不再隐藏，只收起列宽拖拽条。
    背景跟随主题（继承 --panel），不再混入笔记色调——与其他视图同源。 */
 body.trash-view .list-resizer { display: none; }
-body.trash-view .item-pane { border-right: 0; }
+body.trash-view .item-pane:not(.tab-side-pane) { border-right: 0; }
 body.trash-view .editor-pane { display: none; }
 @media (min-width: 801px) {
   body.trash-view main.workspace { grid-template-columns: var(--acta-sidebar-width) minmax(0,1fr) 0px !important; }
@@ -2267,13 +2267,13 @@ body.trash-view .editor-pane { display: none; }
    标注常驻。画布是 transform 驱动的坐标平面，底纹点阵跟随相机；未选中条目
    时画布占满中栏，点击卡片后编辑器展开为第三栏（移动端为全屏编辑器覆盖）。 */
 body.board-view .search-box, body.board-view .filter-row, body.board-view .list-footer, body.board-view .list-resizer { display: none; }
-body.board-view .item-pane { border-right: 0; background: var(--paper); }
+body.board-view .item-pane:not(.tab-side-pane) { border-right: 0; background: var(--paper); }
 /* 计划板整页画布：渲染区域覆盖整个计划板页面（画布顶端直达标题栏），
    标题行浮在画布上层成为半透明材质条——画布在标题栏下方平移缩放，
    内容从浮动标题栏下穿过，与底部悬浮工具条同一语言。标题行只让控件
    接指针（板选择器 / 图层 / 个性化），其余区域画布手势照常——不会出现
    「顶部一条不能拖」的死区。 */
-body.board-view .item-header {
+body.board-view .item-pane:not(.tab-side-pane) > .item-header {
   position: absolute; top: 0; left: 0; right: 0; z-index: 20;
   background: color-mix(in srgb, var(--paper) 72%, transparent);
   backdrop-filter: blur(16px) saturate(1.15);
@@ -2282,7 +2282,7 @@ body.board-view .item-header {
 }
 body.board-view .item-header :is(button, select, input, .board-pill-menu, .view-title-menu-panel, .list-filter-panel) { pointer-events: auto; }
 @media (prefers-reduced-transparency: reduce) {
-  body.board-view .item-header { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  body.board-view .item-pane:not(.tab-side-pane) > .item-header { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 /* 画布永远占满中栏；编辑面板浮在右侧（桌面端），向左投影 + 非线性滑入滑出。 */
 @media (min-width: 801px) {
@@ -2923,7 +2923,7 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
      右内边距同步收窄）；按钮之间的空隙统一交给容器的 6px gap——
      个性化按钮沿用旧布局的 margin-left:auto 会吃掉剩余空间，让它与
      前面按钮的间隙随屏宽浮动，这里清零。 */
-  body.board-view .item-header { padding-right: 4px; }
+  body.board-view .item-pane:not(.tab-side-pane) > .item-header { padding-right: 4px; }
   .board-title-actions { gap: 6px; margin-right: 0; }
   .board-title-actions .board-pill { margin-left: 0; }
   .board-style-trigger { margin-left: 0; margin-right: 0; }
@@ -3071,9 +3071,9 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
   .stats-bars { height: 104px; }
   .new-button { left: 50%; }
   .item-header { position: relative; padding-right: 20px; }
-  body.calendar-view .item-header { min-height: 150px; padding: 10px 15px 10px 18px; display: grid; grid-template-columns: 1fr; align-content: end; gap: 9px; }
-  body.calendar-view .item-header > div:first-child { min-width: 0; }
-  body.calendar-view .item-header h1 { font-size: calc(22px * var(--acta-font-scale)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.calendar-view .item-pane:not(.tab-side-pane) > .item-header { min-height: 150px; padding: 10px 15px 10px 18px; display: grid; grid-template-columns: 1fr; align-content: end; gap: 9px; }
+  body.calendar-view .item-pane:not(.tab-side-pane) > .item-header > div:first-child { min-width: 0; }
+  body.calendar-view .item-pane:not(.tab-side-pane) > .item-header h1 { font-size: calc(22px * var(--acta-font-scale)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .calendar-toolbar { width: 100%; display: grid; grid-template-columns: 1fr; gap: 6px; }
   .calendar-navigation, .calendar-view-switch { width: 100%; min-width: 0; justify-content: center; }
   .calendar-navigation button { flex: 1; }
@@ -4143,6 +4143,9 @@ html[data-acta-theme="mono-dark"] .custom-mode-seg { background: color-mix(in sr
    卡片略紧，一眼能看出是「另一个页面」而不是当前页面的续列。 */
 .tab-side-pane {
   display: flex; flex-direction: column; min-width: 0; min-height: 0; position: relative;
+  /* 窗格盖在自己这一列：计划板的编辑面板收起时向右滑出，窗格开着时它正好
+     落在窗格这条列上——窗格在上，面板就消失在它后面（其余浮层也同理）。 */
+  z-index: 25;
   background: color-mix(in srgb, var(--panel) 88%, var(--paper));
   border-left: 1px solid rgba(42,48,41,.08);
   transition: box-shadow .18s ease;

@@ -23,6 +23,11 @@
   const MAX_TABS = 9;
   // 侧边窗格要三列同屏才不至于挤成一条：与旧并排入口同一条界线。
   const SIDE_MIN_WIDTH = 1120;
+  // 整页视图（日历 / 计划板 / 总结 / 回收站）另有一条更高的门槛：它们要铺满
+  // 剩余宽度，日历月视图至少需要 760px（加上侧栏与窗格 ≈ 1280）。窗口不够宽
+  // 时窗格自动收起（标签保留），换回列表页又回来——与 1120 以下的行为一致。
+  const FULL_PAGE_VIEWS = ['calendar', 'board', 'stats', 'trash'];
+  const FULL_PAGE_SIDE_MIN_WIDTH = 1280;
   const anyWindow = window;
   if (typeof anyWindow.renderList !== 'function' || typeof anyWindow.itemCardMarkup !== 'function') return;
 
@@ -49,7 +54,6 @@
       sideHint: '把标签页拖到这里', sideEmptyTitle: '这个窗格还是空的',
       sideEmptyBody: '从上面的标签条拖一个标签页过来，它就会显示在这里。',
       sideAdopt: '把当前标签页移到这里',
-      sideBlocked: '这个页面需要整屏，侧边窗格暂时收起',
       unsupportedTitle: '这个页面需要整屏',
       unsupportedBody: '日历、计划板与总结有自己的画布或整页布局，不能挤在侧边窗格里。',
       openMain: '在主区域打开',
@@ -62,7 +66,6 @@
       sideHint: 'Drag a tab here', sideEmptyTitle: 'This pane is empty',
       sideEmptyBody: 'Drag a tab from the strip above and it shows up here.',
       sideAdopt: 'Move the current tab here',
-      sideBlocked: 'This page needs the full width; the side pane folds for now',
       unsupportedTitle: 'This page needs the full width',
       unsupportedBody: 'Calendar, board and summary have their own canvas or full-page layout and cannot sit in the side pane.',
       openMain: 'Open in the main area',
@@ -75,7 +78,6 @@
       sideHint: '把標籤頁拖到這裡', sideEmptyTitle: '這個窗格還是空的',
       sideEmptyBody: '從上面的標籤條拖一個標籤頁過來，它就會顯示在這裡。',
       sideAdopt: '把目前標籤頁移到這裡',
-      sideBlocked: '這個頁面需要整屏，側邊窗格暫時收起',
       unsupportedTitle: '這個頁面需要整屏',
       unsupportedBody: '日曆、計畫板與總結有自己的畫布或整頁版面，不能擠在側邊窗格裡。',
       openMain: '在主區域開啟',
@@ -318,16 +320,12 @@
     }
     const sideButton = byId('tabSideButton');
     if (sideButton) {
-      // 整页视图（日历 / 计划板 / 总结 / 回收站）占满整行时窗格收起：入口
-      // 置灰并说明原因，而不是留一个按下去没动静的开关。
-      const splittable = isListView(currentView);
-      sideButton.disabled = !splittable;
-      sideButton.setAttribute('aria-disabled', String(!splittable));
+      // 窗格与任何主页面同屏（整页视图也留着它，见 sideVisible）：入口只剩
+      // 「开 / 合」两种含义，不再因为当前是整页视图而置灰。
       sideButton.setAttribute('aria-pressed', String(sideOpen));
       const label = sideOpen ? text('hideSide') : text('openSide');
-      const title = splittable ? label : text('sideBlocked');
-      sideButton.title = title;
-      sideButton.setAttribute('aria-label', title);
+      sideButton.title = label;
+      sideButton.setAttribute('aria-label', label);
     }
     // 标签语义挂在真正装标签的容器上（tablist）；#tabStrip 外层还装着动作
     // 按钮与侧边标签条，不再兼任 tablist。
@@ -366,7 +364,14 @@
   };
 
   // —— 侧边窗格 ——
-  const sideVisible = () => Boolean(sideOpen) && !restoring && window.innerWidth >= SIDE_MIN_WIDTH && isListView(currentView);
+  // 窗格与主页面同屏，整页视图（日历 / 计划板 / 总结 / 回收站）也算：主页面
+  // 拿掉编辑器列、铺满中间，窗格仍守在最右一列（列宽覆盖见 styles.css）。
+  // 窗格**自己**装不下的仍是整页视图标签——它们要占满整屏，激活时送回主区。
+  const sideVisible = () => {
+    if (!sideOpen || restoring) return false;
+    const minWidth = FULL_PAGE_VIEWS.includes(currentView) ? FULL_PAGE_SIDE_MIN_WIDTH : SIDE_MIN_WIDTH;
+    return window.innerWidth >= minWidth;
+  };
 
   const emptyMarkup = () => `<div class="tab-pane-empty"><b>${escapeHTML(text('emptyTitle'))}</b>${escapeHTML(text('emptyBody'))}</div>`;
 
@@ -1037,7 +1042,16 @@
       const tab = sideActive();
       if (!card || !tab) return;
       focusGroup = 'side';
-      tab.state.selectedId = card.dataset.id || '';
+      const id = card.dataset.id || '';
+      // 主页面是日历 / 总结 / 回收站时编辑器列被收成 0（看不见）：点卡片按
+      // 「打开这一条」处理，落到它所在的列表页并选中——这正是 openItem 已有的
+      // 跨视图语义，不会选中一个看不见的编辑器。计划板的编辑器是浮层，照旧。
+      if (id && !isListView(currentView) && currentView !== 'board') {
+        event.stopPropagation();
+        window.openItem?.(id);
+        return;
+      }
+      tab.state.selectedId = id;
       scheduleTitleRefresh();
       scheduleSidePane();
       persist();

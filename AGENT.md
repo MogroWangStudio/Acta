@@ -67,7 +67,7 @@ docs/                      `npm run build:pages` 的产物（GitHub Pages），�
 - **筛选**：行内只有内容类型分段（`#listTypeSwitch`），其余条件在标题行漏斗弹出的 `#listFilterPanel`；状态变量见上。
 - **标签页**：`tabs.js`。一个标签 = 一整套页面状态快照：视图、内容类型分段、筛选面板全部条件、搜索词、选中项、列表滚动位置与编辑器滚动位置。标签标题是「页面名 · 正在看的条目名」（`tabLabel`，条目名先省略）。标签条住在顶栏（`#tabStrip` 是 `.titlebar` 的第二列，见上方「顶栏」一段）：主标签条 `#tabStripScroll` 后跟 `#tabStripActions`（新建 / 侧边两个按钮），再跟右侧窗格的标签条 `#tabSideStrip`（两者由一条短竖线 `::before` 分开，不是通高列缝）；侧边窗格是 `#tabSidePane` + `#tabSideList`。右键菜单（`#tabMenu`）提供复制 / 移到另一侧 / 关闭 / 关闭全部；标签可以用指针拖进拖出侧边窗格（`dropTargetAt` 按 `#tabSideStrip` / `#tabSidePane` / `#tabStrip` 判定落点）。`renderList` 与 `renderEditor` 被包装后负责同步标签名、侧边窗格与延迟落盘。
 - **顶栏（改这块先读）**：`.titlebar` 是四列网格 `grid-template-areas: "brand tabs meta controls"`，列宽 `var(--acta-sidebar-width) minmax(0,1fr) auto auto`，所以标签条左缘永远与列表/编辑器的竖缝对齐、侧栏折叠时跟着走。`--acta-sidebar-width` 在 801–1220px 是 220px，折叠后 72px。`.titlebar-meta` 装版本胶囊与 `#saveState`（右对齐、`justify-content: flex-end`）；窗口控件只在 Windows 显示（`display: flex`），macOS 红绿灯由原生落位、品牌区吃 84px 左内边距。移动端（≤800px）顶栏收成单列，标签条 / 侧边窗格隐藏，`.titlebar-meta` 变绝对定位容器、只留版本胶囊。
-- **侧边标签页的规则**（改这块先读）：侧边窗格默认在右侧；收起窗格时侧边的标签全部回主标签条（不留看不见的页面），所以每次打开都是空窗格；主标签条永远至少一个标签（最后一个不给关闭口，关全部时留一个同视图空标签）；侧边窗格只在「主页面是列表型视图」（`isListView`）且窗口 ≥ 1120px 时显示，整页视图下入口置灰、窗口变窄时收起但标签保留；侧边组里激活一个整页视图标签会把它送回主区打开。
+- **侧边标签页的规则**（改这块先读）：侧边窗格默认在右侧；收起窗格时侧边的标签全部回主标签条（不留看不见的页面），所以每次打开都是空窗格；主标签条永远至少一个标签（最后一个不给关闭口，关全部时留一个同视图空标签）。**窗格与任何主页面同屏**，整页视图（日历 / 计划板 / 总结 / 回收站）也算：`sideVisible()` 只按窗口宽度放行——列表页 1120px（`SIDE_MIN_WIDTH`），整页视图 1280px（`FULL_PAGE_SIDE_MIN_WIDTH`，日历月视图要 760px），不够宽时窗格收起、标签保留、`#tabSideButton` 由 CSS 在 1279px 以下隐藏（换回列表页或窗口变宽即回来）。整页视图下网格是四列（主页面占 2、编辑器列 0、窗格占最后，见 styles.css 的 `body.tab-side.*-view`），窗格在整页视图里收窄到 `clamp(240px,18vw,320px)`。窗格**自己**仍装不下整页视图标签（渲染是单例的），激活这类侧边标签仍会 `moveToMain` 送回主区。整页页面里点窗格卡片走 `openItem`（落到该条目所在的列表页并选中），因为那里没有编辑器列；计划板例外（编辑面板是浮层，原地打开）。
 - **局域网雷达入口光效**：`body.lan-radar-live` 由 `interface.js` 的 `updateLanStateUI()` 按服务状态挂上；样式在 `styles.css`：`::before` 是呼吸柔光，`.nav-icon::after`（移动端为按钮 `::after`）是 6 秒一圈的雷达扇面，图标本身不旋转；「减少动态效果」退成静态。
 - **更新**：`interface.js`（关于页 UI：检查更新、通道、下载来源、测速、版本列表）＋ `updater.js`（下载 / 读秒 / 重启）＋ `updater.rs`（GitHub API、semver 比较、平台安装）。`window.actaUpdater.install(info)` 用于"选了某个版本直接装"，跳过询问但仍走同一个下载与向导。
 - **Android 更新**：`ActaUpdaterPlugin.java`，`/releases` 列表端点 + 通道过滤 + semver 取最大，下载 zip、解出 apk、交给系统安装器。
@@ -90,10 +90,11 @@ docs/                      `npm run build:pages` 的产物（GitHub Pages），�
 6. **更新资产命名**固定为 `Acta-<版本>-<平台>-<架构>.zip`，`pick_asset` 按后缀挑平台包；版本列表只列出当前平台真有资产的发布。
 7. **冒烟测试在本机沙箱**：`pipe:true` 会卡在 launch，需要复制到 `/tmp`、把 `puppeteer-core` / `vite` / `path.join(__dirname,'..')` 换成绝对路径、去掉 pipe 并加 `--no-sandbox --remote-debugging-port=0`，并在项目根目录下运行（脚本按相对路径读 css）。
 8. **界面缩放**：`zoom` 挂在 `.app-shell` 与各顶层弹层上，不在根元素；自定义手势里「视觉 px → 布局值」要除以 `actaZoom()`。
-9. **移动端断点 800px**：`.workspace` 变 `display:block`、编辑器全屏、标签条 / 侧边标签条 / 侧边窗格隐藏；侧边入口在 1120px 以下也不提供。
-10. **标签页的网格与 localStorage 不要另起一套**：`.titlebar` 是四列 `brand / tabs / meta / controls`，`.workspace` 只剩一行 `side / list / editor`（`body.tab-side` 再加 `sidepane` 一列，见 `styles.css`）——两侧的竖缝靠 `--acta-sidebar-width` 对齐，整页视图的列宽覆盖规则依赖 `.workspace` 的结构；标签持久化的键仍是 `acta.tabs.v1`，改结构要在 `tabs.js` 的 `restore()` 里兼容旧版本，否则用户的标签布局会丢。
-11. **顶栏里的标签不能触发窗口拖动**：窗口拖动由 `tauri-bridge.js` 在 document 捕获阶段判定（`DRAG_BLOCKERS` + 6px 死区）。标签条进了顶栏后，`.tab-item` 必须在 `DRAG_BLOCKERS` 里，否则按住标签拖页面会变成拖窗口；新建 / 侧边 / 收起按钮是 `<button>`，本来就被拦。
-12. **macOS 顶栏不再居中品牌**：顶栏中段归标签页后，`.brand` 回左侧、`styles.css` 的 `padding-left: 84px` 让开原生红绿灯；不要再写回「logo 绝对居中」的规则，它会把标签条挤到一半。
+9. **窗格与整页视图共存（三处别踩）**：`#tabSidePane` 元素同时带 `.item-pane` 与 `.tab-side-pane` 两个类——`body.calendar-view` / `board-view` / `stats-view` / `trash-view` 的页头与底色规则一律要写成 `.item-pane:not(.tab-side-pane)`，否则计划板的浮动标题行会把窗格页头也变成绝对定位、卡片压到标题下；`.tab-side-pane` 的 `z-index: 25` 是给计划板编辑面板「收起时向右滑进窗格那一列」用的（面板 z 24，滑出后消失在窗格后面）；面板的拖宽条与关闭钮不是网格子项（包含块是整个 `.workspace`），右偏移要把 `--tab-side-width` 加进去。
+10. **移动端断点 800px**：`.workspace` 变 `display:block`、编辑器全屏、标签条 / 侧边标签条 / 侧边窗格隐藏；侧边入口在 1120px 以下也不提供。
+11. **标签页的网格与 localStorage 不要另起一套**：`.titlebar` 是四列 `brand / tabs / meta / controls`，`.workspace` 只剩一行 `side / list / editor`（`body.tab-side` 再加 `sidepane` 一列，见 `styles.css`）——两侧的竖缝靠 `--acta-sidebar-width` 对齐，整页视图的列宽覆盖规则依赖 `.workspace` 的结构；标签持久化的键仍是 `acta.tabs.v1`，改结构要在 `tabs.js` 的 `restore()` 里兼容旧版本，否则用户的标签布局会丢。
+12. **顶栏里的标签不能触发窗口拖动**：窗口拖动由 `tauri-bridge.js` 在 document 捕获阶段判定（`DRAG_BLOCKERS` + 6px 死区）。标签条进了顶栏后，`.tab-item` 必须在 `DRAG_BLOCKERS` 里，否则按住标签拖页面会变成拖窗口；新建 / 侧边 / 收起按钮是 `<button>`，本来就被拦。
+13. **macOS 顶栏不再居中品牌**：顶栏中段归标签页后，`.brand` 回左侧、`styles.css` 的 `padding-left: 84px` 让开原生红绿灯；不要再写回「logo 绝对居中」的规则，它会把标签条挤到一半。
 
 ## 7. 常用命令
 

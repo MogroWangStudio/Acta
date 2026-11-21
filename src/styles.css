@@ -229,14 +229,52 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
 .editor-pane { grid-area: editor; }
 .tab-side-pane { grid-area: sidepane; }
 
-/* 侧边标签页：右侧多出一列，列宽跟着视口走（不给编辑器留一条缝）。 */
+/* 侧边标签页：右侧多出一列，列宽跟着视口走（不给编辑器留一条缝）。
+   列宽抽成 --tab-side-width：窗格宽度不止由网格用，计划板的浮动编辑面板
+   也要让开它（见下面的 body.tab-side.board-view 规则）。 */
+body.tab-side { --tab-side-width: clamp(280px, 22vw, 400px); }
 body.tab-side .workspace {
   grid-template-columns:
     248px
     clamp(300px, var(--list-pane-width, 330px), 520px)
     minmax(260px, 1fr)
-    clamp(280px, 22vw, 400px);
+    var(--tab-side-width);
   grid-template-areas: "side list editor sidepane";
+}
+
+/* 整页视图（日历 / 计划板 / 总结 / 回收站）与窗格同屏：它们原本要把编辑器列
+   收成 0 并铺满中间（interface.css 里带 !important），这里补一份四列版本，
+   窗格占最右一列。全屏页面里窗格里的列表平铺在窄列里（日历等仍只在主区
+   能画——它们的状态是单例的，标签拖到侧边会被送回主区）。 */
+@media (min-width: 801px) {
+  body.tab-side.calendar-view main.workspace,
+  body.tab-side.stats-view main.workspace,
+  body.tab-side.trash-view main.workspace,
+  body.tab-side.board-view main.workspace {
+    grid-template-columns: var(--acta-sidebar-width) minmax(0, 1fr) 0px var(--tab-side-width) !important;
+  }
+  /* 整页视图要铺满中间，窗格这里收窄到刚好够用的一列（日历月视图至少 760px：
+     248 侧栏 + 760 + 240 窗格 = 1280，这是 tabs.js 里 FULL_PAGE_SIDE_MIN_WIDTH
+     的来历；改这三个数要一起改）。 */
+  body.calendar-view.tab-side,
+  body.stats-view.tab-side,
+  body.trash-view.tab-side,
+  body.board-view.tab-side { --tab-side-width: clamp(240px, 18vw, 320px); }
+  /* 计划板的编辑面板浮在画布右侧。它绝对定位在自己的网格区上——整页视图下那
+     正是编辑器列（0px）的位置，也就是窗格的左缘，所以 right: 0 已经贴在窗格
+     左侧，不用再让开窗格宽度（让开反而会越过窗格整整一列）。
+     面板的拖宽条与关闭钮不是网格子项，它们的包含块是整个工作区：跟随面板
+     左缘，右偏移把窗格那一列算进去。 */
+  body.tab-side.board-view .board-editor-resizer { right: calc(var(--board-editor-w, 460px) + var(--tab-side-width)); }
+  body.tab-side.board-view .board-editor-close { right: calc(var(--board-editor-w, 460px) - 42px + var(--tab-side-width)); }
+}
+/* 整页视图的窗格门槛比列表页高（见 tabs.js 的 FULL_PAGE_SIDE_MIN_WIDTH）：
+   窗口不够宽时连入口都不给，而不是给一个点下去没动静的开关。 */
+@media (max-width: 1279px) {
+  body.calendar-view #tabSideButton,
+  body.stats-view #tabSideButton,
+  body.trash-view #tabSideButton,
+  body.board-view #tabSideButton { display: none; }
 }
 
 .sidebar {
@@ -792,12 +830,13 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 @media (max-width: 1220px) {
   .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr) auto auto; }
   .workspace { grid-template-columns: 220px clamp(330px, var(--list-pane-width), 560px) minmax(0, 1fr); }
+  body.tab-side { --tab-side-width: clamp(240px, 20vw, 340px); }
   body.tab-side .workspace {
     grid-template-columns:
       220px
       clamp(280px, var(--list-pane-width, 330px), 460px)
       minmax(240px, 1fr)
-      clamp(240px, 20vw, 340px);
+      var(--tab-side-width);
   }
   .sidebar { padding-left: 11px; padding-right: 11px; }
   .editor-wrap { width: calc(100% - 56px); }
