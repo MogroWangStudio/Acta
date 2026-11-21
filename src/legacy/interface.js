@@ -109,6 +109,13 @@
     boardCustomColor:'自訂顏色', boardBrushPen:'鋼筆', boardBrushHighlighter:'螢光筆', boardPenStroke:'粗細', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'筆尖', boardCapRound:'圓頭', boardCapFlat:'平頭', boardCapSquare:'方頭', boardBrushEraser:'橡皮', boardPenMode:'筆繪模式：可連續繪製，橡皮擦在面板中切換，完成或按 Esc 退出', boardLayers:'圖層', boardLayerShow:'顯示圖層', boardLayerHide:'隱藏圖層', boardLayerGroup:'組', boardGroup:'組合所選', boardUngroup:'取消組合', brandEgg:'行記不輟 —— 這是 Acta 給好奇心的回禮',
     boardEmptyTitle:'這塊板還是空的', boardEmptyHint:'用下方工具新增文字與標註，或匯入想展示在這塊板上的待辦與筆記，自由擺放成你的計劃板。'
   };
+  // 空态问候（繁体）：字面量从 zh 展开，这里换成繁体用词与语气。
+  Object.assign(dictionaries['zh-Hant'], { noMatch: '沒有找到符合的項目', noMatchHint: '換個關鍵詞，或清除篩選再看看。' });
+  Object.assign(dictionaries['zh-Hant'], { emptyGreetings: {
+    list: ['空著也挺好，想寫的時候再寫。', '一張白紙，等你落下第一筆。', '今天想先記點什麼？', '慢慢來，第一條不用寫得完美。'],
+    editor: ['左邊挑一條，我在這裡等你。', '點開一條，我們就開始。', '筆記或待辦，選哪一個？', '告訴我你想先打開哪一條。'],
+    trash: ['這裡很乾淨，沒有東西等著被撈回來。', '空空的，說明你還沒刪錯過什麼。', '暫時沒有過期的東西，挺好。'],
+  } });
   Object.assign(dictionaries['zh-Hant'], { taskDoneSortHint:'按完成時間正序或倒序排列已完成的子任務' });
   Object.assign(dictionaries.zh, { lanRadarNav:'局域网雷达', '返回':'返回' });
   Object.assign(dictionaries.en, { '返回':'Back' });

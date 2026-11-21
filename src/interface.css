@@ -3711,6 +3711,51 @@ body.acta-reduce-motion .board-layer-row { transition: background .14s ease, bor
 /* macOS：品牌回到左端（不再是居中字标）——顶栏中段现在归标签页，
    红绿灯由原生定位贴左上，品牌区自带 84px 左内边距让开它们。 */
 
+
+/* —— 空态里的 Handy ——
+   列表空着、还没选中内容，这两种「什么都没发生」的时刻由品牌小人出面：
+   三角形的脑袋、梯形的身子、两只眼睛，会呼吸、会眨眼、偶尔轻轻点一下头。
+   动作幅度都收在 2° / 2px 以内，三个循环周期互相错开（3.4 / 5.6 / 4.4 秒），
+   不会并成一次整齐的抽动；换句时抬头看一次就停。不做弹跳、不做循环光效，
+   也不给图标垫一块彩色底板——它是安静场景里的角色，不是装饰。
+   命中「减少动态效果」时全身静止，只有文字照常换。 */
+.handy-block { display: grid; justify-items: center; }
+.handy-figure {
+  display: block; width: auto; height: 62px; margin: 0 auto 12px;
+  color: color-mix(in srgb, var(--ink) 74%, transparent);
+  fill: currentColor; overflow: visible;
+  animation: handyBreathe 3.4s cubic-bezier(.4,0,.6,1) infinite;
+}
+.empty-editor .handy-figure { height: 84px; margin-bottom: 15px; }
+/* 眼睛是纸色而不是白色：深色主题下脑袋浅、纸面深，白眼睛会消失。 */
+.handy-figure .handy-eye circle { fill: var(--paper); }
+.handy-figure .handy-head { transform-box: fill-box; transform-origin: 50% 92%; animation: handyNod 5.6s cubic-bezier(.37,0,.24,1) infinite; }
+.handy-figure .handy-eye { transform-box: fill-box; transform-origin: 50% 50%; animation: handyBlink 4.4s linear infinite; }
+.handy-line { animation: handySay .5s var(--ease-out) both; }
+/* 换句那一下：小人抬头看一眼，然后回到自己的呼吸与点头。 */
+.handy-block.is-fresh .handy-head { animation: handyPeek .82s cubic-bezier(.3,.86,.4,1) both; }
+@keyframes handyBreathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes handyNod {
+  0%, 46%, 100% { transform: rotate(0deg); }
+  58% { transform: rotate(-2.2deg); }
+  70% { transform: rotate(1.6deg); }
+}
+@keyframes handyBlink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  93% { transform: scaleY(.14); }
+  96% { transform: scaleY(1); }
+}
+@keyframes handyPeek {
+  0% { transform: rotate(0deg); }
+  26% { transform: rotate(-5deg); }
+  58% { transform: rotate(3.4deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes handySay { from { opacity: 0; transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) {
+  .handy-figure, .handy-figure .handy-head, .handy-figure .handy-eye, .handy-line, .handy-block.is-fresh .handy-head { animation: none; }
+}
+
 /* —— 工具栏设置 —— */
 .nav-page-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; padding: 2px 0 0; }
 .nav-page-grid label { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--white) 45%, transparent); cursor: pointer; transition: border-color .15s ease, background .15s ease; }

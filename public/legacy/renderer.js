@@ -585,6 +585,58 @@ const dictionaries = {
   }
 };
 
+// 空态问句：按语境分三组（列表 / 编辑器 / 回收站）。每条都是一句轻描淡写
+// 的问候，不是「这里还没有内容」那种把状态复述一遍的空洞提示；随机取一条，
+// 尽量不与上一次重复。新增语言在这里补一组即可。
+Object.assign(dictionaries.zh, { noMatch: '没有找到匹配的条目', noMatchHint: '换个关键词，或清除筛选再看看。' });
+Object.assign(dictionaries.zh, { emptyGreetings: {
+  list: ['空着也挺好，想写的时候再写。', '一张白纸，等你落下第一笔。', '今天想先记点什么？', '慢慢来，第一条不用写得完美。'],
+  editor: ['左边挑一条，我在这儿等你。', '点开一条，我们就开始。', '笔记或待办，选哪一个？', '告诉我你想先打开哪一条。'],
+  trash: ['这里很干净，没有东西等着被捞回来。', '空空的，说明你还没删错过什么。', '暂时没有过期的东西，挺好。'],
+} });
+Object.assign(dictionaries.en, { noMatch: 'Nothing matches', noMatchHint: 'Try another term, or clear the filters.' });
+Object.assign(dictionaries.en, { emptyGreetings: {
+  list: ['Empty is a fine place to start.', 'A blank page, waiting for your first line.', 'What would you like to jot down first?', 'No rush — the first one needn’t be perfect.'],
+  editor: ['Pick something on the left; I’ll wait.', 'Open one and we’ll begin.', 'A note or a task — which one first?', 'Tell me which one to open.'],
+  trash: ['Clean in here — nothing waiting to be rescued.', 'Empty means nothing has gone missing yet.', 'Nothing expired. That’s a good sign.'],
+} });
+Object.assign(dictionaries.ja, { noMatch: '一致するものがありません', noMatchHint: '別の言葉で探すか、絞り込みを解除してみてください。' });
+Object.assign(dictionaries.ja, { emptyGreetings: {
+  list: ['空っぽも悪くない。書きたいときに書こう。', '白いページが、最初の一行を待っています。', '今日は何から記録しますか？'],
+  editor: ['左から一つ選んでください。ここで待っています。', '開いてみましょう。そこから始めます。', 'ノートかタスク、どちらにしますか？'],
+  trash: ['きれいなものです。戻すものはありません。', '空っぽなら、まだ何も失っていないということ。'],
+} });
+Object.assign(dictionaries.ko, { noMatch: '맞는 항목이 없어요', noMatchHint: '다른 검색어를 쓰거나 필터를 지워 보세요.' });
+Object.assign(dictionaries.ko, { emptyGreetings: {
+  list: ['비어 있는 것도 괜찮아요. 쓰고 싶을 때 쓰면 됩니다.', '빈 페이지가 첫 한 줄을 기다리고 있어요.', '오늘은 무엇부터 적어 볼까요?'],
+  editor: ['왼쪽에서 하나 골라 주세요. 여기서 기다릴게요.', '하나 열어 보면 바로 시작할 수 있어요.', '노트와 할 일, 어느 쪽을 먼저 볼까요?'],
+  trash: ['아주 깨끗해요. 되찾을 것이 없네요.', '비어 있다는 건 아직 실수한 게 없다는 뜻이에요.'],
+} });
+Object.assign(dictionaries.fr, { noMatch: 'Aucun résultat', noMatchHint: 'Essayez un autre terme ou effacez les filtres.' });
+Object.assign(dictionaries.fr, { emptyGreetings: {
+  list: ['Le vide, c’est un bon point de départ.', 'Une page blanche attend votre première ligne.', 'Qu’allez-vous noter en premier ?'],
+  editor: ['Choisissez un élément à gauche, je vous attends.', 'Ouvrez-en un et nous commençons.', 'Une note ou une tâche — laquelle d’abord ?'],
+  trash: ['Tout est propre : rien à récupérer.', 'Vide, c’est bon signe : rien n’a encore disparu.'],
+} });
+Object.assign(dictionaries.de, { noMatch: 'Nichts passt dazu', noMatchHint: 'Anderer Begriff oder Filter zurücksetzen.' });
+Object.assign(dictionaries.de, { emptyGreetings: {
+  list: ['Leer ist ein guter Anfang.', 'Eine leere Seite wartet auf deine erste Zeile.', 'Was möchtest du zuerst festhalten?'],
+  editor: ['Wähle links etwas aus, ich warte hier.', 'Öffne einen Eintrag, dann geht es los.', 'Notiz oder Aufgabe — was zuerst?'],
+  trash: ['Hier ist alles sauber, nichts wartet auf Rettung.', 'Leer heißt: noch ist nichts verloren gegangen.'],
+} });
+Object.assign(dictionaries.es, { noMatch: 'Nada coincide', noMatchHint: 'Prueba otro término o quita los filtros.' });
+Object.assign(dictionaries.es, { emptyGreetings: {
+  list: ['El vacío es un buen punto de partida.', 'Una página en blanco espera tu primera línea.', '¿Qué quieres apuntar primero?'],
+  editor: ['Elige algo a la izquierda, aquí te espero.', 'Abre uno y empezamos.', '¿Una nota o una tarea? ¿Cuál primero?'],
+  trash: ['Todo limpio: nada esperando que lo rescaten.', 'Vacío significa que aún no se ha perdido nada.'],
+} });
+Object.assign(dictionaries.ru, { noMatch: 'Ничего не найдено', noMatchHint: 'Попробуйте другой запрос или сбросьте фильтры.' });
+Object.assign(dictionaries.ru, { emptyGreetings: {
+  list: ['Пусто — тоже хорошее начало.', 'Чистый лист ждёт первой строки.', 'Что запишем первым?'],
+  editor: ['Выберите что-нибудь слева, я подожду.', 'Откройте запись — и начнём.', 'Заметка или задача — что первым?'],
+  trash: ['Здесь чисто: спасать нечего.', 'Пусто — значит, ничего ещё не потеряно.'],
+} });
+
 const todayISO = () => {
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60000;
@@ -950,6 +1002,86 @@ const stripHTML = (html = '') => {
   return (node.textContent || '').trim();
 };
 const isSafeHref = (value = '') => /^(https?:\/\/|mailto:)/i.test(String(value).trim());
+
+// —— 空态：Handy 出面说话 ——
+// 列表空着、还没选中内容这两种「什么都没发生」的时刻，由品牌小人 Handy
+// 出面。它是一个会呼吸、会眨眼、偶尔轻轻点一下头的小人（三角形脑袋 +
+// 梯形身子 + 两只眼睛），动作幅度都在 2° / 2px 以内——这两个时刻本来就很
+// 安静，角色不该抢戏。问候语按语境分三组，每次进入随机取一条，尽量不与
+// 上次重复；停在空态上时每十几秒换一句，只换文字、不重画小人。
+const HANDY_SVG = `<svg class="handy-figure" viewBox="0 0 91 165" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><g transform="matrix(1,0,0,1,-472.860418,-756.917314)"><g class="handy-head"><g transform="matrix(1.410031,0,0,1.410031,-312.48265,373.365759)"><path d="M600.857,336.618L577.373,336.618C575.368,336.618 573.483,335.665 572.295,334.051C571.107,332.436 570.757,330.353 571.353,328.439L588.913,272.016L606.865,328.4C607.475,330.317 607.134,332.41 605.947,334.034C604.76,335.658 602.869,336.618 600.857,336.618Z"/></g><g transform="matrix(0.343585,0,0,0.343585,294.880491,522.736671)"><g class="handy-eye"><circle cx="622.755" cy="911.802" r="15"/></g></g><g transform="matrix(0.343585,0,0,0.343585,313.556419,522.736671)"><g class="handy-eye"><circle cx="622.755" cy="911.802" r="15"/></g></g></g><g transform="matrix(1.410031,0,0,1.410031,-312.48265,373.365759)"><path d="M605.581,384.773C604.387,386.987 602.075,388.368 599.56,388.368C593.673,388.377 584.037,388.377 578.15,388.377C575.643,388.376 573.336,387.006 572.137,384.804C571.043,382.804 569.047,381.355 566.652,381.025L561.215,380.277C559.783,380.08 558.511,379.263 557.736,378.043C556.961,376.824 556.761,375.325 557.191,373.945L563.493,353.696C565.421,347.5 571.156,343.278 577.645,343.278L600.766,343.278C607.219,343.278 612.931,347.454 614.889,353.603L621.229,373.515C621.71,375.027 621.488,376.674 620.624,378.004C619.759,379.334 618.344,380.206 616.767,380.38L610.97,381.019C608.639,381.277 606.675,382.769 605.581,384.773Z"/></g></g></svg>`;
+
+// 每个语境各自记一条「现在说的是哪一句」，这样列表与编辑器同时空着时
+// 互不顶替；view 变化（换了页面）就重新抽一条。
+const emptyMoods = new Map();
+const emptyGreetingPool = key => {
+  const pool = dictionaries[settings.language]?.emptyGreetings?.[key];
+  return Array.isArray(pool) && pool.length ? pool : (dictionaries.en?.emptyGreetings?.[key] || []);
+};
+const emptyGreetingText = key => {
+  const pool = emptyGreetingPool(key);
+  const mood = emptyMoods.get(key);
+  return pool[mood?.index ?? 0] || '';
+};
+const emptyGreeting = (key, view) => {
+  const pool = emptyGreetingPool(key);
+  if (!pool.length) return '';
+  const mood = emptyMoods.get(key);
+  if (!mood || mood.view !== view) {
+    let next = Math.floor(Math.random() * pool.length);
+    if (mood && pool.length > 1 && next === mood.index) next = (next + 1) % pool.length;
+    emptyMoods.set(key, { view, index: next });
+  }
+  return emptyGreetingText(key);
+};
+const rollEmptyGreeting = key => {
+  const pool = emptyGreetingPool(key);
+  const mood = emptyMoods.get(key);
+  if (!mood || pool.length < 2) return false;
+  let next = Math.floor(Math.random() * pool.length);
+  if (next === mood.index) next = (mood.index + 1) % pool.length;
+  mood.index = next;
+  return true;
+};
+const emptyGreetingSig = key => `${settings.language}|${key}|${emptyMoods.get(key)?.view ?? ''}|${emptyMoods.get(key)?.index ?? -1}`;
+
+let emptyMoodTimer = 0;
+// 停在空态上时换一句：只改文字、让小人抬一下头，不重画整块（重画会让
+// 呼吸与眨眼从第一帧重来）。没有空态了就不再排下一次。
+const armEmptyMoodTimer = () => {
+  if (emptyMoodTimer) return;
+  emptyMoodTimer = setTimeout(() => {
+    emptyMoodTimer = 0;
+    const blocks = [...document.querySelectorAll('.handy-block')];
+    if (!blocks.length) return;
+    blocks.forEach(block => {
+      const key = block.dataset.emptyKey;
+      if (!rollEmptyGreeting(key)) return;
+      const line = block.querySelector('.handy-line');
+      if (line) line.textContent = emptyGreetingText(key);
+      block.dataset.emptySig = emptyGreetingSig(key);
+      block.classList.remove('is-fresh');
+      void block.offsetWidth;
+      block.classList.add('is-fresh');
+      setTimeout(() => block.classList.remove('is-fresh'), 900);
+    });
+    armEmptyMoodTimer();
+  }, 11000 + Math.random() * 7000);
+};
+// 空态容器重绘守门：内容没变（同一语言 / 同一页面 / 同一句话）就什么都不做，
+// 免得每次日常重绘都把小人重建、动画从第一帧跳一下。从「有内容」回到空态时
+// 换一句——这也是随机刷新最主要的时机。
+const paintEmptyState = (container, key, build) => {
+  if (!container) return;
+  if (!container.querySelector('.handy-block') && container.dataset.handyPainted === '1') rollEmptyGreeting(key);
+  container.dataset.handyPainted = '1';
+  const greeting = emptyGreeting(key, currentView);
+  const sig = emptyGreetingSig(key);
+  const existing = container.querySelector('.handy-block');
+  if (existing?.dataset.emptySig === sig) { armEmptyMoodTimer(); return; }
+  container.innerHTML = build(greeting, sig);
+  armEmptyMoodTimer();
+};
 
 // 行内 Markdown 特殊字符转义：保证 HTML→Markdown→HTML 往返不改变格式。
 // 行首块级字符（#、>、-、数字）不做转义，源码保持易读。
@@ -8303,9 +8435,11 @@ function renderList() {
     $('#viewTitle').textContent = viewTitle();
     $('#itemCountLabel').textContent = `${items.length} ${t('trashItems')}`;
     list.className = 'item-list trash-list';
-    list.innerHTML = items.length
-      ? `<div class="list-body">${renderTrashList(items)}</div>`
-      : `<div class="list-body is-empty"><div class="empty-list trash-empty"><div><span><svg><use href="#i-trash"/></svg></span><h3>${escapeHTML(t('trashEmptyTitle'))}</h3><p>${escapeHTML(t('trashEmptyHint'))}</p></div></div></div>`;
+    if (items.length) {
+      list.innerHTML = `<div class="list-body">${renderTrashList(items)}</div>`;
+    } else {
+      paintEmptyState(list, 'trash', (greeting, sig) => `<div class="list-body is-empty handy-empty"><div class="empty-list trash-empty"><div class="handy-block" data-empty-key="trash" data-empty-sig="${sig}">${HANDY_SVG}<h3 class="handy-line">${escapeHTML(greeting || t('trashEmptyTitle'))}</h3><p>${escapeHTML(t('trashEmptyHint'))}</p></div></div></div>`);
+    }
     bindTrashList();
     return;
   }
@@ -8324,7 +8458,11 @@ function renderList() {
   $('#itemCountLabel').textContent = `${items.length} ${t('item')}`;
   list.className = 'item-list';
   if (!items.length) {
-    list.innerHTML = `<div class="list-body is-empty"><div class="empty-list"><div><span><svg><use href="#i-spark"/></svg></span><h3>${t('noItems')}</h3><p>${t('noItemsHint')}</p></div></div></div>`;
+    // 空列表交给 Handy：一句随机问候 + 一行功能提示。
+    // 但「搜索 / 筛选后一条都没有」不是空态，是没对上——这里给中性的一句，
+    // 也不让问候语轮换，免得对着精疲力尽的搜索说「今天想先记点什么」。
+    const narrowing = Boolean(searchQuery) || hasActiveListFilters();
+    paintEmptyState(list, narrowing ? 'filtered' : 'list', (greeting, sig) => `<div class="list-body is-empty handy-empty"><div class="empty-list"><div class="handy-block" data-empty-key="${narrowing ? 'filtered' : 'list'}" data-empty-sig="${sig}">${HANDY_SVG}<h3 class="handy-line">${escapeHTML(narrowing ? t('noMatch') : (greeting || t('noItems')))}</h3><p>${escapeHTML(narrowing ? t('noMatchHint') : t('noItemsHint'))}</p></div></div></div>`);
     return;
   }
 
@@ -8438,7 +8576,7 @@ function renderEditor() {
   document.body.classList.remove('note-focus-mode', 'note-focus-leaving');
   if (!item) {
     pane.classList.remove('mobile-open');
-    pane.innerHTML = `<div class="empty-editor"><div><span><svg><use href="#i-spark"/></svg></span><h2>${t('selectItem')}</h2><p>${t('selectItemHint')}</p></div></div>`;
+    paintEmptyState(pane, 'editor', (greeting, sig) => `<div class="empty-editor handy-empty"><div class="handy-block" data-empty-key="editor" data-empty-sig="${sig}">${HANDY_SVG}<h2 class="handy-line">${escapeHTML(greeting || t('selectItem'))}</h2><p>${escapeHTML(t('selectItemHint'))}</p></div></div>`);
     pane.scrollTop = 0;
     return;
   }
