@@ -77,7 +77,7 @@ const dictionaries = {
     boardMarkerArrow:'箭头', boardMarkerRect:'方框', boardMarkerEllipse:'椭圆', boardMarkerLine:'直线', boardMarkerDraw:'笔绘', boardMarkerEraser:'橡皮擦', boardMarkerColor:'标注颜色', boardMarkerDone:'完成标注', boardMarkerStroke:'线条粗细', boardMarkerFill:'填充颜色', boardFillOpacity:'填充不透明度', boardStrokeOpacity:'线条不透明度', boardArrowHead:'前端箭头', boardArrowTail:'末端箭头', boardArrowNone:'无', boardArrowArrow:'箭头', boardArrowDot:'圆点', boardArrowBar:'短杠', boardMarkerStyle:'标注样式',
     boardBg:'背景', boardBgNone:'无背景', boardBgOpacity:'不透明度', boardRadius:'圆角', boardPadding:'内边距', boardCustomFont:'自定义字体', boardCustomFontHint:'输入本机已安装的字体名，如 Georgia',
     boardDeleteArm:'再点一次删除', boardUndo:'撤销', boardRedo:'重做', boardMarqueeClear:'取消选择', boardMarqueeDelete:'删除所选', boardSelectedCount:'已选 {0} 项',
-    boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardShowBody:'完整内容', boardShowDoneOnly:'仅显示已完成', boardBodyLargeConfirm:'这篇笔记超过一万字符，完整显示可能影响流畅度。仍要开启完整内容显示吗？', boardWidgetOpacity:'不透明度',
+    boardTextColor:'文字颜色', boardContentSettings:'显示内容', boardShowPill:'类型标签', boardShowPriority:'优先级', boardShowDate:'日期', boardShowPreview:'摘要', boardShowFoot:'底部信息', boardShowTasks:'子待办', boardShowBody:'完整内容', boardShowDoneVisible:'显示已完成的子待办', boardShowDoneOnly:'仅显示已完成', boardBodyLargeConfirm:'这篇笔记超过一万字符，完整显示可能影响流畅度。仍要开启完整内容显示吗？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'个性化计划板', boardBgPattern:'背景图案', boardPatternDots:'点阵', boardPatternGrid:'网格', boardPatternNone:'无', boardPatternLines:'横线', boardPatternCross:'交叉点', boardGridColor:'网格颜色', boardGridOpacity:'网格不透明度', boardBoardBgColor:'背景颜色', boardBgColorTheme:'跟随主题', boardSnapGrid:'吸附到网格', boardGridSize:'图案网格大小',
     boardCustomColor:'自定义颜色', boardBrushPen:'钢笔', boardBrushHighlighter:'荧光笔', boardPenStroke:'粗细', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完成', boardPenCap:'笔尖', boardCapRound:'圆头', boardCapFlat:'平头', boardCapSquare:'方头', boardBrushEraser:'橡皮', boardPenMode:'笔绘模式：可连续绘制，橡皮擦在面板中切换，完成或按 Esc 退出', boardLayers:'图层', boardSectionCards:'卡片', boardSectionTexts:'文本', boardSectionMarkers:'标注', boardLayerShow:'显示图层', boardLayerHide:'隐藏图层', boardLayerDrag:'拖动排序', boardLayerGroup:'组', boardGroup:'组合所选', boardUngroup:'取消组合', boardLayerRename:'重命名', boardLayerCopy:'复制', boardLayerCut:'剪切', boardLayerPaste:'粘贴', boardLayerRenamed:'已重命名', boardLayerPasted:'已粘贴 {0} 个元素', brandEgg:'行记不辍 —— 这是 Acta 给好奇心的回礼', historyAlmostFull:'История почти заполнена (450 / 500) — старые записи постепенно будут заменяться', historyAlmostFull:'El historial está casi lleno (450 / 500) — las entradas antiguas se irán reemplazando', historyAlmostFull:'Der Verlauf ist fast voll (450 / 500) — ältere Einträge werden nach und nach ersetzt', historyAlmostFull:'L’historique est presque plein (450 / 500) — les anciennes entrées seront progressivement remplacées', historyAlmostFull:'历史记录将满（450 / 500）——更早的记录会随新记录逐渐被替代',
     updateChannelLabel:'更新通道', updateChannelStable:'稳定通道', updateChannelBeta:'测试通道', updateChannelHint:'测试通道会同时接收 beta 预发布版本；稳定通道只接收正式版', updateSectionTitle:'软件更新',
@@ -149,7 +149,7 @@ const dictionaries = {
     boardMarkerArrow:'Arrow', boardMarkerRect:'Box', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Line', boardMarkerDraw:'Freehand', boardMarkerEraser:'Eraser', boardMarkerColor:'Marker color', boardMarkerDone:'Done', boardMarkerStroke:'Stroke width', boardMarkerFill:'Fill color', boardFillOpacity:'Fill opacity', boardStrokeOpacity:'Stroke opacity', boardArrowHead:'End arrowhead', boardArrowTail:'Start arrowhead', boardArrowNone:'None', boardArrowArrow:'Arrow', boardArrowDot:'Dot', boardArrowBar:'Bar', boardMarkerStyle:'Marker style',
     boardBg:'Background', boardBgNone:'None', boardBgOpacity:'Opacity', boardRadius:'Corner radius', boardPadding:'Padding', boardCustomFont:'Custom font', boardCustomFontHint:'Type an installed font family, e.g. Georgia',
     boardDeleteArm:'Tap again to delete', boardUndo:'Undo', boardRedo:'Redo', boardMarqueeClear:'Clear selection', boardMarqueeDelete:'Delete selected', boardSelectedCount:'{0} selected',
-    boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardShowBody:'Full content', boardShowDoneOnly:'Completed only', boardBodyLargeConfirm:'This note exceeds 10,000 characters — showing it in full may affect smoothness. Enable full content anyway?', boardWidgetOpacity:'Opacity',
+    boardTextColor:'Text color', boardContentSettings:'Shown content', boardShowPill:'Type pill', boardShowPriority:'Priority', boardShowDate:'Date', boardShowPreview:'Preview', boardShowFoot:'Footer', boardShowTasks:'Subtasks', boardShowBody:'Full content', boardShowDoneVisible:'Show completed subtasks', boardShowDoneOnly:'Completed only', boardBodyLargeConfirm:'This note exceeds 10,000 characters — showing it in full may affect smoothness. Enable full content anyway?', boardWidgetOpacity:'Opacity',
     boardPersonalize:'Customize board', boardBgPattern:'Background pattern', boardPatternDots:'Dots', boardPatternGrid:'Grid', boardPatternNone:'None', boardPatternLines:'Ruled', boardPatternCross:'Crosses', boardGridColor:'Grid color', boardGridOpacity:'Grid opacity', boardBoardBgColor:'Background color', boardBgColorTheme:'Follow theme', boardSnapGrid:'Snap to grid', boardGridSize:'Pattern grid size',
     boardCustomColor:'Custom color', boardBrushPen:'Pen', boardBrushHighlighter:'Highlighter', boardPenStroke:'Size', boardPenOpacity:'Opacity', boardPenFlow:'Flow', boardPenDone:'Done', boardPenCap:'Tip', boardCapRound:'Round', boardCapFlat:'Flat', boardCapSquare:'Square', boardBrushEraser:'Eraser', boardPenMode:'Freehand mode: draw as many strokes as you like; the eraser lives in the panel; press Done or Esc to exit', boardLayers:'Layers', boardSectionCards:'Cards', boardSectionTexts:'Texts', boardSectionMarkers:'Markers', boardLayerShow:'Show layer', boardLayerHide:'Hide layer', boardLayerDrag:'Drag to restack', boardLayerGroup:'Group', boardGroup:'Group selected', boardUngroup:'Ungroup', boardLayerRename:'Rename', boardLayerCopy:'Copy', boardLayerCut:'Cut', boardLayerPaste:'Paste', boardLayerRenamed:'Renamed', boardLayerPasted:'Pasted {0} items', brandEgg:'Keep journaling — Acta thanks the curious', historyAlmostFull:'History is nearly full (450 / 500) — older entries will gradually be replaced',
     updateChannelLabel:'Update channel', updateChannelStable:'Stable', updateChannelBeta:'Beta', updateChannelHint:'The Beta channel also receives pre-release versions; Stable only receives final releases', updateSectionTitle:'Software update',
@@ -220,7 +220,7 @@ const dictionaries = {
     boardMarkerArrow:'矢印', boardMarkerRect:'矩形', boardMarkerEllipse:'楕円', boardMarkerLine:'直線', boardMarkerDraw:'フリーハンド', boardMarkerEraser:'消しゴム', boardMarkerColor:'マーカーの色', boardMarkerDone:'完了', boardMarkerStroke:'線の太さ', boardMarkerFill:'塗りつぶしの色', boardFillOpacity:'塗りの不透明度', boardStrokeOpacity:'線の不透明度', boardArrowHead:'終点の矢印', boardArrowTail:'始点の矢印', boardArrowNone:'なし', boardArrowArrow:'矢印', boardArrowDot:'点', boardArrowBar:'棒', boardMarkerStyle:'マーカー設定',
     boardBg:'背景', boardBgNone:'背景なし', boardBgOpacity:'不透明度', boardRadius:'角丸', boardPadding:'内側余白', boardCustomFont:'カスタムフォント', boardCustomFontHint:'端末にインストール済みのフォント名を入力（例: Georgia）',
     boardDeleteArm:'もう一度タップで削除', boardUndo:'元に戻す', boardRedo:'やり直す', boardMarqueeClear:'選択を解除', boardMarqueeDelete:'選択中を削除', boardSelectedCount:'{0} 件を選択中',
-    boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardShowBody:'全文表示', boardShowDoneOnly:'完了のみ表示', boardBodyLargeConfirm:'このノートは1万文字を超えています。全文表示は動作に影響する可能性があります。それでも有効にしますか？', boardWidgetOpacity:'不透明度',
+    boardTextColor:'文字の色', boardContentSettings:'表示内容', boardShowPill:'種類ラベル', boardShowPriority:'優先度', boardShowDate:'日付', boardShowPreview:'概要', boardShowFoot:'フッター', boardShowTasks:'サブタスク', boardShowBody:'全文表示', boardShowDoneVisible:'完了済みサブタスクを表示', boardShowDoneOnly:'完了のみ表示', boardBodyLargeConfirm:'このノートは1万文字を超えています。全文表示は動作に影響する可能性があります。それでも有効にしますか？', boardWidgetOpacity:'不透明度',
     boardPersonalize:'ボードをカスタマイズ', boardBgPattern:'背景パターン', boardPatternDots:'ドット', boardPatternGrid:'グリッド', boardPatternNone:'なし', boardPatternLines:'罫線', boardPatternCross:'交差ポイント', boardGridColor:'グリッドの色', boardGridOpacity:'グリッドの不透明度', boardBoardBgColor:'背景色', boardBgColorTheme:'テーマに合わせる', boardSnapGrid:'グリッドにスナップ', boardGridSize:'パターンの間隔',
     boardCustomColor:'カスタムカラー', boardBrushPen:'ペン', boardBrushHighlighter:'蛍光ペン', boardPenStroke:'太さ', boardPenOpacity:'不透明度', boardPenFlow:'流量', boardPenDone:'完了', boardPenCap:'ペン先', boardCapRound:'丸', boardCapFlat:'平', boardCapSquare:'角', boardBrushEraser:'消しゴム', boardPenMode:'フリーハンドモード：何筆でも描けます。消しゴムはパネルで切り替え、完了または Esc で終了', boardLayers:'レイヤー', boardSectionCards:'カード', boardSectionTexts:'テキスト', boardSectionMarkers:'マーカー', boardLayerShow:'レイヤーを表示', boardLayerHide:'レイヤーを非表示', boardLayerDrag:'ドラッグで並べ替え', boardLayerGroup:'グループ', boardGroup:'選択をグループ化', boardUngroup:'グループ解除', brandEgg:'筆を絶たず —— 好奇心に、Acta からの贈りもの', historyAlmostFull:'履歴がまもなく上限（450 / 500）— 古い履歴から置き換えられていきます',
     updateChannelLabel:'更新チャネル', updateChannelStable:'安定版', updateChannelBeta:'ベータ版', updateChannelHint:'ベータ版チャネルはプレリリースも受け取ります。安定版は正式リリースのみです', updateSectionTitle:'ソフトウェア更新',
@@ -291,7 +291,7 @@ const dictionaries = {
     boardMarkerArrow:'화살표', boardMarkerRect:'사각형', boardMarkerEllipse:'타원', boardMarkerLine:'직선', boardMarkerDraw:'자유 곡선', boardMarkerEraser:'지우개', boardMarkerColor:'마커 색', boardMarkerDone:'완료', boardMarkerStroke:'선 굵기', boardMarkerFill:'채우기 색', boardFillOpacity:'채우기 불투명도', boardStrokeOpacity:'선 불투명도', boardArrowHead:'끝 화살촉', boardArrowTail:'시작 화살촉', boardArrowNone:'없음', boardArrowArrow:'화살표', boardArrowDot:'점', boardArrowBar:'막대', boardMarkerStyle:'마커 스타일',
     boardBg:'배경', boardBgNone:'배경 없음', boardBgOpacity:'불투명도', boardRadius:'모서리 둥글기', boardPadding:'안쪽 여백', boardCustomFont:'사용자 지정 글꼴', boardCustomFontHint:'기기에 설치된 글꼴 이름을 입력하세요(예: Georgia)',
     boardDeleteArm:'한 번 더 누르면 삭제', boardUndo:'실행 취소', boardRedo:'다시 실행', boardMarqueeClear:'선택 해제', boardMarqueeDelete:'선택 항목 삭제', boardSelectedCount:'{0}개 선택됨',
-    boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardShowBody:'전체 내용', boardShowDoneOnly:'완료된 항목만', boardBodyLargeConfirm:'이 노트는 1만 자를 넘습니다. 전체 표시가 성능에 영향을 줄 수 있어요. 그래도 켜시겠어요?', boardWidgetOpacity:'불투명도',
+    boardTextColor:'글자 색', boardContentSettings:'표시 내용', boardShowPill:'유형 라벨', boardShowPriority:'우선순위', boardShowDate:'날짜', boardShowPreview:'요약', boardShowFoot:'하단 정보', boardShowTasks:'하위 작업', boardShowBody:'전체 내용', boardShowDoneVisible:'완료된 하위 작업 표시', boardShowDoneOnly:'완료된 항목만', boardBodyLargeConfirm:'이 노트는 1만 자를 넘습니다. 전체 표시가 성능에 영향을 줄 수 있어요. 그래도 켜시겠어요?', boardWidgetOpacity:'불투명도',
     boardPersonalize:'보드 꾸미기', boardBgPattern:'배경 패턴', boardPatternDots:'점', boardPatternGrid:'격자', boardPatternNone:'없음', boardPatternLines:'줄선', boardPatternCross:'교차점', boardGridColor:'격자 색', boardGridOpacity:'격자 불투명도', boardBoardBgColor:'배경색', boardBgColorTheme:'테마 따르기', boardSnapGrid:'격자에 스냅', boardGridSize:'패턴 간격',
     boardCustomColor:'사용자 지정 색', boardBrushPen:'펜', boardBrushHighlighter:'형광펜', boardPenStroke:'굵기', boardPenOpacity:'불투명도', boardPenFlow:'유량', boardPenDone:'완료', boardPenCap:'펜촉', boardCapRound:'둥근 촉', boardCapFlat:'평평한 촉', boardCapSquare:'각진 촉', boardBrushEraser:'지우개', boardPenMode:'자유 곡선 모드: 여러 번 그릴 수 있어요. 지우개는 패널에서 전환하고 완료 또는 Esc로 종료', boardLayers:'레이어', boardSectionCards:'카드', boardSectionTexts:'텍스트', boardSectionMarkers:'마커', boardLayerShow:'레이어 보이기', boardLayerHide:'레이어 숨기기', boardLayerDrag:'드래그하여 재배치', boardLayerGroup:'그룹', boardGroup:'선택 항목 그룹화', boardUngroup:'그룹 해제', brandEgg:'꾸준히 기록하기 — 호기심 깊은 당신에게, Acta 드림', historyAlmostFull:'기록이 거의 찼어요 (450 / 500) — 오래된 기록부터 서서히 대체돼요',
     updateChannelLabel:'업데이트 채널', updateChannelStable:'안정 채널', updateChannelBeta:'베타 채널', updateChannelHint:'베타 채널은 프리릴리스도 받습니다. 안정 채널은 정식 릴리스만 받아요', updateSectionTitle:'소프트웨어 업데이트',
@@ -362,7 +362,7 @@ const dictionaries = {
     boardMarkerArrow:'Flèche', boardMarkerRect:'Rectangle', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Ligne', boardMarkerDraw:'Dessin', boardMarkerEraser:'Gomme', boardMarkerColor:'Couleur d’annotation', boardMarkerDone:'Terminé', boardMarkerStroke:'Épaisseur du trait', boardMarkerFill:'Couleur de remplissage', boardFillOpacity:'Opacité du remplissage', boardStrokeOpacity:'Opacité du trait', boardArrowHead:'Pointe (fin)', boardArrowTail:'Pointe (début)', boardArrowNone:'Aucune', boardArrowArrow:'Flèche', boardArrowDot:'Point', boardArrowBar:'Barre', boardMarkerStyle:'Style du marquage',
     boardBg:'Arrière-plan', boardBgNone:'Aucun fond', boardBgOpacity:'Opacité', boardRadius:'Arrondi', boardPadding:'Marge interne', boardCustomFont:'Police personnalisée', boardCustomFontHint:'Saisissez une police installée, ex. Georgia',
     boardDeleteArm:'Touchez encore pour supprimer', boardUndo:'Annuler', boardRedo:'Rétablir', boardMarqueeClear:'Effacer la sélection', boardMarqueeDelete:'Supprimer la sélection', boardSelectedCount:'{0} sélectionnés',
-    boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardShowBody:'Contenu complet', boardShowDoneOnly:'Terminées uniquement', boardBodyLargeConfirm:'Cette note dépasse 10 000 caractères — l’affichage complet peut nuire à la fluidité. Activer quand même ?', boardWidgetOpacity:'Opacité',
+    boardTextColor:'Couleur du texte', boardContentSettings:'Contenu affiché', boardShowPill:'Étiquette de type', boardShowPriority:'Priorité', boardShowDate:'Date', boardShowPreview:'Aperçu', boardShowFoot:'Pied', boardShowTasks:'Sous-tâches', boardShowBody:'Contenu complet', boardShowDoneVisible:'Afficher les sous-tâches terminées', boardShowDoneOnly:'Terminées uniquement', boardBodyLargeConfirm:'Cette note dépasse 10 000 caractères — l’affichage complet peut nuire à la fluidité. Activer quand même ?', boardWidgetOpacity:'Opacité',
     boardPersonalize:'Personnaliser le tableau', boardBgPattern:'Motif de fond', boardPatternDots:'Points', boardPatternGrid:'Grille', boardPatternNone:'Aucun', boardPatternLines:'Lignes', boardPatternCross:'Croix', boardGridColor:'Couleur du quadrillage', boardGridOpacity:'Opacité du quadrillage', boardBoardBgColor:'Couleur de fond', boardBgColorTheme:'Suivre le thème', boardSnapGrid:'Aimanter à la grille', boardGridSize:'Taille de la grille',
     boardCustomColor:'Couleur personnalisée', boardBrushPen:'Stylo', boardBrushHighlighter:'Surligneur', boardPenStroke:'Épaisseur', boardPenOpacity:'Opacité', boardPenFlow:'Flux', boardPenDone:'Terminé', boardPenCap:'Pointe', boardCapRound:'Ronde', boardCapFlat:'Plate', boardCapSquare:'Carrée', boardBrushEraser:'Gomme', boardPenMode:'Mode dessin : tracez autant de traits que voulu ; la gomme se trouve dans le panneau ; terminez ou Échap pour sortir', boardLayers:'Calques', boardSectionCards:'Cartes', boardSectionTexts:'Textes', boardSectionMarkers:'Annotations', boardLayerShow:'Afficher le calque', boardLayerHide:'Masquer le calque', boardLayerDrag:'Glisser pour réorganiser', boardLayerGroup:'Groupe', boardGroup:'Grouper la sélection', boardUngroup:'Dissocier', brandEgg:'Tenir son journal — le cadeau d’Acta aux curieux',
     updateChannelLabel:'Canal de mise à jour', updateChannelStable:'Stable', updateChannelBeta:'Bêta', updateChannelHint:'Le canal Bêta reçoit aussi les préversions ; Stable ne reçoit que les versions finales', updateSectionTitle:'Mise à jour du logiciel',
@@ -433,7 +433,7 @@ const dictionaries = {
     boardMarkerArrow:'Pfeil', boardMarkerRect:'Kasten', boardMarkerEllipse:'Ellipse', boardMarkerLine:'Linie', boardMarkerDraw:'Zeichnen', boardMarkerEraser:'Radierer', boardMarkerColor:'Markerfarbe', boardMarkerDone:'Fertig', boardMarkerStroke:'Linienbreite', boardMarkerFill:'Füllfarbe', boardFillOpacity:'Füll-Deckkraft', boardStrokeOpacity:'Linien-Deckkraft', boardArrowHead:'Spitze (Ende)', boardArrowTail:'Spitze (Anfang)', boardArrowNone:'Keine', boardArrowArrow:'Pfeil', boardArrowDot:'Punkt', boardArrowBar:'Strich', boardMarkerStyle:'Markierungsstil',
     boardBg:'Hintergrund', boardBgNone:'Kein Hintergrund', boardBgOpacity:'Deckkraft', boardRadius:'Eckenradius', boardPadding:'Innenabstand', boardCustomFont:'Eigene Schrift', boardCustomFontHint:'Name einer installierten Schrift, z. B. Georgia',
     boardDeleteArm:'Nochmal tippen zum Löschen', boardUndo:'Widerrufen', boardRedo:'Wiederholen', boardMarqueeClear:'Auswahl aufheben', boardMarqueeDelete:'Auswahl löschen', boardSelectedCount:'{0} ausgewählt',
-    boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardShowBody:'Vollständiger Inhalt', boardShowDoneOnly:'Nur erledigte', boardBodyLargeConfirm:'Diese Notiz überschreitet 10.000 Zeichen — die vollständige Anzeige kann die Flüssigkeit beeinträchtigen. Trotzdem aktivieren?', boardWidgetOpacity:'Deckkraft',
+    boardTextColor:'Textfarbe', boardContentSettings:'Angezeigter Inhalt', boardShowPill:'Typ-Label', boardShowPriority:'Priorität', boardShowDate:'Datum', boardShowPreview:'Vorschau', boardShowFoot:'Fußzeile', boardShowTasks:'Unteraufgaben', boardShowBody:'Vollständiger Inhalt', boardShowDoneVisible:'Erledigte Unteraufgaben anzeigen', boardShowDoneOnly:'Nur erledigte', boardBodyLargeConfirm:'Diese Notiz überschreitet 10.000 Zeichen — die vollständige Anzeige kann die Flüssigkeit beeinträchtigen. Trotzdem aktivieren?', boardWidgetOpacity:'Deckkraft',
     boardPersonalize:'Board gestalten', boardBgPattern:'Hintergrundmuster', boardPatternDots:'Punkte', boardPatternGrid:'Gitter', boardPatternNone:'Keine', boardPatternLines:'Linien', boardPatternCross:'Kreuze', boardGridColor:'Rasterfarbe', boardGridOpacity:'Rasterdeckkraft', boardBoardBgColor:'Hintergrundfarbe', boardBgColorTheme:'Wie Thema', boardSnapGrid:'Am Raster ausrichten', boardGridSize:'Rastergröße',
     boardCustomColor:'Eigene Farbe', boardBrushPen:'Füller', boardBrushHighlighter:'Textmarker', boardPenStroke:'Stärke', boardPenOpacity:'Deckkraft', boardPenFlow:'Fluss', boardPenDone:'Fertig', boardPenCap:'Spitze', boardCapRound:'Rund', boardCapFlat:'Flach', boardCapSquare:'Quadratisch', boardBrushEraser:'Radierer', boardPenMode:'Zeichenmodus: so viele Striche wie du willst; der Radierer ist im Panel; mit Fertig oder Esc beenden', boardLayers:'Ebenen', boardSectionCards:'Karten', boardSectionTexts:'Texte', boardSectionMarkers:'Marker', boardLayerShow:'Ebene einblenden', boardLayerHide:'Ebene ausblenden', boardLayerDrag:'Zum Umsortieren ziehen', boardLayerGroup:'Gruppe', boardGroup:'Auswahl gruppieren', boardUngroup:'Gruppierung aufheben', brandEgg:'Weiter im Journal — Actas Geschenk an Neugierige',
     updateChannelLabel:'Update-Kanal', updateChannelStable:'Stabil', updateChannelBeta:'Beta', updateChannelHint:'Der Beta-Kanal erhält auch Vorabversionen; Stabil nur finale Veröffentlichungen', updateSectionTitle:'Software-Update',
@@ -504,7 +504,7 @@ const dictionaries = {
     boardMarkerArrow:'Flecha', boardMarkerRect:'Caja', boardMarkerEllipse:'Elipse', boardMarkerLine:'Línea', boardMarkerDraw:'Dibujo', boardMarkerEraser:'Borrador', boardMarkerColor:'Color de anotación', boardMarkerDone:'Listo', boardMarkerStroke:'Grosor de línea', boardMarkerFill:'Color de relleno', boardFillOpacity:'Opacidad del relleno', boardStrokeOpacity:'Opacidad de la línea', boardArrowHead:'Punta final', boardArrowTail:'Punta inicial', boardArrowNone:'Ninguna', boardArrowArrow:'Flecha', boardArrowDot:'Punto', boardArrowBar:'Barra', boardMarkerStyle:'Estilo de anotación',
     boardBg:'Fondo', boardBgNone:'Sin fondo', boardBgOpacity:'Opacidad', boardRadius:'Redondeo', boardPadding:'Margen interior', boardCustomFont:'Fuente personalizada', boardCustomFontHint:'Escribe una fuente instalada, p. ej. Georgia',
     boardDeleteArm:'Toca otra vez para eliminar', boardUndo:'Deshacer', boardRedo:'Rehacer', boardMarqueeClear:'Quitar selección', boardMarqueeDelete:'Eliminar selección', boardSelectedCount:'{0} seleccionados',
-    boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardShowBody:'Contenido completo', boardShowDoneOnly:'Solo completadas', boardBodyLargeConfirm:'Esta nota supera los 10.000 caracteres; mostrarla completa puede afectar la fluidez. ¿Activar de todos modos?', boardWidgetOpacity:'Opacidad',
+    boardTextColor:'Color del texto', boardContentSettings:'Contenido mostrado', boardShowPill:'Etiqueta de tipo', boardShowPriority:'Prioridad', boardShowDate:'Fecha', boardShowPreview:'Vista previa', boardShowFoot:'Pie', boardShowTasks:'Subtareas', boardShowBody:'Contenido completo', boardShowDoneVisible:'Mostrar subtareas completadas', boardShowDoneOnly:'Solo completadas', boardBodyLargeConfirm:'Esta nota supera los 10.000 caracteres; mostrarla completa puede afectar la fluidez. ¿Activar de todos modos?', boardWidgetOpacity:'Opacidad',
     boardPersonalize:'Personalizar tablero', boardBgPattern:'Patrón de fondo', boardPatternDots:'Puntos', boardPatternGrid:'Cuadrícula', boardPatternNone:'Ninguno', boardPatternLines:'Líneas', boardPatternCross:'Cruces', boardGridColor:'Color de cuadrícula', boardGridOpacity:'Opacidad de cuadrícula', boardBoardBgColor:'Color de fondo', boardBgColorTheme:'Según el tema', boardSnapGrid:'Ajustar a la cuadrícula', boardGridSize:'Tamaño de cuadrícula',
     boardCustomColor:'Color personalizado', boardBrushPen:'Pluma', boardBrushHighlighter:'Rotulador', boardPenStroke:'Grosor', boardPenOpacity:'Opacidad', boardPenFlow:'Flujo', boardPenDone:'Listo', boardPenCap:'Punta', boardCapRound:'Redonda', boardCapFlat:'Plana', boardCapSquare:'Cuadrada', boardBrushEraser:'Borrador', boardPenMode:'Modo dibujo: traza tantos trazos como quieras; el borrador está en el panel; termina o pulsa Esc para salir', boardLayers:'Capas', boardSectionCards:'Tarjetas', boardSectionTexts:'Textos', boardSectionMarkers:'Anotaciones', boardLayerShow:'Mostrar capa', boardLayerHide:'Ocultar capa', boardLayerDrag:'Arrastra para reordenar', boardLayerGroup:'Grupo', boardGroup:'Agrupar selección', boardUngroup:'Desagrupar', brandEgg:'Sigue escribiendo — el regalo de Acta para los curiosos',
     updateChannelLabel:'Canal de actualización', updateChannelStable:'Estable', updateChannelBeta:'Beta', updateChannelHint:'El canal Beta también recibe versiones preliminares; Estable solo recibe versiones finales', updateSectionTitle:'Actualización de software',
@@ -575,7 +575,7 @@ const dictionaries = {
     boardMarkerArrow:'Стрелка', boardMarkerRect:'Рамка', boardMarkerEllipse:'Овал', boardMarkerLine:'Линия', boardMarkerDraw:'Рисование', boardMarkerEraser:'Ластик', boardMarkerColor:'Цвет пометки', boardMarkerDone:'Готово', boardMarkerStroke:'Толщина линии', boardMarkerFill:'Цвет заливки', boardFillOpacity:'Непрозрачность заливки', boardStrokeOpacity:'Непрозрачность линии', boardArrowHead:'Наконечник (конец)', boardArrowTail:'Наконечник (начало)', boardArrowNone:'Нет', boardArrowArrow:'Стрелка', boardArrowDot:'Точка', boardArrowBar:'Черта', boardMarkerStyle:'Стиль пометки',
     boardBg:'Фон', boardBgNone:'Без фона', boardBgOpacity:'Непрозрачность', boardRadius:'Скругление', boardPadding:'Внутренние поля', boardCustomFont:'Свой шрифт', boardCustomFontHint:'Введите установленный шрифт, напр. Georgia',
     boardDeleteArm:'Нажмите ещё раз для удаления', boardUndo:'Отменить', boardRedo:'Повторить', boardMarqueeClear:'Снять выделение', boardMarqueeDelete:'Удалить выбранное', boardSelectedCount:'Выбрано: {0}',
-    boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardShowBody:'Полное содержимое', boardShowDoneOnly:'Только выполненные', boardBodyLargeConfirm:'Эта заметка больше 10 000 символов — полное отображение может снизить плавность. Всё равно включить?', boardWidgetOpacity:'Непрозрачность',
+    boardTextColor:'Цвет текста', boardContentSettings:'Показывать', boardShowPill:'Метка типа', boardShowPriority:'Приоритет', boardShowDate:'Дату', boardShowPreview:'Анонс', boardShowFoot:'Нижнюю строку', boardShowTasks:'Подзадачи', boardShowBody:'Полное содержимое', boardShowDoneVisible:'Показывать выполненные подзадачи', boardShowDoneOnly:'Только выполненные', boardBodyLargeConfirm:'Эта заметка больше 10 000 символов — полное отображение может снизить плавность. Всё равно включить?', boardWidgetOpacity:'Непрозрачность',
     boardPersonalize:'Оформить планшет', boardBgPattern:'Фоновый узор', boardPatternDots:'Точки', boardPatternGrid:'Сетка', boardPatternNone:'Нет', boardPatternLines:'Линии', boardPatternCross:'Перекрестия', boardGridColor:'Цвет сетки', boardGridOpacity:'Непрозрачность сетки', boardBoardBgColor:'Цвет фона', boardBgColorTheme:'Как в теме', boardSnapGrid:'Привязка к сетке', boardGridSize:'Шаг сетки',
     boardCustomColor:'Свой цвет', boardBrushPen:'Перо', boardBrushHighlighter:'Маркер', boardPenStroke:'Толщина', boardPenOpacity:'Непрозрачность', boardPenFlow:'Поток', boardPenDone:'Готово', boardPenCap:'Перо', boardCapRound:'Круглое', boardCapFlat:'Плоское', boardCapSquare:'Квадратное', boardBrushEraser:'Ластик', boardPenMode:'Режим рисования: рисуйте сколько угодно штрихов; ластик — в панели; «Готово» или Esc — выход', boardLayers:'Слои', boardSectionCards:'Карточки', boardSectionTexts:'Текст', boardSectionMarkers:'Аннотации', boardLayerShow:'Показать слой', boardLayerHide:'Скрыть слой', boardLayerDrag:'Перетащите, чтобы изменить порядок', boardLayerGroup:'Группа', boardGroup:'Сгруппировать выбранное', boardUngroup:'Разгруппировать', brandEgg:'Записывайте не останавливаясь — подарок Acta любопытным',
     updateChannelLabel:'Канал обновлений', updateChannelStable:'Стабильный', updateChannelBeta:'Бета', updateChannelHint:'Бета-канал также получает предварительные версии; стабильный — только финальные', updateSectionTitle:'Обновление ПО',
@@ -783,7 +783,8 @@ function sanitizeBoards(boards) {
           opacity: Math.min(100, Math.max(30, Math.round(Number(widget.opacity) ?? 100))),
           show: {
             pill: show.pill !== false, priority: show.priority !== false, date: show.date !== false,
-            tasks: show.tasks === true, preview: show.preview !== false, foot: show.foot !== false
+            tasks: show.tasks === true, tasksDoneVisible: show.tasksDoneVisible !== false,
+            tasksDoneOnly: show.tasksDoneOnly === true, preview: show.preview !== false, foot: show.foot !== false
           }
         });
         return;
@@ -3834,6 +3835,15 @@ function boardNodeCheckinBadge(item) {
   return `<span class="checkin-badge${on ? ' on' : ''}"><svg><use href="#i-check"/></svg>${escapeHTML(on ? t('checkinDone') : t('checkinTodoYet'))}</span>`;
 }
 
+// 子待办行的过滤口径（画布与导出共用）：「仅显示已完成」优先（复盘 /
+// 验收场景，此时忽略「显示已完成的子待办」）；其次按该开关隐藏已完成
+// 行（专注未完成）；默认全部显示。
+function boardShownTasks(tasks, show) {
+  if (show?.tasksDoneOnly === true) return tasks.filter(task => task.done);
+  if (show?.tasksDoneVisible === false) return tasks.filter(task => !task.done);
+  return tasks;
+}
+
 function boardNodeHTML(card, silent) {
   const item = card.item;
   const done = item.type === 'todo' && isTodoComplete(item);
@@ -3860,8 +3870,8 @@ function boardNodeHTML(card, silent) {
     stamp ? stamp.replace('<time ', `<time${show.date === false ? ' hidden' : ''} `) : ''
   ].join('');
   const topRow = `<div class="board-node-top">${topParts}</div>`;
-  // 子待办行：可选择只看已完成的（复盘 / 验收场景）。
-  const shownTasks = show.tasksDoneOnly === true ? tasks.filter(task => task.done) : tasks;
+  // 子待办行：「仅显示已完成」（复盘 / 验收）或「隐藏已完成」（专注未完成）。
+  const shownTasks = boardShownTasks(tasks, show);
   const tasksBlock = item.type === 'todo' && tasks.length
     ? `<div class="board-node-tasks"${show.tasks === true ? '' : ' hidden'}>${shownTasks.map(task => `<span class="board-node-task${task.done ? ' is-done' : ''}"><i><svg><use href="#i-check"/></svg></i><span>${escapeHTML(task.text)}</span></span>`).join('')}</div>`
     : '';
@@ -4567,20 +4577,25 @@ function boardRenderContentPop(widget) {
   }
   const show = widget.show || {};
   // 开关按模块类型过滤：优先级与子待办仅对待办有意义，笔记提供完整内容显示。
+  // 子待办两项过滤并存：「显示已完成的子待办」管已完成行去留（默认开），
+  // 「仅显示已完成」是更具体的复盘模式、优先级更高（开启时忽略前者）。
   const items = widget.type === 'todo'
     ? [
         ['pill', t('boardShowPill')], ['priority', t('boardShowPriority')], ['date', t('boardShowDate')],
-        ['tasks', t('boardShowTasks')], ['tasksDoneOnly', t('boardShowDoneOnly')],
+        ['tasks', t('boardShowTasks')], ['tasksDoneVisible', t('boardShowDoneVisible')], ['tasksDoneOnly', t('boardShowDoneOnly')],
         ['preview', t('boardShowPreview')], ['foot', t('boardShowFoot')]
       ]
     : [
         ['pill', t('boardShowPill')], ['date', t('boardShowDate')],
         ['body', t('boardShowBody')], ['preview', t('boardShowPreview')], ['foot', t('boardShowFoot')]
       ];
+  // 默认态按 key 区分：tasksDoneOnly 未设置时是「关」（=== true 才生效），
+  // 其余开关未设置都是「开」（!== false 生效）——复选框必须如实反映行为。
+  const defaultOn = key => key === 'tasksDoneOnly' ? show[key] === true : show[key] !== false;
   pop.innerHTML = `
     <div class="board-style-pop-head"><b>${escapeHTML(t('boardContentSettings'))}</b><button type="button" data-content-close title="${escapeHTML(t('cancel'))}" aria-label="${escapeHTML(t('cancel'))}"><svg><use href="#i-close"/></svg></button></div>
     <div class="board-style-column">${items.map(([key, label]) => `
-    <label class="board-style-toggle"><input type="checkbox" data-show="${key}"${show[key] !== false ? ' checked' : ''}/><i></i><span>${escapeHTML(label)}</span></label>`).join('')}
+    <label class="board-style-toggle"><input type="checkbox" data-show="${key}"${defaultOn(key) ? ' checked' : ''}/><i></i><span>${escapeHTML(label)}</span></label>`).join('')}
   </div>`;
   pop.hidden = false;
   const bar = boardEls?.toolbar;
@@ -5663,9 +5678,10 @@ function boardDrawCard(ctx, widget, item, X, Y, theme) {
     ctx.stroke();
   }
   cy += Math.round(16 * theme.fontScale) + 6;
-  // 子待办（显示内容开关）
-  if (show.tasks === true && tasks.length) {
-    tasks.slice(0, 10).forEach(task => {
+  // 子待办（显示内容开关：与画布同一过滤口径，导出所见与卡片一致）
+  const exportTasks = boardShownTasks(tasks, show);
+  if (show.tasks === true && exportTasks.length) {
+    exportTasks.slice(0, 10).forEach(task => {
       ctx.lineWidth = 1.2;
       boardRoundRect(ctx, x + padX, cy + 1, 12, 12, 4);
       if (task.done) { ctx.fillStyle = theme.sage; ctx.fill(); }
@@ -8150,9 +8166,9 @@ function bindBoardScene() {
         persist();
         // 只更新现有节点各区块的 hidden：不重建节点（重建会让卡片悬停位移
         // 与层叠顺序跳动），也不动选中态与打开中的面板。子待办的行集合可能
-        // 变化（仅显示已完成），这类开关走签名重绘。
+        // 变化（仅显示已完成 / 隐藏已完成），这类开关走签名重绘。
         boardApplyShownContent(boardRenderedCards.get(widget.id), widget);
-        if (showBox.dataset.show === 'tasksDoneOnly' || showBox.dataset.show === 'tasks') boardSyncNodes();
+        if (['tasks', 'tasksDoneOnly', 'tasksDoneVisible'].includes(showBox.dataset.show)) boardSyncNodes();
       }
       return;
     }

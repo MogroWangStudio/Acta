@@ -1598,6 +1598,57 @@ async function main() {
         && Math.abs(saveStateRect.right - (titlebarMetaRect.right - saveStatePadding)) <= 1;
       const saveStateMetrics = { saveLeft:saveStateRect.left, tabStripRight:tabStripRect.right, metaRight:titlebarMetaRect.right, rightGap:Number((titlebarMetaRect.right - saveStatePadding - saveStateRect.right).toFixed(2)) };
       const lowerLeftControlsTogether = ['#dataRefreshButton', '#historyButton', '#settingsButton', '#sidebarToggle'].every(selector => document.querySelector(selector)?.closest('.sidebar-dock-actions'));
+      // —— v4.3.0-beta8 计划板子待办显示开关：显示已完成 / 仅显示已完成 ——
+      // 已知状态：t1 已完成、t2 未完成。断言：默认两项开关的复选框如实
+      // 反映行为（tasksDoneOnly 未设置时必须未勾选）、隐藏已完成只剩未完成
+      // 行、「仅显示已完成」优先级更高、归一化保留两个开关字段。
+      window.__actaSmokeStep = 'board-subtask-display';
+      task.tasks.find(entry => entry.id === 't1').done = true;
+      task.tasks.find(entry => entry.id === 't2').done = false;
+      document.querySelector('[data-view="board"]').click();
+      await waitFor(() => currentView === 'board' && Boolean(document.querySelector('.board-canvas')));
+      const boardForDisplay = activeBoard();
+      let displayWidget = boardForDisplay.widgets.find(entry => entry.ref === 'launch-plan');
+      if (!displayWidget) {
+        displayWidget = { id: uid(), type: 'todo', ref: 'launch-plan', x: 60, y: 60, w: 264, h: 220, opacity: 100, show: { pill: true, priority: true, date: true, tasks: true, preview: true, foot: true } };
+        boardForDisplay.widgets.push(displayWidget);
+        touchBoard(boardForDisplay);
+        renderList();
+        await waitFor(() => document.querySelector('.board-node[data-widget-id="' + displayWidget.id + '"]'));
+      }
+      boardRenderContentPop(displayWidget);
+      // 内容开关的 change 处理器只作用于单选中的组件：先选中再拨开关。
+      boardSetSelection([displayWidget.id]);
+      const popVisible = !document.querySelector('#boardContentPop').hidden;
+      const doneVisibleBox = document.querySelector('#boardContentPop [data-show="tasksDoneVisible"]');
+      const doneOnlyBox = document.querySelector('#boardContentPop [data-show="tasksDoneOnly"]');
+      const boardToggleDefaults = popVisible && Boolean(doneVisibleBox) && Boolean(doneOnlyBox)
+        && doneVisibleBox.checked && !doneOnlyBox.checked;
+      const cardRows = () => [...document.querySelectorAll('.board-node[data-widget-id="' + displayWidget.id + '"] .board-node-task')];
+      const boardShowsAllByDefault = cardRows().length === 2 && cardRows().some(row => row.classList.contains('is-done'));
+      // 关掉「显示已完成的子待办」：只剩未完成的 t2
+      doneVisibleBox.checked = false;
+      doneVisibleBox.dispatchEvent(new Event('change', { bubbles: true }));
+      await waitFor(() => cardRows().length === 1 && !cardRows()[0].classList.contains('is-done'));
+      const boardHidesCompleted = cardRows().length === 1 && !cardRows()[0].classList.contains('is-done');
+      // 开「仅显示已完成」：优先级更高，显示已完成的 t1（虽然已完成显示是关的）
+      doneOnlyBox.checked = true;
+      doneOnlyBox.dispatchEvent(new Event('change', { bubbles: true }));
+      await waitFor(() => cardRows().length === 1 && cardRows()[0].classList.contains('is-done'));
+      const boardDoneOnlyTakesPrecedence = cardRows().length === 1 && cardRows()[0].classList.contains('is-done');
+      // 关「仅显示已完成」回到只看未完成；再开「显示已完成」恢复全部
+      doneOnlyBox.checked = false;
+      doneOnlyBox.dispatchEvent(new Event('change', { bubbles: true }));
+      await waitFor(() => cardRows().length === 1 && !cardRows()[0].classList.contains('is-done'));
+      doneVisibleBox.checked = true;
+      doneVisibleBox.dispatchEvent(new Event('change', { bubbles: true }));
+      await waitFor(() => cardRows().length === 2);
+      const boardDisplayTogglesRestore = cardRows().length === 2;
+      // 归一化保留两个开关字段（此前 tasksDoneOnly 会被重建时丢弃）
+      const sanitizedBoardShow = sanitizeBoards([{ id:'sb1', name:'S', widgets:[{ id:'sw1', type:'todo', ref:'launch-plan', x:10, y:10, show:{ tasks:true, tasksDoneVisible:false, tasksDoneOnly:true } }] }])[0].widgets[0].show;
+      const boardShowKeysPersist = sanitizedBoardShow.tasksDoneVisible === false && sanitizedBoardShow.tasksDoneOnly === true;
+      document.querySelector('[data-view="inbox"]').click();
+      await waitFor(() => currentView === 'inbox');
       window.__actaSmokeStep = 'sidebar-checked';
       document.querySelector('#settingsButton').click();
       const cacheReloadAvailable = Boolean(document.querySelector('#clearCacheReload'));
@@ -1994,6 +2045,12 @@ async function main() {
         saveStateRelocated,
         saveStateMetrics,
         lowerLeftControlsTogether,
+        boardToggleDefaults,
+        boardShowsAllByDefault,
+        boardHidesCompleted,
+        boardDoneOnlyTakesPrecedence,
+        boardDisplayTogglesRestore,
+        boardShowKeysPersist,
         settingsCloseAnimation,
         defaultLibraryItems,
         cacheReloadAvailable,
@@ -2329,6 +2386,12 @@ async function main() {
     assert.equal(result.collapsedFolderMenuWorks, true);
     assert.equal(result.saveStateRelocated, true, JSON.stringify(result.saveStateMetrics));
     assert.equal(result.lowerLeftControlsTogether, true);
+    assert.equal(result.boardToggleDefaults, true);
+    assert.equal(result.boardShowsAllByDefault, true);
+    assert.equal(result.boardHidesCompleted, true);
+    assert.equal(result.boardDoneOnlyTakesPrecedence, true);
+    assert.equal(result.boardDisplayTogglesRestore, true);
+    assert.equal(result.boardShowKeysPersist, true);
     assert.equal(result.settingsCloseAnimation, true);
     assert.equal(result.defaultLibraryItems, 0);
     assert.equal(result.cacheReloadAvailable, true);
