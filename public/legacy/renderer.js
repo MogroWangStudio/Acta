@@ -924,7 +924,7 @@ function normalizeLibrary(candidate) {
         startAt,
         dueAt,
         priority:['high', 'medium', 'low'].includes(item.priority) ? item.priority : 'medium',
-        tasks:Array.isArray(item.tasks) ? item.tasks : [],
+        tasks:Array.isArray(item.tasks) ? item.tasks.map(task => sanitizeTaskSchedule(task)) : [],
         completed:Boolean(item.completed)
       };
     });
@@ -1285,6 +1285,32 @@ function todoDueDate(item) {
   return value ? new Date(value) : null;
 }
 
+// —— 子待办的排期（startAt / dueAt 与父待办同结构，独立设置）——
+// helpers 只读 startAt/dueAt 两个字段，所以父待办与子待办对象都能传。
+function taskStartDate(task) {
+  const value = validDate(task?.startAt);
+  return value ? new Date(value) : null;
+}
+
+function taskDueDate(task) {
+  const value = validDate(task?.dueAt);
+  return value ? new Date(value) : null;
+}
+
+function taskIsScheduled(task) {
+  const start = taskStartDate(task);
+  const due = taskDueDate(task);
+  return Boolean(start && due && due > start);
+}
+
+// 清洗子待办上的排期字段：非法时刻直接去掉，避免半残数据进入渲染与日历。
+function sanitizeTaskSchedule(task) {
+  if (!task || typeof task !== 'object') return task;
+  if (!validDate(task.startAt)) delete task.startAt;
+  if (!validDate(task.dueAt)) delete task.dueAt;
+  return task;
+}
+
 function todoIsScheduled(item) {
   const start = todoStartDate(item);
   const due = todoDueDate(item);
@@ -1627,6 +1653,53 @@ function calendarNotes() {
     .sort((first, second) => new Date(first.createdAt) - new Date(second.createdAt));
 }
 
+// —— 单独排期的子待办：父待办不必在日历上，子待办按自己的时间出现 ——
+// 条目形如 { item, task }，startAt/dueAt 直接取自 task，父待办只提供
+// 优先级、归属与打开入口。排序口径与 calendarTodos 一致。
+function calendarScheduledSubtasks() {
+  const entries = [];
+  library.items.forEach(item => {
+    if (isTrashed(item) || item.type !== 'todo') return;
+    (item.tasks || []).forEach(task => {
+      if (!taskIsScheduled(task)) return;
+      entries.push({ item, task });
+    });
+  });
+  return entries.sort((first, second) => {
+    const startDifference = String(first.task.startAt).localeCompare(String(second.task.startAt));
+    if (startDifference) return startDifference;
+    const dueDifference = String(first.task.dueAt).localeCompare(String(second.task.dueAt));
+    if (dueDifference) return dueDifference;
+    return priorityRank(first.item.priority) - priorityRank(second.item.priority);
+  });
+}
+
+// 与 calendarTodosByDate 同一套跨天铺开逻辑：从开始日铺到截止日，
+// 视口外的部分裁进可视范围。
+function calendarSubtasksByDate(entries = calendarScheduledSubtasks(), rangeStart = null, rangeEnd = null) {
+  const grouped = new Map();
+  const visibleStart = calendarDate(rangeStart);
+  const visibleEnd = calendarDate(rangeEnd);
+  entries.forEach(entry => {
+    let date = calendarDate(calendarDateISO(taskStartDate(entry.task)));
+    let lastDate = calendarDate(calendarDateISO(taskDueDate(entry.task)));
+    if (!date || !lastDate) return;
+    if (visibleStart && date < visibleStart) date = visibleStart;
+    if (visibleEnd) {
+      const visibleLastDate = calendarAddDays(visibleEnd, -1);
+      if (lastDate > visibleLastDate) lastDate = visibleLastDate;
+    }
+    while (date <= lastDate) {
+      const iso = calendarDateISO(date);
+      if (!grouped.has(iso)) grouped.set(iso, []);
+      grouped.get(iso).push(entry);
+      date = calendarAddDays(date, 1);
+    }
+  });
+  return grouped;
+}
+
+
 function calendarTodosByDate(items = calendarTodos(), rangeStart = null, rangeEnd = null) {
   const grouped = new Map();
   const visibleStart = calendarDate(rangeStart);
@@ -1695,7 +1768,19 @@ function calendarPeriodTodos(mode = calendarViewMode, cursor = calendarCursor) {
 function calendarPeriodItems(mode = calendarViewMode, cursor = calendarCursor) {
   const [start, end] = calendarPeriodRange(mode, cursor);
   const notesByDate = calendarNotesByDate(calendarNotes(), start, end);
-  return [...calendarPeriodTodos(mode, cursor), ...[...notesByDate.values()].flat()];
+  return [...calendarPeriodTodos(mode, cursor), ...calendarPeriodSubtasks(mode, cursor), ...[...notesByDate.values()].flat()];
+}
+
+// 与 calendarPeriodTodos 同口径：子待办在周期内出现过一次就算一条。
+function calendarPeriodSubtasks(mode = calendarViewMode, cursor = calendarCursor) {
+  const [start, end] = calendarPeriodRange(mode, cursor);
+  const startISO = calendarDateISO(start);
+  const endISO = calendarDateISO(end);
+  return calendarScheduledSubtasks().filter(({ task }) => {
+    const firstDate = calendarDateISO(taskStartDate(task));
+    const lastDate = calendarDateISO(taskDueDate(task));
+    return firstDate < endISO && lastDate >= startISO;
+  });
 }
 
 function calendarPeriodLabel() {
@@ -1786,6 +1871,42 @@ function calendarMonthNoteMarkup(item) {
   </article>`;
 }
 
+// —— 单独排期的子待办条目（日历月 / 周 / 日视图）——
+// 月视图只有标题（月格不放勾选与时间，口径与 calendarMonthHasNoToggle
+// 的断言一致），完成态只影响样式；周 / 日视图带勾选钮与所属待办，复用
+// 现成的 data-calendar-subtask-toggle / data-calendar-open 委托事件。
+function calendarMonthSubtaskMarkup(entry) {
+  const { item, task } = entry;
+  const title = task.text || t('taskPlaceholder');
+  const owner = item.title || t('untitledTodo');
+  const time = calendarTodoTime(task);
+  const label = `${owner} · ${title}${time ? ` · ${time}` : ''}`;
+  return `<article class="calendar-month-subtask ${task.done ? 'is-complete' : ''}" data-calendar-subtask-entry="${escapeHTML(task.id)}" data-calendar-owner="${escapeHTML(item.id)}">
+    <button type="button" class="calendar-month-subtask-title" data-calendar-open="${escapeHTML(item.id)}" title="${escapeHTML(label)}" aria-label="${escapeHTML(label)}">${escapeHTML(title)}</button>
+  </article>`;
+}
+
+function calendarSubtaskEntryMarkup(entry) {
+  const { item, task } = entry;
+  const done = Boolean(task.done);
+  const time = calendarTodoTime(task);
+  const owner = item.title || t('untitledTodo');
+  const title = task.text || t('taskPlaceholder');
+  const completionLabel = done ? t('reopenTask') : t('completeTask');
+  return `<article class="calendar-todo calendar-subtask-entry ${done ? 'is-complete' : ''} priority-${escapeHTML(item.priority || 'medium')}" data-calendar-subtask-entry="${escapeHTML(task.id)}" data-calendar-owner="${escapeHTML(item.id)}">
+    <button class="calendar-todo-check" type="button" data-calendar-subtask-toggle="${escapeHTML(item.id)}" data-calendar-subtask-id="${escapeHTML(task.id)}" title="${escapeHTML(completionLabel)}" aria-label="${escapeHTML(completionLabel)}" aria-pressed="${done}"><svg><use href="#i-check"/></svg></button>
+    <div class="calendar-todo-content">
+      <div class="calendar-todo-heading">
+        <div class="calendar-todo-meta">
+          ${time ? `<span><svg><use href="#i-clock"/></svg>${escapeHTML(time)}</span>` : ''}
+          <span class="calendar-subtask-owner" title="${escapeHTML(owner)}">${escapeHTML(owner)}</span>
+        </div>
+        <button class="calendar-todo-title" type="button" data-calendar-open="${escapeHTML(item.id)}" title="${escapeHTML(t('calendarOpenTodo'))}">${escapeHTML(title)}</button>
+      </div>
+    </div>
+  </article>`;
+}
+
 function calendarNoteMarkup(item) {
   const folder = getFolder(item.folderId);
   const title = item.title || t('untitledNote');
@@ -1808,6 +1929,9 @@ function calendarNoteMarkup(item) {
 
 const calendarMonthItemMarkup = item => item.type === 'note' ? calendarMonthNoteMarkup(item) : calendarMonthTodoMarkup(item);
 const calendarItemMarkup = item => item.type === 'note' ? calendarNoteMarkup(item) : calendarTodoMarkup(item, 'full');
+// 条目分发：子待办条目带 task 字段，父待办 / 笔记没有。
+const calendarMonthEntryMarkup = entry => entry.task ? calendarMonthSubtaskMarkup(entry) : calendarMonthItemMarkup(entry);
+const calendarEntryMarkup = entry => entry.task ? calendarSubtaskEntryMarkup(entry) : calendarItemMarkup(entry);
 
 function calendarEmptyMarkup() {
   return `<div class="calendar-empty"><span><svg><use href="#i-calendar"/></svg></span><h3>${escapeHTML(t('noCalendarItems'))}</h3><p>${escapeHTML(t('noCalendarItemsHint'))}</p></div>`;
@@ -1822,6 +1946,7 @@ function renderCalendarMonth() {
   const weekdays = calendarWeekdayLabels('short');
   const todosByDate = calendarTodosByDate(calendarTodos(), gridStart, gridEnd);
   const notesByDate = calendarNotesByDate(calendarNotes(), gridStart, gridEnd);
+  const subtasksByDate = calendarSubtasksByDate(calendarScheduledSubtasks(), gridStart, gridEnd);
   const visibleLimit = matchMedia('(max-width: 800px)').matches ? 2 : 3;
   const cells = Array.from({ length:6 }, (_, weekIndex) => {
     const weekStart = calendarAddDays(gridStart, weekIndex * 7);
@@ -1829,12 +1954,12 @@ function renderCalendarMonth() {
     const days = Array.from({ length:7 }, (_, dayIndex) => {
       const date = calendarAddDays(weekStart, dayIndex);
       const iso = calendarDateISO(date);
-      const items = [...(notesByDate.get(iso) || []), ...(todosByDate.get(iso) || [])];
+      const items = [...(notesByDate.get(iso) || []), ...(todosByDate.get(iso) || []), ...(subtasksByDate.get(iso) || [])];
       const visible = items.slice(0, visibleLimit);
       const remaining = items.length - visible.length;
       return `<section class="calendar-day-cell ${date.getMonth() === activeMonth ? '' : 'is-adjacent'} ${iso === today ? 'is-today' : ''}" data-calendar-cell="${iso}">
         <header><button type="button" data-calendar-date="${iso}" title="${escapeHTML(t('calendarOpenDay'))}">${date.getDate()}</button>${items.length ? `<span>${items.length}</span>` : ''}</header>
-        <div class="calendar-day-events">${visible.map(calendarMonthItemMarkup).join('')}${remaining > 0 ? `<button class="calendar-overflow" type="button" data-calendar-date="${iso}" title="${escapeHTML(calendarText('moreTodos', remaining))}" aria-label="${escapeHTML(calendarText('moreTodos', remaining))}"><svg><use href="#i-more"/></svg></button>` : ''}</div>
+        <div class="calendar-day-events">${visible.map(calendarMonthEntryMarkup).join('')}${remaining > 0 ? `<button class="calendar-overflow" type="button" data-calendar-date="${iso}" title="${escapeHTML(calendarText('moreTodos', remaining))}" aria-label="${escapeHTML(calendarText('moreTodos', remaining))}"><svg><use href="#i-more"/></svg></button>` : ''}</div>
       </section>`;
     }).join('');
     return `<div class="calendar-month-week" data-calendar-week="${calendarDateISO(weekStart)}"><aside class="calendar-week-number" title="${escapeHTML(`${t('weekNumber')} ${weekNumber}`)}"><span>W</span><b>${weekNumber}</b></aside>${days}</div>`;
@@ -1849,13 +1974,14 @@ function renderCalendarWeek() {
   const labels = calendarWeekdayLabels('short');
   const todosByDate = calendarTodosByDate(calendarTodos(), start, end);
   const notesByDate = calendarNotesByDate(calendarNotes(), start, end);
+  const subtasksByDate = calendarSubtasksByDate(calendarScheduledSubtasks(), start, end);
   const days = Array.from({ length:7 }, (_, index) => {
     const date = calendarAddDays(start, index);
     const iso = calendarDateISO(date);
-    const items = [...(todosByDate.get(iso) || []), ...(notesByDate.get(iso) || [])];
+    const items = [...(todosByDate.get(iso) || []), ...(notesByDate.get(iso) || []), ...(subtasksByDate.get(iso) || [])];
     return `<section class="calendar-week-day ${iso === today ? 'is-today' : ''}" data-calendar-day="${iso}">
       <header><button type="button" data-calendar-date="${iso}"><span>${escapeHTML(labels[index])}</span><b>${date.getDate()}</b></button><em>${items.length || ''}</em></header>
-      <div class="calendar-week-events">${items.length ? items.map(calendarItemMarkup).join('') : '<span class="calendar-day-quiet">—</span>'}</div>
+      <div class="calendar-week-events">${items.length ? items.map(calendarEntryMarkup).join('') : '<span class="calendar-day-quiet">—</span>'}</div>
     </section>`;
   }).join('');
   return `<div class="calendar-week-swipe-hint" aria-hidden="true"><svg><use href="#i-chevron"/></svg><span>${escapeHTML(t('swipeWeekHint'))}</span><svg><use href="#i-chevron"/></svg></div><div class="calendar-week-view">${days}</div>`;
@@ -1866,7 +1992,8 @@ function renderCalendarDay() {
   const dayStart = calendarDate(calendarCursor);
   const todos = calendarTodosByDate(calendarTodos(), dayStart, calendarAddDays(dayStart, 1)).get(iso) || [];
   const notes = calendarNotesByDate(calendarNotes(), dayStart, calendarAddDays(dayStart, 1)).get(iso) || [];
-  const items = [...todos, ...notes];
+  const subtasks = calendarSubtasksByDate(calendarScheduledSubtasks(), dayStart, calendarAddDays(dayStart, 1)).get(iso) || [];
+  const items = [...todos, ...notes, ...subtasks];
   const openCount = todos.filter(item => !isTodoComplete(item)).length;
   const completedCount = todos.length - openCount;
   return `<div class="calendar-day-view">
@@ -1876,7 +2003,7 @@ function renderCalendarDay() {
       <div><b>${completedCount}</b><span>${escapeHTML(t('completed'))}</span></div>
       <div><b>${notes.length}</b><span>${escapeHTML(t('createdNotes'))}</span></div>
     </div>
-    <div class="calendar-day-list">${items.length ? items.map(calendarItemMarkup).join('') : calendarEmptyMarkup()}</div>
+    <div class="calendar-day-list">${items.length ? items.map(calendarEntryMarkup).join('') : calendarEmptyMarkup()}</div>
   </div>`;
 }
 
@@ -1890,10 +2017,15 @@ function renderCalendarYear() {
   const notes = calendarNotes();
   const todosByDate = calendarTodosByDate(scheduled, yearStart, yearEnd);
   const notesByDate = calendarNotesByDate(notes, yearStart, yearEnd);
+  const subtasksByDate = calendarSubtasksByDate(calendarScheduledSubtasks(), yearStart, yearEnd);
   const monthItemIds = Array.from({ length:12 }, () => new Set());
   todosByDate.forEach((todos, iso) => {
     const date = calendarDate(iso);
     todos.forEach(item => monthItemIds[date.getMonth()].add(item.id));
+  });
+  subtasksByDate.forEach((entries, iso) => {
+    const date = calendarDate(iso);
+    entries.forEach(entry => monthItemIds[date.getMonth()].add(entry.task.id));
   });
   notesByDate.forEach((createdNotes, iso) => {
     const date = calendarDate(iso);
@@ -1910,9 +2042,10 @@ function renderCalendarYear() {
       const iso = calendarDateISO(date);
       const todos = todosByDate.get(iso) || [];
       const createdNotes = notesByDate.get(iso) || [];
-      const itemCount = todos.length + createdNotes.length;
+      const subtaskEntries = subtasksByDate.get(iso) || [];
+      const itemCount = todos.length + createdNotes.length + subtaskEntries.length;
       const linkedCount = todos.filter(item => calendarLinkedNotes(item).length).length;
-      return `<button type="button" class="calendar-mini-day ${iso === today ? 'is-today' : ''} ${todos.length ? 'has-todos' : ''} ${createdNotes.length ? 'has-notes' : ''} ${linkedCount ? 'has-links' : ''}" data-calendar-date="${iso}" title="${escapeHTML(`${date.getDate()} ${itemCount} ${t('calendarItems')}`)}"><span>${date.getDate()}</span>${itemCount ? `<i>${itemCount}</i>` : ''}</button>`;
+      return `<button type="button" class="calendar-mini-day ${iso === today ? 'is-today' : ''} ${todos.length || subtaskEntries.length ? 'has-todos' : ''} ${createdNotes.length ? 'has-notes' : ''} ${linkedCount ? 'has-links' : ''}" data-calendar-date="${iso}" title="${escapeHTML(`${date.getDate()} ${itemCount} ${t('calendarItems')}`)}"><span>${date.getDate()}</span>${itemCount ? `<i>${itemCount}</i>` : ''}</button>`;
     }).join('');
     return `<section class="calendar-year-month" data-calendar-year-month="${calendarDateISO(monthStart)}"><header><button type="button" data-calendar-month="${calendarDateISO(monthStart)}">${escapeHTML(monthLabel)}</button><span>${monthCounts[month] || ''}</span></header><div class="calendar-mini-weekdays">${weekdays.map(label => `<span>${escapeHTML(label)}</span>`).join('')}</div><div class="calendar-mini-grid">${days}</div></section>`;
   }).join('')}</div><div class="calendar-legend"><span><i class="has-todos"></i>${escapeHTML(t('scheduledTodos'))}</span><span><i class="has-notes"></i>${escapeHTML(t('createdNotes'))}</span><span><i class="has-links"></i>${escapeHTML(t('calendarLegendLinked'))}</span></div>`;

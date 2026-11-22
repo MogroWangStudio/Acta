@@ -1699,11 +1699,45 @@
   });
 
   const todoMetaMessages = {
-    zh: { edit:'编辑', confirm:'确认时间设置', schedule:'时间安排', created:'创建日期时间', start:'开始日期时间', due:'截止日期时间', clear:'取消', notSet:'未设置', immutable:'创建时间不可更改', invalid:'请输入有效日期时间，且截止时间必须晚于开始时间。', calendarHidden:'开始或截止时间未设置，此待办将不在日历中显示。' },
-    en: { edit:'Edit', confirm:'Confirm time settings', schedule:'Schedule', created:'Created date and time', start:'Start date and time', due:'Due date and time', clear:'Clear', notSet:'Not set', immutable:'The creation time cannot be changed', invalid:'Enter valid dates and times, with the due time after the start time.', calendarHidden:'Without both a start and due time, this task will not appear in the calendar.' },
-    'zh-Hant': { edit:'編輯', confirm:'確認時間設定', schedule:'時間安排', created:'建立日期時間', start:'開始日期時間', due:'截止日期時間', clear:'取消', notSet:'未設定', immutable:'建立時間不可更改', invalid:'請輸入有效日期時間，且截止時間必須晚於開始時間。', calendarHidden:'開始或截止時間未設定，此待辦將不在日曆中顯示。' }
+    zh: { edit:'编辑', collapse:'收起', confirm:'确认时间设置', schedule:'时间安排', created:'创建日期时间', start:'开始日期时间', due:'截止日期时间', startShort:'开始', dueShort:'截止', clear:'取消', notSet:'未设置', immutable:'创建时间不可更改', invalid:'请输入有效日期时间，且截止时间必须晚于开始时间。', calendarHidden:'开始或截止时间未设置，此待办将不在日历中显示。', taskSchedule:'子待办时间', taskScheduleHint:'为单个子待办单独设置开始与截止时间，排了期的子待办会按自己的时间出现在日历上。', taskScheduleSet:'设置时间' },
+    en: { edit:'Edit', collapse:'Collapse', confirm:'Confirm time settings', schedule:'Schedule', created:'Created date and time', start:'Start date and time', due:'Due date and time', startShort:'Start', dueShort:'Due', clear:'Clear', notSet:'Not set', immutable:'The creation time cannot be changed', invalid:'Enter valid dates and times, with the due time after the start time.', calendarHidden:'Without both a start and due time, this task will not appear in the calendar.', taskSchedule:'Subtask schedule', taskScheduleHint:'Set a start and due time for an individual subtask; scheduled subtasks appear on the calendar in their own slot.', taskScheduleSet:'Set schedule' },
+    'zh-Hant': { edit:'編輯', collapse:'收合', confirm:'確認時間設定', schedule:'時間安排', created:'建立日期時間', start:'開始日期時間', due:'截止日期時間', startShort:'開始', dueShort:'截止', clear:'取消', notSet:'未設定', immutable:'建立時間不可更改', invalid:'請輸入有效日期時間，且截止時間必須晚於開始時間。', calendarHidden:'開始或截止時間未設定，此待辦將不在日曆中顯示。', taskSchedule:'子待辦時間', taskScheduleHint:'為單個子待辦單獨設定開始與截止時間，排了期的子待辦會按自己的時間出現在日曆上。', taskScheduleSet:'設定時間' }
   };
   const todoMetaText = () => todoMetaMessages[uiSettings.language] || todoMetaMessages.zh;
+
+  // —— 子待办排期（与父待办同结构，行内 pill 与属性面板两处共用）——
+  // 展示口径：两端齐且截止>开始用日历同款区间文案；只设一端时标注
+  // 是开始还是截止；都未设回退「未设置」。
+  const taskScheduleValue = task => {
+    if (taskIsScheduled(task)) return calendarTodoTime(task);
+    const start = validDate(task.startAt);
+    const due = validDate(task.dueAt);
+    const copy = todoMetaText();
+    if (start) return `${copy.startShort} ${formatListDateTime(start)}`;
+    if (due) return `${copy.dueShort} ${formatListDateTime(due)}`;
+    return copy.notSet;
+  };
+  const taskScheduleHasValue = task => Boolean(validDate(task.startAt) || validDate(task.dueAt));
+  const taskScheduleOverdue = task => Boolean(task && !task.done && taskIsScheduled(task) && new Date(task.dueAt) < new Date());
+  // 属性面板里每条子待办的行：收起时只显示文本 + 当前值 + 编辑入口，
+  // 展开后才是两行 datetime 输入（值在展开时写入，与父级排期一致）。
+  const subtaskScheduleRowMarkup = task => {
+    const copy = todoMetaText();
+    const label = task.text || t('taskPlaceholder');
+    return `<div class="subtask-schedule-row" data-subtask-schedule="${escapeHTML(task.id)}">
+      <div class="subtask-schedule-summary">
+        <span class="subtask-schedule-text" title="${escapeHTML(label)}">${escapeHTML(label)}</span>
+        <span class="subtask-schedule-value${taskScheduleHasValue(task) ? '' : ' is-empty'}">${escapeHTML(taskScheduleValue(task))}</span>
+        <button class="subtask-schedule-toggle" type="button" aria-expanded="false" aria-label="${escapeHTML(copy.taskScheduleSet)}">${escapeHTML(copy.edit)}</button>
+      </div>
+      <div class="subtask-schedule-editor" hidden>
+        <div class="schedule-editor-row"><label for="subtaskScheduleStart-${escapeHTML(task.id)}">${escapeHTML(copy.startShort)}</label><button type="button" data-subtask-schedule-clear="start">${escapeHTML(copy.clear)}</button><input id="subtaskScheduleStart-${escapeHTML(task.id)}" data-subtask-schedule-input="start" type="datetime-local" step="1" value=""/></div>
+        <div class="schedule-editor-row"><label for="subtaskScheduleDue-${escapeHTML(task.id)}">${escapeHTML(copy.dueShort)}</label><button type="button" data-subtask-schedule-clear="due">${escapeHTML(copy.clear)}</button><input id="subtaskScheduleDue-${escapeHTML(task.id)}" data-subtask-schedule-input="due" type="datetime-local" step="1" value=""/></div>
+        <p class="meta-error" hidden>${escapeHTML(copy.invalid)}</p>
+        <button class="subtask-schedule-confirm" type="button" title="${escapeHTML(copy.confirm)}" aria-label="${escapeHTML(copy.confirm)}"><svg><use href="#i-check"/></svg></button>
+      </div>
+    </div>`;
+  };
 
   createItem = function createItemWithSchedule(type) {
     if (type === 'quick') { openQuickCapture(); return; }
@@ -1800,6 +1834,19 @@
         </div>
         <small>${escapeHTML(t('checkinDurationHint'))}</small>
       </div>` : '';
+    // 子待办时间区块：打卡待办没有子任务列表，直接省略；空文本且未排期
+    // 的占位行（新建待办自带的那一行）也不进入列表。
+    const subtaskScheduleField = item.checkin ? '' : (() => {
+      const rows = (item.tasks || []).filter(task => String(task.text || '').trim() || taskScheduleHasValue(task));
+      if (!rows.length) return '';
+      return `<div class="meta-field subtask-schedule-field">
+        <div class="meta-field-heading">
+          <label><svg><use href="#i-ordered-list"/></svg>${escapeHTML(metaCopy.taskSchedule)}</label>
+        </div>
+        <small>${escapeHTML(metaCopy.taskScheduleHint)}</small>
+        <div class="subtask-schedule-list">${rows.map(task => subtaskScheduleRowMarkup(task)).join('')}</div>
+      </div>`;
+    })();
     return `<div class="item-meta-popover todo-meta-grid" id="itemMetaPopover" role="group" aria-label="${escapeHTML(copy.panel)}" hidden>
       <div class="meta-field schedule-field">
         <div class="meta-field-heading">
@@ -1824,6 +1871,7 @@
         <p class="schedule-warning" id="scheduleWarning" ${scheduleIncomplete ? '' : 'hidden'}>${escapeHTML(metaCopy.calendarHidden)}</p>
         <p class="meta-error" id="scheduleError" hidden>${escapeHTML(metaCopy.invalid)}</p>
       </div>
+      ${subtaskScheduleField}
       ${checkinDurationField}
       <div class="meta-field priority-field"><label><svg><use href="#i-spark"/></svg>${t('priority')}</label><div class="priority-options">
         ${['high','medium','low'].map(value => `<button type="button" data-priority="${value}" class="${item.priority === value ? 'active' : ''}">${t(value)}</button>`).join('')}
@@ -1973,12 +2021,29 @@
     const doneDirection = uiSettings.subtaskDoneSort === 'desc' ? -1 : 1;
     const sortedDoneTasks = [...doneTasks].sort((a, b) =>
       String(a.completedAt || '').localeCompare(String(b.completedAt || '')) * doneDirection);
+    // 子待办行的时间列：排了期显示紧凑区间 pill（逾期未完成为红色信号），
+    // 未排期是时钟图标按钮（悬停 / 聚焦行时才现身，与移动按钮同一克制
+    // 口径）。点击都在行内展开开始 / 截止输入面板（grid 第二行跨全列）。
+    const taskScheduleCellHTML = task => {
+      const scheduled = taskIsScheduled(task);
+      const toggleTitle = `${metaCopy.taskSchedule}${task.text ? ` · ${task.text}` : ''}`;
+      return `<span class="task-schedule">
+            <button class="task-schedule-toggle${scheduled ? ' has-time' : ''}${taskScheduleOverdue(task) ? ' is-overdue' : ''}" type="button" title="${escapeHTML(toggleTitle)}" aria-label="${escapeHTML(toggleTitle)}" aria-expanded="false">${scheduled ? `<time>${escapeHTML(calendarTodoTime(task))}</time>` : '<svg><use href="#i-clock"/></svg>'}</button>
+          </span>
+          <div class="task-schedule-panel" hidden>
+            <div class="schedule-editor-row"><label for="taskScheduleStart-${escapeHTML(task.id)}">${escapeHTML(metaCopy.startShort)}</label><button type="button" data-task-schedule-clear="start">${escapeHTML(metaCopy.clear)}</button><input id="taskScheduleStart-${escapeHTML(task.id)}" data-task-schedule-input="start" type="datetime-local" step="1" value=""/></div>
+            <div class="schedule-editor-row"><label for="taskScheduleDue-${escapeHTML(task.id)}">${escapeHTML(metaCopy.dueShort)}</label><button type="button" data-task-schedule-clear="due">${escapeHTML(metaCopy.clear)}</button><input id="taskScheduleDue-${escapeHTML(task.id)}" data-task-schedule-input="due" type="datetime-local" step="1" value=""/></div>
+            <p class="meta-error" hidden>${escapeHTML(metaCopy.invalid)}</p>
+            <div class="task-schedule-actions"><button class="task-schedule-confirm" type="button" title="${escapeHTML(metaCopy.confirm)}" aria-label="${escapeHTML(metaCopy.confirm)}"><svg><use href="#i-check"/></svg></button></div>
+          </div>`;
+    };
     const taskRowHTML = (task, index) => `<div class="task-row${ordered ? ' is-ordered' : ''} ${task.done ? 'done' : ''}" data-task-id="${escapeHTML(task.id)}" style="animation-delay:${index * 35}ms">
           <i class="task-done-date"${task.done && task.completedAt && uiSettings.subtaskCompletedDates !== false ? ` data-time="${escapeHTML(task.completedAt)}">${escapeHTML(formatMonthDay(task.completedAt))}</i>` : ' aria-hidden="true"></i>'}
           ${ordered ? `<i class="task-order-index" title="${escapeHTML(t('taskDragHint'))}" aria-hidden="true">${index + 1}</i>` : ''}
           <button class="task-check"><svg><use href="#i-check"/></svg></button>
           <div class="task-text" contenteditable="true" inputmode="text" spellcheck="true" autocapitalize="sentences" data-placeholder="${t('taskPlaceholder')}">${escapeHTML(task.text)}</div>
           ${ordered ? `<span class="task-move"><button class="move-task-up" type="button" title="${escapeHTML(t('taskMoveUp'))}" aria-label="${escapeHTML(t('taskMoveUp'))}"><svg><use href="#i-chevron"/></svg></button><button class="move-task-down" type="button" title="${escapeHTML(t('taskMoveDown'))}" aria-label="${escapeHTML(t('taskMoveDown'))}"><svg><use href="#i-chevron"/></svg></button></span>` : ''}
+          ${taskScheduleCellHTML(task)}
           <span class="remove-task-zone">
             <button class="remove-task" type="button"><svg><use href="#i-close"/></svg></button>
             <span class="remove-task-confirm" hidden>
@@ -2061,6 +2126,24 @@
     const startInput = byId('todoStartAt');
     const dueInput = byId('todoDueAt');
     const metaCopy = todoMetaText();
+    // 子待办排期的两处入口（行内 pill / 属性面板行）互为镜像，但谁都不
+    // 重建编辑器：确认后按 taskId 就地同步另一处的显示，避免读到旧值。
+    const syncTaskScheduleViews = taskId => {
+      const task = (item.tasks || []).find(entry => entry.id === taskId);
+      if (!task) return;
+      const toggle = document.querySelector(`.task-row[data-task-id="${CSS.escape(taskId)}"] .task-schedule-toggle`);
+      if (toggle) {
+        const scheduled = taskIsScheduled(task);
+        toggle.classList.toggle('has-time', scheduled);
+        toggle.classList.toggle('is-overdue', taskScheduleOverdue(task));
+        toggle.innerHTML = scheduled ? `<time>${escapeHTML(calendarTodoTime(task))}</time>` : '<svg><use href="#i-clock"/></svg>';
+      }
+      const valueEl = document.querySelector(`.subtask-schedule-row[data-subtask-schedule="${CSS.escape(taskId)}"] .subtask-schedule-value`);
+      if (valueEl) {
+        valueEl.textContent = taskScheduleValue(task);
+        valueEl.classList.toggle('is-empty', !taskScheduleHasValue(task));
+      }
+    };
 
     const syncScheduleWarning = () => {
       scheduleWarning.hidden = Boolean(startInput.value && dueInput.value);
@@ -2138,6 +2221,71 @@
       if (event.key === 'Enter') { event.preventDefault(); confirmSchedule.click(); }
       if (event.key === 'Escape') { event.preventDefault(); setScheduleEditing(false); }
     }));
+
+    // —— 属性面板里的「子待办时间」：每条子待办独立展开 / 确认，确认 ——
+    // —— 后就地更新行内显示并刷新列表（日历）。打卡待办没有该区块。 ——
+    $$('.subtask-schedule-row').forEach(rowEl => {
+      const task = (item.tasks || []).find(entry => entry.id === rowEl.dataset.subtaskSchedule);
+      if (!task) return;
+      const toggle = $('.subtask-schedule-toggle', rowEl);
+      const editor = $('.subtask-schedule-editor', rowEl);
+      const valueEl = $('.subtask-schedule-value', rowEl);
+      const startInput2 = $('[data-subtask-schedule-input="start"]', rowEl);
+      const dueInput2 = $('[data-subtask-schedule-input="due"]', rowEl);
+      const errorEl = $('.meta-error', rowEl);
+      const syncRow = () => {
+        valueEl.textContent = taskScheduleValue(task);
+        valueEl.classList.toggle('is-empty', !taskScheduleHasValue(task));
+      };
+      const setRowEditing = open => {
+        editor.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? metaCopy.collapse : metaCopy.edit;
+        if (open) {
+          startInput2.value = dateTimeLocalValue(task.startAt);
+          dueInput2.value = dateTimeLocalValue(task.dueAt);
+          dueInput2.min = startInput2.value || '';
+          errorEl.hidden = true;
+          requestAnimationFrame(() => startInput2.focus());
+        }
+      };
+      toggle.addEventListener('click', () => setRowEditing(editor.hidden));
+      const clearSubtaskInput = input => {
+        input.value = '';
+        errorEl.hidden = true;
+        dueInput2.min = startInput2.value || '';
+        input.focus();
+      };
+      $('[data-subtask-schedule-clear="start"]', rowEl).addEventListener('click', () => clearSubtaskInput(startInput2));
+      $('[data-subtask-schedule-clear="due"]', rowEl).addEventListener('click', () => clearSubtaskInput(dueInput2));
+      const confirmSubtaskSchedule = () => {
+        const nextStart = dateTimeLocalISO(startInput2.value);
+        const nextDue = dateTimeLocalISO(dueInput2.value);
+        if ((startInput2.value && !nextStart) || (dueInput2.value && !nextDue) || (nextStart && nextDue && nextDue <= nextStart)) {
+          errorEl.hidden = false;
+          return;
+        }
+        if (nextStart) task.startAt = nextStart; else delete task.startAt;
+        if (nextDue) task.dueAt = nextDue; else delete task.dueAt;
+        touchItem(item);
+        syncRow();
+        syncTaskScheduleViews(task.id);
+        setRowEditing(false);
+        renderList();
+        renderSidebar();
+      };
+      $('.subtask-schedule-confirm', rowEl).addEventListener('click', confirmSubtaskSchedule);
+      [startInput2, dueInput2].forEach(input => {
+        input.addEventListener('input', () => {
+          errorEl.hidden = true;
+          dueInput2.min = startInput2.value || '';
+        });
+        input.addEventListener('keydown', event => {
+          if (event.key === 'Enter') { event.preventDefault(); confirmSubtaskSchedule(); }
+          if (event.key === 'Escape') { event.preventDefault(); setRowEditing(false); }
+        });
+      });
+    });
 
     $$('.priority-options button').forEach(button => button.addEventListener('click', () => {
       item.priority = button.dataset.priority;
@@ -2299,6 +2447,8 @@
           // 弹出）：不重建编辑器，快速撤回时过渡从当前插值状态连续反向，
           // 而不是被重建瞬跳到终态。进度数字、进度条与列表卡片就地更新。
           row.classList.toggle('done', task.done);
+          // 完成 / 撤回会改变逾期信号的成立条件，时间 pill 就地跟进。
+          $('.task-schedule-toggle', row)?.classList.toggle('is-overdue', taskScheduleOverdue(task));
           // 就地同步日期元素：勾选时写入 mm/dd 与原始时刻（编辑器不再
           // 重建，模板不会重渲染，必须在展开的占位列里填上内容）；撤回
           // 时保留文本，让它随列收合与透明度一起淡出即可。
@@ -2441,6 +2591,69 @@
         if (ordered) {
           $('.move-task-up', row).addEventListener('click', () => moveTask(task.id, -1));
           $('.move-task-down', row).addEventListener('click', () => moveTask(task.id, 1));
+        }
+        // —— 子待办行内排期：pill / 时钟按钮展开行内面板，确认就地把 ——
+        // —— 时间写回 task 并同步按钮外观；校验与父级排期同一口径。 ——
+        const scheduleToggle = $('.task-schedule-toggle', row);
+        const schedulePanel = $('.task-schedule-panel', row);
+        if (scheduleToggle && schedulePanel) {
+          const scheduleStart = $('[data-task-schedule-input="start"]', schedulePanel);
+          const scheduleDue = $('[data-task-schedule-input="due"]', schedulePanel);
+          const scheduleError = $('.meta-error', schedulePanel);
+          const syncScheduleToggle = () => {
+            const scheduled = taskIsScheduled(task);
+            scheduleToggle.classList.toggle('has-time', scheduled);
+            scheduleToggle.classList.toggle('is-overdue', taskScheduleOverdue(task));
+            scheduleToggle.innerHTML = scheduled ? `<time>${escapeHTML(calendarTodoTime(task))}</time>` : '<svg><use href="#i-clock"/></svg>';
+          };
+          const setSchedulePanel = open => {
+            schedulePanel.hidden = !open;
+            scheduleToggle.setAttribute('aria-expanded', String(open));
+            scheduleToggle.classList.toggle('is-open', open);
+            if (open) {
+              scheduleStart.value = dateTimeLocalValue(task.startAt);
+              scheduleDue.value = dateTimeLocalValue(task.dueAt);
+              scheduleDue.min = scheduleStart.value || '';
+              scheduleError.hidden = true;
+              requestAnimationFrame(() => scheduleStart.focus());
+            }
+          };
+          scheduleToggle.addEventListener('click', () => setSchedulePanel(schedulePanel.hidden));
+          const clearScheduleInput = input => {
+            input.value = '';
+            scheduleError.hidden = true;
+            scheduleDue.min = scheduleStart.value || '';
+            input.focus();
+          };
+          $('[data-task-schedule-clear="start"]', schedulePanel).addEventListener('click', () => clearScheduleInput(scheduleStart));
+          $('[data-task-schedule-clear="due"]', schedulePanel).addEventListener('click', () => clearScheduleInput(scheduleDue));
+          const confirmTaskSchedule = () => {
+            const nextStart = dateTimeLocalISO(scheduleStart.value);
+            const nextDue = dateTimeLocalISO(scheduleDue.value);
+            if ((scheduleStart.value && !nextStart) || (scheduleDue.value && !nextDue) || (nextStart && nextDue && nextDue <= nextStart)) {
+              scheduleError.hidden = false;
+              return;
+            }
+            if (nextStart) task.startAt = nextStart; else delete task.startAt;
+            if (nextDue) task.dueAt = nextDue; else delete task.dueAt;
+            touchItem(item);
+            syncScheduleToggle();
+            syncTaskScheduleViews(task.id);
+            setSchedulePanel(false);
+            renderList();
+            renderSidebar();
+          };
+          $('.task-schedule-confirm', schedulePanel).addEventListener('click', confirmTaskSchedule);
+          [scheduleStart, scheduleDue].forEach(input => {
+            input.addEventListener('input', () => {
+              scheduleError.hidden = true;
+              scheduleDue.min = scheduleStart.value || '';
+            });
+            input.addEventListener('keydown', event => {
+              if (event.key === 'Enter') { event.preventDefault(); confirmTaskSchedule(); }
+              if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); setSchedulePanel(false); }
+            });
+          });
         }
         const zone = $('.remove-task-zone', row);
         const confirmGroup = $('.remove-task-confirm', row);

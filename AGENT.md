@@ -60,8 +60,9 @@ docs/                      `npm run build:pages` 的产物（GitHub Pages），�
 
 ## 4. 功能地图
 
-- **笔记 / 待办**：列表卡片 + 右侧编辑器；子任务（顺序模式、拖拽排序、批量添加、导出）、打卡待办、优先级、开始 / 截止时间、双向关联。
-- **日历**：年 / 月 / 周 / 日四种视图，周数、快速跳转、移动端独立滚动；`body.calendar-view` 把 `.workspace` 的编辑器列压成 0。
+- **笔记 / 待办**：列表卡片 + 右侧编辑器；子任务（顺序模式、拖拽排序、批量添加、导出、**单独排期**）、打卡待办、优先级、开始 / 截止时间、双向关联。
+- **子待办排期**（v4.3.0-beta8）：子待办可有独立 `startAt` / `dueAt`（ISO，结构与父待办同款；归一化时非法值剔除，`sanitizeTaskSchedule`）。设置入口两处，**互为镜像**：编辑器行内 `.task-schedule` 列（排期显示区间 pill、逾期未完成染 `--danger-accent`、未排期为悬停现身的时钟按钮，点击展开 `.task-schedule-panel`）与属性面板 `.subtask-schedule-field` 区块；任一处确认后由 `bindTodoEditor` 里的 `syncTaskScheduleViews(taskId)` 就地同步另一处（不重建编辑器）。校验与父待办一致：截止晚于开始（都填时），只设一端也保存。`taskScheduleValue` / `taskIsScheduled` / `taskScheduleOverdue` 在 `interface.js`（`renderer.js` 里有 `taskIsScheduled` / `taskStartDate` / `taskDueDate`）。
+- **日历**：年 / 月 / 周 / 日四种视图，周数、快速跳转、移动端独立滚动；`body.calendar-view` 把 `.workspace` 的编辑器列压成 0。**单独排期的子待办独立成条**：`calendarScheduledSubtasks()`（`{ item, task }` 伪条目，按 `task.startAt` / `task.dueAt` 跨天铺开 `calendarSubtasksByDate`）混入月 / 周 / 日视图的格内条目数组——分发函数 `calendarMonthEntryMarkup` / `calendarEntryMarkup` 按 `entry.task` 是否存在分流；月视图条目只有标题（月格不放勾选），周 / 日视图复用 `data-calendar-subtask-toggle` / `data-calendar-open` 委托事件；年视图只计入天格计数不渲染条目；侧栏日历徽标刻意保持父级口径（父待办 + 笔记，与待办 / 笔记计数同级）。
 - **计划板**：`#boardViewport` 内的相机画布，卡片 / 富文本 / 标注三类组件，图层、多选、撤销、导出 PNG/JPG/PDF；`body.board-view` 下编辑器是浮层。
 - **总结 / 回收站**：整页视图，同样把编辑器列压成 0。
 - **筛选**：行内只有内容类型分段（`#listTypeSwitch`），其余条件在标题行漏斗弹出的 `#listFilterPanel`；状态变量见上。

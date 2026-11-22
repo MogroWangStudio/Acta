@@ -1174,6 +1174,26 @@ body.acta-steady .task-row.task-toggle-motion { animation: taskToggle .22s var(-
 .schedule-editor-row input:focus { border-color: var(--todo-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--todo-accent) 12%, transparent); }
 .schedule-warning { margin: 0; padding: 7px 9px; border-radius: 8px; color: #96613e; background: color-mix(in srgb, #d99a58 13%, transparent); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.45; }
 .meta-error { margin: 0; color: #a15b43; font-size: calc(9px * var(--acta-font-scale)); }
+.meta-edit-button[hidden], .meta-confirm-button[hidden], .schedule-display[hidden], .schedule-display > span[hidden], .schedule-editor[hidden], .schedule-warning[hidden], .meta-error[hidden], .subtask-schedule-editor[hidden] { display: none !important; }
+/* —— 子待办时间（属性面板）：每条子待办收起为一行（文本 + 当前值 + —— */
+/* —— 编辑入口），展开后才是开始 / 截止输入行；列表超高内部滚动。 —— */
+.subtask-schedule-field { min-width: 0; display: grid; gap: 7px; grid-column: 1 / -1; }
+.subtask-schedule-field > small { color: var(--faint); font-size: calc(9px * var(--acta-font-scale)); line-height: 1.5; }
+.subtask-schedule-list { min-width: 0; display: grid; gap: 4px; max-height: 190px; overflow: hidden auto; overscroll-behavior: contain; }
+.subtask-schedule-row { min-width: 0; padding: 7px 8px; border: 1px solid color-mix(in srgb, var(--todo-accent) 13%, var(--line)); border-radius: 9px; background: color-mix(in srgb, var(--todo-soft) 42%, var(--white)); display: grid; gap: 6px; }
+.subtask-schedule-summary { min-width: 0; display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 7px; align-items: center; }
+.subtask-schedule-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-size: calc(10px * var(--acta-font-scale)); }
+.subtask-schedule-value { color: var(--ink); font-size: calc(8.5px * var(--acta-font-scale)); font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.subtask-schedule-value.is-empty { color: var(--faint); font-weight: 500; }
+.subtask-schedule-toggle { padding: 3px 8px; border: 1px solid color-mix(in srgb, var(--todo-accent) 18%, var(--line)); border-radius: 7px; background: transparent; color: var(--todo-accent); font-size: calc(8px * var(--acta-font-scale)); font-weight: 700; cursor: pointer; transition: background .14s ease, transform .15s var(--ease-out); }
+.subtask-schedule-toggle:hover { background: color-mix(in srgb, var(--todo-accent) 10%, transparent); }
+.subtask-schedule-toggle:active { transform: scale(.96); }
+.subtask-schedule-editor { min-width: 0; display: grid; gap: 6px; }
+.subtask-schedule-editor .schedule-editor-row input { height: 32px; }
+.subtask-schedule-confirm { justify-self: end; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 8px; background: var(--todo-accent); color: #fff; display: grid; place-items: center; cursor: pointer; transition: transform .15s var(--ease-out), filter .15s ease; }
+.subtask-schedule-confirm svg { width: 12px; height: 12px; }
+.subtask-schedule-confirm:hover { filter: brightness(1.06); }
+.subtask-schedule-confirm:active { transform: scale(.94); }
 .priority-field .priority-options { width: 100%; min-height: 38px; flex: 1; }
 .priority-field .priority-options button { min-width: 0; height: 38px; padding: 0 7px; border: 1px solid transparent; font-size: calc(9px * var(--acta-font-scale)); font-weight: 700; line-height: 1.2; }
 .priority-field .priority-options button.active[data-priority="high"] { border-color: color-mix(in srgb, #a15b43 20%, transparent); }
@@ -2031,6 +2051,14 @@ body.calendar-view .list-footer { background: color-mix(in srgb, var(--calendar-
 .calendar-month-todo-title:hover { color: var(--calendar-accent); }
 .calendar-month-todo.is-complete { opacity: .58; }
 .calendar-month-todo.is-complete .calendar-month-todo-title { text-decoration: line-through; }
+/* 单独排期的子待办（月视图）：比父待办条目轻一级——无底色，缩进 +
+   前缀短线表达从属；悬停只变色（kill-ai-slop 口径），完成态划线。 */
+.calendar-month-subtask { position: relative; min-width: 0; height: 19px; padding: 0 4px 0 15px; border-radius: 6px; display: flex; align-items: center; overflow: hidden; }
+.calendar-month-subtask::before { content: ""; position: absolute; left: 6px; top: 50%; width: 5px; height: 1.5px; border-radius: 1px; background: color-mix(in srgb, var(--calendar-accent) 52%, transparent); }
+.calendar-month-subtask-title { min-width: 0; flex: 1; height: 17px; padding: 0 2px; border: 0; border-radius: 4px; background: transparent; color: var(--muted); overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; font-size: calc(9px * var(--acta-font-scale)); font-weight: 600; cursor: pointer; transition: color .16s ease; }
+.calendar-month-subtask-title:hover { color: var(--calendar-accent); }
+.calendar-month-subtask.is-complete { opacity: .62; }
+.calendar-month-subtask.is-complete .calendar-month-subtask-title { text-decoration: line-through; }
 .calendar-month-link { position: relative; width: 17px; height: 17px; flex: 0 0 17px; padding: 0; border: 0; border-radius: 5px; background: color-mix(in srgb, var(--note-soft) 72%, transparent); color: var(--note-accent); display: grid; place-items: center; cursor: pointer; transition: background .18s ease; }
 .calendar-month-link:hover { background: var(--note-soft); transform: scale(1.08); }
 .calendar-month-link svg { width: 10px; height: 10px; }
@@ -2054,6 +2082,11 @@ body.calendar-view .list-footer { background: color-mix(in srgb, var(--calendar-
 .calendar-todo.is-complete .calendar-todo-check { border-color: var(--calendar-accent); background: var(--calendar-accent); }
 .calendar-todo.is-complete .calendar-todo-check svg { opacity: 1; transform: scale(1) rotate(0); }
 .calendar-todo.is-complete .calendar-todo-title { text-decoration: line-through; }
+/* 单独排期的子待办（周 / 日视图）：复用 calendar-todo-full 的骨架，
+   左缘一道细竖线 + meta 行里的所属待办名表达从属；标题降一号字。 */
+.calendar-subtask-entry { border-left: 2px solid color-mix(in srgb, var(--calendar-accent) 34%, transparent); }
+.calendar-subtask-entry .calendar-todo-title { font-size: calc(11px * var(--acta-font-scale)); font-weight: 660; }
+.calendar-subtask-owner { min-width: 0; max-width: 46%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
 .calendar-todo-content { min-width: 0; display: grid; gap: 4px; }
 .calendar-todo-heading { min-width: 0; display: flex; align-items: center; gap: 5px; }
 .calendar-todo-heading time { flex: 0 0 auto; color: var(--faint); font: 700 calc(9px * var(--acta-font-scale))/1.2 inherit; font-variant-numeric: tabular-nums; }

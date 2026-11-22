@@ -249,11 +249,52 @@ async function main() {
       removeTargetRow.querySelector('.confirm-remove-task').click();
       task.notes = '测试待办';
       persist();
+      // —— v4.3.0-beta8 子待办排期（行内面板）：t2 排今天 09:00–12:00，——
+      // —— 校验拒绝截止早于开始，清空按钮清输入，确认后就地同步 pill。 ——
+      const inlineRow = document.querySelector('.task-row[data-task-id="t2"]');
+      const inlineToggle = inlineRow.querySelector('.task-schedule-toggle');
+      inlineToggle.click();
+      const inlinePanel = inlineRow.querySelector('.task-schedule-panel');
+      const inlineSchedulePanelOpens = !inlinePanel.hidden && inlineToggle.getAttribute('aria-expanded') === 'true';
+      const subtaskStart = new Date(); subtaskStart.setHours(9, 0, 0, 0);
+      const subtaskDue = new Date(subtaskStart.getTime() + 3 * 3600000);
+      inlineRow.querySelector('[data-task-schedule-input="start"]').value = dateTimeLocalValue(subtaskStart);
+      inlineRow.querySelector('[data-task-schedule-input="due"]').value = dateTimeLocalValue(subtaskDue);
+      inlineRow.querySelector('.task-schedule-confirm').click();
+      const inlineSubtask = task.tasks.find(entry => entry.id === 't2');
+      const inlineSubtaskScheduleSaved = inlineSubtask.startAt === new Date(subtaskStart).toISOString()
+        && inlineSubtask.dueAt === new Date(subtaskDue).toISOString()
+        && inlinePanel.hidden
+        && inlineToggle.classList.contains('has-time')
+        && (inlineToggle.querySelector('time')?.textContent || '').includes(':');
+      inlineToggle.click();
+      inlineRow.querySelector('[data-task-schedule-input="due"]').value = dateTimeLocalValue(new Date(new Date(inlineSubtask.startAt).getTime() - 3600000));
+      inlineRow.querySelector('.task-schedule-confirm').click();
+      const inlineSubtaskScheduleRejectsInvalid = !inlineRow.querySelector('.meta-error').hidden
+        && inlineSubtask.dueAt === subtaskDue.toISOString();
+      inlineRow.querySelector('[data-task-schedule-clear="due"]').click();
+      inlineRow.querySelector('[data-task-schedule-input="due"]').value = dateTimeLocalValue(subtaskDue);
+      inlineRow.querySelector('.task-schedule-confirm').click();
+      const inlineSubtaskScheduleRecovered = inlinePanel.hidden && inlineSubtask.dueAt === subtaskDue.toISOString();
       document.querySelector('#itemMetaButton').click();
       document.querySelector('#editSchedule').click();
       document.querySelector('#todoDueAt').value = dateTimeLocalValue(editedDue);
       document.querySelector('#todoDueAt').dispatchEvent(new Event('input', { bubbles:true }));
       document.querySelector('#confirmSchedule').click();
+      // —— 属性面板的「子待办时间」：t2 行显示已排期值，t1 行就地排明 ——
+      // —— 天 09:00–11:00（给日历独立条目再添一条跨设备数据）。 ——
+      const metaT2Row = document.querySelector('.subtask-schedule-row[data-subtask-schedule="t2"]');
+      const metaSubtaskRowsPresent = Boolean(metaT2Row) && Boolean(document.querySelector('.subtask-schedule-row[data-subtask-schedule="t1"]'))
+        && (metaT2Row.querySelector('.subtask-schedule-value')?.textContent || '').includes(':');
+      const metaT1Row = document.querySelector('.subtask-schedule-row[data-subtask-schedule="t1"]');
+      metaT1Row.querySelector('.subtask-schedule-toggle').click();
+      const t1Start = new Date(subtaskStart.getTime() + 24 * 3600000);
+      metaT1Row.querySelector('[data-subtask-schedule-input="start"]').value = dateTimeLocalValue(t1Start);
+      metaT1Row.querySelector('[data-subtask-schedule-input="due"]').value = dateTimeLocalValue(new Date(t1Start.getTime() + 2 * 3600000));
+      metaT1Row.querySelector('.subtask-schedule-confirm').click();
+      const inlineT1 = task.tasks.find(entry => entry.id === 't1');
+      const metaSubtaskScheduleSaved = Boolean(inlineT1.startAt) && Boolean(inlineT1.dueAt)
+        && metaT1Row.querySelector('.subtask-schedule-editor').hidden;
       document.querySelector('#itemMetaButton').click();
       const todoMetaCloseAnimation = document.querySelector('#itemMetaPopover').classList.contains('is-closing')
         && getComputedStyle(document.querySelector('#itemMetaPopover')).animationName === 'itemMetaPopoverOut'
@@ -343,6 +384,13 @@ async function main() {
         && desktopMonthTodo.querySelector('.calendar-month-todo-title').textContent === task.title
         && getComputedStyle(desktopMonthTodo.querySelector('.calendar-month-todo-title')).display !== 'none';
       const calendarMonthHasNoToggle = !document.querySelector('.calendar-month-view [data-calendar-toggle], .calendar-month-view [data-calendar-subtask-toggle]');
+      // 单独排期的子待办进入月视图：t2 在今天格、t1 在明天格，且月视图
+      // 的子待办条目不带勾选（与 calendarMonthHasNoToggle 同口径）。
+      const calendarMonthSubtaskEntries = Boolean(document.querySelector('.calendar-month-view .calendar-month-subtask[data-calendar-subtask-entry="t1"]'))
+        && document.querySelector('[data-calendar-cell="' + todayISO() + '"] header span')?.textContent === '11'
+        && Boolean(document.querySelector('[data-calendar-cell="' + todayISO() + '"] .calendar-overflow'))
+        && !document.querySelector('.calendar-month-view .calendar-month-subtask [data-calendar-subtask-toggle]');
+      const monthTodayCell = document.querySelector('[data-calendar-cell="' + todayISO() + '"]');
       const calendarMonthOverflowIcon = document.querySelector('.calendar-month-view .calendar-overflow use')?.getAttribute('href') === '#i-more';
       const calendarMonthWeekNumbers = document.querySelector('.calendar-week-number-heading')?.textContent === '周数' && document.querySelectorAll('.calendar-week-number').length === 6 && /^\\d+$/.test(document.querySelector('.calendar-week-number b')?.textContent || '') && /W\\d+/.test(document.querySelector('#viewTitle').textContent);
       const calendarMonthShiftLabels = [...document.querySelectorAll('[data-calendar-shift-label]')].map(node => node.textContent).join('|') === '上一月|下一月';
@@ -356,6 +404,12 @@ async function main() {
       const calendarNonlinearMotion = getComputedStyle(document.querySelector('.calendar-list > .list-body')).animationName === 'calendarViewEnter' && getComputedStyle(document.querySelector('.calendar-list > .list-body')).animationTimingFunction.includes('cubic-bezier');
       document.querySelector('[data-calendar-mode="week"]').click();
       const calendarWeekVisible = Boolean(document.querySelector('.calendar-week-view')) && document.querySelectorAll('.calendar-week-day').length === 7;
+      // 周 / 日视图的独立子待办条目：带勾选钮与所属待办名。
+      const t2StandaloneWeek = document.querySelector('[data-calendar-day="' + todayISO() + '"] .calendar-subtask-entry[data-calendar-subtask-entry="t2"]');
+      const calendarWeekStandaloneEntry = Boolean(t2StandaloneWeek)
+        && t2StandaloneWeek.querySelector('.calendar-subtask-owner')?.textContent === task.title
+        && (t2StandaloneWeek.querySelector('.calendar-todo-meta span')?.textContent || '').includes(':')
+        && Boolean(t2StandaloneWeek.querySelector('[data-calendar-subtask-toggle="launch-plan"][data-calendar-subtask-id="t2"]'));
       const desktopWeekEvents = document.querySelector('[data-calendar-todo="launch-plan"]')?.closest('.calendar-week-events');
       const calendarWeekScrollMetrics = { overflowY:getComputedStyle(desktopWeekEvents).overflowY, scrollHeight:desktopWeekEvents.scrollHeight, clientHeight:desktopWeekEvents.clientHeight, viewHeight:document.querySelector('.calendar-week-view').clientHeight, listHeight:document.querySelector('.calendar-list').clientHeight };
       const calendarWeekScrollable = getComputedStyle(desktopWeekEvents).overflowY === 'scroll' && desktopWeekEvents.scrollHeight > desktopWeekEvents.clientHeight;
@@ -371,6 +425,12 @@ async function main() {
       const calendarDaySubtaskUndo = !task.tasks.find(entry => entry.id === 't1').done;
       document.querySelector('[data-calendar-subtask-toggle="launch-plan"][data-calendar-subtask-id="t1"]').click();
       const calendarDaySubtaskComplete = task.tasks.find(entry => entry.id === 't1').done;
+      // 日视图里的独立子待办条目可以直接勾选 / 撤回（与父卡内清单同事件）。
+      document.querySelector('.calendar-subtask-entry[data-calendar-subtask-entry="t2"] [data-calendar-subtask-toggle]').click();
+      const calendarDayStandaloneToggleWorks = task.tasks.find(entry => entry.id === 't2').done
+        && document.querySelector('.calendar-subtask-entry[data-calendar-subtask-entry="t2"]').classList.contains('is-complete');
+      document.querySelector('.calendar-subtask-entry[data-calendar-subtask-entry="t2"] [data-calendar-subtask-toggle]').click();
+      const calendarDayStandaloneToggleRestored = !task.tasks.find(entry => entry.id === 't2').done;
       const calendarToggle = document.querySelector('[data-calendar-toggle="launch-plan"]');
       calendarToggle.click();
       const calendarQuickComplete = isTodoComplete(task) && Boolean(document.querySelector('[data-calendar-todo="launch-plan"].is-complete'));
@@ -1720,6 +1780,17 @@ async function main() {
         removeConfirmShows,
         removeCancelRestores,
         removeConfirmDeletes,
+        inlineSchedulePanelOpens,
+        inlineSubtaskScheduleSaved,
+        inlineSubtaskScheduleRejectsInvalid,
+        inlineSubtaskScheduleRecovered,
+        metaSubtaskRowsPresent,
+        metaSubtaskScheduleSaved,
+        calendarMonthSubtaskEntries,
+
+        calendarWeekStandaloneEntry,
+        calendarDayStandaloneToggleWorks,
+        calendarDayStandaloneToggleRestored,
         quickCheckinTypeSelectable,
         quickCheckinCreated,
         nativeStatusBarMatchesThemes,
@@ -2065,6 +2136,16 @@ async function main() {
     assert.equal(result.removeConfirmShows, true);
     assert.equal(result.removeCancelRestores, true);
     assert.equal(result.removeConfirmDeletes, true);
+    assert.equal(result.inlineSchedulePanelOpens, true);
+    assert.equal(result.inlineSubtaskScheduleSaved, true);
+    assert.equal(result.inlineSubtaskScheduleRejectsInvalid, true);
+    assert.equal(result.inlineSubtaskScheduleRecovered, true);
+    assert.equal(result.metaSubtaskRowsPresent, true);
+    assert.equal(result.metaSubtaskScheduleSaved, true);
+    assert.equal(result.calendarMonthSubtaskEntries, true);
+    assert.equal(result.calendarWeekStandaloneEntry, true);
+    assert.equal(result.calendarDayStandaloneToggleWorks, true);
+    assert.equal(result.calendarDayStandaloneToggleRestored, true);
     assert.equal(result.quickCheckinTypeSelectable, true);
     assert.equal(result.quickCheckinCreated, true);
     assert.equal(result.nativeStatusBarMatchesThemes, true, JSON.stringify(result.nativeSystemBarsStyleCalls));

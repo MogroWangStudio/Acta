@@ -1,6 +1,6 @@
 {
   "name": "acta",
-  "version": "4.3.0-beta7",
+  "version": "4.3.0-beta8",
   "description": "Acta 行记 — notes and tasks, in one calm workspace.",
   "scripts": {
     "dev": "vite",

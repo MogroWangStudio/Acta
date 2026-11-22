@@ -56,7 +56,7 @@
              状态是这一整页的写入回执，所以守在右端、贴着窗口控件，
              不占标签条要用的横向空间。 -->
         <div class="titlebar-meta">
-          <span class="brand-version" aria-label="当前版本 4.3.0-beta7">4.3.0-beta7</span>
+          <span class="brand-version" aria-label="当前版本 4.3.0-beta8">4.3.0-beta8</span>
           <span id="saveState" data-i18n="saved" role="status" aria-live="polite">已保存</span>
         </div>
         <div class="mobile-titlebar-actions" id="mobileTitlebarActions">
@@ -512,8 +512,8 @@
               <div class="about-mark"><img src="/images/Acta Poster.jpg" alt="Acta" /></div>
               <div class="about-meta">
                 <div><small>产品</small><b>Acta</b></div>
-                <div><small>版本</small><b id="aboutVersion">4.3.0-beta7</b></div>
-                <div><small>本版更新日期</small><b>2026-11-21</b></div>
+                <div><small>版本</small><b id="aboutVersion">4.3.0-beta8</b></div>
+                <div><small>本版更新日期</small><b>2026-11-23</b></div>
                 <div><small>桌面框架</small><b>Tauri（Windows/macOS），Capacitor（Android）</b></div>
               </div>
               <!-- 软件更新：独立板块（单层卡组，标题行 + 通道/来源行 +

@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <strong>Current version v4.3.0-beta7</strong>
+  <strong>Current version v4.3.0-beta8</strong>
 </p>
 
 Acta is a local-first notes and tasks app that brings writing, action, and organization into one calm workspace. The project shares a single web interface across Tauri desktop apps for Windows/macOS, a Capacitor Android app, and a modern-browser PWA.
@@ -17,7 +17,7 @@ Acta is a local-first notes and tasks app that brings writing, action, and organ
 ## Features
 
 - Bidirectional links between notes and tasks: a "Linked items" summary stays visible in the editor above the body (it lists the linked entries, each openable or unlinkable, and steps aside when there are none), while the link button in the toolbar opens a separate window for picking a project and for viewing or removing links; both places show the same content, and the window stays open when you remove a link
-- High, medium, and low task priorities, plus subtasks, progress, immutable creation time, and optional start/due times
+- High, medium, and low task priorities, plus subtasks, progress, immutable creation time, and optional start/due times; each subtask can also carry its own start and due time (set inline via the row's time pill or in the properties panel's "Subtask schedule" section; the due time must come after the start), and scheduled subtasks appear on their own dates in the month/week/day calendar views (with their parent task and an independent checkbox), turning red when overdue and unfinished
 - Check-in tasks: generate from the create menu or quick capture, check in daily with streak/total counters and a last-7-days strip, optional start/due dates that feed the calendar, and a today badge on list cards
 - Ordered subtasks: turn on "In order" to arrange subtasks by number and reorder them with arrow buttons; the default stays unordered
 - Bulk subtask add & export: the editor's progress row offers "Quick-add subtasks" (one per line — paste a multi-line list and append them all at once) and "Export subtasks" (plain lines or a Markdown task list, copied to the clipboard or saved as a TXT / Markdown file); the export dialog puts format and scope on the left and a live preview on the right, so changing the format, the subtask scope (completed + open / completed only / open only), or the numbering style (none, `1.`, `1、`, `一、`, or `(1)`) re-renders the exact text that will be written
@@ -147,7 +147,7 @@ Releases run automatically through GitHub Actions (`.github/workflows/release.ym
 npm test
 ```
 
-The smoke test starts a Vite dev server programmatically and then drives the app in headless Edge/Chrome. It covers default task classification, creation/start/due times, mobile calendar interaction, week-list scrolling, direct task/subtask completion, IME composition, strict view filtering, bidirectional links, OOBE onboarding, custom select menus, MWS themes, launch-animation speed semantics, the mobile app-icon presets, check-in tasks, ordered subtasks, and Markdown round-trips.
+The smoke test starts a Vite dev server programmatically and then drives the app in headless Edge/Chrome. It covers default task classification, creation/start/due times, per-subtask scheduling (inline panel and properties panel, validation, standalone calendar entries), mobile calendar interaction, week-list scrolling, direct task/subtask completion, IME composition, strict view filtering, bidirectional links, OOBE onboarding, custom select menus, MWS themes, launch-animation speed semantics, the mobile app-icon presets, check-in tasks, ordered subtasks, and Markdown round-trips.
 
 ## Troubleshooting
 
