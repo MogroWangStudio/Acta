@@ -1664,6 +1664,22 @@ async function main() {
       const boardShowKeysPersist = sanitizedBoardShow.tasksDoneVisible === false && sanitizedBoardShow.tasksDoneOnly === true;
       document.querySelector('[data-view="inbox"]').click();
       await waitFor(() => currentView === 'inbox');
+      // —— v4.3.0-beta8 安全加固回归：计划板 customFont 净化、导入条目走 ——
+      // —— sanitizeNoteHTML 管线、DOMPurify 缺位时 fail-closed（整段转义）。——
+      window.__actaSmokeStep = 'security-hardening';
+      const dirtyFont = 'A"; onmouseover=alert(1); x{}<script>';
+      const sanitizedFontSample = sanitizeBoards([{ id:'sf1', name:'S', widgets:[{ id:'sw1', type:'text', x:10, y:10, w:240, text:'hi', size:16, font:'custom', customFont: dirtyFont, align:'left', bold:false, italic:false, bg:'none', bgOpacity:100, radius:0, pad:0 }] }])[0].widgets[0].customFont;
+      const boardFontSanitized = !/[<>"';{}]/.test(sanitizedFontSample) && sanitizedFontSample.indexOf('A') === 0;
+      const dirtyBody = '<p onclick="alert(1)">安全样例<script>alert(2)</script></p>';
+      const sanitizedImportSample = normalizeLibrary({ version: 1, items: [{ id:'sec-item-1', type:'note', folderId:'', title:'安全样例', body: dirtyBody, linkedIds:[], createdAt:smokeNow, updatedAt:smokeNow }], folders: [] }).items[0].body;
+      const importBodySanitized = !/<script/i.test(sanitizedImportSample) && !/onclick/i.test(sanitizedImportSample) && sanitizedImportSample.includes('安全样例');
+      const savedPurify = window.DOMPurify;
+      let purifyFallbackEscapes = false;
+      try {
+        delete window.DOMPurify;
+        const fallbackSample = normalizeLibrary({ version: 1, items: [{ id:'sec-item-2', type:'note', folderId:'', title:'降级样例', body: dirtyBody, linkedIds:[], createdAt:smokeNow, updatedAt:smokeNow }], folders: [] }).items[0].body;
+        purifyFallbackEscapes = fallbackSample.includes('&lt;script&gt;') && !fallbackSample.includes('<script');
+      } finally { window.DOMPurify = savedPurify; }
       window.__actaSmokeStep = 'sidebar-checked';
       document.querySelector('#settingsButton').click();
       const cacheReloadAvailable = Boolean(document.querySelector('#clearCacheReload'));
@@ -2061,6 +2077,9 @@ async function main() {
         saveStateMetrics,
         lowerLeftControlsTogether,
         collapsedWithPaneGridOK,
+        boardFontSanitized,
+        importBodySanitized,
+        purifyFallbackEscapes,
         boardToggleDefaults,
         boardShowsAllByDefault,
         boardHidesCompleted,
@@ -2403,6 +2422,9 @@ async function main() {
     assert.equal(result.saveStateRelocated, true, JSON.stringify(result.saveStateMetrics));
     assert.equal(result.lowerLeftControlsTogether, true);
     assert.equal(result.collapsedWithPaneGridOK, true);
+    assert.equal(result.boardFontSanitized, true);
+    assert.equal(result.importBodySanitized, true);
+    assert.equal(result.purifyFallbackEscapes, true);
     assert.equal(result.boardToggleDefaults, true);
     assert.equal(result.boardShowsAllByDefault, true);
     assert.equal(result.boardHidesCompleted, true);

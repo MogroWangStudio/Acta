@@ -742,9 +742,13 @@ function loadJSON(key, fallback) {
 
 // Note bodies are user-authored HTML that round-trips through sync/import, so any
 // HTML entering the library gets sanitized once at this single choke point.
-const sanitizeNoteHTML = value => (
-  typeof value === 'string' && value && window.DOMPurify?.sanitize ? window.DOMPurify.sanitize(value) : value
-);
+// DOMPurify 缺位（脚本被裁剪 / 加载失败）时绝不放行原始 HTML——退化为整段
+// 转义（正文按字面文本显示），宁可难看也不 fail-open。
+const sanitizeNoteHTML = value => {
+  if (typeof value !== 'string' || !value) return value;
+  if (window.DOMPurify?.sanitize) return window.DOMPurify.sanitize(value);
+  return escapeHTML(value);
+};
 
 const folderColor = value => (typeof value === 'string' && /^#[0-9a-f]{3,8}$/i.test(value) ? value : '#999');
 
@@ -759,6 +763,11 @@ const boardCoords = value => (value && Number.isFinite(Number(value.x)) && Numbe
 const BOARD_MARKER_KINDS = ['arrow', 'rect', 'ellipse', 'line', 'draw'];
 const BOARD_TEXT_FONTS = ['app', 'serif', 'rounded', 'mono'];
 const BOARD_MARKER_COLORS = ['#526b55', '#b96051', '#4f86a8', '#987329', '#7a7799', '#a87876'];
+// 自定义字体名净化：结果会插进 style="..." 属性（boardStaticHTML）与
+// canvas 的 ctx.font。删掉属性引号、CSS 结构符与尖括号——含 `"` 的值曾
+// 能闭合 style 属性注入任意属性（导入的 .actaplan / 同步数据都经这里）。
+// 逗号、括号、空格与 CJK 保留，合法字体名不受影响。
+const boardSafeCustomFont = value => String(value || '').replace(/[;{}<>"'`\\]/g, '').trim().slice(0, 120);
 function sanitizeBoards(boards) {
   if (!Array.isArray(boards)) return undefined;
   const seen = new Set();
@@ -797,7 +806,7 @@ function sanitizeBoards(boards) {
           text: typeof widget.text === 'string' ? widget.text.slice(0, 4000) : '',
           size: Math.min(48, Math.max(11, Math.round(Number(widget.size) || 16))),
           font: [...BOARD_TEXT_FONTS, 'custom'].includes(widget.font) ? widget.font : 'app',
-          customFont: typeof widget.customFont === 'string' ? widget.customFont.slice(0, 120) : '',
+          customFont: typeof widget.customFont === 'string' ? boardSafeCustomFont(widget.customFont) : '',
           align: ['left', 'center', 'right'].includes(widget.align) ? widget.align : 'left',
           bold: Boolean(widget.bold), italic: Boolean(widget.italic),
           color: /^#[0-9a-f]{3,8}$/i.test(widget.color) ? widget.color : '',
@@ -1480,7 +1489,32 @@ const isTrashed = (item) => Boolean(item?.deletedAt);
 const activeItems = () => library.items.filter(item => !isTrashed(item));
 const trashedItems = () => library.items.filter(isTrashed).sort((a, b) => String(b.deletedAt).localeCompare(String(a.deletedAt)));
 const priorityRank = (priority) => ({ high: 0, medium: 1, low: 2 })[priority] ?? 1;
-const getLinkedItems = (item) => (item.linkedIds || []).map(id => library.items.find(entry => entry.id === id)).filter(Boolean);
+
+// Intl.DateTimeFormat 的构造在 Chromium 上不便宜（几百微秒级），日历视图
+// 与卡片渲染每次都要格式化几百个时刻——按 locale+选项缓存 formatter，
+// 调用点只换构造方式，行为完全一致。
+const intlFormatterCache = new Map();
+const cachedFormatter = (locale, options) => {
+  const key = `${locale}|${JSON.stringify(options)}`;
+  let formatter = intlFormatterCache.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options);
+    intlFormatterCache.set(key, formatter);
+  }
+  return formatter;
+};
+const formatWithCache = (locale, options, date) => cachedFormatter(locale, options).format(date);
+// 条目 id → 条目的索引：主列表 / 日历 / 计划板渲染每张卡片都要解析
+// linkedIds，原来逐个 Array.find 是 O(条目²)。数组身份 + 长度作失效键——
+// id 只在增删条目（长度或数组本体变化）时才会改变映射。
+let itemIndexCache = { source: null, length: -1, map: null };
+const itemIndex = () => {
+  if (itemIndexCache.source !== library.items || itemIndexCache.length !== library.items.length) {
+    itemIndexCache = { source: library.items, length: library.items.length, map: new Map(library.items.map(item => [item.id, item])) };
+  }
+  return itemIndexCache.map;
+};
+const getLinkedItems = (item) => (item.linkedIds || []).map(id => itemIndex().get(id)).filter(Boolean);
 
 function persist() {
   $('#saveState').textContent = t('saving');
@@ -1536,9 +1570,9 @@ function formatDate(value, short = false) {
   const difference = Math.round((date - today) / 86400000);
   if (difference === 0) return t('today');
   if (difference === -1) return t('yesterday');
-  return new Intl.DateTimeFormat(localeTag(), short
+  return formatWithCache(localeTag(), short
     ? { month: 'short', day: 'numeric' }
-    : { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+    : { year: 'numeric', month: 'short', day: 'numeric' }, date);
 }
 
 function formatDateTimeSeconds(value) {
@@ -1546,10 +1580,10 @@ function formatDateTimeSeconds(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return t('noDate');
   const locale = localeTag();
-  return new Intl.DateTimeFormat(locale, {
+  return formatWithCache(locale, {
     year:'numeric', month:'2-digit', day:'2-digit',
     hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
-  }).format(date).replace(',', '');
+  }, date).replace(',', '');
 }
 
 function formatListDateTime(value) {
@@ -1557,9 +1591,9 @@ function formatListDateTime(value) {
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return t('noDate');
   const locale = localeTag();
-  return new Intl.DateTimeFormat(locale, {
+  return formatWithCache(locale, {
     month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false
-  }).format(date).replace(',', '');
+  }, date).replace(',', '');
 }
 
 function todoListTimeMarkup(item) {
@@ -1621,16 +1655,16 @@ function calendarMonthStart(date) {
 
 function calendarWeekdayLabels(style = 'short') {
   const monday = new Date(2024, 0, 1, 12);
-  return Array.from({ length:7 }, (_, index) => new Intl.DateTimeFormat(calendarLocale(), { weekday:style }).format(calendarAddDays(monday, index)));
+  return Array.from({ length:7 }, (_, index) => formatWithCache(calendarLocale(), { weekday:style }, calendarAddDays(monday, index)));
 }
 
 function calendarTodoTime(item) {
   const start = todoStartDate(item);
   const due = todoDueDate(item);
   if (!start || !due) return '';
-  const time = date => new Intl.DateTimeFormat(calendarLocale(), { hour:'2-digit', minute:'2-digit', hour12:false }).format(date);
+  const time = date => formatWithCache(calendarLocale(), { hour:'2-digit', minute:'2-digit', hour12:false }, date);
   if (calendarDateISO(start) === calendarDateISO(due)) return `${time(start)}–${time(due)}`;
-  const dateTime = date => new Intl.DateTimeFormat(calendarLocale(), { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:false }).format(date);
+  const dateTime = date => formatWithCache(calendarLocale(), { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:false }, date);
   return `${dateTime(start)}–${dateTime(due)}`;
 }
 
@@ -1787,22 +1821,22 @@ function calendarPeriodSubtasks(mode = calendarViewMode, cursor = calendarCursor
 function calendarPeriodLabel() {
   const active = calendarDate(calendarCursor) || calendarDate(todayISO());
   const locale = calendarLocale();
-  if (calendarViewMode === 'year') return new Intl.DateTimeFormat(locale, { year:'numeric' }).format(active);
+  if (calendarViewMode === 'year') return formatWithCache(locale, { year:'numeric' }, active);
   if (calendarViewMode === 'month') {
     const monthStart = calendarMonthStart(active);
     const gridStart = calendarStartOfWeek(monthStart);
-    const monthLabel = new Intl.DateTimeFormat(locale, { year:'numeric', month:'long' }).format(active);
+    const monthLabel = formatWithCache(locale, { year:'numeric', month:'long' }, active);
     return `${monthLabel} W${calendarWeekNumber(gridStart)}–W${calendarWeekNumber(calendarAddDays(gridStart, 35))}`;
   }
   if (calendarViewMode === 'week') {
     const start = calendarStartOfWeek(active);
     const end = calendarAddDays(start, 6);
     const sameYear = start.getFullYear() === end.getFullYear();
-    const startLabel = new Intl.DateTimeFormat(locale, { ...(sameYear ? {} : { year:'numeric' }), month:'short', day:'numeric' }).format(start);
-    const endLabel = new Intl.DateTimeFormat(locale, { year:'numeric', month:'short', day:'numeric' }).format(end);
+    const startLabel = formatWithCache(locale, { ...(sameYear ? {} : { year:'numeric' }), month:'short', day:'numeric' }, start);
+    const endLabel = formatWithCache(locale, { year:'numeric', month:'short', day:'numeric' }, end);
     return `W${calendarWeekNumber(start)} ${startLabel} – ${endLabel}`;
   }
-  return new Intl.DateTimeFormat(locale, { year:'numeric', month:'long', day:'numeric', weekday:'long' }).format(active);
+  return formatWithCache(locale, { year:'numeric', month:'long', day:'numeric', weekday:'long' }, active);
 }
 
 function calendarLinkedNotes(item) {
@@ -2036,7 +2070,7 @@ function renderCalendarYear() {
   return `<div class="calendar-year-view">${Array.from({ length:12 }, (_, month) => {
     const monthStart = new Date(year, month, 1, 12);
     const gridStart = calendarStartOfWeek(monthStart);
-    const monthLabel = new Intl.DateTimeFormat(calendarLocale(), { month:'long' }).format(monthStart);
+    const monthLabel = formatWithCache(calendarLocale(), { month:'long' }, monthStart);
     const days = Array.from({ length:42 }, (_, index) => {
       const date = calendarAddDays(gridStart, index);
       if (date.getMonth() !== month) return '<span class="calendar-mini-day is-empty"></span>';
@@ -2115,7 +2149,7 @@ function syncCalendarShell() {
       const activeDate = calendarDate(calendarCursor) || calendarDate(todayISO());
       jumpLabel.textContent = calendarViewMode === 'year'
         ? String(activeDate.getFullYear())
-        : new Intl.DateTimeFormat(calendarLocale(), { year: 'numeric', month: 'long' }).format(activeDate);
+        : formatWithCache(calendarLocale(), { year: 'numeric', month: 'long' }, activeDate);
     }
     toggleCalendarJump(false);
     $$('[data-calendar-mode]', toolbar).forEach(button => {
@@ -2581,7 +2615,7 @@ function statsCollectionItems() {
 function statsGroupLabel(dateKey) {
   if (dateKey === todayISO()) return t('statsGroupToday');
   if (dateKey === daysFromToday(-1)) return t('yesterday');
-  return new Intl.DateTimeFormat(calendarLocale(), { month:'long', day:'numeric', weekday:'short' }).format(new Date(`${dateKey}T12:00:00`));
+  return formatWithCache(calendarLocale(), { month:'long', day:'numeric', weekday:'short' }, new Date(`${dateKey}T12:00:00`));
 }
 
 function statsItemRow(item, index) {
@@ -4004,7 +4038,7 @@ function boardStaticHTML(widget) {
   const selected = boardSelection.has(widget.id) ? ' selected' : '';
   if (widget.type === 'text') {
     const family = widget.font === 'custom'
-      ? (widget.customFont || '')
+      ? boardSafeCustomFont(widget.customFont)
       : (BOARD_TEXT_FAMILIES[widget.font] || '');
     const body = widget.text
       ? escapeHTML(widget.text).replace(/\n/g, '<br>')
@@ -5183,7 +5217,16 @@ async function boardImportPlanFile() {
     idMap.set(ref, newId);
     importedItems.push({ ...item, id: newId, folderId: library.folders.some(f => f.id === item.folderId) ? item.folderId : '' });
   });
-  library.items.push(...importedItems);
+  // 新条目必须走 normalizeLibrary 咽喉点：文件内的富文本在进资料库前过
+  // sanitizeNoteHTML（与启动读档 / WebDAV / 局域网同一管线）。否则
+  // .actaplan 快照会绕过净化——被当前会话直接渲染，还会随 persist 写回
+  // localStorage、随备份与导出继续传播。linkedIds 以原值带回：文件里的
+  // 关联可以指向库中已有的条目（normalize 只认批内 id，会误删跨批引用；
+  // 悬挂 id 渲染侧本来就能容忍）。
+  const rawImportById = new Map(importedItems.map(item => [item.id, item]));
+  const sanitizedImport = normalizeLibrary({ version: 1, items: importedItems, folders: library.folders }).items
+    .map(item => ({ ...item, linkedIds: (rawImportById.get(item.id)?.linkedIds || []).filter(id => typeof id === 'string') }));
+  library.items.push(...sanitizedImport);
   const widgets = payload.board.widgets
     .filter(widget => widget && (widget.type === 'text' || widget.type === 'marker' || (idMap.has(widget.ref))))
     .map(widget => {
@@ -7997,7 +8040,7 @@ function bindBoardScene() {
       const custom = await askNameDialog({ title: t('boardCustomFont'), defaultValue: widget.customFont || '', icon: '#i-text', confirmIcon: '#i-check', maxlength: 120 });
       if (!custom) { boardRenderToolbar(); return; }
       widget.font = 'custom';
-      widget.customFont = custom;
+      widget.customFont = boardSafeCustomFont(custom);
     } else {
       widget.font = select.value;
     }
@@ -8460,6 +8503,9 @@ function bindDeleteConfirmDialog() {
 // 列表视图（所有待办、归类的待办筛选）布置底延迟计时器；视图上下文变化或
 // 撤回完成时收回等待。previousOrder 是本次渲染前卡片的 DOM 顺序。
 function syncCompletedTodoSink(previousOrder) {
+  // previousOrder 是上一帧的 DOM 顺序（900+ 条时数百项），下面的逐条
+  // 成员判断用 Set，别用 Array.includes（曾把整段拖成 O(条目²)）。
+  const previousOrderSet = new Set(previousOrder);
   const eligible = completedTodoSinkView() && completedTodoSinkEnabled() && !reduceWindowMotion();
   if (!eligible || sinkContext.view !== currentView || sinkContext.filter !== currentFilter) {
     if (pendingSink.size) {
@@ -8486,7 +8532,7 @@ function syncCompletedTodoSink(previousOrder) {
       return;
     }
     if (previouslyComplete === false && !pendingSink.has(item.id) && eligible
-        && previousOrder.includes(item.id)) {
+        && previousOrderSet.has(item.id)) {
       // 只对当前列表里可见的卡片布置底等待（其它视图/筛选下完成不动画）。
       // 冻结当前顺序，让该待办在延迟期间原地停留；多个待办相继完成时，
       // 以屏幕上的现状（含此前冻结的结果）为准重新冻结。
@@ -9653,7 +9699,7 @@ function renderCalendarJump() {
 }
 
 function calendarMonthShort(month) {
-  const formatter = new Intl.DateTimeFormat(calendarLocale(), { month: 'short' });
+  const formatter = cachedFormatter(calendarLocale(), { month: 'short' });
   return formatter.format(new Date(2021, month, 15));
 }
 

@@ -308,8 +308,12 @@
       strip.querySelectorAll('[data-tab-close]').forEach(button => {
         button.hidden = mainTabs().length <= 1;
       });
+      // 活动标签保持在可视范围内。只在标签条真正重建时滚一次：签名未变
+      // 时 DOM 与活动位都没动，重滚毫无意义——而 scrollIntoView 会强制
+      // 整页布局，列表刚重建（布局树脏、节点多）时单次可拖慢几百毫秒，
+      // renderList / renderSidebar / 标题刷新每次都会经过这里。
+      strip.querySelector(`[data-tab-id="${cssEscape(activeId)}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
-    strip?.querySelector(`[data-tab-id="${cssEscape(activeId)}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 
     const newButton = byId('tabNewButton');
     if (newButton) {
