@@ -147,7 +147,7 @@ Releases run automatically through GitHub Actions (`.github/workflows/release.ym
 npm test
 ```
 
-The smoke test starts a Vite dev server programmatically and then drives the app in headless Edge/Chrome. It covers default task classification, creation/start/due times, per-subtask scheduling (inline panel and properties panel, validation, standalone calendar entries), mobile calendar interaction, week-list scrolling, direct task/subtask completion, IME composition, strict view filtering, bidirectional links, OOBE onboarding, custom select menus, MWS themes, launch-animation speed semantics, the mobile app-icon presets, check-in tasks, ordered subtasks, and Markdown round-trips.
+The smoke test starts a Vite dev server programmatically and then drives the app in headless Edge/Chrome. It covers default task classification, creation/start/due times, per-subtask scheduling (inline panel and properties panel, validation, standalone calendar entries), seam geometry with a collapsed sidebar and the side tab pane, mobile calendar interaction, week-list scrolling, direct task/subtask completion, IME composition, strict view filtering, bidirectional links, OOBE onboarding, custom select menus, MWS themes, launch-animation speed semantics, the mobile app-icon presets, check-in tasks, ordered subtasks, and Markdown round-trips.
 
 ## Troubleshooting
 

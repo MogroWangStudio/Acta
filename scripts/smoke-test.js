@@ -1527,6 +1527,10 @@ async function main() {
       const miniLogoCenterBeforeCollapse = miniLogoBeforeCollapseRect.left + miniLogoBeforeCollapseRect.width / 2;
       document.querySelector('#sidebarToggle').click();
       const collapsedSidebarAligned = await waitFor(() => {
+        // 必须等 grid 过渡彻底结束（JS 挂的 sidebar-resizing 在 620ms 后才移除，
+        // 晚于 540ms 动画）：内部对齐在动画中途也成立，提前通过会让轴线取到
+        // 中间态（如 79.6px），后续 ±1px 的几何断言就会随机挂掉。
+        if (document.body.classList.contains('sidebar-resizing')) return false;
         const sidebar = document.querySelector('#primarySidebar').getBoundingClientRect();
         const axis = sidebar.left + sidebar.width / 2;
         const aligned = ['#newButton', '#smartNav button', '.section-label-actions', '#folderNav', '.sidebar-dock-actions'].map(selector => document.querySelector(selector)?.getBoundingClientRect()).filter(Boolean);
@@ -1542,6 +1546,17 @@ async function main() {
       const collapsedBrandCentered = parseFloat(collapsedBrandStyle.left) + parseFloat(collapsedBrandStyle.width) / 2 === 36;
       const collapsedBrandVersionStyle = getComputedStyle(brandVersion);
       const collapsedBrandVersionHidden = collapsedBrandVersionStyle.visibility === 'hidden';
+      // 折叠 + 侧边窗格同开：工作区侧栏列必须跟随 --acta-sidebar-width（72px），
+      // 顶栏标签条与列表竖缝不得错位（回归：tab-side 网格曾硬编码 248px）。
+      // 直接切 body.tab-side 类做纯 CSS 断言，不走窗格开关的渲染流程，
+      // 避免扰动本节的既有几何断言。
+      document.body.classList.add('tab-side');
+      const collapsedWithPaneSidebarWidth = Number((document.querySelector('#primarySidebar').getBoundingClientRect().width / actaZoom()).toFixed(1));
+      const collapsedWithPaneSeamDelta = Number(((document.querySelector('#tabStripScroll').getBoundingClientRect().left - 10
+        - document.querySelector('#itemList').closest('.item-pane').getBoundingClientRect().left) / actaZoom()).toFixed(1));
+      const collapsedWithPaneGridOK = Math.abs(collapsedWithPaneSidebarWidth - 72) < 1
+        && Math.abs(collapsedWithPaneSeamDelta) < 1;
+      document.body.classList.remove('tab-side');
       const sidebarToggleButton = document.querySelector('#sidebarToggle');
       sidebarToggleButton.style.transition = 'none';
       void sidebarToggleButton.offsetWidth;
@@ -2030,7 +2045,7 @@ async function main() {
         collapsedBrandCentered,
         collapsedBrandVersionHidden,
         collapsedToggleInDock,
-        collapsedTogglePosition: { position:collapsedToggleStyle.position, left:collapsedToggleStyle.left, translate:collapsedToggleStyle.translate },
+        collapsedTogglePosition: { position:collapsedToggleStyle.position, left:collapsedToggleStyle.left, translate:collapsedToggleStyle.translate, axisDelta:Number((collapsedToggleRect.left + collapsedToggleRect.width/2 - collapsedSidebarAxis).toFixed(2)), sidebarW:Number(collapsedSidebarRect.width.toFixed(1)), inDock: Boolean(sidebarToggleButton.closest('.sidebar-dock-actions')) },
         collapsedBrandAnchorStable,
         miniLogoCenters: [miniLogoCenterBeforeCollapse, miniLogoCenterAfterCollapse],
         collapsedMiniLogoPulseAnchored,
@@ -2045,6 +2060,7 @@ async function main() {
         saveStateRelocated,
         saveStateMetrics,
         lowerLeftControlsTogether,
+        collapsedWithPaneGridOK,
         boardToggleDefaults,
         boardShowsAllByDefault,
         boardHidesCompleted,
@@ -2386,6 +2402,7 @@ async function main() {
     assert.equal(result.collapsedFolderMenuWorks, true);
     assert.equal(result.saveStateRelocated, true, JSON.stringify(result.saveStateMetrics));
     assert.equal(result.lowerLeftControlsTogether, true);
+    assert.equal(result.collapsedWithPaneGridOK, true);
     assert.equal(result.boardToggleDefaults, true);
     assert.equal(result.boardShowsAllByDefault, true);
     assert.equal(result.boardHidesCompleted, true);

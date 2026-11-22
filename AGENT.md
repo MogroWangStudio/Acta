@@ -81,7 +81,7 @@ docs/                      `npm run build:pages` 的产物（GitHub Pages），�
 - 三语文案：`renderer.js` 的 `dictionaries` + `interface.js` 里的 `Object.assign(dictionaries.zh, …)`；关于页更新板块另有一份 `updateMessages`（zh / en / zh-Hant）。新增文案三处都要给。
 - 弹窗一律 `<dialog class="relation-dialog">` + `.relation-dialog-head` / `-body`；网格布局用 `grid-template-areas` 而不是改 DOM 层级（`.workspace` 的三列被日历 / 计划板 / 总结的 `!important` 规则依赖）。
 - **空态里的角色**：Handy 是品牌小人（尖顶脑袋 + 两只眼睛 + 梯形身子），只在列表空着与未选中内容时出现。它替代的是一枚图标，所以不给它垫彩色底板、不加投影；动作只保留呼吸 / 眨眼 / 点头三样，幅度 2° / 2px 以内，三个周期错开——这三条是刻意的克制（`kill-ai-slop` 与 `apple-design` 的口径：循环动画要么有用、要么安静，不拿它当装饰）。改尺寸 / 颜色只动 `.handy-figure` 的 `height` 与 `color`，眼睛颜色走 `var(--paper)`（深色主题下脑袋是浅的，白眼睛会消失）。
-- **顶栏是唯一一条横带**：品牌、标签条、状态与版本、窗口控件全在 52px 高的 `.titlebar` 里，不要再给标签条单开一行。顶栏底色是 `var(--sidebar)`（各主题差异很大：深色近黑、MWS 浅色是品牌绿），所以上面的一切文字 / 边框 / 悬停底色都用 `--chrome-line` / `--chrome-hover` / `--chrome-muted` 三个混色令牌（定义在 `.titlebar`，MWS 浅色主题另行覆盖成白色系），不要写死浅灰。
+- **顶栏是唯一一条横带**：品牌、标签条、状态与版本、窗口控件全在 52px 高的 `.titlebar` 里，不要再给标签条单开一行。顶栏底色是 `var(--sidebar)`（各主题差异很大：深色近黑、MWS 浅色是品牌绿），所以上面的一切文字 / 边框 / 悬停底色都用 `--chrome-line` / `--chrome-hover` / `--chrome-muted` 三个混色令牌（定义在 `.titlebar`，MWS 浅色主题另行覆盖成白色系），不要写死浅灰。**工作区网格的侧栏列（普通三列、`body.tab-side` 四列、整页视图）一律用 `var(--acta-sidebar-width)`**，与顶栏品牌列同一事实来源——硬编码（如 248px / 220px）会让折叠态（72px）下窗格模式把侧栏拉回旧宽、顶栏与列表竖缝错位（beta8 修过一回，别再犯）。
 
 ## 6. 容易踩的坑
 

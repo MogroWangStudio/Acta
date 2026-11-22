@@ -234,8 +234,11 @@ html[data-desktop-platform="darwin"] .brand { padding-left: 84px; }
    也要让开它（见下面的 body.tab-side.board-view 规则）。 */
 body.tab-side { --tab-side-width: clamp(280px, 22vw, 400px); }
 body.tab-side .workspace {
+  /* 侧栏列必须走 --acta-sidebar-width（与顶栏品牌列、普通 / 整页工作区同一
+     事实来源）：硬编码会让折叠态（72px）下的窗格模式把侧栏拉回旧宽度，
+     顶栏标签条与列表竖缝也随之错位。 */
   grid-template-columns:
-    248px
+    var(--acta-sidebar-width)
     clamp(300px, var(--list-pane-width, 330px), 520px)
     minmax(260px, 1fr)
     var(--tab-side-width);
@@ -854,11 +857,11 @@ html[data-note-toolbar-position="top"] .note-editor .note-toolbar { top: 8px; bo
 
 @media (max-width: 1220px) {
   .titlebar { grid-template-columns: var(--acta-sidebar-width, 220px) minmax(0, 1fr) auto auto; }
-  .workspace { grid-template-columns: 220px clamp(330px, var(--list-pane-width), 560px) minmax(0, 1fr); }
+  .workspace { grid-template-columns: var(--acta-sidebar-width) clamp(330px, var(--list-pane-width), 560px) minmax(0, 1fr); }
   body.tab-side { --tab-side-width: clamp(240px, 20vw, 340px); }
   body.tab-side .workspace {
     grid-template-columns:
-      220px
+      var(--acta-sidebar-width)
       clamp(280px, var(--list-pane-width, 330px), 460px)
       minmax(240px, 1fr)
       var(--tab-side-width);
